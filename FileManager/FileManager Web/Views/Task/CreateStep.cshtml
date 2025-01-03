@@ -1,0 +1,114 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@using FileManager.Domain.Enum
+@model FileManager.Domain.Entity.TaskStepEntity
+@{
+    ViewData["Title"] = "Добавление шага";
+}
+<div class="container padding-top-container">
+	<h1 class="text-center">Добавление шага в задачу @ViewBag.TaskId</h1>
+
+
+	<form asp-action="CreateStep" method="post" asp-route-taskId="@ViewBag.TaskId">
+
+		<div class="row justify-content-md-center">
+
+			<div class="col-md-3">
+				<div class="form-group">
+					<label asp-for="StepNumber" class="control-label"></label>
+					<input asp-for="StepNumber" class="form-control" type="number" min="1" max="@ViewBag.MaxNumber"/>
+					<span asp-validation-for="StepNumber" class="text-danger"></span>
+				</div>
+
+			</div>
+			<div class="col-md-3">
+				<div class="form-group">
+					<label asp-for="Description" class="control-label"></label>
+					<input asp-for="Description" class="form-control"/>
+					<span asp-validation-for="Description" class="text-danger"></span>
+				</div>
+
+			</div>
+			<div class="col-md-3">
+				<div class="form-group">
+					<label asp-for="OperationName" class="control-label"></label>
+					<select asp-for="OperationName" class="form-select mb-3" asp-items="Html.GetEnumSelectList<OperationName>()"></select>
+					<span asp-validation-for="OperationName" class="text-danger"></span>
+				</div>
+			</div>
+		</div>
+
+
+		<div class="row  justify-content-md-center">
+			<div class="col-md-3">
+				<div class="form-group">
+					<label asp-for="FileMask" class="control-label"></label>
+					<input asp-for="FileMask" class="form-control"/>
+					<span asp-validation-for="FileMask" class="text-danger"></span>
+				</div>
+
+			</div>
+			<div class="col-md-3">
+				<div class="form-group">
+					<label asp-for="Source" class="control-label"></label>
+					<input asp-for="Source" class="form-control"/>
+					<span asp-validation-for="Source" class="text-danger"></span>
+				</div>
+
+
+			</div>
+			<div class="col-md-3">
+				<div class="form-group">
+					<label asp-for="Destination" class="control-label"></label>
+					<input asp-for="Destination" class="form-control" />
+					<span asp-validation-for="Destination" class="text-danger"></span>
+				</div>
+			</div>
+		</div>
+
+
+		<div class="row  justify-content-md-center">
+			<div class="col-md-3">
+				<div class="form-group">
+					<label asp-for="IsBreak" class="form-check-label">
+						Прерывание
+						<input type="checkbox" class="form-check-input" asp-for="IsBreak" />
+					</label>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class="form-group">
+					<label asp-for="IsActive" class="form-check-label">
+						Активно
+						<input type="checkbox" class="form-check-input" asp-for="IsActive" />
+					</label>
+				</div>
+			</div>
+			<div class="col-md-3">
+				
+			</div>
+		</div>
+
+
+
+
+
+		<br />
+		<div class="row  justify-content-md-center">
+			<div class="col-1">
+				<div class="form-group">
+					<a asp-action="Tasks" class="btn btn-warning">Назад</a>
+				</div>
+			</div>
+			<div class="col-1">
+				<div class="form-group">
+					<input type="submit" value="Сохранить" class="btn btn-success" />
+				</div>
+			</div>
+		</div>
+
+	</form>
+
+
+</div>

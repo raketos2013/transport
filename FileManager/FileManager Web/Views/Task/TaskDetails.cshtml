@@ -1,0 +1,158 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model FileManager.Domain.ViewModels.Task.TaskDetailsViewModel
+@{
+	ViewData["Title"] = "Задача ";
+}
+
+<div class="container-fluid padding-top-container" style="padding-left: 0px; padding-right: 0px;">
+
+	<div class="row">
+		<div class="col-3" style="border-right: 1px solid;">
+			<button class="btn btn-info">Редактировать</button>
+			
+			<a asp-area="" asp-controller="Task" asp-action="TaskLog" class="btn btn-info" asp-route-dateFrom="@DateTime.Today" 
+																							asp-route-dateTo="@DateTime.Today"
+																							asp-route-taskId="@Model.Task.TaskId">Журнал</a>
+			<p> Задача @Model.Task.TaskId</p>
+			<p>@Model.Task.Name</p>
+			<p>Время начала - @Model.Task.TimeBegin</p>
+			<p>Время окончания - @Model.Task.TimeEnd</p>
+			<p>Дни активности - @Model.Task.DayActive</p>
+			<p>Группа рассылки - @Model.Task.AddresseeGroupId</p>
+			<p>Группа задач - @Model.Task.TaskGroupId</p>
+			<p>Последнее изменение - @Model.Task.LastModified</p>
+			<p>Статус - @Model.Task.TaskStatus</p>
+		</div>
+		<div class="col-9">
+			<a asp-action="CreateStep" class="btn btn-info" asp-route-idTask="@Model.Task.TaskId">Добавить</a>
+			<button class="btn btn-outline-primary" onclick="ShowActive()"><span id="titleButton">Скрыть</span> неактивные</button>
+			<div>
+				<a class="btn" onclick="replaceStep('up', '@Model.Task.TaskId.ToString()')"><img src="~/images/arrow_up_icon.png" /></a>
+				<a class="btn" onclick="replaceStep('down', '@Model.Task.TaskId.ToString()')"><img src="~/images/arrow_down_icon.png" /></a>
+				<a class="btn" onclick="replaceStep('maxup', '@Model.Task.TaskId.ToString()')"><img src="~/images/arrow_upmax_icon.png" /></a>
+				<a class="btn" onclick="replaceStep('maxdown', '@Model.Task.TaskId.ToString()')"><img src="~/images/arrow_downmax_icon.png" /></a>
+			</div>
+			<table class="table table-hover">
+				<thead>
+					<tr>
+						
+						<th>
+							Номер шага
+						</th>
+						<th>
+							Вкл/Выкл
+						</th>
+						<th>
+							Краткое описание
+						</th>
+						<th>
+							Маска
+						</th>
+						<th>
+							Операция
+						</th>
+						<th>
+							Прерывание
+						</th>
+						<th>
+							Св-ва
+						</th>
+						<th>
+							Источник
+						</th>
+						<th>
+							Назначение
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var item in Model.TaskSteps)
+					{
+						<tr>
+							
+							<td>
+								@Html.DisplayFor(modelItem => item.StepNumber)
+							</td>
+							<td>
+								@Html.DisplayFor(modelItem => item.IsActive)
+							</td>
+							<td>
+								@Html.DisplayFor(modelItem => item.Description)
+							</td>
+							<td>
+								@Html.DisplayFor(modelItem => item.FileMask)
+							</td>
+							<td>
+								@Html.DisplayFor(modelItem => item.OperationName)
+							</td>
+							<td>
+								@Html.DisplayFor(modelItem => item.IsBreak)
+							</td>
+							<td>
+							</td>
+							<td>
+								@Html.DisplayFor(modelItem => item.Source)
+							</td>
+							<td>
+								@Html.DisplayFor(modelItem => item.Destination)
+							</td>
+						</tr>
+					}
+				</tbody>
+
+
+			</table>
+
+		</div>
+	</div>
+
+
+
+
+
+
+</div>
+
+<script>
+	var selectStep;
+	var trs = document.querySelectorAll("tbody tr");
+	for (var i = 0; i < trs.length; i++) {
+		MakeRowHover(trs[i], i);
+	}
+	function MakeRowHover(row, numRow) {
+		row.addEventListener("click", function (numRow) {
+			//this.style.backgroundColor = "silver";
+			let td = this.querySelectorAll('td');
+			for (var i = 0; i < trs.length; i++) {
+				selectStep = td[0].innerText;
+				//td[1].style.display = 'block';
+				trs[i].classList.add('selected-row');
+			}
+			for (var i = 0; i < trs.length; i++) {
+				if (trs[i] != this) {
+					td = trs[i].querySelectorAll('td');
+					//td[1].style.display = 'none';
+					trs[i].classList.remove('selected-row');
+				}
+			}
+		});
+	}
+
+	function replaceStep(operation, taskId){
+		
+		$.ajax({
+			method: 'POST',
+			url: '@Url.Action("ReplaceStep", "Task")',
+			data: {	"taskId": taskId,
+					"numberStep": selectStep,
+					"operation": operation},
+			dataType: 'html',
+			success: function (result) {
+				location.href = "@Url.Action("TaskDetails", "Task", new { taskId = "cid" })".replace("cid", taskId);
+			}
+		});
+	}
+	
+</script>

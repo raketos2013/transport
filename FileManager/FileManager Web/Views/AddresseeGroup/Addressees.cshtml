@@ -1,0 +1,292 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model IEnumerable<FileManager.Domain.Entity.AddresseeGroupEntity>
+@{
+	ViewData["Title"] = "Группы рассылки";
+}
+
+<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
+
+	<div class="modal fade" id="staticBackdropMailList" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelMailList" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="staticBackdropLabelMailList">Новая группа рассылки</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="clearNewGroup()"></button>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label class="control-label">Номер группы</label>
+						<input class="form-control" id="numberNewGroup" />
+					</div>
+					<div class="form-group">
+						<label class="control-label">Название группы</label>
+						<input class="form-control" id="nameNewGroup" />
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="clearNewGroup()">Отмена</button>
+					<button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="createGroup()">Ок</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="staticBackdropNewEmail" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelNewEmail" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="staticBackdropLabelNewEmail">Добавить адресата в группу <span id="MailGroupForModal"></span></h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="clearNewEmail()"></button>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label class="control-label">Email</label>
+						<input class="form-control" id="newEmail" />
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="clearNewEmail()">Отмена</button>
+					<button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="newEmail()">Ок</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="staticBackdropDeleteEmail" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelDeleteEmail" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="staticBackdropLabelDeleteEmail">Удалить адресата <span id="deletedEmail"></span> ?</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick=""></button>
+				</div>
+				<div class="modal-body">
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="">Отмена</button>
+					<button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="deleteEmail()">Ок</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="staticBackdropDeleteGroup" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelDeleteGroup" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="staticBackdropLabelDeleteGroup">Удалить группу <span id="deletedGroup"></span> ?</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick=""></button>
+				</div>
+				<div class="modal-body">
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="">Отмена</button>
+					<button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="deleteGroup()">Ок</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+	<div class="mainDiv">
+		<div class="listGroups d-flex flex-column align-items-stretch flex-shrink-0 padding-top-container" style="width: 20%;">
+			<div class="list-group list-group-flush scrollarea" style="max-height: 90vh;">
+				<div class="row" style="margin-right: 0px;">
+					<div class="col-11" style="padding-left: 20px; border-bottom: solid 1px black;">
+						<h5><b>Группы</b></h5>
+					</div>
+					<div class="col-1 p-0">
+						<a class="btn p-0" data-bs-toggle="modal" data-bs-target="#staticBackdropMailList">
+							<img id="btn-add-group-task" src="~/images/add_icon.png" />
+						</a>
+
+					</div>
+				</div>
+
+				<table>
+					<tbode>
+						@foreach (var item in Model)
+						{
+							<tr class="list-group-item" onclick="getMailList('@item.Id')">
+								<td>
+									@item.Id
+								</td>
+								<td>
+									@item.Name
+								</td>
+								<td style="display: none;">
+									<button class="btn p-0" data-bs-toggle="modal" data-bs-target="#staticBackdropDeleteGroup" onclick="delGroup('@item.Name')">
+										<img src="~/images/delete_icon.png" />
+									</button>
+								</td>
+							</tr>
+
+						}
+					</tbode>
+				</table>
+			</div>
+
+		</div>
+
+		<div class="mailList scrollarea padding-top-container">
+			<h2>Список адресатов</h2>
+			@* <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#staticBackdropNewEmail" onclick="addEmail()">Добавить адресата</button><br /> *@
+			<div id="mailList">
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+<script>
+
+	var selectGroup;
+	var trs = document.querySelectorAll("tbody tr");
+	for (var i = 0; i < trs.length; i++) {
+		MakeRowHover(trs[i], i);
+	}
+
+	function MakeRowHover(row, numRow) {
+		row.addEventListener("click", function (numRow) {
+			//this.style.backgroundColor = "silver";
+			let td = this.querySelectorAll('td');
+			for (var i = 0; i < trs.length; i++) {
+				td[2].style.display = 'block';
+				trs[i].classList.add('selected-row');
+			}
+			for (var i = 0; i < trs.length; i++) {
+				if (trs[i] != this) {
+					td = trs[i].querySelectorAll('td');
+					td[2].style.display = 'none';
+					trs[i].classList.remove('selected-row');
+				}
+			}
+		});
+
+	}
+
+
+	window.addEventListener('load', () => {
+		var firstGroup = document.querySelectorAll("tbody tr");
+		if(firstGroup.length > 0)
+		{
+			firstGroup[0].classList.add('selected-row');
+			var id = firstGroup[0].querySelectorAll("td");
+			id[2].style.display = 'block';
+			selectGroup = id[0].innerText
+			getMailList(id[0].innerText)
+		}
+		else
+		{
+
+		}
+		
+
+
+	});
+
+	function getMailList(id) {
+		$.ajax({
+			method: 'POST',
+			url: '@Url.Action("AddresseeList", "AddresseeGroup")',
+			data: { "groupId": id },
+			dataType: 'html',
+			success: function (result) {
+				selectGroup = id;
+				$('#mailList').empty();
+				$('#mailList').append(result);
+			}
+		});
+	}
+
+
+	function clearNewGroup() {
+		document.getElementById("nameNewGroup").value = '';
+		document.getElementById("numberNewGroup").value = '';
+	}
+
+	function createGroup() {
+		var numberGroup = document.getElementById("numberNewGroup").value;
+		var nameGroup = document.getElementById("nameNewGroup").value;
+		$.ajax({
+			method: 'POST',
+			url: '@Url.Action("CreateGroup", "AddresseeGroup")',
+			data: {
+				"number": numberGroup,
+				"name": nameGroup
+			},
+			dataType: 'html',
+			success: function (result) {
+				window.location.href = '@Url.Action("Addressees", "AddresseeGroup")'
+			}
+		});
+		clearNewGroup();
+	}
+
+	function newEmail() {
+		email = document.getElementById("newEmail").value;
+		$.ajax({
+			method: 'POST',
+			url: '@Url.Action("CreateEmail", "MailGroups")',
+			data: {
+				"groupId": selectGroup,
+				"email": email
+			},
+			dataType: 'html',
+			success: function (result) {
+				window.location.href = '@Url.Action("Index", "MailGroups")'
+			}
+		});
+		clearNewEmail()
+	}
+
+	function clearNewEmail() {
+		document.getElementById("newEmail").value = '';
+	}
+
+	function addEmail() {
+		document.getElementById("MailGroupForModal").innerText = selectGroup;
+	}
+
+	function delEmail(mail) {
+		document.getElementById("deletedEmail").innerText = mail;
+	}
+
+	function deleteEmail() {
+		email = document.getElementById("deletedEmail").innerText;
+		$.ajax({
+			method: 'POST',
+			url: '@Url.Action("DeleteEmail", "MailGroups")',
+			data: {
+				"id": selectGroup,
+				"email": email
+			},
+			dataType: 'html',
+			success: function (result) {
+				window.location.href = '@Url.Action("Index", "MailGroups")'
+			}
+		});
+	}
+
+	function delGroup(group) {
+		document.getElementById("deletedGroup").innerText = group;
+	}
+
+	function deleteGroup() {
+		$.ajax({
+			method: 'POST',
+			url: '@Url.Action("DeleteGroup", "MailGroups")',
+			data: {
+				"id": selectGroup,
+			},
+			dataType: 'html',
+			success: function (result) {
+				window.location.href = '@Url.Action("Index", "MailGroups")'
+			}
+		});
+	}
+
+</script>

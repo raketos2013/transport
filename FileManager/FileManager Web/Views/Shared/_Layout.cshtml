@@ -1,0 +1,110 @@
+﻿@using System.Security.Claims;
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/FileManager_Web.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+		<nav class="navbar navbar-expand-sm navbar-toggleable-sm  mb-3 fixed-top pb-0 pt-0">
+            <div class="container-fluid">
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                   
+                    <span class="navbar-brand text-white navbar-text navbrand" style="width: 20%;"><b>БЕЛАРУСБАНК</b></span>
+                    
+                    <ul class="navbar-nav flex-grow-1 list-group">
+                       @*  <li class="list-group-item" style="opacity: 0;"></li> *@
+                        <li class="nav-item list-group-item nav_li" id="nav_li_1" >
+                            <a id="a1" class="linka not_active_link navbar-menu_item" asp-area="" asp-controller="Task" asp-action="Tasks">Задачи</a>
+                        </li>
+                        <li class="nav-item list-group-item  nav_li" id="nav_li_2">
+                            <a id="a2" class="linka  navbar-menu_item" asp-area="" asp-controller="AddresseeGroup" asp-action="Addressees">Группы рассылки</a>
+                        </li>
+                       @*  <li class="nav-item list-group-item  nav_li text-center" id="nav_li_3">
+                            <a id="a3" class="linka navbar-menu_item" asp-area="" asp-controller="TaskEntity" asp-action="Index">Задачи</a>
+                        </li> *@
+                        <li class="nav-item list-group-item  nav_li" id="nav_li_4">
+                            <a id="a4" class="linka  navbar-menu_item" asp-area="" asp-controller="UserLogs" asp-action="Index" asp-route-dateFrom="@DateTime.Today" asp-route-dateTo="@DateTime.Today">Логи пользователей</a>
+                        </li>
+                        <li class ="list-group-item" style="opacity: 0;"></li>
+
+                    </ul>
+                </div>
+                @if (User.Identity?.Name != null)
+                {
+                    <div class="text-white">@User.FindFirst(ClaimTypes.GivenName)?.Value </div>
+                    <a class="nav-link text-dark" asp-area="" asp-action="Logout" asp-controller="Account">
+						<img src="~/images/logout_icon.png" />
+                    </a>
+                }
+                else
+                {
+                    <a class="nav-link" asp-area="" asp-action="Login" asp-controller="Account" >Войти</a>
+                }
+            </div>
+        </nav>
+    </header>
+    <div class="container-fluid" style="padding-left: 0px; padding-right: 0px;" id="containerTasks">
+        <main role="main">
+            @RenderBody()
+            
+        </main>
+        
+    </div>
+
+    
+    
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+	<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+
+
+
+</html>
+
+
+<script>
+    $(document).ready(function () {
+        if (window.location.pathname.search('TaskEntity') != -1) {
+            $('#nav_li_3').removeClass('nav_li');
+            $('#nav_li_3').addClass('active_nav-link');
+            $('#a3').addClass('active_link');
+        } else if (window.location.pathname.search('UserLogs') != -1) {
+            $('#nav_li_4').removeClass('nav_li');
+            $('#nav_li_4').addClass('active_nav-link');
+            $('#a4').addClass('active_link');
+        } else if (window.location.pathname.search('AddresseeGroup') != -1) {
+            $('#nav_li_2').removeClass('nav_li');
+            $('#nav_li_2').addClass('active_nav-link');
+            $('#a2').addClass('active_link');
+        } else if (window.location.pathname.search('MailList') != -1) {
+            $('#nav_li_2').removeClass('nav_li');
+            $('#nav_li_2').addClass('active_nav-link');
+            $('#a2').addClass('active_link');
+        } else if (window.location.pathname.search('TaskOperationEntity') != -1) {
+            $('#nav_li_3').removeClass('nav_li');
+            $('#nav_li_3').addClass('active_nav-link');
+            $('#a3').addClass('active_link');
+        } else if (window.location.pathname.search('Account') != -1) {
+            $('#nav_li_4').removeClass('active_nav-link');
+            $('#nav_li_3').removeClass('active_nav-link');
+            $('#nav_li_2').removeClass('active_nav-link');
+            $('#nav_li_1').removeClass('active_nav-link');
+        } else if (window.location.pathname.search('') != -1) {
+            $('#nav_li_1').removeClass('nav_li');
+            $('#nav_li_1').addClass('active_nav-link');
+            $('#a1').addClass('active_link');
+        } 
+    })
+</script>

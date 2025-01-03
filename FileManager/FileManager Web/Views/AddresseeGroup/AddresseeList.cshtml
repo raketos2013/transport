@@ -1,0 +1,73 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model IEnumerable<FileManager.Domain.Entity.AddresseeEntity>
+@{
+}
+<div class="container-fluid position-relative" style=" min-height: 100%;">
+    <div class="row justify-content-between">
+        <div class="col-3">
+            <div>
+                <a asp-action="CreateTask" class="btn btn-info" method="post">Добавить адресата</a>
+                <button class="btn btn-outline-primary" onclick="ShowActive()"><span id="titleButton">Скрыть</span> неактивные</button>
+            </div>
+
+        </div>
+        <div class="col-5" style=" display: flex; justify-content: flex-end;">
+            <div class="input-group" style="max-width: 500px; min-width: 300px;">
+
+                <div class="input-group-append">
+
+                    <select class="form-select" id="inputSelect">
+                        <option selected value="0">Id</option>
+                        <option value="1">Наименование</option>
+                        <option value="5">Вход. каталог</option>
+                        <option value="6">Маска</option>
+                    </select>
+                </div>
+                <input type="text" class="form-control" id="myInput" onkeyup="myFunction(document.querySelector('#inputSelect'))">
+
+            </div>
+        </div>
+
+
+    </div>
+    <table class="table table-hover" id="myTable">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.PersonalNumber)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.EMail)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Fio)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.StructuralUnit)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PersonalNumber)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.EMail)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Fio)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.StructuralUnit)
+                    </td>
+                    
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

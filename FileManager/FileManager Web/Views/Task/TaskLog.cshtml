@@ -1,0 +1,248 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model IEnumerable<FileManager.Domain.Entity.TaskLogEntity>
+@{
+}
+<div class="container-fluid padding-top-container" style="padding-left: 0px; padding-right: 0px;">
+
+	<div class="row">
+
+		<div class="col-xl-3">
+			<h3 class="text-center">Статус задачи </h3>
+			<hr />
+			<dl class="row">
+				@* <span>Выполнений за день : @ViewBag.taskStatus.CountExecute</span>
+				<span>Обработано файлов : @ViewBag.taskStatus.CountProcessedFiles</span>
+				<span>Осталось в каталоге файлов : @ViewBag.taskStatus.CountLeftFiles</span>
+				<span>Последний запуск : @ViewBag.taskStatus.DateLastExecute</span>
+				<span>
+					Выполняется сейчас :
+					@if (@ViewBag.taskStatus.IsProgress)
+					{
+						<span>Да</span>
+					}
+					else
+					{
+						<span>Нет</span>
+					}
+				</span>
+				<span>
+					Есть ошибки :
+					@if (@ViewBag.taskStatus.IsError)
+					{
+						<span>Да</span>
+					}
+					else
+					{
+						<span>Нет</span>
+					}
+				</span> *@
+				fhafh
+				sd
+				hsdf
+				h
+				dsfh
+				sdfh
+				sdfh
+
+			</dl>
+			@* <a asp-controller="TaskOperationEntity" asp-action="Index" asp-route-id="@ViewBag.taskStatus.TaskId" asp-route-contr="Home" asp-route-act="Details" class="btn">
+				<img src="~/images/operations_icon.png" alt="Назначения" title="Назначения" />
+			</a>
+			<a asp-controller="TaskEntity" asp-action="Edit" asp-route-id="@ViewBag.taskStatus.TaskId" asp-route-contr="Home" asp-route-act="Details" class="btn">
+				<img src="~/images/edit_icon.png" alt="Редактировать" title="Редактировать" />
+			</a>
+			<a asp-controller="TaskEntity" asp-action="Details" asp-route-id="@ViewBag.taskStatus.TaskId" asp-route-contr="Home" asp-route-act="Details" class="btn">
+				<img src="~/images/details_icon(2).png" alt="Подробно" title="Подробно" />
+			</a> *@
+			<div>
+				<a asp-action="Task" class="btn btn-warning">Назад</a>
+			</div>
+
+			<br />
+
+			<div class="accordion" id="accordionExample">
+				<div class="accordion-item">
+					<h2 class="accordion-header" id="headingTwo">
+						<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+							Фильтр
+						</button>
+					</h2>
+					<div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+						<div class="accordion-body">
+							<form method="get">
+								<div class="row">
+
+									<div class="input-group col">
+										<input name="dateFrom" type="date" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" id="dateInputFrom" value="@ViewBag.FilterDateFrom" style="max-width: 150px;">
+									</div>
+									<div class="input-group col">
+										<input name="dateTo" type="date" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" id="dateInputTo" value="@ViewBag.FilterDateTo" style="max-width: 150px;">
+									</div>
+
+									<div class="input-group">
+										<label for="SearchId" class="control-label">
+											Id операции
+											<input name="SearchId" class="form-control" type="text" value="@ViewBag.SearchId" />
+										</label>
+									</div>
+									<div class="input-group">
+										<label for="SearchFileName" class="control-label">
+											Имя файла
+											<input name="SearchFileName" class="form-control" type="text" value="@ViewBag.SearchFileName" />
+										</label>
+									</div>
+									<div class="input-group-append">
+										<label for="searchResult">
+											Результат
+
+											<select name="searchResult" class="form-select">
+												<option value="6"></option>
+												<option value="0">Успешно</option>
+												<option value="1">Ошибка</option>
+												<option value="2">Переименован</option>
+											</select>
+										</label>
+
+									</div>
+									<div class="input-group">
+										<label for="SearchText" class="control-label">
+											Сообщение
+											<input name="SearchText" class="form-control" type="text" value="@ViewBag.SearchText" />
+										</label>
+									</div>
+									<br />
+									<div class="form-group">
+										<input type="submit" value="Поиск" class="btn btn-secondary form-control" style="max-width: 200px;" />
+
+									</div>
+
+
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-xl-9">
+
+			<table class="table table-striped" id="myTable">
+				<caption class="caption-top">Список обработанных файлов</caption>
+				<thead>
+					<tr>
+						<th onclick="sortTable(0)">
+							Дата-время события
+						</th>
+						<th onclick="sortTable(1)">
+							Id операции
+						</th>
+						<th onclick="sortTable(2)">
+							Имя файла
+						</th>
+						<th onclick="sortTable(3)">
+							Результат операции
+						</th>
+						<th onclick="sortTable(4)">
+							Сообщение
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var item in Model)
+					{
+						<tr>
+							<td>
+								@Html.DisplayFor(model => item.DateTimeLog)
+							</td>
+							<td>
+								@Html.DisplayFor(model => item.OperationId)
+							</td>
+							<td>
+								@Html.DisplayFor(model => item.FileName)
+							</td>
+							<td>
+								@Html.DisplayFor(model => item.ResultOperation)
+							</td>
+							<td>
+								@Html.DisplayFor(model => item.ResultText)
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+
+			@* Страница @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) из @Model.PageCount
+
+			@Html.PagedListPager(Model,
+							page => Url.Action("Details",
+							new
+							{
+								id = ViewBag.taskStatus.TaskId,
+								dateFrom = @ViewBag.FilterDateFrom,
+								dateTo = @ViewBag.FilterDateTo,
+								page = page,
+								searchId = @ViewBag.SearchId,
+								searchFileName = @ViewBag.SearchFileName,
+								searchResult = @ViewBag.SearchResult,
+								searchText = @ViewBag.SearchText
+							}),
+							new PagedListRenderOptions
+			{
+				DisplayEllipsesWhenNotShowingAllPageNumbers = true,
+				LiElementClasses = new string[] { "page-item" },
+				PageClasses = new string[] { "page-link" }
+			}) *@
+
+
+
+		</div>
+	</div>
+
+
+	@* <table class="table table-striped" id="myTable">
+		<caption class="caption-top">Список обработанных файлов</caption>
+		<thead>
+			<tr>
+				<th onclick="sortTable(0)">
+					Дата-время события
+				</th>
+				<th onclick="sortTable(1)">
+					Id операции
+				</th>
+				<th onclick="sortTable(2)">
+					Имя файла
+				</th>
+				<th onclick="sortTable(3)">
+					Результат операции
+				</th>
+				<th onclick="sortTable(4)">
+					Сообщение
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var item in Model)
+			{
+				<tr>
+					<td>
+						@Html.DisplayFor(model => item.DateTimeLog)
+					</td>
+					<td>
+						@Html.DisplayFor(model => item.OperationId)
+					</td>
+					<td>
+						@Html.DisplayFor(model => item.FileName)
+					</td>
+					<td>
+						@Html.DisplayFor(model => item.ResultOperation)
+					</td>
+					<td>
+						@Html.DisplayFor(model => item.ResultText)
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table> *@
+</div>

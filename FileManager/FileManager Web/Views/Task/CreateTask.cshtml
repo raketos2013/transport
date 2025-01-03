@@ -1,0 +1,130 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@using FileManager.Domain.Enum
+@model FileManager.Domain.Entity.TaskEntity
+
+@{
+	ViewData["Title"] = "Создание задачи";
+	SelectList addresseeGroups = new SelectList(ViewBag.AddresseeGroups, "Id", "Name");
+	SelectList taskGroups = new SelectList(ViewBag.TaskGroups, "Id", "Name");
+
+}
+
+<div class="container padding-top-container">
+	<h1 class="text-center">Создание задачи</h1>
+
+
+	<form asp-action="CreateTask" method="post">
+
+		<div class="row justify-content-md-center">
+
+			<div class="col-md-3">
+				<div class="form-group">
+					<label asp-for="TaskId" class="control-label"></label>
+					<input asp-for="TaskId" class="form-control" />
+					<span asp-validation-for="TaskId" class="text-danger"></span>
+				</div>
+
+			</div>
+			<div class="col-md-2">
+				<div class="form-group">
+					<label asp-for="TimeBegin" class="control-label"></label>
+					<input asp-for="TimeBegin" class="form-control" type="time" value="00:00" />
+					<span asp-validation-for="TimeBegin" class="text-danger"></span>
+				</div>
+
+			</div>
+			<div class="col-md-4">
+				<div class="form-group">
+					<label asp-for="DayActive" class="control-label"></label>
+					<select asp-for="DayActive" class="form-select mb-3" asp-items="Html.GetEnumSelectList<DayActive>()"></select>
+					<span asp-validation-for="DayActive" class="text-danger"></span>
+				</div>
+			</div>
+		</div>
+
+
+		<div class="row  justify-content-md-center">
+			<div class="col-md-3">
+				<div class="form-group">
+					<label asp-for="Name" class="control-label"></label>
+					<input asp-for="Name" class="form-control" />
+					<span asp-validation-for="Name" class="text-danger"></span>
+				</div>
+
+			</div>
+			<div class="col-md-2">
+				<div class="form-group">
+					<label asp-for="TimeEnd" class="control-label"></label>
+					<input asp-for="TimeEnd" class="form-control" type="time" value="00:00" />
+					<span asp-validation-for="TimeEnd" class="text-danger"></span>
+				</div>
+
+
+			</div>
+			<div class="col-md-4">
+				<div class="form-group">
+					<label asp-for="AddresseeGroupId" class="control-label"></label>
+					<select asp-for="AddresseeGroupId" class="form-select mb-3" asp-items=@addresseeGroups></select>
+					<span asp-validation-for="AddresseeGroupId" class="text-danger"></span>
+				</div>
+			</div>
+		</div>
+
+
+		<div class="row  justify-content-md-center">
+			<div class="col-md-3">
+
+			</div>
+			<div class="col-md-2">
+				
+
+			</div>
+			<div class="col-md-4">
+				<div class="form-group">
+					<label asp-for="TaskGroupId" class="control-label"></label>
+					<select asp-for="TaskGroupId" class="form-select mb-3" asp-items=@taskGroups></select>
+					<span asp-validation-for="TaskGroupId" class="text-danger"></span>
+				</div>
+			</div>
+		</div>
+
+
+		
+
+		<div class="row justify-content-center">
+			<div class="col-3">
+				
+			</div>
+			<div class="col-2">
+			</div>
+			<div class="col-4">
+				
+			</div>
+		</div>
+
+		
+
+		<br />
+		<div class="row  justify-content-md-center">
+			<div class="col-1">
+				<div class="form-group">
+					<a asp-action="Tasks" class="btn btn-warning">Назад</a>
+				</div>
+			</div>
+			<div class="col-1">
+				<div class="form-group">
+					<input type="submit" value="Сохранить" class="btn btn-success" />
+				</div>
+			</div>
+		</div>
+
+	</form>
+
+
+</div>
+
+
+
+

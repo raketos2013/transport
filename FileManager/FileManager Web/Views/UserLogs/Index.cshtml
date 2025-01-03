@@ -1,0 +1,86 @@
+﻿@using System.Globalization
+@model IEnumerable<FileManager.Domain.Entity.UserLogEntity>
+
+@{
+    ViewData["Title"] = "Логи пользователя";
+}
+<div class="container padding-top-container">
+
+
+    <h1 class="text-center">Логи действий пользователя</h1>
+
+    @* <p>
+        <a asp-action="Create">Create New</a>
+    </p> *@
+    <div class="row justify-content-between">
+        <div class="col">
+			<form method="get">
+				<div>
+					<div class="input-group mb-1" style="max-width: 500px;">
+						<span class="input-group-text" id="inputGroup-sizing-default">Дата</span>
+                        <input name="dateFrom" type="date" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" id="dateInput" value="@ViewBag.FilterDateFrom" style="max-width: 150px;">
+						<input name="dateTo" type="date" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" id="dateInput" value="@ViewBag.FilterDateTo" style="max-width: 150px;">
+						<input type="submit" value="Показать" class="btn btn-secondary form-control" />
+					</div>
+				</div>
+			</form>
+        </div>
+        <div class="col" style="display: flex; justify-content: flex-end;">
+            <div class="input-group" style="max-width: 500px; min-width: 300px; display: flex; justify-content: flex-end;">
+                <div class="input-group-append">
+					<select class="form-select" id="inputSelect">
+						<option selected value="1">Имя пользователя</option>
+						<option value="2">Действие</option>
+					</select>
+				</div>
+                <div class="form-group">
+                    <input type="text" class="form-control" id="myInput" onkeyup="myFunction(document.querySelector('#inputSelect'))">
+                </div>
+				
+			</div>
+        </div>
+    </div>
+   
+    
+    <table class="table table-striped" id="myTable">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.DateTimeLog)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.UserName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Action)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model) {
+                <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DateTimeLog)
+                        </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.UserName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Action)
+                    </td>
+                    <td>
+                        <a asp-action="Details" asp-route-username="@item.UserName" asp-route-dateTime="@item.DateTimeLog.ToString("yyyy-MM-dd HH:mm:ss.ffffff")" class="btn">
+                            <img src="~/images/details_icon(2).png" alt="Детально" title="Детально" />
+                        </a>
+                        @* <div class="btn btn-success">
+                                    @Html.ActionLink("Details", "Details", new { dateTime = item.DateTimeLog.ToString("yyyy-MM-dd HH:mm:ss.ffffff"), username = item.UserName })
+                        </div> *@
+                    
+                    </td>
+                </tr>
+    }
+        </tbody>
+    </table>
+
+</div>

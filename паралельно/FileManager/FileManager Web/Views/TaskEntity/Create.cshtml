@@ -1,0 +1,262 @@
+﻿@using FileManager.Domain.Enum
+@model FileManager.Domain.Entity.TaskEntity
+
+@{
+	ViewData["Title"] = "Создание задачи";
+	SelectList slist = new SelectList(ViewBag.MailGroups, "Id", "Name");
+	SelectList taskGroups = new SelectList(ViewBag.TaskGroups, "Id", "Name");
+
+}
+
+<div class="container padding-top-container">
+	<h1 class="text-center">Создание задачи</h1>
+	
+
+	<form asp-action="Create">
+		
+		<div class="row justify-content-md-center">
+			
+			<div class="col-md-3">
+				<div class="form-group">
+					<label asp-for="TaskId" class="control-label"></label>
+					<input asp-for="TaskId" class="form-control" />
+					<span asp-validation-for="TaskId" class="text-danger"></span>
+				</div>
+				
+			</div>
+			<div class="col-md-2">
+				<div class="form-group">
+					<label asp-for="TimeBegin" class="control-label"></label>
+					<input asp-for="TimeBegin" class="form-control" type="time" value="00:00" />
+					<span asp-validation-for="TimeBegin" class="text-danger"></span>
+				</div>
+				
+			</div>
+			<div class="col-md-4">
+				<div class="form-group">
+					<label asp-for="SourceCatalog" class="control-label"></label>
+					<input asp-for="SourceCatalog" class="form-control" />
+					<span asp-validation-for="SourceCatalog" class="text-danger"></span>
+				</div>
+				
+			</div>
+		</div>
+
+
+		<div class="row  justify-content-md-center">
+			<div class="col-md-3">
+				<div class="form-group">
+					<label asp-for="Name" class="control-label"></label>
+					<input asp-for="Name" class="form-control" />
+					<span asp-validation-for="Name" class="text-danger"></span>
+				</div>
+				
+			</div>
+			<div class="col-md-2">
+				<div class="form-group">
+					<label asp-for="TimeEnd" class="control-label"></label>
+					<input asp-for="TimeEnd" class="form-control" type="time" value="00:00" />
+					<span asp-validation-for="TimeEnd" class="text-danger"></span>
+				</div>
+
+				
+			</div>
+			<div class="col-md-4">
+				<div class="form-group">
+					<label asp-for="FileMask" class="control-label"></label>
+					<input asp-for="FileMask" class="form-control" />
+					<span asp-validation-for="FileMask" class="text-danger"></span>
+				</div>
+				
+			</div>
+		</div>
+
+
+		<div class="row  justify-content-md-center">
+			<div class="col-md-3">
+				<div class="form-group">
+					<label asp-for="Group" class="control-label"></label>
+					<select asp-for="Group" class="form-select mb-3" asp-items=@slist></select>
+					<span asp-validation-for="Group" class="text-danger"></span>
+				</div>
+				
+			</div>
+			<div class="col-md-2">
+				<div class="form-group">
+					<label asp-for="Delay" class="control-label"></label>
+					<input asp-for="Delay" class="form-control" type="time" value="00:00:00" />
+					<span asp-validation-for="Delay" class="text-danger"></span>
+				</div>
+				
+			</div>
+			<div class="col-md-4">
+				<div class="form-group">
+					<label asp-for="ArchiveCatalog" class="control-label"></label>
+					<input asp-for="ArchiveCatalog" class="form-control" />
+					<span asp-validation-for="ArchiveCatalog" class="text-danger"></span>
+				</div>
+				
+			</div>
+		</div>
+
+
+		<div class="row  justify-content-md-center">
+			<div class="col-md-3">
+				<div class="form-group">
+					<label asp-for="DayActive" class="control-label"></label>
+					<select asp-for="DayActive" class="form-select mb-3" asp-items="Html.GetEnumSelectList<DayActive>()"></select>
+					<span asp-validation-for="DayActive" class="text-danger"></span>
+				</div>
+			</div>
+			<div class="col-md-2">
+				<div class="form-group">
+					<label asp-for="MaxAmountFiles" class="control-label"></label>
+					<input asp-for="MaxAmountFiles" class="form-control" min="0" />
+					<span asp-validation-for="MaxAmountFiles" class="text-danger"></span>
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="form-group">
+					<label asp-for="BadArchiveCatalog" class="control-label"></label>
+					<input asp-for="BadArchiveCatalog" class="form-control" />
+					<span asp-validation-for="BadArchiveCatalog" class="text-danger"></span>
+				</div>
+			</div>
+		</div>
+
+
+		<div class="row justify-content-center">
+			<div class="col-md-3">
+				<div class="form-group form-check">
+					<div class="form-group form-check">
+						<div class="form-check form-switch">
+							<input class="form-check-input" type="checkbox" id="isDelSource" asp-for="IsDeleteSource">
+							<label class="form-check-label" for="isDelSource">@Html.DisplayNameFor(model => model.IsDeleteSource)</label>
+						</div>
+					</div>
+					<br />
+					<div class="form-group form-check">
+						<div class="form-check form-switch">
+							<input class="form-check-input" type="checkbox" id="doubleName" asp-for="DublNameJr">
+							<label class="form-check-label" for="doubleName">@Html.DisplayNameFor(model => model.DublNameJr)</label>
+						</div>
+					</div>
+					@* <br />
+					<div class="form-check form-switch">
+						<input class="form-check-input" type="checkbox" id="splitFiles" asp-for="SplitFiles">
+						<label class="form-check-label" for="splitFiles">@Html.DisplayNameFor(model => model.SplitFiles)</label>
+					</div> *@
+				</div>
+			</div>
+			<div class="col-md-2">
+				<div class="form-group">
+					<label asp-for="DelayBeforeExecuting" class="control-label"></label>
+					<input asp-for="DelayBeforeExecuting" class="form-control" type="time" value="00:00:00" />
+					<span asp-validation-for="DelayBeforeExecuting" class="text-danger"></span>
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="form-group">
+					<label asp-for="SubMask" class="control-label"></label>
+					<input asp-for="SubMask" class="form-control" />
+					<span asp-validation-for="SubMask" class="text-danger"></span>
+				</div>
+				@* <div class="form-group">
+					<label asp-for="SubArchiveCatalog" class="control-label"></label>
+					<input asp-for="SubArchiveCatalog" class="form-control" />
+					<span asp-validation-for="SubArchiveCatalog" class="text-danger"></span>
+				</div> *@
+			</div>
+		</div>
+
+		<div class="row justify-content-center">
+			<div class="col-3">
+				<div class="form-check form-switch">
+					<input class="form-check-input" type="checkbox" onclick="showDopParams()" id="splitFiles" asp-for="SplitFiles">
+					<label class="form-check-label" for="splitFiles">@Html.DisplayNameFor(model => model.SplitFiles)</label>
+				</div>
+			</div>
+			<div class="col-2">
+
+			</div>
+			<div class="col-4">
+				<div class="form-group">
+					<label asp-for="TaskGroup" class="control-label"></label>
+					<select asp-for="TaskGroup" class="form-select mb-3" asp-items=@taskGroups></select>
+					<span asp-validation-for="TaskGroup" class="text-danger"></span>
+				</div>
+			</div>
+		</div>
+		
+		<div class="row justify-content-center" id="dopTaskParams">
+		
+			
+				<div class="col-3">
+					<div class="form-group form-check">
+						<div class="form-check form-switch">
+							<input class="form-check-input" type="checkbox" id="isRegex" asp-for="IsRegex">
+							<label class="form-check-label" for="isRegex">@Html.DisplayNameFor(model => model.IsRegex)</label>
+						</div>
+					</div>
+					<div class="form-group">
+						<label asp-for="ValueParameterOfSplit" class="control-label"></label>
+						<input asp-for="ValueParameterOfSplit" class="form-control" />
+						<span asp-validation-for="ValueParameterOfSplit" class="text-danger"></span>
+					</div>
+					<div class="form-group form-check">
+						<div class="form-check form-switch">
+							<input class="form-check-input" type="checkbox" id="moveToTmp" asp-for="MoveToTmp">
+							<label class="form-check-label" for="moveToTmp">@Html.DisplayNameFor(model => model.MoveToTmp)</label>
+						</div>
+					</div>
+					<div class="form-group">
+						<label asp-for="TmpCatalog" class="control-label"></label>
+						<input asp-for="TmpCatalog" class="form-control" />
+						<span asp-validation-for="TmpCatalog" class="text-danger"></span>
+					</div>
+				</div>
+				<div class="col-2">
+					
+				</div>
+				<div class="col-4">
+				</div>
+			
+		</div>
+
+		<br />
+		<div class="row  justify-content-md-center">
+			<div class="col-1">
+				<div class="form-group">
+					<a asp-action="Index" class="btn btn-warning">Назад</a>
+				</div>
+			</div>
+			<div class="col-1">
+				<div class="form-group">
+					<input type="submit" value="Сохранить" class="btn btn-success" />
+				</div>
+			</div>
+		</div>
+		
+	</form>
+
+
+</div>
+
+<script>
+	function showDopParams() {
+		var st = document.getElementById('splitFiles');
+		if (st.checked) {
+			document.getElementById('dopTaskParams').style.display = 'flex';
+		} else {
+			document.getElementById('dopTaskParams').style.display = 'none';
+		}
+	}
+</script>
+
+
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+}

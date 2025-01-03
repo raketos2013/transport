@@ -1,0 +1,58 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model IEnumerable<FileManager.Domain.ViewModels.CopyTaskOperationsViewModel>
+@{
+
+}
+
+<div>
+	<table>
+		<tr>
+			<th>
+				Копировать
+			</th>
+			<th>
+				Назначение
+			</th>
+			<th>
+				Идентификатор нового назначения
+			</th>
+		</tr>
+		@{
+			int i = 0;
+			foreach (var item in Model)
+			{
+				string isCopy, operId, newOperId;
+				isCopy = "operation[" + i + "].IsCopied";
+				operId = "operation[" + i + "].OperationId";
+				newOperId = "operation[" + i + "].NewOperationId";
+				<tr>
+					<td>
+						<div class="form-group form-check">
+							<div class="form-check form-switch">
+								<input name="@isCopy" class="form-check-input" type="checkbox" id="isDelSource" asp-for="@item.IsCopied">
+								@* <label class="form-check-label" for="isDelSource">@Html.DisplayNameFor(model => item.IsCopied)</label> *@
+							</div>
+						</div>
+					</td>
+					<td>
+						<div class="form-group">
+							@* <label asp-for="@item.OperationId" class="control-label"></label> *@
+							<input name="@operId" asp-for="@item.OperationId" class="form-control" readonly />
+							<span asp-validation-for="@item.OperationId" class="text-danger"></span>
+						</div>
+					</td>
+					<td>
+						<div class="form-group">
+							@* <label asp-for="@item.NewOperationId" class="control-label"></label> *@
+							<input name="@newOperId" asp-for="@item.NewOperationId" class="form-control" />
+							<span asp-validation-for="@item.NewOperationId" class="text-danger"></span>
+						</div>
+					</td>
+				</tr>
+				i++;
+			}
+		}
+	</table>
+</div>

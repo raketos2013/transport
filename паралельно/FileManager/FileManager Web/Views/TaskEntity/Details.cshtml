@@ -1,0 +1,170 @@
+﻿@model FileManager.Domain.Entity.TaskEntity
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<div class="padding-top-container">
+    <h1>Задача @Model.TaskId</h1>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.TimeBegin)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.TimeBegin)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.TimeEnd)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.TimeEnd)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.DayActive)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.DayActive)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Group)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Group)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.IsActive)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.IsActive)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.SourceCatalog)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.SourceCatalog)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.FileMask)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.FileMask)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Delay)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Delay)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ArchiveCatalog)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ArchiveCatalog)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.BadArchiveCatalog)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.BadArchiveCatalog)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.IsDeleteSource)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.IsDeleteSource)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.MaxAmountFiles)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.MaxAmountFiles)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.DublNameJr)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.DublNameJr)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.SplitFiles)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.SplitFiles)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.IsRegex)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.IsRegex)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ValueParameterOfSplit)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ValueParameterOfSplit)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MoveToTmp)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MoveToTmp)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.TmpCatalog)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.TmpCatalog)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DelayBeforeExecuting)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DelayBeforeExecuting)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.SubMask)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.SubMask)
+        </dd>
+        @* <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.SubArchiveCatalog)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.SubArchiveCatalog)
+        </dd> *@
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.TaskGroup)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.TaskGroup)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.LastModified)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.LastModified)
+        </dd>
+    </dl>
+</div>
+<div>
+    @if (@ViewBag.Controller == "Home")
+    {
+        <a asp-controller="@ViewBag.Controller" asp-action="@ViewBag.Action" asp-route-id="@Model.TaskId" asp-route-dateFrom="@DateTime.Today" asp-route-dateTo="@DateTime.Today" asp-route-page="1" class="btn btn-warning">Назад</a>
+    } else
+    {
+        <a asp-controller="@ViewBag.Controller" asp-action="@ViewBag.Action" class="btn btn-warning">Назад</a>
+    }
+    
+    <a asp-action="Edit" asp-route-id="@Model?.TaskId" class="btn btn-info">Редактировать</a> 
+    
+</div>

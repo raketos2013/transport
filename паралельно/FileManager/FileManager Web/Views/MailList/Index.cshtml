@@ -1,0 +1,48 @@
+﻿@model IEnumerable<FileManager.Domain.Entity.MailList>
+
+@{
+    ViewData["Title"] = $"Адресаты группы {@ViewBag.MailGroupId}";
+}
+
+<div class="container-sm padding-top-container">
+    <h1>Список адресатов</h1>
+
+    <p>
+        <a asp-action="Create" asp-route-MailgroupId=@ViewBag.MailGroupId class="btn btn-info">Добавить</a>
+    </p>
+
+    <table class="table table-striped" id="myTable">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.MailGroupsId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.EMail)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.MailGroupsId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.EMail)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Удалить", "Delete", new { id = item.MailGroupsId, Email = item.EMail }, new { @class = "btn btn-danger" })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <p>
+        <a asp-controller="MailGroups" asp-action="Index" class="btn btn-warning">Назад</a>
+    </p>
+</div>
+
+

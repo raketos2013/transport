@@ -1,0 +1,48 @@
+﻿@model FileManager.Domain.Entity.UserLogEntity
+@addTagHelper "*, Microsoft.AspNet.Mvc.TagHelpers"
+@{
+    ViewData["Title"] = "Логи пользователя";
+}
+
+
+<div class="padding-top-container">
+    <h4>Детали лога</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DateTimeLog)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DateTimeLog)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.UserName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.UserName)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Action)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Action)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Data)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Data)
+        </dd>
+        
+    </dl>
+</div>
+<div>
+    
+    <a class="btn btn-warning" asp-controller="UserLogs" asp-action="Index" asp-route-date="@DateTime.Today">Назад</a>
+</div>
+
+<script >
+    function printJson(data) {
+        
+    }
+</script>

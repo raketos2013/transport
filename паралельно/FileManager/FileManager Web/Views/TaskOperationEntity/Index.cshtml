@@ -1,0 +1,249 @@
+﻿@model IEnumerable<FileManager.Domain.Entity.TaskOperationEntity>
+
+@{
+	ViewData["Title"] = "Каталоги назначения для задачи " + @ViewBag.TaskId;
+}
+
+
+
+
+<div class="container-fluid position-relative padding-top-container" style=" min-height: 100%;">
+
+	<h1 class="text-center">Каталоги назначения для задачи @ViewBag.TaskId</h1>
+
+
+	<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					@* <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5> *@
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="CancelOnOffTask()"></button>
+				</div>
+				<div class="modal-body">
+					<p><span id="titleInfo"></span> назначение <span id="idTaskInfo"></span> ?</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="CancelOnOffTask()">Отмена</button>
+					<button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="OkOnOffTask()">Ок</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+	<p>
+		<a asp-action="Create" class="btn btn-info" asp-route-id="@ViewBag.TaskId" asp-route-contr="@ViewBag.Controller" asp-route-act="@ViewBag.Action">Добавить</a>
+		<button class="btn btn-info" onclick="ShowActive()"><span id="titleButton">Скрыть</span> неактивные</button>
+	</p>
+	<table class="table" id="myTable">
+		<thead>
+			<tr>
+				<th>
+				@Html.DisplayNameFor(model => model.OperationId)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => model.Description)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => model.DestinationDirectory)
+				</th>
+			
+				<th>
+					@Html.DisplayNameFor(model => model.IsActive)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => model.DublDest)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => model.IsRename)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => model.TemplateFileName)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => model.NewTemplateFileName)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => model.AdditionalText)
+				</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var item in Model)
+			{
+				<tr>
+					<td>
+						@Html.DisplayFor(modelItem => item.OperationId)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.Description)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.DestinationDirectory)
+					</td>
+					<td>
+						<div class="form-check form-switch">
+								<label class="form-check-label" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+								<input type="checkbox" class="form-check-input" asp-for="@item.IsActive" onclick="OnOffTask('@item.OperationId.ToString()')" />
+							</label>
+						</div>
+					</td>
+					
+					<td>
+						@Html.DisplayFor(modelItem => item.DublDest)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.IsRename)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.TemplateFileName)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.NewTemplateFileName)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.AdditionalText)
+					</td>
+					<td>
+						<a asp-action="Edit" asp-route-id="@item.TaskId" asp-route-operationid="@item.OperationId" asp-route-contr="@ViewBag.Controller" asp-route-act="@ViewBag.Action" class="btn">
+							<img src="~/images/edit_icon.png" alt="Редактировать" title="Редактировать" />
+						</a>
+						@* <a asp-action="Details" asp-route-id="@item.TaskId" asp-route-operationid="@item.OperationId" asp-route-contr="@ViewBag.Controller" asp-route-act="@ViewBag.Action" class="btn">
+							<img src="~/images/details_icon(2).png" alt="Подробно" title="Подробно" />
+						</a> *@
+						@* <a asp-action="Delete" asp-route-id="@item.TaskId" asp-route-operationid="@item.OperationId" class="btn">
+					<img src="~/images/delete_icon.png" alt="Удалить" title="Удалить" />
+					</a> *@
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+	<p>
+		@if (@ViewBag.Controller == "Home")
+		{
+			<a asp-controller="@ViewBag.Controller" asp-action="@ViewBag.Action" asp-route-id="@ViewBag.TaskId" asp-route-dateFrom="@DateTime.Today" asp-route-dateTo="@DateTime.Today" asp-route-page="1" class="btn btn-warning">Назад</a>
+		}
+		else
+		{
+			<a asp-controller="@ViewBag.Controller" asp-action="@ViewBag.Action" class="btn btn-warning">Назад</a>
+		}
+	</p>
+</div>
+
+<script>
+	function CancelOnOffTask() {
+		//document.getElementById('confirmActivated').style.display = 'none';
+		//document.getElementById('shadow').style.display = 'none';
+
+		var table, tr, td, i, txtValue, valueCheck;
+
+		table = document.getElementById("myTable");
+		tr = table.getElementsByTagName("tr");
+
+		// Перебирайте все строки таблицы и скрывайте тех, кто не соответствует поисковому запросу
+
+		for (i = 0; i < tr.length; i++) {
+			td = tr[i].getElementsByTagName("td")[0];
+			if (td) {
+				txtValue = td.innerText;
+				if (txtValue == document.getElementById('idTaskInfo').innerText) {
+					var qwe = tr[i].getElementsByTagName("td")[3];
+					qwe.firstElementChild.firstElementChild.firstElementChild.checked = !qwe.firstElementChild.firstElementChild.firstElementChild.checked;
+
+				}
+			}
+		}
+
+	}
+	function OkOnOffTask() {
+		//document.getElementById('confirmActivated').style.display = 'none';
+		//document.getElementById('shadow').style.display = 'none';
+		var id = document.getElementById('idTaskInfo').innerText
+
+		$.ajax({
+			method: 'POST',
+			url: '@Url.Action("ActivatedOperation", "TaskOperationEntity")',
+			data: { "id": id },
+			dataType: 'html',
+			success: function (result) {
+
+			}
+		});
+
+	}
+
+	function OnOffTask(id) {
+
+		// Объявить переменные
+		var table, tr, td, i, txtValue, valueCheck;
+
+		table = document.getElementById("myTable");
+		tr = table.getElementsByTagName("tr");
+
+		// Перебирайте все строки таблицы и скрывайте тех, кто не соответствует поисковому запросу
+
+		for (i = 0; i < tr.length; i++) {
+			td = tr[i].getElementsByTagName("td")[0];
+			if (td) {
+				txtValue = td.innerText;
+				if (txtValue == id) {
+					var qwe = tr[i].getElementsByTagName("td")[3];
+					var chl1 = qwe.firstElementChild.firstElementChild.firstElementChild.checked;
+
+				}
+			}
+		}
+
+		if (chl1 == true) {
+			document.getElementById('titleInfo').innerText = "Включить";
+		} else {
+			document.getElementById('titleInfo').innerText = "Выключить";
+		}
+
+		//document.getElementById('containerTasks').style.position = 'relative';
+
+		document.getElementById('idTaskInfo').innerText = id;
+
+		//document.getElementById('confirmActivated').style.display = 'block';
+		//document.getElementById('shadow').style.display = 'block';
+
+
+	}
+
+	var isShowActive = false;
+
+	function ShowActive(){
+
+		isShowActive = !isShowActive;
+		if (isShowActive) {
+			document.getElementById('titleButton').innerText = "Показать";
+		} else {
+			document.getElementById('titleButton').innerText = "Скрыть";
+		}
+
+		var table, tr, td, i, txtValue, valueCheck;
+
+		table = document.getElementById("myTable");
+		tr = table.getElementsByTagName("tr");
+
+		// Перебирайте все строки таблицы и скрывайте тех, кто не соответствует поисковому запросу
+		
+		for (i = 1; i < tr.length; i++) {
+			var qwe = tr[i].getElementsByTagName("td")[3];
+			var chl1 = qwe.firstElementChild.firstElementChild.firstElementChild.checked;
+			if (isShowActive) {
+				if (!chl1) {
+					tr[i].style.display = "none";
+				} 
+			} else {
+				tr[i].style.display = "";
+			}
+
+			
+		}
+
+	}
+</script>

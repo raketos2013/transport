@@ -1,0 +1,30 @@
+﻿@model FileManager.Domain.Entity.MailList
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Редактирование адресата</h1>
+
+<h4>Адресат</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="MailGroupsId" />
+            <input type="hidden" asp-for="EMail" />
+            <div class="form-group">
+                <input type="submit" value="Сохранить" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index" class="btn btn-primary">Назад к списку</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

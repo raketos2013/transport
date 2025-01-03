@@ -1,0 +1,38 @@
+﻿@model FileManager.Domain.Entity.MailGroups
+
+@{
+	ViewData["Title"] = "Группа" + Model.Id;
+}
+
+<div class="container padding-top-container">
+	<h2 class="text-center">Группа рассылки номер @Model.Id</h2>
+	<hr />
+	<div class="row justify-content-center">
+		<div class="col-md-4">
+			<form asp-action="Edit">
+				<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+				<input type="hidden" asp-for="Id" />
+				<div class="form-group">
+					<label asp-for="Name" class="control-label"></label>
+					<input asp-for="Name" class="form-control" />
+					<span asp-validation-for="Name" class="text-danger"></span>
+				</div>
+				<br />
+				<div class="form-group">
+					<a asp-action="Index" class="btn btn-warning">Назад</a>
+					<input type="submit" value="Сохранить" class="btn btn-info" />
+				</div>
+			</form>
+		</div>
+	</div>
+
+
+
+
+	@section Scripts {
+		@{
+			await Html.RenderPartialAsync("_ValidationScriptsPartial");
+		}
+	}
+</div>
+

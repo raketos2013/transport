@@ -1,0 +1,105 @@
+﻿@model FileManager.Domain.Entity.TaskOperationEntity
+@using FileManager.Domain.Enum
+@{
+    SelectList slist = new SelectList(ViewBag.MailGroups, "Id", "Name");
+    ViewData["Title"] = "Create";
+}
+
+<div class="container padding-top-container">
+    <h2 class="text-center">Добавление каталога назначения</h2>
+    <hr />
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="TaskId" class="control-label"></label>
+                    <input asp-for="TaskId" class="form-control" value=@ViewBag.TaskId readonly />
+                    @*                 <select asp-for="TaskId" class ="form-control" asp-items="ViewBag.TaskId"></select>
+                    *@
+                </div>
+                <div class="form-group">
+                    <label asp-for="OperationId" class="control-label"></label>
+                    <input asp-for="OperationId" class="form-control" />
+                    <span asp-validation-for="OperationId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Description" class="control-label"></label>
+                    <input asp-for="Description" class="form-control" />
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="DestinationDirectory" class="control-label"></label>
+                    <input asp-for="DestinationDirectory" class="form-control" />
+                    <span asp-validation-for="DestinationDirectory" class="text-danger"></span>
+                </div>
+                <div class="form-group form-check">
+                    <label class="form-check-label">
+                        <input id="isRename" class="form-check-input" onclick="showRenameParams()" asp-for="IsRename" /> @Html.DisplayNameFor(model => model.IsRename)
+                    </label>
+                </div>
+                <div id="renameForm" class="row">
+                    <div class="form-group row">
+                        <label asp-for="TemplateFileName" class="control-label"></label>
+                        <input asp-for="TemplateFileName" class="form-control" />
+                        <span asp-validation-for="TemplateFileName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group row">
+                        <label asp-for="NewTemplateFileName" class="control-label"></label>
+                        <input asp-for="NewTemplateFileName" class="form-control" />
+                        <span asp-validation-for="NewTemplateFileName" class="text-danger"></span>
+                    </div>
+                </div>
+                
+                <div class="form-group form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" asp-for="IsActive" /> @Html.DisplayNameFor(model => model.IsActive)
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label asp-for="DublDest" class="control-label"></label>
+                    <select asp-for="DublDest" class="form-control" asp-items="Html.GetEnumSelectList<FileInDestination>()"></select>
+                    <span asp-validation-for="DublDest" class="text-danger"></span>
+                </div>
+                <div class="form-group form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" asp-for="DublNameJr" /> @Html.DisplayNameFor(model => model.DublNameJr)
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AdditionalText" class="control-label"></label>
+                    <input asp-for="AdditionalText" class="form-control" />
+                    <span asp-validation-for="AdditionalText" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Group" class="control-label"></label>
+                    <select asp-for="Group" class="form-select mb-3" asp-items=@slist></select>
+                    <span asp-validation-for="Group" class="text-danger"></span>
+                </div>
+                <br />
+                <div class="form-group">
+                    <a asp-controller="TaskOperationEntity" asp-action="Index" asp-route-id="@ViewBag.TaskId" asp-route-contr="@ViewBag.Controller" asp-route-act="@ViewBag.Action" class="btn btn-warning">
+                        Назад
+                    </a>
+                    <input type="submit" value="Сохранить" class="btn btn-success" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showRenameParams() {
+        var st = document.getElementById('isRename');
+        if (st.checked) {
+            document.getElementById('renameForm').style.display = 'flex';
+        } else {
+            document.getElementById('renameForm').style.display = 'none';
+        }
+    }
+</script>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

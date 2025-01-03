@@ -1,0 +1,467 @@
+﻿@model IEnumerable<FileManager.Domain.Entity.TaskEntity>
+
+@{
+	ViewData["Title"] = "Список задач";
+}
+
+<div class="container-fluid position-relative padding-top-container" style=" min-height: 100%;">
+
+	<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="CancelOnOffTask()"></button>
+				</div>
+				<div class="modal-body">
+					<p><span id="titleInfo"></span> задачу <span id="idTaskInfo"></span> ?</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="CancelOnOffTask()">Отмена</button>
+					<button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="OkOnOffTask()">Ок</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="staticBackdropCopy" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelCopy" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<form method="post" asp-action="CopyTask" class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="staticBackdropLabelCopy">Копирование задачи</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick=""></button>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-auto">
+							<input name="idTask" type="text" readonly class="form-control-plaintext" id="copyIdTask">
+						</div>
+						<div class="col-auto">
+							<input name="newIdTask" type="text" class="form-control" id="newTaskId" placeholder="новая задача">
+						</div>
+					</div>
+
+
+
+					@* <label>
+						Id задачи
+						<input type="text" id="copyIdTask" readonly />
+					</label>
+
+					<label>
+						Id новой задачи
+						<input type="text" id="newTaskId" />
+					</label> *@
+					<div class="form-check form-switch">
+						<label class="form-check-label">
+							Копировать назначения
+							<input name="isCopy" id="isCopyOperations" type="checkbox" class="form-check-input" onclick="CopyOperations()" />
+						</label>
+					</div>
+					<div id="copyOperations" style="display: none;">
+					</div>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="">Отмена</button>
+					<button type="submit" class="btn btn-primary" data-bs-dismiss="modal" onclick="">Ок</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+
+	<div class="row justify-content-between">
+		<div class="col-3">
+			<div >
+				<a asp-action="Create" class="btn btn-info" method="post">Новая задача</a>
+				<button class="btn btn-outline-primary" onclick="ShowActive()"><span id="titleButton">Скрыть</span> неактивные</button>
+			</div>
+
+		</div>
+		<div class="col-5" style=" display: flex; justify-content: flex-end;">
+			<div class="input-group" style="max-width: 500px; min-width: 300px;">
+
+				<div class="input-group-append">
+
+					<select class="form-select" id="inputSelect">
+						<option selected value="0">Id</option>
+						<option value="1">Наименование</option>
+						<option value="5">Вход. каталог</option>
+						<option value="6">Маска</option>
+					</select>
+				</div>
+				<input type="text" class="form-control" id="myInput" onkeyup="myFunction(document.querySelector('#inputSelect'))">
+				
+			</div>
+		</div>
+		
+
+	</div>
+
+
+
+	<table class="table  table-hover" id="myTable">
+		<thead>
+			<tr>
+				<th onclick="sortTable(0)">
+					@Html.DisplayNameFor(model => model.TaskId)
+				</th>
+				<th onclick="sortTable(1)">
+					@Html.DisplayNameFor(model => model.Name)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => model.TimeBegin)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => model.TimeEnd)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => model.IsActive)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => model.SourceCatalog)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => model.FileMask)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => model.Delay)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => model.SplitFiles)
+				</th>
+				<th style="min-width: 270px;"></th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var item in Model)
+			{
+				<tr>
+					<td>
+						@Html.DisplayFor(modelItem => item.TaskId)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.Name)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.TimeBegin)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.TimeEnd)
+					</td>
+					<td>
+						<div class="form-check form-switch">
+							<label class="form-check-label" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+								<input type="checkbox" class="form-check-input" asp-for="@item.IsActive" onclick="OnOffTask('@item.TaskId.ToString()')" />
+							</label>
+						</div>
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.SourceCatalog)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.FileMask)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.Delay)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.SplitFiles)
+					</td>
+					<td clas="qwert " style="display:none;">
+						<a asp-controller="TaskOperationEntity" asp-action="Index" asp-route-id="@item.TaskId" asp-route-contr="TaskEntity" asp-route-act="Index" class="btn">
+							<img src="~/images/operations_icon.png" alt="Назначения" title="Назначения" />
+						</a>
+						<a asp-action="Edit" asp-route-id="@item.TaskId" asp-route-contr="TaskEntity" asp-route-act="Index" class="btn">
+							<img src="~/images/edit_icon.png" alt="Редактировать" title="Редактировать" />
+						</a>
+						<a asp-action="Details" asp-route-id="@item.TaskId" asp-route-contr="TaskEntity" asp-route-act="Index" class="btn">
+							<img src="~/images/details_icon(2).png" alt="Подробно" title="Подробно" />
+						</a>
+						<a onclick="CopyTask('@item.TaskId'), copyOperations('@item.TaskId')" class="btn" data-bs-toggle="modal" data-bs-target="#staticBackdropCopy">
+							<img src="~/images/copy_icon.png" alt="Скопировать" title="Скопировать" />
+						</a>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+
+</div>
+
+
+
+
+
+<script>
+
+	var trs = document.querySelectorAll("tbody tr");
+	for (var i = 0; i < trs.length; i++) {
+		MakeRowHover(trs[i], i);
+	}
+
+	function MakeRowHover(row, numRow) {
+		row.addEventListener("click", function (numRow) {
+			//this.style.backgroundColor = "silver";
+			let td = this.querySelectorAll('td');
+			for (var i = 0; i < trs.length; i++) {
+				td[9].style.display = 'block';
+				trs[i].classList.add('selected-row');
+			}
+			for (var i = 0; i < trs.length; i++) {
+				if (trs[i] != this) {
+					td = trs[i].querySelectorAll('td');
+					td[9].style.display = 'none';
+					trs[i].classList.remove('selected-row');
+				}
+			}
+		});
+
+		// row.addEventListener("mouseout", function () {
+		//this.style.backgroundColor = "white";
+		//   let td = this.querySelectorAll('td');
+		//    for (var i = 0; i < td.length; i++) {
+
+		//            td[9].style.display = 'none';
+
+		//     }
+		// });
+	}
+	function CancelOnOffTask() {
+		// document.getElementById('confirmActivated').style.display = 'none';
+		// document.getElementById('shadow').style.display = 'none';
+
+		var table, tr, td, i, txtValue, valueCheck;
+
+		table = document.getElementById("myTable");
+		tr = table.getElementsByTagName("tr");
+
+		// Перебирайте все строки таблицы и скрывайте тех, кто не соответствует поисковому запросу
+
+		for (i = 0; i < tr.length; i++) {
+			td = tr[i].getElementsByTagName("td")[0];
+			if (td) {
+				txtValue = td.innerText;
+				if (txtValue == document.getElementById('idTaskInfo').innerText) {
+					var qwe = tr[i].getElementsByTagName("td")[4];
+					qwe.firstElementChild.firstElementChild.firstElementChild.checked = !qwe.firstElementChild.firstElementChild.firstElementChild.checked;
+
+				}
+			}
+		}
+
+	}
+	function OkOnOffTask() {
+		//document.getElementById('confirmActivated').style.display = 'none';
+		//document.getElementById('shadow').style.display = 'none';
+		var id = document.getElementById('idTaskInfo').innerText
+
+		$.ajax({
+			method: 'POST',
+			url: '@Url.Action("ActivatedTask", "TaskEntity")',
+			data: { "id": id },
+			dataType: 'html',
+			success: function (result) {
+
+			}
+		});
+
+	}
+
+	function OnOffTask(id) {
+
+		// Объявить переменные
+		var table, tr, td, i, txtValue, valueCheck;
+
+		table = document.getElementById("myTable");
+		tr = table.getElementsByTagName("tr");
+
+		// Перебирайте все строки таблицы и скрывайте тех, кто не соответствует поисковому запросу
+
+		for (i = 0; i < tr.length; i++) {
+			td = tr[i].getElementsByTagName("td")[0];
+			if (td) {
+				txtValue = td.innerText;
+				if (txtValue == id) {
+					var qwe = tr[i].getElementsByTagName("td")[4];
+					var chl1 = qwe.firstElementChild.firstElementChild.firstElementChild.checked;
+
+				}
+			}
+		}
+
+		if (chl1 == true) {
+			document.getElementById('titleInfo').innerText = "Включить";
+		} else {
+			document.getElementById('titleInfo').innerText = "Выключить";
+		}
+
+		//document.getElementById('containerTasks').style.position = 'relative';
+
+		document.getElementById('idTaskInfo').innerText = id;
+
+		//document.getElementById('confirmActivated').style.display = 'block';
+		//document.getElementById('shadow').style.display = 'block';
+
+
+	}
+
+
+	var isShowActive = false;
+
+	function ShowActive() {
+
+		isShowActive = !isShowActive;
+		if (isShowActive) {
+			document.getElementById('titleButton').innerText = "Показать";
+		} else {
+			document.getElementById('titleButton').innerText = "Скрыть";
+		}
+
+		var table, tr, td, i, txtValue, valueCheck;
+
+		table = document.getElementById("myTable");
+		tr = table.getElementsByTagName("tr");
+
+		// Перебирайте все строки таблицы и скрывайте тех, кто не соответствует поисковому запросу
+
+		for (i = 1; i < tr.length; i++) {
+			var qwe = tr[i].getElementsByTagName("td")[4];
+			var chl1 = qwe.firstElementChild.firstElementChild.firstElementChild.checked;
+			if (isShowActive) {
+				if (!chl1) {
+					tr[i].style.display = "none";
+				}
+			} else {
+				tr[i].style.display = "";
+			}
+
+
+		}
+
+	}
+
+	function CopyTask(id) {
+		//document.getElementById('shadow').style.display = 'block';
+		//document.getElementById('copyform').style.display = 'block';
+		document.getElementById('newTaskId').value = '';
+		document.getElementById('copyIdTask').value = id;
+	}
+	function TaskFormOk() {
+		//document.getElementById('shadow').style.display = 'none';
+		//document.getElementById('copyform').style.display = 'none';
+
+		var newId = document.getElementById('newTaskId').value;
+		var id = document.getElementById('copyIdTask').value;
+		if (newId != '' && newId[1] != ' ') {
+			$.ajax({
+				method: 'POST',
+				url: '@Url.Action("CopyTask", "TaskEntity")',
+				data: { "id": id, "newId": newId },
+				dataType: 'html',
+				success: function (result) {
+					window.location.href = '@Url.Action("Index", "TaskEntity")'
+				}
+			});
+		}
+	}
+	function TaskFormCancel() {
+		//document.getElementById('shadow').style.display = 'none';
+		//document.getElementById('copyform').style.display = 'none';
+	}
+
+
+	function sortTable(n) {
+		var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+		table = document.getElementById("myTable");
+		switching = true;
+		//Задать направление сортировки по возрастанию:
+		dir = "asc";
+		/*Сделайте петлю, которая будет продолжаться до тех пор, пока
+		никакого переключения не было сделано:*/
+		while (switching) {
+			//начните с того, что скажите: никакого переключения не происходит:
+			switching = false;
+			rows = table.rows;
+			/*Цикл через все строки таблицы (за исключением
+			во-первых, который содержит заголовки таблиц):*/
+			for (i = 1; i < (rows.length - 1); i++) {
+				//начните с того, что не должно быть никакого переключения:
+				shouldSwitch = false;
+				/*Получите два элемента, которые вы хотите сравнить,
+				один из текущей строки и один из следующей:*/
+				x = rows[i].getElementsByTagName("TD")[n];
+				y = rows[i + 1].getElementsByTagName("TD")[n];
+				/*проверьте, должны ли две строки поменяться местами,
+				в зависимости от направления, asc или desc:*/
+				if (dir == "asc") {
+					if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+						//если это так, отметьте как переключатель и разорвите петлю:
+						shouldSwitch = true;
+						break;
+					}
+				} else if (dir == "desc") {
+					if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+						//если это так, отметьте как переключатель и разорвите петлю:
+						shouldSwitch = true;
+						break;
+					}
+				}
+			}
+			if (shouldSwitch) {
+				/*Если переключатель был отмечен, сделайте переключатель
+				и отметьте, что переключение было сделано:*/
+				rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+				switching = true;
+				//Каждый раз, когда выполняется переключение, увеличьте это число на 1:
+				switchcount++;
+			} else {
+				/*Если переключение не было сделано и направление "asc",
+				установите направление на "desc"и снова запустите цикл while.*/
+				if (switchcount == 0 && dir == "asc") {
+					dir = "desc";
+					switching = true;
+				}
+			}
+		}
+	}
+
+	function CopyOperations() {
+		var idCopiedTask = document.getElementById('copyIdTask').value;
+		$.ajax({
+			method: 'POST',
+			url: '@Url.Action("CopyTaskForm", "TaskEntity")',
+			data: { "idTask": idCopiedTask },
+			dataType: 'html',
+			success: function (result) {
+				ShowCopyOperations();
+				$('#copyOperations').empty();
+				$('#copyOperations').append(result);
+				
+			}
+		});
+	}
+
+	function ShowCopyOperations() {
+		var st = document.getElementById('isCopyOperations');
+		if (st.checked) {
+			document.getElementById('copyOperations').style.display = 'block';
+		} else {
+			document.getElementById('copyOperations').style.display = 'none';
+		}
+	}
+
+	function CopyTaskOk() {
+
+	}
+
+</script>
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,80 @@
+﻿@model FileManager.Domain.Entity.TaskOperationEntity
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Подробно</h1>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.TaskId)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.TaskId)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.DestinationDirectory)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.DestinationDirectory)
+        </dd>
+        @* <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.NewMask)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.NewMask)
+        </dd> *@
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.IsActive)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.IsActive)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.DublDest)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.DublDest)
+        </dd>
+        @* <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Prior)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Prior)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ScanAttr)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ScanAttr)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.IsComplit)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.IsComplit)
+        </dd> *@
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.AdditionalText)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.AdditionalText)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-controller="TaskOperationEntity" asp-action="Index" asp-route-id="@ViewBag.TaskId" asp-route-contr="@ViewBag.Controller" asp-route-act="@ViewBag.Action" class="btn btn-warning">
+        Назад
+    </a>
+    @Html.ActionLink("Редактировать", "Edit", new { id = Model.TaskId, operationid = Model.OperationId }, new {@class="btn btn-info"}) 
+    
+</div>

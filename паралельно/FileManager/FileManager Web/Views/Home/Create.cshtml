@@ -1,0 +1,51 @@
+﻿@using FileManager.Domain.Enum
+@{
+}
+@* <h2>Создание задачи</h2>
+
+
+<div class="" id="addForm">
+    <form class="model" method="post">
+        <div class="row">
+            <div class="col">
+                <label class="form-label">Номер задачи</label>
+                <input type="text" name="taskId" class="form-control" />
+                <label class="form-label">Название</label>
+                <input type="text" name="name" class="form-control" />
+                <label class="form-label">Время начала</label>
+                <input type="time" name="timeBegin" class="form-control" />
+                <label class="form-label">Время окончания</label>
+                <input type="time" name="timeEnd" class="form-control" />
+                <label class="form-label">Вкл/Выкл</label>
+                <input type="checkbox" class="" /><br />
+            </div>
+            <div class="col">
+                <label class="form-label">Каталог источник</label>
+                <input type="text" name="sourceCatalog" class="form-control" />
+                <label class="form-label">Маска</label>
+                <input type="text" name="fileMask" class="form-control" />
+                <label class="form-label">Кталог архива</label>
+                <input type="text" name="archiveCatalog" class="form-control" />
+                <label class="form-label">Каталог архива ошибок</label>
+                <input type="text" name="badArchiveCatalog" class="form-control" />
+                <label class="form-label">Удалять в источнике</label>
+                <input type="checkbox" class="" /><br />
+            </div>
+            <div class="col">
+                <label class="form-label">Дни активности</label>
+                <select name="dayActive" class="form-select mb-3" asp-items="Html.GetEnumSelectList<DayActive>()"></select>
+                <label class="form-label">Кол-во файлов</label>
+                <input type="number" name="maxAmountFiles" class="form-control" min="0" />
+                <label class="form-label">Группа рассылки</label>
+                <input type="text" name="group" class="form-control" />
+                <label class="form-label">Периодичность</label>
+                <input type="time" name="delay" class="form-control" />
+                <label class="form-label">Дубль по журналу</label>
+                <input type="checkbox" class="" /><br />
+            </div>
+
+        </div>
+        <div class="btn btn-info" onclick="ViewAddForm(1)">Назад</div>
+        <button class="btn btn-success">Создать</button>
+    </form>
+    </div> *@

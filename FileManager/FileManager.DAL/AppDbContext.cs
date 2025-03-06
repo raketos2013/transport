@@ -47,7 +47,7 @@ namespace FileManager.DAL
             //modelBuilder.Entity<UserLogEntity>().Property(p=>p.Id).ValueGeneratedOnAdd();
             modelBuilder.Entity<UserLogEntity>().HasKey(u => new {u.DateTimeLog, u.UserName});
             
-            //modelBuilder.Entity<AddresseeEntity>().HasKey(u => new {u.MailGroupsId, u.EMail});
+            modelBuilder.Entity<AddresseeEntity>().HasKey(u => new {u.PersonalNumber, u.AddresseeGroupId});
             modelBuilder.Entity<TaskLogEntity>().HasKey(u => new { u.DateTimeLog, u.TaskId, u.OperationId});
         }
 

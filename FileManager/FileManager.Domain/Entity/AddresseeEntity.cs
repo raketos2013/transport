@@ -10,22 +10,21 @@ namespace FileManager.Domain.Entity
 {
     public class AddresseeEntity
 	{
-		[Key]
+		
 		[Display(Name = "Табельный номер")]
 		public string PersonalNumber { get; set; }
 		[Display(Name = "Номер группы")]
-        public int MailGroupId { get; set; }
-		[ForeignKey(nameof(MailGroupId))]
-		public AddresseeGroupEntity? MailGroup { get; set; }
+		
+        public int AddresseeGroupId { get; set; }
+		[ForeignKey(nameof(AddresseeGroupId))]
+		public AddresseeGroupEntity? AddresseeGroup { get; set; }
 		[Display(Name = "Адрес электронной почты")]
         public string EMail { get; set; }
 		[Display(Name = "ФИО")]
 		public string Fio {  get; set; }
-        
 		[Display(Name = "Структурное подразделение")]
 		public string StructuralUnit { get; set; }
-        
-
-        
+        [Display(Name = "Активно")]
+        public bool IsActive { get; set; }
     }
 }

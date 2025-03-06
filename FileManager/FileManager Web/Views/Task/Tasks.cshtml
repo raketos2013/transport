@@ -8,6 +8,23 @@
 
 <div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
 
+	<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="CancelOnOffTask()"></button>
+				</div>
+				<div class="modal-body">
+					<p><span id="titleInfo"></span> задачу <span id="idTaskInfo"></span> ?</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="CancelOnOffTask()">Отмена</button>
+					<button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="OkOnOffTask()">Ок</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<div class="modal fade" id="staticBackdropCopy" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelCopy" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
@@ -44,8 +61,8 @@
 
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-					<button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="deleteGroup()">Ок</button>
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="clearNewGroup()">Отмена</button>
+					<button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="deleteTaskGroup()">Ок</button>
 				</div>
 			</div>
 		</div>
@@ -72,7 +89,16 @@
 				
 
 				<table class="tabl1">
-					
+					<tr class="list-group-item py-3 lh-tight " onclick="foo('Все')">
+						<td>
+							<div class="col-11">
+								<span>Все</span>
+							</div>
+						</td>
+						<td style="display: none;">
+							
+						</td>
+					</tr>
 						@foreach (var item in Model)
 						{
 							<tr class="list-group-item py-3 lh-tight " onclick="foo('@item.Name')">
@@ -106,15 +132,15 @@
 
 
 <script>
+	
 	var selectGroup = "Все";
+	
 	window.addEventListener('load', () => {
 		var firstGroup = document.querySelectorAll("tbody tr");
 		firstGroup[0].classList.add('selected-row');
-		
 
 		foo(selectGroup);
 		func();
-
 
 	});
 
@@ -125,6 +151,7 @@
 
 	function MakeRowHover(row, numRow) {
 		row.addEventListener("click", function (numRow) {
+			selectedTask = 0;
 			//this.style.backgroundColor = "silver";
 			let td = this.querySelectorAll('td');
 			for (var i = 0; i < trs.length; i++) {
@@ -156,6 +183,7 @@
 	}
 	function foo(group) {
 		selectGroup = group
+		document.cookie = "selectedTaskGroup=" + group;
 		$.ajax({
 			method: 'POST',
 			url: '@Url.Action("TasksList", "Task")',
@@ -173,7 +201,7 @@
 		if (newGroup != "" & newGroup[0] != " ") {
 			$.ajax({
 				method: 'POST',
-				url: '@Url.Action("CreateTaskGroup", "Home")',
+				url: '@Url.Action("CreateTaskGroup", "Task")',
 				data: { "nameGroup": newGroup },
 				dataType: 'html',
 				success: function (result) {
@@ -184,15 +212,15 @@
 		clearNewGroup();
 	}
 	var idDeleteGroup;
-	function deleteGroup() {
+	function deleteTaskGroup() {
 		var nameGroup = document.getElementById("nameDeleteGroup").innerText;
 		$.ajax({
 			method: 'POST',
-			url: '@Url.Action("DeleteGroup", "Home")',
-			data: { "id": idDeleteGroup },
+			url: '@Url.Action("DeleteTaskGroup", "Task")',
+			data: { "idDeleteGroup": idDeleteGroup },
 			dataType: 'html',
 			success: function (result) {
-				window.location.href = '@Url.Action("Index", "Home")'
+				window.location.href = '@Url.Action("Tasks", "Task")'
 			}
 		});
 	}
@@ -211,5 +239,69 @@
 	}
 
 
+	function OnOffTask(id) {
+
+		// Объявить переменные
+		var table, tr, td, i, txtValue, valueCheck;
+
+		table = document.getElementById("tableTasks");
+		tr = table.getElementsByTagName("tr");
+
+		for (i = 0; i < tr.length; i++) {
+			td = tr[i].getElementsByTagName("td")[0];
+			if (td) {
+				txtValue = td.innerText;
+				if (txtValue == id) {
+					var qwe = tr[i].getElementsByTagName("td")[7];
+					var chl1 = qwe.firstElementChild.firstElementChild.firstElementChild.checked;
+
+				}
+			}
+		}
+		if (chl1 == true) {
+			document.getElementById('titleInfo').innerText = "Включить";
+		} else {
+			document.getElementById('titleInfo').innerText = "Выключить";
+		}
+		document.getElementById('idTaskInfo').innerText = id;
+	}
+
+
+	function OkOnOffTask() {
+		var id = document.getElementById('idTaskInfo').innerText
+		$.ajax({
+			method: 'POST',
+			url: '@Url.Action("ActivatedTask", "Task")',
+			data: { "id": id },
+			dataType: 'html',
+			success: function (result) {
+				f1();
+			}
+		});
+
+	}
+	function CancelOnOffTask() {
+		var table, tr, td, i, txtValue, valueCheck;
+
+		table = document.getElementById("tableTasks");
+		tr = table.getElementsByTagName("tr");
+
+		for (i = 0; i < tr.length; i++) {
+			td = tr[i].getElementsByTagName("td")[0];
+			if (td) {
+				txtValue = td.innerText;
+				if (txtValue == document.getElementById('idTaskInfo').innerText) {
+					var qwe = tr[i].getElementsByTagName("td")[7];
+					qwe.firstElementChild.firstElementChild.firstElementChild.checked = !qwe.firstElementChild.firstElementChild.firstElementChild.checked;
+
+				}
+			}
+		}
+
+	}
+
+	
+
+	
 
 </script>

@@ -57,7 +57,7 @@
 				<img src="~/images/details_icon(2).png" alt="Подробно" title="Подробно" />
 			</a> *@
 			<div>
-				<a asp-action="Task" class="btn btn-warning">Назад</a>
+				<a asp-controller="Task" asp-action="TaskDetails" asp-route-taskId="@ViewBag.TaskId" class="btn btn-warning">Назад</a>
 			</div>
 
 			<br />

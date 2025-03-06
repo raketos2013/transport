@@ -9,7 +9,7 @@
         <div class="col-3">
             <div>
                 <a asp-action="CreateTask" class="btn btn-info" method="post">Новая задача</a>
-                <button class="btn btn-outline-primary" onclick="ShowActive()"><span id="titleButton">Скрыть</span> неактивные</button>
+                <button class="btn btn-outline-primary" onclick="ShowActiveTask()"><span id="titleButton">Скрыть</span> неактивные</button>
             </div>
 
         </div>
@@ -32,7 +32,7 @@
 
 
     </div>
-    <table class="table table-hover" id="myTable">
+    <table class="table table-hover" id="tableTasks">
         <thead>
             <tr>
                 <th>
@@ -110,3 +110,14 @@
         </tbody>
     </table>
 </div>
+
+
+<script>
+
+
+    ActiveTask();
+    SelectTask();
+    
+
+    
+</script>

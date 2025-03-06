@@ -33,43 +33,7 @@
 		</div>
 	</div>
 
-	<div class="modal fade" id="staticBackdropNewEmail" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelNewEmail" aria-hidden="true">
-		<div class="modal-dialog modal-dialog-centered">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="staticBackdropLabelNewEmail">Добавить адресата в группу <span id="MailGroupForModal"></span></h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="clearNewEmail()"></button>
-				</div>
-				<div class="modal-body">
-					<div class="form-group">
-						<label class="control-label">Email</label>
-						<input class="form-control" id="newEmail" />
-					</div>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="clearNewEmail()">Отмена</button>
-					<button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="newEmail()">Ок</button>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<div class="modal fade" id="staticBackdropDeleteEmail" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelDeleteEmail" aria-hidden="true">
-		<div class="modal-dialog modal-dialog-centered">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="staticBackdropLabelDeleteEmail">Удалить адресата <span id="deletedEmail"></span> ?</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick=""></button>
-				</div>
-				<div class="modal-body">
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="">Отмена</button>
-					<button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="deleteEmail()">Ок</button>
-				</div>
-			</div>
-		</div>
-	</div>
+	
 
 	<div class="modal fade" id="staticBackdropDeleteGroup" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelDeleteGroup" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered">
@@ -226,51 +190,6 @@
 		clearNewGroup();
 	}
 
-	function newEmail() {
-		email = document.getElementById("newEmail").value;
-		$.ajax({
-			method: 'POST',
-			url: '@Url.Action("CreateEmail", "MailGroups")',
-			data: {
-				"groupId": selectGroup,
-				"email": email
-			},
-			dataType: 'html',
-			success: function (result) {
-				window.location.href = '@Url.Action("Index", "MailGroups")'
-			}
-		});
-		clearNewEmail()
-	}
-
-	function clearNewEmail() {
-		document.getElementById("newEmail").value = '';
-	}
-
-	function addEmail() {
-		document.getElementById("MailGroupForModal").innerText = selectGroup;
-	}
-
-	function delEmail(mail) {
-		document.getElementById("deletedEmail").innerText = mail;
-	}
-
-	function deleteEmail() {
-		email = document.getElementById("deletedEmail").innerText;
-		$.ajax({
-			method: 'POST',
-			url: '@Url.Action("DeleteEmail", "MailGroups")',
-			data: {
-				"id": selectGroup,
-				"email": email
-			},
-			dataType: 'html',
-			success: function (result) {
-				window.location.href = '@Url.Action("Index", "MailGroups")'
-			}
-		});
-	}
-
 	function delGroup(group) {
 		document.getElementById("deletedGroup").innerText = group;
 	}
@@ -278,13 +197,13 @@
 	function deleteGroup() {
 		$.ajax({
 			method: 'POST',
-			url: '@Url.Action("DeleteGroup", "MailGroups")',
+			url: '@Url.Action("DeleteAddresseeGroup", "AddresseeGroup")',
 			data: {
 				"id": selectGroup,
 			},
 			dataType: 'html',
 			success: function (result) {
-				window.location.href = '@Url.Action("Index", "MailGroups")'
+				window.location.href = '@Url.Action("Addressees", "AddresseeGroup")'
 			}
 		});
 	}

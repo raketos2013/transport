@@ -233,7 +233,7 @@ namespace FileManager_Web.Logging
                     {
                         command.Connection = connection;
                         command.CommandType = System.Data.CommandType.Text;
-                        command.CommandText = $"INSERT INTO \"UserLogs\" (\"UserName\", \"DateTimeLog\", \"Action\", \"Data\") VALUES (@Username, @DateTimeLog, @Action, @Data::json)";
+                        command.CommandText = $"INSERT INTO \"UserLog\" (\"UserName\", \"DateTimeLog\", \"Action\", \"Data\") VALUES (@Username, @DateTimeLog, @Action, @Data::json)";
                         command.Parameters.AddWithValue("@UserName", username);
                         command.Parameters.AddWithValue("@Action", action);
                         command.Parameters.AddWithValue("@Data", data);

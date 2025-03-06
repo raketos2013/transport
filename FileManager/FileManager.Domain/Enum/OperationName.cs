@@ -9,8 +9,8 @@ namespace FileManager.Domain.Enum
 {
     public enum OperationName
     {
-        [Display(Name = "")]
-        None = 0,
+        /*[Display(Name = "")]
+        None = 0,*/
         [Display(Name = "Копировать")]
         Copy = 1,
         [Display(Name = "Переместить")]

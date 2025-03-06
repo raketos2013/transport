@@ -3,6 +3,7 @@ using System;
 using FileManager.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FileManager.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250227071113_addActiveAddressee")]
+    partial class addActiveAddressee
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,7 +50,7 @@ namespace FileManager.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("PersonalNumber", "AddresseeGroupId");
+                    b.HasKey("PersonalNumber");
 
                     b.HasIndex("AddresseeGroupId");
 
@@ -195,7 +198,7 @@ namespace FileManager.DAL.Migrations
                     b.Property<string>("AdditionalText")
                         .HasColumnType("text");
 
-                    b.Property<int?>("AddresseeGroupId")
+                    b.Property<int>("AddresseeGroupId")
                         .HasColumnType("integer");
 
                     b.Property<bool>("InformSuccess")
@@ -205,6 +208,8 @@ namespace FileManager.DAL.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("OperationId");
+
+                    b.HasIndex("AddresseeGroupId");
 
                     b.HasIndex("StepId")
                         .IsUnique();
@@ -439,11 +444,19 @@ namespace FileManager.DAL.Migrations
 
             modelBuilder.Entity("FileManager.Domain.Entity.TaskOperation", b =>
                 {
+                    b.HasOne("FileManager.Domain.Entity.AddresseeGroupEntity", "AddresseeGroup")
+                        .WithMany()
+                        .HasForeignKey("AddresseeGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("FileManager.Domain.Entity.TaskStepEntity", "Step")
                         .WithOne()
                         .HasForeignKey("FileManager.Domain.Entity.TaskOperation", "StepId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("AddresseeGroup");
 
                     b.Navigation("Step");
                 });

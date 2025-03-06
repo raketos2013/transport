@@ -21,7 +21,7 @@ namespace FileManager.Domain.Entity
 		[Display(Name = "Информировать об успехе")]
 		public bool InformSuccess { get; set; }
 		[Display(Name = "Группа рассылки")]
-		public AddresseeGroupEntity AddresseeGroup { get; set; }
+		public int? AddresseeGroupId { get; set; }
 		[Display(Name = "Дополнительный текст")]
 		public string? AdditionalText { get; set; }
 	}

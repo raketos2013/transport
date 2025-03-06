@@ -5,11 +5,46 @@
 @{
 }
 <div class="container-fluid position-relative" style=" min-height: 100%;">
+
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="CancelOnOffAddressee()"></button>
+                </div>
+                <div class="modal-body">
+                    <p><span id="titleInfo"></span> табельный номер <span id="idTaskInfo"></span> ?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="CancelOnOffAddressee()">Отмена</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="OkOnOffAddressee()">Ок</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="staticBackdropDeleteEmail" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelDeleteEmail" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabelDeleteEmail">Удалить адресата <span id="deletedEmail"></span> из группы номер <span id="groupDelEmail"></span> ?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick=""></button>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="">Отмена</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="deleteEmail()">Ок</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row justify-content-between">
         <div class="col-3">
             <div>
-                <a asp-action="CreateTask" class="btn btn-info" method="post">Добавить адресата</a>
-                <button class="btn btn-outline-primary" onclick="ShowActive()"><span id="titleButton">Скрыть</span> неактивные</button>
+                <a asp-action="CreateAddressee" asp-controller="AddresseeGroup" class="btn btn-info">Добавить адресата</a>
+                <button class="btn btn-outline-primary" onclick="ShowActiveAddressee()"><span id="titleButton">Скрыть</span> неактивные</button>
             </div>
 
         </div>
@@ -32,7 +67,7 @@
 
 
     </div>
-    <table class="table table-hover" id="myTable">
+    <table class="table table-hover" id="addresseeTable">
         <thead>
             <tr>
                 <th>
@@ -46,6 +81,12 @@
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.StructuralUnit)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.IsActive)
+                </th>
+                <th>
+
                 </th>
             </tr>
         </thead>
@@ -65,9 +106,113 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.StructuralUnit)
                     </td>
-                    
+                    <td>
+                        <div class="form-check form-switch">
+                            <label class="form-check-label" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                                <input type="checkbox" class="form-check-input" asp-for="@item.IsActive" onclick="OnOffAddressee('@item.PersonalNumber.ToString()')" />
+                            </label>
+                        </div>
+                    </td>
+                    <td>
+                        <a data-bs-toggle="modal" data-bs-target="#staticBackdropDeleteEmail" onclick="delEmail('@item.PersonalNumber.ToString()', '@item.AddresseeGroupId.ToString()')">
+                            <img src="~/images/delete_icon.png" alt="Удалить" title="Удалить" />
+                        </a>
+                    </td>
                 </tr>
             }
         </tbody>
     </table>
 </div>
+
+<script>
+
+    ActiveAddressee();
+
+
+    function OnOffAddressee(id) {
+
+        // Объявить переменные
+        var table, tr, td, i, txtValue, valueCheck;
+
+        table = document.getElementById("addresseeTable");
+        tr = table.getElementsByTagName("tr");
+
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[0];
+            if (td) {
+                txtValue = td.innerText;
+                if (txtValue == id) {
+                    var qwe = tr[i].getElementsByTagName("td")[4];
+                    var chl1 = qwe.firstElementChild.firstElementChild.firstElementChild.checked;
+
+                }
+            }
+        }
+        if (chl1 == true) {
+            document.getElementById('titleInfo').innerText = "Включить";
+        } else {
+            document.getElementById('titleInfo').innerText = "Выключить";
+        }
+        document.getElementById('idTaskInfo').innerText = id;
+    }
+
+
+    function OkOnOffAddressee() {
+        var id = document.getElementById('idTaskInfo').innerText
+        $.ajax({
+            method: 'POST',
+            url: '@Url.Action("ActivatedAddressee", "AddresseeGroup")',
+            data: { "id": id },
+            dataType: 'html',
+            success: function (result) {
+                
+            }
+        });
+
+    }
+    function CancelOnOffAddressee() {
+        var table, tr, td, i, txtValue, valueCheck;
+
+        table = document.getElementById("addresseeTable");
+        tr = table.getElementsByTagName("tr");
+
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[0];
+            if (td) {
+                txtValue = td.innerText;
+                if (txtValue == document.getElementById('idTaskInfo').innerText) {
+                    var qwe = tr[i].getElementsByTagName("td")[4];
+                    qwe.firstElementChild.firstElementChild.firstElementChild.checked = !qwe.firstElementChild.firstElementChild.firstElementChild.checked;
+
+                }
+            }
+        }
+
+    }
+
+
+
+    function delEmail(number, group) {
+        document.getElementById("deletedEmail").innerText = number;
+        document.getElementById("groupDelEmail").innerText = group;
+    }
+
+    function deleteEmail() {
+        number = document.getElementById("deletedEmail").innerText;
+        group = document.getElementById("groupDelEmail").innerText;
+        $.ajax({
+            method: 'POST',
+            url: '@Url.Action("DeleteAddressee", "AddresseeGroup")',
+            data: {
+                "number": number,
+                "idGroup": group
+            },
+            dataType: 'html',
+            success: function (result) {
+                window.location.href = '@Url.Action("Addressees", "AddresseeGroup")'
+            }
+        });
+    }
+
+
+</script>

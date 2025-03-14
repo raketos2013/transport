@@ -202,3 +202,29 @@ function ActiveAddressee() {
 
     }
 }
+
+function ShowCreateForm() {
+    document.getElementById("createForm").style.display = 'block';
+    document.getElementById("headr").style.display = 'none';
+    document.getElementById("btnCreate").style.display = 'none';
+    document.getElementById("btnCancelCreate").style.display = 'block';
+}
+function HideCreateForm() {
+    document.getElementById("createForm").style.display = 'none';
+    document.getElementById("headr").style.display = 'block';
+    document.getElementById("btnCreate").style.display = 'block';
+    document.getElementById("btnCancelCreate").style.display = 'none';
+}
+
+function ShowEditForm() {
+    document.getElementById("infoOperation").style.display = 'none';
+    document.getElementById("editForm").style.display = 'block';
+    document.getElementById("btnEdit").style.display = 'none';
+    document.getElementById("btnCancelEdit").style.display = 'block';
+}
+function HideEditForm() {
+    document.getElementById("infoOperation").style.display = 'block';
+    document.getElementById("editForm").style.display = 'none';
+    document.getElementById("btnEdit").style.display = 'block';
+    document.getElementById("btnCancelEdit").style.display = 'none';
+}

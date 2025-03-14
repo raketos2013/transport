@@ -381,7 +381,57 @@ namespace FileManager_Web.Controllers
 					step.FileMask = collection["FileMask"];
 					step.IsActive = Convert.ToBoolean(collection["IsActive"].ToString().Split(',')[0]);
 					step.IsBreak = Convert.ToBoolean(collection["IsBreak"].ToString().Split(',')[0]);
+					
+					switch (step.OperationName)
+					{
+						case OperationName.Copy:
+							OperationCopyEntity copy = _appDbContext.OperationCopy.FirstOrDefault(x => x.StepId == step.StepId);
+							if (copy != null)
+							{
+								_appDbContext.OperationCopy.Remove(copy);
+							}
+							break;
+						case OperationName.Move:
+							OperationMoveEntity move = _appDbContext.OperationMove.FirstOrDefault(x => x.StepId == step.StepId);
+							if (move != null)
+							{
+								_appDbContext.OperationMove.Remove(move);
+							}
+							break;
+						case OperationName.Read:
+							OperationReadEntity read = _appDbContext.OperationRead.FirstOrDefault(x => x.StepId == step.StepId);
+							if (read != null)
+							{
+								_appDbContext.OperationRead.Remove(read);
+							}
+							break;
+						case OperationName.Exist:
+							OperationExistEntity exist = _appDbContext.OperationExist.FirstOrDefault(x => x.StepId == step.StepId);
+							if (exist != null)
+							{
+								_appDbContext.OperationExist.Remove(exist);
+							}
+							break;
+						case OperationName.Rename:
+							OperationRenameEntity rename = _appDbContext.OperationRename.FirstOrDefault(x => x.StepId == step.StepId);
+							if (rename != null)
+							{
+								_appDbContext.OperationRename.Remove(rename);
+							}
+							break;
+						case OperationName.Delete:
+							OperationDeleteEntity delete = _appDbContext.OperationDelete.FirstOrDefault(x => x.StepId == step.StepId);
+							if (delete != null)
+							{
+								_appDbContext.OperationDelete.Remove(delete);
+							}
+							break;
+						default:
+							break;
+					}
+
 					step.OperationName = (OperationName)Enum.Parse(typeof(OperationName), collection["OperationName"]);
+
 					_appDbContext.TaskStep.Update(step);
 					_appDbContext.SaveChanges();
 
@@ -460,6 +510,11 @@ namespace FileManager_Web.Controllers
                 _appDbContext.OperationCopy.Add(operation);
                 _appDbContext.SaveChanges();
 
+				operation = _appDbContext.OperationCopy.FirstOrDefault(x => x.StepId == int.Parse(stepId));
+				taskStep.OperationId = operation.OperationId;
+				_appDbContext.TaskStep.Update(taskStep);
+				_appDbContext.SaveChanges();
+
             }
 
 
@@ -473,8 +528,6 @@ namespace FileManager_Web.Controllers
 
 			if (ModelState.IsValid)
 			{
-				
-				
 				operation.InformSuccess = Convert.ToBoolean(collection["InformSuccess"].ToString().Split(',')[0]);
 				if (operation.InformSuccess)
 				{
@@ -504,6 +557,312 @@ namespace FileManager_Web.Controllers
 
 			return RedirectToAction("StepDetails", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
 		}
+
+		public IActionResult CreateOperationMove(IFormCollection collection, string stepId)
+		{
+			TaskStepEntity taskStep = _appDbContext.TaskStep.FirstOrDefault(x => x.StepId == int.Parse(stepId));
+
+			if (ModelState.IsValid)
+			{
+				OperationMoveEntity operation = new OperationMoveEntity();
+				operation.StepId = int.Parse(stepId);
+				operation.InformSuccess = Convert.ToBoolean(collection["InformSuccess"].ToString().Split(',')[0]);
+				if (operation.InformSuccess)
+				{
+					operation.AddresseeGroupId = int.Parse(collection["AddresseeGroupId"]);
+				}
+				operation.AdditionalText = collection["AdditionalText"];
+				operation.FileInDestination = (FileInDestination)Enum.Parse(typeof(FileInDestination), collection["FileInDestination"]);
+				operation.FileInLog = Convert.ToBoolean(collection["FileInLog"].ToString().Split(',')[0]);
+				operation.Sort = (SortFiles)Enum.Parse(typeof(SortFiles), collection["Sort"]);
+				if (collection["FilesForProcessing"] == "")
+				{
+					operation.FilesForProcessing = 0;
+				}
+				else
+				{
+					operation.FilesForProcessing = int.Parse(collection["FilesForProcessing"]);
+				}
+				operation.FileAttribute = (AttributeFile)Enum.Parse(typeof(AttributeFile), collection["FileAttribute"]);
+
+				_appDbContext.OperationMove.Add(operation);
+				_appDbContext.SaveChanges();
+				operation = _appDbContext.OperationMove.FirstOrDefault(x => x.StepId == int.Parse(stepId));
+				taskStep.OperationId = operation.OperationId;
+				_appDbContext.TaskStep.Update(taskStep);
+				_appDbContext.SaveChanges();
+
+			}
+
+
+			return RedirectToAction("StepDetails", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+		}
+
+		public IActionResult EditOperationMove(IFormCollection collection, string operationId)
+		{
+			OperationMoveEntity operation = _appDbContext.OperationMove.FirstOrDefault(x => x.OperationId == int.Parse(operationId));
+			TaskStepEntity taskStep = _appDbContext.TaskStep.FirstOrDefault(x => x.StepId == operation.StepId);
+
+			if (ModelState.IsValid)
+			{
+				operation.InformSuccess = Convert.ToBoolean(collection["InformSuccess"].ToString().Split(',')[0]);
+				if (operation.InformSuccess)
+				{
+					operation.AddresseeGroupId = int.Parse(collection["AddresseeGroupId"]);
+				}
+				operation.AdditionalText = collection["AdditionalText"];
+				operation.FileInDestination = (FileInDestination)Enum.Parse(typeof(FileInDestination), collection["FileInDestination"]);
+				operation.FileInLog = Convert.ToBoolean(collection["FileInLog"].ToString().Split(',')[0]);
+				operation.Sort = (SortFiles)Enum.Parse(typeof(SortFiles), collection["Sort"]);
+				if (collection["FilesForProcessing"] == "")
+				{
+					operation.FilesForProcessing = 0;
+				}
+				else
+				{
+					operation.FilesForProcessing = int.Parse(collection["FilesForProcessing"]);
+				}
+
+				operation.FileAttribute = (AttributeFile)Enum.Parse(typeof(AttributeFile), collection["FileAttribute"]);
+
+				_appDbContext.OperationMove.Update(operation);
+				_appDbContext.SaveChanges();
+
+			}
+
+
+			return RedirectToAction("StepDetails", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+		}
+
+		public IActionResult CreateOperationDelete(IFormCollection collection, string stepId)
+		{
+			TaskStepEntity taskStep = _appDbContext.TaskStep.FirstOrDefault(x => x.StepId == int.Parse(stepId));
+
+			if (ModelState.IsValid)
+			{
+				OperationDeleteEntity operation = new OperationDeleteEntity();
+				operation.StepId = int.Parse(stepId);
+				operation.InformSuccess = Convert.ToBoolean(collection["InformSuccess"].ToString().Split(',')[0]);
+				if (operation.InformSuccess)
+				{
+					operation.AddresseeGroupId = int.Parse(collection["AddresseeGroupId"]);
+				}
+				operation.AdditionalText = collection["AdditionalText"];
+
+				_appDbContext.OperationDelete.Add(operation);
+				_appDbContext.SaveChanges();
+				operation = _appDbContext.OperationDelete.FirstOrDefault(x => x.StepId == int.Parse(stepId));
+				taskStep.OperationId = operation.OperationId;
+				_appDbContext.TaskStep.Update(taskStep);
+				_appDbContext.SaveChanges();
+
+			}
+
+
+			return RedirectToAction("StepDetails", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+		}
+
+		public IActionResult EditOperationDelete(IFormCollection collection, string operationId)
+		{
+			OperationDeleteEntity operation = _appDbContext.OperationDelete.FirstOrDefault(x => x.OperationId == int.Parse(operationId));
+			TaskStepEntity taskStep = _appDbContext.TaskStep.FirstOrDefault(x => x.StepId == operation.StepId);
+
+			if (ModelState.IsValid)
+			{
+				operation.InformSuccess = Convert.ToBoolean(collection["InformSuccess"].ToString().Split(',')[0]);
+				if (operation.InformSuccess)
+				{
+					operation.AddresseeGroupId = int.Parse(collection["AddresseeGroupId"]);
+				}
+				operation.AdditionalText = collection["AdditionalText"];
+				
+
+				_appDbContext.OperationDelete.Update(operation);
+				_appDbContext.SaveChanges();
+
+			}
+
+
+			return RedirectToAction("StepDetails", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+		}
+
+
+		public IActionResult CreateOperationRead(IFormCollection collection, string stepId)
+		{
+			TaskStepEntity taskStep = _appDbContext.TaskStep.FirstOrDefault(x => x.StepId == int.Parse(stepId));
+
+			if (ModelState.IsValid)
+			{
+				OperationReadEntity operation = new OperationReadEntity();
+				operation.StepId = int.Parse(stepId);
+				operation.InformSuccess = Convert.ToBoolean(collection["InformSuccess"].ToString().Split(',')[0]);
+				if (operation.InformSuccess)
+				{
+					operation.AddresseeGroupId = int.Parse(collection["AddresseeGroupId"]);
+				}
+				operation.AdditionalText = collection["AdditionalText"];
+				operation.FileInSource = (FileInSource)Enum.Parse(typeof(FileInDestination), collection["FileInSource"]);
+				operation.Encode = (Encode)Enum.Parse(typeof(Encode), collection["Encode"]);
+				operation.SearchRegex = Convert.ToBoolean(collection["SearchRegex"].ToString().Split(',')[0]);
+				operation.FindString = collection["FindString"];
+				operation.ExpectedResult = (ExpectedResult)Enum.Parse(typeof(ExpectedResult), collection["ExpectedResult"]);
+				operation.BreakTaskAfterError = Convert.ToBoolean(collection["BreakTaskAfterError"].ToString().Split(',')[0]);
+				
+
+				_appDbContext.OperationRead.Add(operation);
+				_appDbContext.SaveChanges();
+				operation = _appDbContext.OperationRead.FirstOrDefault(x => x.StepId == int.Parse(stepId));
+				taskStep.OperationId = operation.OperationId;
+				_appDbContext.TaskStep.Update(taskStep);
+				_appDbContext.SaveChanges();
+
+			}
+
+
+			return RedirectToAction("StepDetails", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+		}
+
+		public IActionResult EditOperationRead(IFormCollection collection, string operationId)
+		{
+			OperationReadEntity operation = _appDbContext.OperationRead.FirstOrDefault(x => x.OperationId == int.Parse(operationId));
+			TaskStepEntity taskStep = _appDbContext.TaskStep.FirstOrDefault(x => x.StepId == operation.StepId);
+
+			if (ModelState.IsValid)
+			{
+				operation.InformSuccess = Convert.ToBoolean(collection["InformSuccess"].ToString().Split(',')[0]);
+				if (operation.InformSuccess)
+				{
+					operation.AddresseeGroupId = int.Parse(collection["AddresseeGroupId"]);
+				}
+				operation.AdditionalText = collection["AdditionalText"];
+				operation.FileInSource = (FileInSource)Enum.Parse(typeof(FileInDestination), collection["FileInSource"]);
+				operation.Encode = (Encode)Enum.Parse(typeof(Encode), collection["Encode"]);
+				operation.SearchRegex = Convert.ToBoolean(collection["SearchRegex"].ToString().Split(',')[0]);
+				operation.FindString = collection["FindString"];
+				operation.ExpectedResult = (ExpectedResult)Enum.Parse(typeof(ExpectedResult), collection["ExpectedResult"]);
+				operation.BreakTaskAfterError = Convert.ToBoolean(collection["BreakTaskAfterError"].ToString().Split(',')[0]);
+
+				_appDbContext.OperationRead.Update(operation);
+				_appDbContext.SaveChanges();
+
+			}
+
+
+			return RedirectToAction("StepDetails", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+		}
+
+
+		public IActionResult CreateOperationExist(IFormCollection collection, string stepId)
+		{
+			TaskStepEntity taskStep = _appDbContext.TaskStep.FirstOrDefault(x => x.StepId == int.Parse(stepId));
+
+			if (ModelState.IsValid)
+			{
+				OperationExistEntity operation = new OperationExistEntity();
+				operation.StepId = int.Parse(stepId);
+				operation.InformSuccess = Convert.ToBoolean(collection["InformSuccess"].ToString().Split(',')[0]);
+				if (operation.InformSuccess)
+				{
+					operation.AddresseeGroupId = int.Parse(collection["AddresseeGroupId"]);
+				}
+				operation.AdditionalText = collection["AdditionalText"];
+				operation.ExpectedResult = (ExpectedResult)Enum.Parse(typeof(ExpectedResult), collection["ExpectedResult"]);
+				operation.BreakTaskAfterError = Convert.ToBoolean(collection["BreakTaskAfterError"].ToString().Split(',')[0]);
+
+
+				_appDbContext.OperationExist.Add(operation);
+				_appDbContext.SaveChanges();
+				operation = _appDbContext.OperationExist.FirstOrDefault(x => x.StepId == int.Parse(stepId));
+				taskStep.OperationId = operation.OperationId;
+				_appDbContext.TaskStep.Update(taskStep);
+				_appDbContext.SaveChanges();
+
+			}
+
+
+			return RedirectToAction("StepDetails", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+		}
+
+		public IActionResult EditOperationExist(IFormCollection collection, string operationId)
+		{
+			OperationExistEntity operation = _appDbContext.OperationExist.FirstOrDefault(x => x.OperationId == int.Parse(operationId));
+			TaskStepEntity taskStep = _appDbContext.TaskStep.FirstOrDefault(x => x.StepId == operation.StepId);
+
+			if (ModelState.IsValid)
+			{
+				operation.InformSuccess = Convert.ToBoolean(collection["InformSuccess"].ToString().Split(',')[0]);
+				if (operation.InformSuccess)
+				{
+					operation.AddresseeGroupId = int.Parse(collection["AddresseeGroupId"]);
+				}
+				operation.AdditionalText = collection["AdditionalText"];
+				operation.ExpectedResult = (ExpectedResult)Enum.Parse(typeof(ExpectedResult), collection["ExpectedResult"]);
+				operation.BreakTaskAfterError = Convert.ToBoolean(collection["BreakTaskAfterError"].ToString().Split(',')[0]);
+
+				_appDbContext.OperationExist.Update(operation);
+				_appDbContext.SaveChanges();
+
+			}
+
+
+			return RedirectToAction("StepDetails", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+		}
+
+
+		public IActionResult CreateOperationRename(IFormCollection collection, string stepId)
+		{
+			TaskStepEntity taskStep = _appDbContext.TaskStep.FirstOrDefault(x => x.StepId == int.Parse(stepId));
+
+			if (ModelState.IsValid)
+			{
+				OperationRenameEntity operation = new OperationRenameEntity();
+				operation.StepId = int.Parse(stepId);
+				operation.InformSuccess = Convert.ToBoolean(collection["InformSuccess"].ToString().Split(',')[0]);
+				if (operation.InformSuccess)
+				{
+					operation.AddresseeGroupId = int.Parse(collection["AddresseeGroupId"]);
+				}
+				operation.AdditionalText = collection["AdditionalText"];
+				operation.Pattern = collection["Pattern"];
+
+
+				_appDbContext.OperationRename.Add(operation);
+				_appDbContext.SaveChanges();
+				operation = _appDbContext.OperationRename.FirstOrDefault(x => x.StepId == int.Parse(stepId));
+				taskStep.OperationId = operation.OperationId;
+				_appDbContext.TaskStep.Update(taskStep);
+				_appDbContext.SaveChanges();
+
+			}
+
+
+			return RedirectToAction("StepDetails", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+		}
+
+		public IActionResult EditOperationRename(IFormCollection collection, string operationId)
+		{
+			OperationRenameEntity operation = _appDbContext.OperationRename.FirstOrDefault(x => x.OperationId == int.Parse(operationId));
+			TaskStepEntity taskStep = _appDbContext.TaskStep.FirstOrDefault(x => x.StepId == operation.StepId);
+
+			if (ModelState.IsValid)
+			{
+				operation.InformSuccess = Convert.ToBoolean(collection["InformSuccess"].ToString().Split(',')[0]);
+				if (operation.InformSuccess)
+				{
+					operation.AddresseeGroupId = int.Parse(collection["AddresseeGroupId"]);
+				}
+				operation.AdditionalText = collection["AdditionalText"];
+				operation.Pattern = collection["Pattern"];
+
+				_appDbContext.OperationRename.Update(operation);
+				_appDbContext.SaveChanges();
+
+			}
+
+
+			return RedirectToAction("StepDetails", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+		}
+
 
 
 	}

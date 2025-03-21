@@ -8,11 +8,21 @@ builder.Logging.AddFile(Path.Combine(Directory.GetCurrentDirectory(), $"logger_{
 builder.Services.AddDbContext<AppDbContext>();  
 
 builder.Services.AddQuartz(q => {
-    q.UseMicrosoftDependencyInjectionJobFactory();
+
+	var jobKey = new JobKey(nameof(ProcessOutboxMessagesJob));
+
+	q
+		.AddJob<ProcessOutboxMessagesJob>(jobKey)
+		.AddTrigger(
+			trigger => trigger.ForJob(jobKey).WithSimpleSchedule(
+				schedule => schedule.WithIntervalInSeconds(10).RepeatForever()));
+
+	q.UseMicrosoftDependencyInjectionJobFactory();
     
 });
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 builder.Services.AddTransient<DoSomething>();
+builder.Services.AddTransient<TaskOperationService>();
 builder.Services.AddHostedService<Worker>();
 
 var host = builder.Build();

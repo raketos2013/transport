@@ -17,7 +17,7 @@ namespace FileManager_Server
     public class DoSomething
     {
 
-        /*private readonly ILogger<DoSomething> _logger;
+        private readonly ILogger<DoSomething> _logger;
         private readonly IServiceProvider _serviceProvider;
         public DoSomething(ILogger<DoSomething> logger, IServiceProvider serviceProvider)
         {
@@ -25,10 +25,201 @@ namespace FileManager_Server
             _serviceProvider = serviceProvider;
         }
 
-        public void DoCopy(TaskEntity taskEntity, TaskOperationEntity destinationEntity, string[] files, ref List<string> badfiles)
+        public void Copy(TaskEntity taskEntity)
+        {
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                using (var dbContext = scope.ServiceProvider.GetService<AppDbContext>())
+                {
+                    if (dbContext == null)
+                    {
+                        throw new ArgumentNullException(nameof(dbContext));
+                    }
+
+					string sourceCatalog = String.Format(taskEntity.SourceCatalog, DateTime.Now);
+
+
+
+
+					FileInfo fileInfo;
+                    List<AddresseeGroupEntity> mailListTask = dbContext.AddresseeGroup.Where(x => x.Id == taskEntity.AddresseeGroupId).ToList();
+                    Dictionary<string, string> successCopiedFiles = new Dictionary<string, string>();
+                    Dictionary<string, Dictionary<string, string>> notCopiedFiles = new Dictionary<string, Dictionary<string, string>>();
+                    TaskLogEntity transportTaskLogEntity;
+
+                    string fileName;
+                    string fileNameExt;
+                    string optionCopy = "";
+                   
+
+                    //протоколирование копирования в файлов в каталог назначения
+                    
+                    //transportTaskLogEntity.ResultText = $"Начало копирования ({optionCopy}) в {destinationEntity.OperationId}: {taskEntity.SourceCatalog} => {destinationEntity.DestinationDirectory}";
+                    
+
+                    //transportTaskLogEntity.ResultText = $"Количество найденных файлов по маске {taskEntity.FileMask}: {files.Length}";
+                    
+
+
+                    foreach (string s in files)
+                    {
+                        fileInfo = new FileInfo(s);
+                        string destinationDirectory = String.Format(destinationEntity.DestinationDirectory, DateTime.Now, fileInfo.CreationTime);
+
+                        fileName = Path.GetFileName(s);
+
+                        //контроль на повтор обработки в течении дня
+                        dublFileNames = dbContext.TransportTaskLogs.Where(x => x.FileName == fileName && DateOnly.FromDateTime(x.DateTimeLog) == DateOnly.FromDateTime(DateTime.Now)).ToList();
+                        if (dublFileNames.Count > 0 && destinationEntity.DublNameJr)
+                        {
+                            transportTaskLogEntity = new TransportTaskLogEntity();
+                            transportTaskLogEntity.FileName = fileName;
+                            transportTaskLogEntity.DateTimeLog = DateTime.Now;
+                            transportTaskLogEntity.TaskId = taskEntity.TaskId;
+                            transportTaskLogEntity.OperationId = destinationEntity.OperationId;
+                            transportTaskLogEntity.ResultOperation = ResultOperation.Error;
+                            transportTaskLogEntity.ResultText = "Не пройден контроль на повторную обработку за текущий день";
+                            dbContext.TransportTaskLogs.Add(transportTaskLogEntity);
+                            dbContext.SaveChanges();
+
+                            badfiles.Add(s);
+                            notCopiedFiles.Add(s, new Dictionary<string, string>() { { destinationDirectory, "Не пройден контроль на повторную обработку за текущий день" } });
+                            _logger.LogError($"{DateTime.Now} задача: {taskEntity.TaskId}; Не пройден контроль на повторную обработку файла за текущий день: {s} в {destinationEntity.DestinationDirectory}");
+                            continue;
+                        }
+
+
+                        try
+                        {
+                            if (!Directory.Exists(destinationDirectory))
+                            {
+                                Directory.CreateDirectory(destinationDirectory);
+
+                                transportTaskLogEntity = new TransportTaskLogEntity();
+                                transportTaskLogEntity.FileName = fileName;
+                                transportTaskLogEntity.DateTimeLog = DateTime.Now;
+                                transportTaskLogEntity.TaskId = taskEntity.TaskId;
+                                transportTaskLogEntity.OperationId = destinationEntity.OperationId;
+                                transportTaskLogEntity.ResultOperation = ResultOperation.Success;
+                                transportTaskLogEntity.ResultText = $"Создан каталог назначения {destinationDirectory}";
+                                dbContext.TransportTaskLogs.Add(transportTaskLogEntity);
+                                dbContext.SaveChanges();
+                            }
+
+                            if (destinationEntity.DublDest == FileInDestination.OVR)
+                            {
+                                File.Copy(s, Path.Combine(destinationDirectory, fileName), true);
+                                successCopiedFiles.Add(s, destinationDirectory);
+                                _logger.LogInformation($"{DateTime.Now} задача: {taskEntity.TaskId} - {Path.GetFileName(s)} скопирован усшешно в {destinationDirectory}");
+                            }
+                            else if (destinationEntity.DublDest == FileInDestination.ERR)
+                            {
+                                File.Copy(s, Path.Combine(destinationDirectory, fileName), false);
+                                successCopiedFiles.Add(fileName, destinationDirectory);
+                                _logger.LogInformation($"{DateTime.Now} задача: {taskEntity.TaskId} - {Path.GetFileName(s)} скопирован усшешно в {destinationDirectory}");
+                            }
+                            else if (destinationEntity.DublDest == FileInDestination.RNM)
+                            {
+                                FileInfo fileInfoInDestination = new FileInfo(Path.Combine(destinationDirectory, fileName));
+                                if (fileInfoInDestination.Exists)
+                                {
+                                    fileNameExt = Path.Combine(destinationDirectory, string.Concat(fileName, DateTime.Now.ToString("_ddMMyyyy_HHmmss")));
+
+                                    transportTaskLogEntity = new TransportTaskLogEntity();
+                                    transportTaskLogEntity.FileName = fileName;
+                                    transportTaskLogEntity.DateTimeLog = DateTime.Now;
+                                    transportTaskLogEntity.TaskId = taskEntity.TaskId;
+                                    transportTaskLogEntity.OperationId = destinationEntity.OperationId;
+                                    transportTaskLogEntity.ResultOperation = ResultOperation.Rename;
+                                    transportTaskLogEntity.ResultText = $"Файл {fileName} существует в {destinationDirectory} и будет переименован в {Path.GetFileName(fileNameExt)}";
+                                    dbContext.TransportTaskLogs.Add(transportTaskLogEntity);
+                                    dbContext.SaveChanges();
+
+                                    File.Copy(s, fileNameExt, false);
+                                    _logger.LogInformation($"{DateTime.Now} задача: {taskEntity.TaskId} - {fileName} скопирован усшешно в {destinationEntity} с именем {Path.GetFileName(fileNameExt)} ");
+                                }
+                                else
+                                {
+                                    fileNameExt = Path.Combine(destinationDirectory, fileName);
+                                    File.Copy(s, fileNameExt, false);
+                                    _logger.LogInformation($"{DateTime.Now} задача: {taskEntity.TaskId} - {fileName} скопирован усшешно в {destinationEntity}");
+                                }
+                            }
+
+                            transportTaskLogEntity = new TransportTaskLogEntity();
+                            transportTaskLogEntity.FileName = fileName;
+                            transportTaskLogEntity.DateTimeLog = DateTime.Now;
+                            transportTaskLogEntity.TaskId = taskEntity.TaskId;
+                            transportTaskLogEntity.OperationId = destinationEntity.OperationId;
+                            transportTaskLogEntity.ResultOperation = ResultOperation.Success;
+                            transportTaskLogEntity.ResultText = $"Файл успешно скопирован в {destinationDirectory}";
+                            dbContext.TransportTaskLogs.Add(transportTaskLogEntity);
+                            dbContext.SaveChanges();
+
+                        }
+                        catch (Exception ex)
+                        {
+                            transportTaskLogEntity = new TransportTaskLogEntity();
+                            transportTaskLogEntity.FileName = fileName;
+                            transportTaskLogEntity.DateTimeLog = DateTime.Now;
+                            transportTaskLogEntity.TaskId = taskEntity.TaskId;
+                            transportTaskLogEntity.OperationId = destinationEntity.OperationId;
+                            transportTaskLogEntity.ResultOperation = ResultOperation.Error;
+                            transportTaskLogEntity.ResultText = $"Ошибка при копировании файла: {ex.Message}";
+                            dbContext.TransportTaskLogs.Add(transportTaskLogEntity);
+                            dbContext.SaveChanges();
+                            badfiles.Add(s);
+                            notCopiedFiles.Add(s, new Dictionary<string, string>() { { destinationDirectory, ex.Message } });
+                            _logger.LogError($"{DateTime.Now} задача: {taskEntity.TaskId}; Ошибка при копировании файла:{s} в {destinationEntity.DestinationDirectory} - {ex.Message}");
+                        }
+                    }
+                    SendMailForDestination(successCopiedFiles, $"Назначение: {destinationEntity.OperationId}", "выполнена успешно", destinationEntity, mailListDestination);
+                    if (notCopiedFiles.Count > 0)
+                    {
+                        SendErrorMailForDestination(notCopiedFiles, $"Назначение: {destinationEntity.OperationId}", "завершена с ошибкой", destinationEntity, mailListTask);
+                    }
+                    transportTaskLogEntity = new TransportTaskLogEntity();
+                    transportTaskLogEntity.FileName = taskEntity.FileMask;
+                    transportTaskLogEntity.DateTimeLog = DateTime.Now;
+                    transportTaskLogEntity.TaskId = taskEntity.TaskId;
+                    transportTaskLogEntity.OperationId = destinationEntity.OperationId;
+                    transportTaskLogEntity.ResultOperation = ResultOperation.Success;
+                    transportTaskLogEntity.ResultText = $"Завершение копирования ({optionCopy}) в назначение {destinationEntity.OperationId}";
+                    dbContext.TransportTaskLogs.Add(transportTaskLogEntity);
+                    dbContext.SaveChanges();
+
+                }
+            }
+        }
+		public void Move()
         {
 
-            using (var scope = _serviceProvider.CreateScope())
+        }
+        public void Delete() 
+        {
+            
+        }   
+        
+        public void Exist()
+        {
+
+        }
+
+        public void Rename()
+        {
+
+        }
+
+        public void Read()
+        {
+
+        }
+
+
+        public void DoCopy(TaskEntity taskEntity,  string[] files, ref List<string> badfiles)
+        {
+
+            /*using (var scope = _serviceProvider.CreateScope())
             {
                 using (var dbContext = scope.ServiceProvider.GetService<AppDbContext>())
                 {
@@ -38,9 +229,9 @@ namespace FileManager_Server
                     }
                     if (destinationEntity is null)
                     {
-                        throw new ArgumentNullException(nameof (destinationEntity));
+                        throw new ArgumentNullException(nameof(destinationEntity));
                     }
-                    
+
                     int initialCountBadFiles = badfiles.Count;
                     FileInfo fileInfo;
                     List<MailList> mailListTask = dbContext.MailLists.Where(x => x.MailGroupsId == taskEntity.Group).ToList();
@@ -245,7 +436,7 @@ namespace FileManager_Server
                     dbContext.SaveChanges();
 
                 }
-            }
+            }*/
         }
 
 
@@ -276,7 +467,7 @@ namespace FileManager_Server
 
 
 
-        public void DoCopyArchFiles(string[] files, List<string> badfiles, TaskEntity taskEntity)
+        /*public void DoCopyArchFiles(string[] files, List<string> badfiles, TaskEntity taskEntity)
         {
             using (var scope = _serviceProvider.CreateScope())
             {
@@ -371,13 +562,13 @@ namespace FileManager_Server
 
                 }
             }
-        }
+        }*/
 
 
 
-        public void SendMail(string message, string Subject, List<MailList> recipients, string? attachFile = null)
+        public void SendMail(string message, string Subject, List<AddresseeGroupEntity> recipients, string? attachFile = null)
         {
-            try
+            /*try
             {
                 if (recipients.Count > 0)
                 {
@@ -421,14 +612,17 @@ namespace FileManager_Server
             catch (Exception ex)
             {
                 _logger.LogError($"Ошибка при отправке e-mail: {ex.Message}");
-            }
+            }*/
         }
 
 
 
-        public void SendMailForDestination(Dictionary<string, string> copiedFiles, string Subject, string caption, TaskOperationEntity destinationEntity, List<MailList> recipients, string? attachFile = null)
+        public void SendMailForDestination(Dictionary<string, string> copiedFiles, 
+                                            string Subject, string caption, 
+                                            //TaskOperationEntity destinationEntity, 
+                                            List<AddresseeGroupEntity> recipients, string? attachFile = null)
         {
-            StringBuilder message = new StringBuilder();
+           /* StringBuilder message = new StringBuilder();
             try
             {
                 if (recipients.Count > 0)
@@ -483,13 +677,16 @@ namespace FileManager_Server
             catch (Exception ex)
             {
                 _logger.LogError($"Ошибка отправки e-mail: {ex.Message}");
-            }
+            }*/
         }
 
 
-        public void SendErrorMailForDestination(Dictionary<string, Dictionary<string, string>> notCopiedFiles, string Subject, string caption, TaskOperationEntity destinationEntity, List<MailList> recipients, string? attachFile = null)
+        public void SendErrorMailForDestination(Dictionary<string, Dictionary<string, string>> notCopiedFiles, 
+                                                string Subject, string caption, 
+                                                //TaskOperationEntity destinationEntity,
+                                                List<AddresseeGroupEntity> recipients, string? attachFile = null)
         {
-            StringBuilder message = new StringBuilder();
+            /*StringBuilder message = new StringBuilder();
             try
             {
                 if (recipients.Count > 0)
@@ -547,17 +744,19 @@ namespace FileManager_Server
             catch (Exception ex)
             {
                 _logger.LogError($"Mail.Send: {ex.Message}");
-            }
+            }*/
         }
 
 
 
 
-        public void UploadFiles(TaskEntity taskEntity, TaskOperationEntity destinationEntity, string[] files, ref List<string> badfiles)
+        public void UploadFiles(TaskEntity taskEntity, 
+                                //TaskOperationEntity destinationEntity,
+                                string[] files, ref List<string> badfiles)
         {
 
 
-            using (var scope = _serviceProvider.CreateScope())
+            /*using (var scope = _serviceProvider.CreateScope())
             {
                 using (var dbContext = scope.ServiceProvider.GetService<AppDbContext>())
                 {
@@ -567,7 +766,7 @@ namespace FileManager_Server
                     }
                     if (destinationEntity is null)
                     {
-                        throw new ArgumentNullException(nameof (destinationEntity));
+                        throw new ArgumentNullException(nameof(destinationEntity));
                     }
                     int initialCountBadFiles = badfiles.Count;
                     List<MailList> mailListTask = dbContext.MailLists.Where(x => x.MailGroupsId == taskEntity.Group).ToList();
@@ -738,7 +937,7 @@ namespace FileManager_Server
                     dbContext.SaveChanges();
 
                 }
-            }
+            }*/
         }
 
 
@@ -792,14 +991,14 @@ namespace FileManager_Server
 
         public void DoMoveSplit(TaskEntity taskEntity, List<FileInformation> files, ref List<string> badfiles)
         {
-            using (var scope = _serviceProvider.CreateScope())
+            /*using (var scope = _serviceProvider.CreateScope())
             {
                 using (var dbContext = scope.ServiceProvider.GetService<AppDbContext>())
                 {
                     if (taskEntity is null)
                     {
                         throw new ArgumentNullException(nameof(taskEntity));
-                    }                    
+                    }
                     if (taskEntity.TmpCatalog is null)
                     {
                         throw new ArgumentNullException($"{nameof(taskEntity)} TmpCatalog");
@@ -858,10 +1057,10 @@ namespace FileManager_Server
                         }
                     }
                 }
-            }
+            }*/
         }
 
-*/
+
 
 
 

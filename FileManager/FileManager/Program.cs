@@ -21,8 +21,9 @@ builder.Services.AddQuartz(q => {
     
 });
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
-builder.Services.AddTransient<DoSomething>();
 builder.Services.AddTransient<TaskOperationService>();
+builder.Services.AddTransient<DoSomething>();
+
 builder.Services.AddHostedService<Worker>();
 
 var host = builder.Build();

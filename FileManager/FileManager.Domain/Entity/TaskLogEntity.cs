@@ -14,8 +14,10 @@ namespace FileManager.Domain.Entity
         public DateTime DateTimeLog { get; set; }
         [Display(Name = "Id задачи")]
         public string TaskId { get; set; }
-        [Display(Name = "Идентификатор операции")]
-        public string OperationId { get; set; }
+		[Display(Name = "Id шага")]
+		public int StepId { get; set; }
+		[Display(Name = "Id операции")]
+        public int? OperationId { get; set; }
         [Display(Name = "Результат операции")]
         public ResultOperation ResultOperation { get; set; }
         [Display(Name = "Имя файла")]

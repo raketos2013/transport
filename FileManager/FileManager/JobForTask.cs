@@ -18,7 +18,7 @@ namespace FileManager_Server
 
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<JobForTask> _logger;
-        private readonly DoSomething _doSomething;
+        //private readonly DoSomething _doSomething;
 		private readonly TaskOperationService _taskOperationService;
 		private Task? _mainTask;
         private Task? _splitTask;
@@ -44,8 +44,6 @@ namespace FileManager_Server
                 {
                     using (var dbContext = scope.ServiceProvider.GetService<AppDbContext>())
                     {
-						using TaskOperationService taskOperationService = scope.ServiceProvider.GetService<TaskOperationService>();
-
                         if (dbContext == null)
                         {
                             throw new ArgumentNullException(nameof(dbContext));
@@ -56,29 +54,32 @@ namespace FileManager_Server
 						{
 							throw new ArgumentNullException(nameof(taskEntity));
 						}
-                        List<TaskStepEntity> taskSteps = dbContext.TaskStep.Where(x => x.TaskId == taskEntity.TaskId).ToList();
+                        List<TaskStepEntity> taskSteps = dbContext.TaskStep.Where(x => x.TaskId == taskEntity.TaskId).OrderBy(x => x.StepNumber).ToList();
 
                         foreach (var taskStep in taskSteps)
                         {
-                            switch (taskStep.OperationName)
+                            if (taskStep.IsActive)
                             {
-                                case FileManager.Domain.Enum.OperationName.Copy:
-
-                                    break;
-                                case FileManager.Domain.Enum.OperationName.Move:
-                                    break;
-                                case FileManager.Domain.Enum.OperationName.Read:
-                                    break;
-                                case FileManager.Domain.Enum.OperationName.Exist:
-                                    break;
-                                case FileManager.Domain.Enum.OperationName.Rename:
-                                    break;
-                                case FileManager.Domain.Enum.OperationName.Delete:
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
+                                switch (taskStep.OperationName)
+                                {
+                                    case FileManager.Domain.Enum.OperationName.Copy:
+                                        _taskOperationService.Copy(taskStep);
+                                        break;
+                                    case FileManager.Domain.Enum.OperationName.Move:
+                                        break;
+                                    case FileManager.Domain.Enum.OperationName.Read:
+                                        break;
+                                    case FileManager.Domain.Enum.OperationName.Exist:
+                                        break;
+                                    case FileManager.Domain.Enum.OperationName.Rename:
+                                        break;
+                                    case FileManager.Domain.Enum.OperationName.Delete:
+                                        break;
+                                    default:
+                                        break;
+                                }
+							}
+						}
 
 
 
@@ -89,12 +90,12 @@ namespace FileManager_Server
                         FileInfo fileInfo;
                         TaskLogEntity transportTaskLogEntity;
                         //List<TaskOperationEntity> destinationsList = service.TaskOperations.Where(x => x.TaskId == context.JobDetail.Key.Name && x.IsActive == true).ToList();
-                        TaskStatusEntity status = service.TaskStatuse.First(x => x.TaskId == context.JobDetail.Key.Name);
+                        //TaskStatusEntity status = service.TaskStatuse.First(x => x.TaskId == context.JobDetail.Key.Name);
                        
                         //List<MailList> mailList = service.MailLists.Where(x => x.MailGroupsId == taskEntity.Group).ToList();
 
                         
-                        if (status != null)
+                        /*if (status != null)
                         {
                             if (DateOnly.FromDateTime(status.DateLastExecute) != DateOnly.FromDateTime(DateTime.Now))
                             {
@@ -136,7 +137,7 @@ namespace FileManager_Server
                             string[] files_raw_with_sub_mask = [];
                             string sourceCatalog = "";// = String.Format(taskEntity.SourceCatalog, DateTime.Now);
 
-                            /*if (Directory.Exists(sourceCatalog))
+                            *//*if (Directory.Exists(sourceCatalog))
                             {
                                 files_raw_with_sub_mask = Directory.GetFiles(sourceCatalog, taskEntity.FileMask);
                                 //исключим подмаску файлов
@@ -222,10 +223,10 @@ namespace FileManager_Server
                                 }
 
                                 return;
-                            }*/
+                            }*//*
                                                     
                             string[] files = [];
-                            /*if (files_raw != null && files_raw.Count > 0)
+                            *//*if (files_raw != null && files_raw.Count > 0)
                             {
 
                                 //список файлов с датой создания 
@@ -339,7 +340,7 @@ namespace FileManager_Server
                                 service.TaskLog.Add(transportTaskLogEntity);
 
                                 service.SaveChanges();
-                            }*/
+                            }*//*
 
 
 
@@ -348,7 +349,7 @@ namespace FileManager_Server
 
 
 							_logger.LogInformation($"{status.DateLastExecute} задача: {context.JobDetail.Key.Name} {lastModified} - завершение");
-                        }
+                        }*/
                     }
                 }
                 await Task.CompletedTask;

@@ -3,6 +3,7 @@ using System;
 using FileManager.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,13 +12,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FileManager.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250401084023_OperId_in_taskLog")]
+    partial class OperId_in_taskLog
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "8.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -164,22 +167,24 @@ namespace FileManager.DAL.Migrations
                     b.Property<string>("TaskId")
                         .HasColumnType("text");
 
-                    b.Property<string>("FileName")
-                        .HasColumnType("text");
-
-                    b.Property<int?>("OperationId")
+                    b.Property<int>("StepId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("ResultOperation")
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("IdOperation")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ResultOperation")
                         .HasColumnType("integer");
 
                     b.Property<string>("ResultText")
+                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int?>("StepId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("DateTimeLog", "TaskId");
+                    b.HasKey("DateTimeLog", "TaskId", "StepId");
 
                     b.ToTable("TaskLog");
                 });
@@ -206,6 +211,9 @@ namespace FileManager.DAL.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("OperationId");
+
+                    b.HasIndex("StepId")
+                        .IsUnique();
 
                     b.ToTable((string)null);
 
@@ -285,6 +293,8 @@ namespace FileManager.DAL.Migrations
 
                     b.HasKey("StepId");
 
+                    b.HasIndex("OperationId");
+
                     b.HasIndex("TaskId");
 
                     b.ToTable("TaskStep");
@@ -333,16 +343,12 @@ namespace FileManager.DAL.Migrations
                     b.Property<int>("Sort")
                         .HasColumnType("integer");
 
-                    b.HasIndex("StepId");
-
                     b.ToTable("OperationCopy");
                 });
 
             modelBuilder.Entity("FileManager.Domain.Entity.OperationDeleteEntity", b =>
                 {
                     b.HasBaseType("FileManager.Domain.Entity.TaskOperation");
-
-                    b.HasIndex("StepId");
 
                     b.ToTable("OperationDelete");
                 });
@@ -356,8 +362,6 @@ namespace FileManager.DAL.Migrations
 
                     b.Property<int>("ExpectedResult")
                         .HasColumnType("integer");
-
-                    b.HasIndex("StepId");
 
                     b.ToTable("OperationExist");
                 });
@@ -380,8 +384,6 @@ namespace FileManager.DAL.Migrations
 
                     b.Property<int>("Sort")
                         .HasColumnType("integer");
-
-                    b.HasIndex("StepId");
 
                     b.ToTable("OperationMove");
                 });
@@ -409,8 +411,6 @@ namespace FileManager.DAL.Migrations
                     b.Property<bool>("SearchRegex")
                         .HasColumnType("boolean");
 
-                    b.HasIndex("StepId");
-
                     b.ToTable("OperationRead");
                 });
 
@@ -421,8 +421,6 @@ namespace FileManager.DAL.Migrations
                     b.Property<string>("Pattern")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.HasIndex("StepId");
 
                     b.ToTable("OperationRename");
                 });
@@ -445,6 +443,17 @@ namespace FileManager.DAL.Migrations
                         .HasForeignKey("TaskGroupEntityId");
                 });
 
+            modelBuilder.Entity("FileManager.Domain.Entity.TaskOperation", b =>
+                {
+                    b.HasOne("FileManager.Domain.Entity.TaskStepEntity", "Step")
+                        .WithOne()
+                        .HasForeignKey("FileManager.Domain.Entity.TaskOperation", "StepId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Step");
+                });
+
             modelBuilder.Entity("FileManager.Domain.Entity.TaskStatusEntity", b =>
                 {
                     b.HasOne("FileManager.Domain.Entity.TaskEntity", "Task")
@@ -458,79 +467,21 @@ namespace FileManager.DAL.Migrations
 
             modelBuilder.Entity("FileManager.Domain.Entity.TaskStepEntity", b =>
                 {
+                    b.HasOne("FileManager.Domain.Entity.TaskOperation", "Operation")
+                        .WithMany()
+                        .HasForeignKey("OperationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("FileManager.Domain.Entity.TaskEntity", "Task")
                         .WithMany("Steps")
                         .HasForeignKey("TaskId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Operation");
+
                     b.Navigation("Task");
-                });
-
-            modelBuilder.Entity("FileManager.Domain.Entity.OperationCopyEntity", b =>
-                {
-                    b.HasOne("FileManager.Domain.Entity.TaskStepEntity", "Step")
-                        .WithMany()
-                        .HasForeignKey("StepId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Step");
-                });
-
-            modelBuilder.Entity("FileManager.Domain.Entity.OperationDeleteEntity", b =>
-                {
-                    b.HasOne("FileManager.Domain.Entity.TaskStepEntity", "Step")
-                        .WithMany()
-                        .HasForeignKey("StepId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Step");
-                });
-
-            modelBuilder.Entity("FileManager.Domain.Entity.OperationExistEntity", b =>
-                {
-                    b.HasOne("FileManager.Domain.Entity.TaskStepEntity", "Step")
-                        .WithMany()
-                        .HasForeignKey("StepId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Step");
-                });
-
-            modelBuilder.Entity("FileManager.Domain.Entity.OperationMoveEntity", b =>
-                {
-                    b.HasOne("FileManager.Domain.Entity.TaskStepEntity", "Step")
-                        .WithMany()
-                        .HasForeignKey("StepId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Step");
-                });
-
-            modelBuilder.Entity("FileManager.Domain.Entity.OperationReadEntity", b =>
-                {
-                    b.HasOne("FileManager.Domain.Entity.TaskStepEntity", "Step")
-                        .WithMany()
-                        .HasForeignKey("StepId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Step");
-                });
-
-            modelBuilder.Entity("FileManager.Domain.Entity.OperationRenameEntity", b =>
-                {
-                    b.HasOne("FileManager.Domain.Entity.TaskStepEntity", "Step")
-                        .WithMany()
-                        .HasForeignKey("StepId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Step");
                 });
 
             modelBuilder.Entity("FileManager.Domain.Entity.TaskEntity", b =>

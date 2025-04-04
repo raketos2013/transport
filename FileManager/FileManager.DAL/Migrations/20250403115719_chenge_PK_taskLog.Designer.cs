@@ -3,6 +3,7 @@ using System;
 using FileManager.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FileManager.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250403115719_chenge_PK_taskLog")]
+    partial class chenge_PK_taskLog
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -165,15 +168,17 @@ namespace FileManager.DAL.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("FileName")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int?>("OperationId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("ResultOperation")
+                    b.Property<int>("ResultOperation")
                         .HasColumnType("integer");
 
                     b.Property<string>("ResultText")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int?>("StepId")

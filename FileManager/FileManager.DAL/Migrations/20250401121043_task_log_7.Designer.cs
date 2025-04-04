@@ -3,6 +3,7 @@ using System;
 using FileManager.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,13 +12,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FileManager.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250401121043_task_log_7")]
+    partial class task_log_7
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "8.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -164,22 +167,24 @@ namespace FileManager.DAL.Migrations
                     b.Property<string>("TaskId")
                         .HasColumnType("text");
 
+                    b.Property<int>("StepId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("FileName")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int?>("OperationId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("ResultOperation")
+                    b.Property<int>("ResultOperation")
                         .HasColumnType("integer");
 
                     b.Property<string>("ResultText")
+                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int?>("StepId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("DateTimeLog", "TaskId");
+                    b.HasKey("DateTimeLog", "TaskId", "StepId");
 
                     b.ToTable("TaskLog");
                 });

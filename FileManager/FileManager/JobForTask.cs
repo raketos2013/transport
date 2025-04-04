@@ -1,5 +1,7 @@
 ﻿using FileManager.DAL;
+using FileManager.DAL.Repositories.Interfaces;
 using FileManager.Domain.Entity;
+using FileManager.Domain.Enum;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Update;
 using Quartz;
@@ -12,448 +14,809 @@ using System.Xml;
 namespace FileManager_Server
 {
 
-    [DisallowConcurrentExecution]
-    public class JobForTask : IJob
-    {
+	[DisallowConcurrentExecution]
+	public class JobForTask : IJob
+	{
 
-        private readonly IServiceProvider _serviceProvider;
-        private readonly ILogger<JobForTask> _logger;
-        //private readonly DoSomething _doSomething;
+		private readonly IServiceProvider _serviceProvider;
+		private readonly ILogger<JobForTask> _logger;
+		//private readonly DoSomething _doSomething;
 		private readonly TaskOperationService _taskOperationService;
-		private Task? _mainTask;
-        private Task? _splitTask;
+		private readonly ITaskLogger _taskLogger;
 
-        public JobForTask(IServiceProvider serviceProvider, ILogger<JobForTask> logger, TaskOperationService taskOperationService)
-        {
-            _serviceProvider = serviceProvider;
-            _logger = logger;
-            _taskOperationService = taskOperationService;
-        }
+		public JobForTask(IServiceProvider serviceProvider, ILogger<JobForTask> logger, TaskOperationService taskOperationService, ITaskLogger taskLogger)
+		{
+			_serviceProvider = serviceProvider;
+			_logger = logger;
+			_taskOperationService = taskOperationService;
+			_taskLogger = taskLogger;
+		}
 
 
 
-        public async Task Execute(IJobExecutionContext context)
-        {
-            if (context.RefireCount > 5)
-            {
-                _logger.LogError($"{DateTime.Now} задача: {context.JobDetail.Key.Name} - RefireCount > 5");
-            }
-            try
-            {
-                using (var scope = _serviceProvider.CreateScope())
-                {
-                    using (var dbContext = scope.ServiceProvider.GetService<AppDbContext>())
-                    {
-                        if (dbContext == null)
-                        {
-                            throw new ArgumentNullException(nameof(dbContext));
-                        }
+		public async Task Execute(IJobExecutionContext context)
+		{
+			// log - 
+			// log - начало выполнения задачи
+
+			_taskLogger.TaskLog(context.JobDetail.Key.Name, $"<<< Начало работы задачи {context.JobDetail.Key.Name} >>>");
+
+			if (context.RefireCount > 5)
+			{
+				_logger.LogError($"{DateTime.Now} задача: {context.JobDetail.Key.Name} - RefireCount > 5");
+			}
+			try
+			{
+				using (var scope = _serviceProvider.CreateScope())
+				{
+					using (var dbContext = scope.ServiceProvider.GetService<AppDbContext>())
+					{
+						if (dbContext == null)
+						{
+							throw new ArgumentNullException(nameof(dbContext));
+						}
+
 
 						TaskEntity? taskEntity = dbContext.Task.First(x => x.TaskId == context.JobDetail.Key.Name);
+
+
+
 						if (taskEntity is null)
 						{
 							throw new ArgumentNullException(nameof(taskEntity));
 						}
-                        List<TaskStepEntity> taskSteps = dbContext.TaskStep.Where(x => x.TaskId == taskEntity.TaskId).OrderBy(x => x.StepNumber).ToList();
+						List<TaskStepEntity> taskSteps = dbContext.TaskStep.Where(x => x.TaskId == taskEntity.TaskId).OrderBy(x => x.StepNumber).ToList();
 
-                        foreach (var taskStep in taskSteps)
-                        {
-                            if (taskStep.IsActive)
-                            {
-                                switch (taskStep.OperationName)
-                                {
-                                    case FileManager.Domain.Enum.OperationName.Copy:
-                                        _taskOperationService.Copy(taskStep);
-                                        break;
-                                    case FileManager.Domain.Enum.OperationName.Move:
-                                        break;
-                                    case FileManager.Domain.Enum.OperationName.Read:
-                                        break;
-                                    case FileManager.Domain.Enum.OperationName.Exist:
-                                        break;
-                                    case FileManager.Domain.Enum.OperationName.Rename:
-                                        break;
-                                    case FileManager.Domain.Enum.OperationName.Delete:
-                                        break;
-                                    default:
-                                        break;
-                                }
+						List<ITaskStep> steps = new List<ITaskStep>();
+						int i = 0;
+						TaskOperation? operation;
+						foreach (var step in taskSteps)
+						{
+							if (step.IsActive)
+							{
+								switch (step.OperationName)
+								{
+									case OperationName.Copy:
+										operation = dbContext.OperationCopy.First(x => x.StepId == step.StepId);
+										CreatorFactoryMethod copyCreator = new CopyCreator();
+										steps.Add(copyCreator.FactoryMethod(step, operation, _serviceProvider, _taskLogger));
+										break;
+									case OperationName.Move:
+										operation = dbContext.OperationMove.First(x => x.StepId == step.StepId);
+										CreatorFactoryMethod moveCreator = new MoveCreator();
+										steps.Add(moveCreator.FactoryMethod(step, operation, _serviceProvider, _taskLogger));
+										break;
+									case OperationName.Read:
+										operation = dbContext.OperationRead.First(x => x.StepId == step.StepId);
+										CreatorFactoryMethod readCreator = new ReadCreator();
+										steps.Add(readCreator.FactoryMethod(step, operation, _serviceProvider, _taskLogger));
+										break;
+									case OperationName.Exist:
+										break;
+									case OperationName.Rename:
+										break;
+									case OperationName.Delete:
+										break;
+									default:
+										break;
+								}
+								if (i != 0)
+								{
+									steps[i - 1].SetNext(steps[i]);
+								}
+
+								i++;
 							}
+
+
+						}
+						if (steps.Count > 0)
+						{
+							steps[0].Execute();
 						}
 
 
+					}
+				}
+				await Task.CompletedTask;
+				// log - завершение работы задачи
+				_taskLogger.TaskLog(context.JobDetail.Key.Name, $"<<< Окончание работы задачи {context.JobDetail.Key.Name} >>>");
+
+			}
+			catch (Exception ex)
+			{
+				using (var scope = _serviceProvider.CreateScope())
+				{
+					try
+					{
+
+						var service = scope.ServiceProvider.GetService<AppDbContext>();
+						if (service != null)
+						{
+							TaskStatusEntity status = service.TaskStatuse.First(x => x.TaskId == context.JobDetail.Key.Name);
+							if (status != null)
+							{
+								status.IsProgress = false;
+								status.IsError = true;
+								status.DateLastExecute = DateTime.Now;
+								service.TaskStatuse.Update(status);
+								service.SaveChanges();
+							}
+						}
+						_logger.LogError($"{DateTime.Now} задача: {context.JobDetail.Key.Name} - {ex.Message}");
+					}
+					catch (Exception ex2)
+					{
+						_logger.LogError($"{DateTime.Now} задача: {context.JobDetail.Key.Name} - {ex2.Message}");
+					}
+
+				}
+				throw new JobExecutionException(msg: "", refireImmediately: true, cause: ex);
+			}
+		}
+
+
+	}
 
 
 
-						string archCatalog;
-                        string badArchCatalog;
-                        FileInfo fileInfo;
-                        TaskLogEntity transportTaskLogEntity;
-                        //List<TaskOperationEntity> destinationsList = service.TaskOperations.Where(x => x.TaskId == context.JobDetail.Key.Name && x.IsActive == true).ToList();
-                        //TaskStatusEntity status = service.TaskStatuse.First(x => x.TaskId == context.JobDetail.Key.Name);
-                       
-                        //List<MailList> mailList = service.MailLists.Where(x => x.MailGroupsId == taskEntity.Group).ToList();
-
-                        
-                        /*if (status != null)
-                        {
-                            if (DateOnly.FromDateTime(status.DateLastExecute) != DateOnly.FromDateTime(DateTime.Now))
-                            {
-                                status.CountExecute = 0;
-                                status.CountProcessedFiles = 0;
-                                status.IsError = false;
-                            }
-                            status.IsProgress = true;
-                            service.TaskStatuse.Update(status);
-                            service.SaveChanges();
-
-                            JobDataMap? dataMap = context.JobDetail.JobDataMap;
-
-                            string? jobName = dataMap?.GetString("JobName");
-                            string? lastModified = dataMap?.GetString("LastModified");
-
-                            //протоколирование начала выполнения задачи
-                            _logger.LogInformation($"{DateTime.Now} задача: {context.JobDetail.Key.Name} {lastModified} - запуск");
-
-                            transportTaskLogEntity = new TaskLogEntity();
-                            transportTaskLogEntity.DateTimeLog = DateTime.Now;
-                            transportTaskLogEntity.TaskId = taskEntity.TaskId;
-                            transportTaskLogEntity.OperationId = "0";
-                            transportTaskLogEntity.ResultOperation = FileManager.Domain.Enum.ResultOperation.Success;
-                            transportTaskLogEntity.ResultText = $"<<<Начало работы задачи: {taskEntity.TaskId}>>>";
-                            service.TaskLog.Add(transportTaskLogEntity);
-                            service.SaveChanges();
 
 
 
-                            List<FileInformation> filesSet = new();
-                            List<FileInformation> outFilesSet = new();
-                            List<FileInformation> sortedFilesSet = new();
-                            List<TaskLogEntity> dublFileNames = new();
-                            List<string> badfiles = new();
-
-                            //проверка на существование каталога источника
-                            List<string> files_raw = new();
-                            string[] files_raw_with_sub_mask = [];
-                            string sourceCatalog = "";// = String.Format(taskEntity.SourceCatalog, DateTime.Now);
-
-                            *//*if (Directory.Exists(sourceCatalog))
-                            {
-                                files_raw_with_sub_mask = Directory.GetFiles(sourceCatalog, taskEntity.FileMask);
-                                //исключим подмаску файлов
-                                string? subMask = null;
-                                if (taskEntity.SubMask != null && taskEntity.SubMask.Length > 0 && files_raw_with_sub_mask.Length > 0)
-                                {
-                                    subMask = taskEntity.SubMask;
-                                    foreach (string file in files_raw_with_sub_mask)
-                                    {
-                                        if (!_doSomething.FitsMask(Path.GetFileName(file), subMask))
-                                        {
-                                            files_raw.Add(file);
-                                        }
-                                        else
-                                        {
-                                            transportTaskLogEntity = new TransportTaskLogEntity();
-                                            transportTaskLogEntity.FileName = Path.GetFileName(file);
-                                            transportTaskLogEntity.DateTimeLog = DateTime.Now;
-                                            transportTaskLogEntity.TaskId = taskEntity.TaskId;
-                                            transportTaskLogEntity.OperationId = "0";
-                                            transportTaskLogEntity.ResultOperation = FileManager.Domain.Enum.ResultOperation.Success;
-                                            transportTaskLogEntity.ResultText = $"Файл {Path.GetFileName(file)} исключен по маске {subMask}";
-                                            service.TransportTaskLogs.Add(transportTaskLogEntity);
-                                            service.SaveChanges();
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    foreach (string file in files_raw_with_sub_mask)
-                                    {
-                                        files_raw.Add(file);
-                                    }
-                                }
-                                //протоколирование количества найденных файлов для обработки
-                                _logger.LogInformation($"{DateTime.Now} задача: {context.JobDetail.Key.Name} - количество найденных файлов по маске {taskEntity.FileMask}: {files_raw.Count}");
-
-                                transportTaskLogEntity = new TransportTaskLogEntity();
-                                transportTaskLogEntity.FileName = taskEntity.FileMask;
-                                transportTaskLogEntity.DateTimeLog = DateTime.Now;
-                                transportTaskLogEntity.TaskId = taskEntity.TaskId;
-                                transportTaskLogEntity.OperationId = "0";
-                                transportTaskLogEntity.ResultOperation = FileManager.Domain.Enum.ResultOperation.Success;
-                                transportTaskLogEntity.ResultText = $"Количество найденных файлов по маске {taskEntity.FileMask}: {files_raw.Count}";
-                                service.TransportTaskLogs.Add(transportTaskLogEntity);
-                                service.SaveChanges();
-
-                            }
-                            else
-                            {
-                                transportTaskLogEntity = new TransportTaskLogEntity();
-                                transportTaskLogEntity.FileName = taskEntity.FileMask;
-                                transportTaskLogEntity.DateTimeLog = DateTime.Now;
-                                transportTaskLogEntity.TaskId = taskEntity.TaskId;
-                                transportTaskLogEntity.OperationId = "0";
-                                transportTaskLogEntity.ResultOperation = FileManager.Domain.Enum.ResultOperation.Error;
-                                transportTaskLogEntity.ResultText = $"Не существует каталог источник: {sourceCatalog}";
-                                service.TransportTaskLogs.Add(transportTaskLogEntity);
-
-                                transportTaskLogEntity = new TransportTaskLogEntity();
-                                transportTaskLogEntity.FileName = taskEntity.FileMask;
-                                transportTaskLogEntity.DateTimeLog = DateTime.Now;
-                                transportTaskLogEntity.TaskId = taskEntity.TaskId;
-                                transportTaskLogEntity.OperationId = "0";
-                                transportTaskLogEntity.ResultOperation = FileManager.Domain.Enum.ResultOperation.Error;
-                                transportTaskLogEntity.ResultText = $">>>Работа задачи: {taskEntity.TaskId} завершена<<<";
-                                service.TransportTaskLogs.Add(transportTaskLogEntity);
-
-                                service.SaveChanges();
-
-                                status.IsError = true;
-                                status.IsProgress = false;
-                                status.DateLastExecute = DateTime.Now;
-                                status.CountLeftFiles = GetCountFiles(sourceCatalog, taskEntity);
-                                service.TaskStatuses.Update(status);
-                                service.SaveChanges();
-
-                                _logger.LogError($"{DateTime.Now} задача: {taskEntity.TaskId} - не существует каталог источник: {taskEntity.SourceCatalog}, работа задачи завершена");
-
-                                if (mailList.Count > 0)
-                                {
-                                    _doSomething.SendMail($"Ошибка при выполнеии задачи: {jobName}. Не существует каталог источник: {taskEntity.SourceCatalog}", $"Задача: {jobName}", mailList);
-                                }
-
-                                return;
-                            }*//*
-                                                    
-                            string[] files = [];
-                            *//*if (files_raw != null && files_raw.Count > 0)
-                            {
-
-                                //список файлов с датой создания 
-                                foreach (var file in files_raw)
-                                {
-                                    filesSet.Add(new FileInformation { Name = file, Creation = new FileInfo(file).CreationTime });
-                                }
-
-
-                                //выборка порции файлов для обработки
-                                //протоколирование
-                                */
-                            /*if (taskEntity is not null)
-                                {
-                                    transportTaskLogEntity = new TaskLogEntity();
-                                    
-                                    transportTaskLogEntity.DateTimeLog = DateTime.Now;
-                                    transportTaskLogEntity.TaskId = taskEntity.TaskId;
-                                    transportTaskLogEntity.OperationId = "0";
-                                    transportTaskLogEntity.ResultOperation = FileManager.Domain.Enum.ResultOperation.Success;
-                                    transportTaskLogEntity.ResultText = $"Сортировка файлов по дате создания и ограничение количества файлов в порции: {taskEntity.MaxAmountFiles}";
-                                    service.TaskLog.Add(transportTaskLogEntity);
-                                    service.SaveChanges();
-
-
-                                    sortedFilesSet = filesSet.OrderBy(o => o.Creation).ToList();
-                                    *//*for (int i = 0; i < sortedFilesSet.Count; i++)
-                                    {
-                                        if (taskEntity.MaxAmountFiles > 0 && i >= taskEntity.MaxAmountFiles)
-                                        {
-                                            break;
-                                        }
-
-                                        Array.Resize(ref files, files.Length + 1);
-                                        files[files.GetUpperBound(0)] = sortedFilesSet[i].Name;
-                                    }*//*
-                                }*//*
-                            }*/
-                            /*if (files != null && files.Length > 0 && taskEntity is not null)
-                            {
-                                transportTaskLogEntity = new TaskLogEntity();
-                                
-                                transportTaskLogEntity.DateTimeLog = DateTime.Now;
-                                transportTaskLogEntity.TaskId = taskEntity.TaskId;
-                                transportTaskLogEntity.OperationId = "0";
-                                transportTaskLogEntity.ResultOperation = FileManager.Domain.Enum.ResultOperation.Success;
-                                transportTaskLogEntity.ResultText = $"Отобрано файлов для обработки с учетом максимального в порции: {files.Length}";
-                                service.TaskLog.Add(transportTaskLogEntity);
-                                service.SaveChanges();
-
-                                _logger.LogInformation($"{DateTime.Now} задача: {taskEntity.TaskId}, отобрано: {files.Length} файлов");
-                                //запуск действий главной задачи
-                                *//*_mainTask = Task.Factory.StartNew(() =>
-                                {
-                                    //задержка выполнения задачи
-                                    if (taskEntity.DelayBeforeExecuting.Ticks == 0)
-                                    {
-                                        int milisec = (taskEntity.DelayBeforeExecuting.Hour * 3600 + taskEntity.DelayBeforeExecuting.Minute * 60 + taskEntity.DelayBeforeExecuting.Second) * 1000;
-
-                                        if (milisec > 0)
-                                        {
-                                            transportTaskLogEntity = new TransportTaskLogEntity();
-                                            transportTaskLogEntity.FileName = taskEntity.FileMask;
-                                            transportTaskLogEntity.DateTimeLog = DateTime.Now;
-                                            transportTaskLogEntity.TaskId = taskEntity.TaskId;
-                                            transportTaskLogEntity.OperationId = "0";
-                                            transportTaskLogEntity.ResultOperation = FileManager.Domain.Enum.ResultOperation.Success;
-                                            transportTaskLogEntity.ResultText = $"Начало задержки выполнения задачи на: {milisec / 1000} секунд";
-                                            service.TransportTaskLogs.Add(transportTaskLogEntity);
-                                            service.SaveChanges();
-
-                                            Task.Delay(milisec).Wait();
-                                        }
-                                    }
-                                    //запуск подзадач для каждого каталога назначения
-                                    foreach (var taskOperationEntity in destinationsList)
-                                    {
-                                        if (taskOperationEntity.DestinationDirectory.StartsWith("http"))
-                                        {
-                                            Task.Factory.StartNew(() => _doSomething.UploadFiles(taskEntity, taskOperationEntity, files, ref badfiles), TaskCreationOptions.AttachedToParent);
-                                        }
-                                        else
-                                        {
-                                            Task.Factory.StartNew(() => _doSomething.DoCopy(taskEntity, taskOperationEntity, files, ref badfiles), TaskCreationOptions.AttachedToParent);
-                                        }
-                                    }
-                                });*//*
-                                //ожидаем выполнения главной задачи
-                                _mainTask.Wait();
-                                
-                            }*/
-
-                            /*status = service.TaskStatuse.First(x => x.TaskId == context.JobDetail.Key.Name);
-                            status.CountProcessedFiles += files.Length;
-                            status.DateLastExecute = DateTime.Now;
-                            status.IsProgress = false;
-                            status.CountExecute += 1;
-                            status.CountLeftFiles = GetCountFiles(sourceCatalog, taskEntity);
-                            service.TaskStatuse.Update(status);
-                            service.SaveChanges();
-
-                            if (taskEntity != null)
-                            {
-
-                                transportTaskLogEntity = new TaskLogEntity();
-                                transportTaskLogEntity.DateTimeLog = DateTime.Now;
-                                transportTaskLogEntity.TaskId = taskEntity.TaskId;
-                                transportTaskLogEntity.OperationId = "0";
-                                transportTaskLogEntity.ResultOperation = FileManager.Domain.Enum.ResultOperation.Success;
-                                transportTaskLogEntity.ResultText = $">>>Работа задачи: {taskEntity.TaskId} завершена<<<";
-                                service.TaskLog.Add(transportTaskLogEntity);
-
-                                service.SaveChanges();
-                            }*//*
 
 
 
-                            _doSomething.DoCopy(taskEntity, files, ref badfiles);
 
 
 
-							_logger.LogInformation($"{status.DateLastExecute} задача: {context.JobDetail.Key.Name} {lastModified} - завершение");
-                        }*/
-                    }
-                }
-                await Task.CompletedTask;
-
-            }
-            catch (Exception ex)
-            {
-                using (var scope = _serviceProvider.CreateScope())
-                {
-                    try
-                    {
-
-                        var service = scope.ServiceProvider.GetService<AppDbContext>();
-                        if (service != null)
-                        {
-                            TaskStatusEntity status = service.TaskStatuse.First(x => x.TaskId == context.JobDetail.Key.Name);
-                            if (status != null)
-                            {
-                                status.IsProgress = false;
-                                status.IsError = true;
-                                status.DateLastExecute = DateTime.Now;
-                                service.TaskStatuse.Update(status);
-                                service.SaveChanges();
-                            }
-                        }
-                        _logger.LogError($"{DateTime.Now} задача: {context.JobDetail.Key.Name} - {ex.Message}");
-                    }
-                    catch (Exception ex2)
-                    {
-                        _logger.LogError($"{DateTime.Now} задача: {context.JobDetail.Key.Name} - {ex2.Message}");
-                    }
-
-                }
-                throw new JobExecutionException(msg: "", refireImmediately: true, cause: ex);
-            }
-        }
-
-
-        /*private List<FileInformation> SplitFileSet(TaskEntity taskEntity, List<FileInformation> inSet, out List<FileInformation> outSet)
-        {
-            if (taskEntity.ValueParameterOfSplit is null)
-            {
-                throw new ArgumentNullException($"{nameof(taskEntity)} ValueParameterOfSplit");
-            }
-
-            List<FileInformation> resultSet = [.. inSet];
-            outSet = new List<FileInformation>();
-            Regex regex = new Regex(@$"{taskEntity.ValueParameterOfSplit}");
-
-            foreach (FileInformation file in inSet)
-            {
-                if (!taskEntity.IsRegex)
-                {
-
-                    if (File.ReadLines(file.Name).Any(line => line.Contains(taskEntity.ValueParameterOfSplit)))
-                    {
-                        resultSet.Remove(file);
-                        outSet.Add(file);
-                    }
-                }
-                else
-                {
-                    if (File.ReadLines(file.Name).Any(line => regex.Matches(line).Count > 0))
-                    {
-                        resultSet.Remove(file);
-                        outSet.Add(file);
-                    }
-                }
-            }
-            return resultSet;
-        }*/
 
 
 
-        private int GetCountFiles(string sourceCatalog, TaskEntity taskEntity)
-        {
-            List<string> files_raw = new List<string>();
-            if (Directory.Exists(sourceCatalog))
-            {
-                //var files_raw_with_sub_mask = Directory.GetFiles(sourceCatalog, taskEntity.FileMask);
-                //исключим подмаску файлов
-                /*string? subMask = null;
-                if (taskEntity.SubMask != null && taskEntity.SubMask.Length > 0 && files_raw_with_sub_mask.Length > 0)
-                {
-                    subMask = taskEntity.SubMask;
-                    foreach (string file in files_raw_with_sub_mask)
-                    {
-                        if (!_doSomething.FitsMask(Path.GetFileName(file), subMask))
-                        {
-                            files_raw.Add(file);
-                        }
-                    }
-                }
-                else
-                {
-                    foreach (string file in files_raw_with_sub_mask)
-                    {
-                        files_raw.Add(file);
-                    }
-                }*/
-            }
-            return files_raw.Count;
-        }
+	public interface ITaskStep
+	{
+		void SetNext(ITaskStep nextStep);
+		void Execute();
+	}
 
 
-    }
+	public abstract class TaskStep : ITaskStep
+	{
+		protected ITaskStep _nextStep;
+
+		public TaskStepEntity TaskStepEntity { get; set; }
+
+		public TaskOperation TaskOperation { get; set; }
+
+		protected readonly IServiceProvider _serviceProvider;
+		protected readonly ITaskLogger _taskLogger;
+
+		public TaskStep(TaskStepEntity step, TaskOperation operation, IServiceProvider serviceProvider, ITaskLogger taskLogger)
+		{
+			TaskStepEntity = step;
+			TaskOperation = operation;
+			_serviceProvider = serviceProvider;
+			_taskLogger = taskLogger;
+		}
+
+		public abstract void Execute();
+
+		public void SetNext(ITaskStep nextStep)
+		{
+			_nextStep = nextStep;
+		}
+	}
+
+
+	public class Copy : TaskStep
+	{
+
+		public Copy(TaskStepEntity step, TaskOperation operation, IServiceProvider serviceProvider, ITaskLogger taskLogger)
+			: base(step, operation, serviceProvider, taskLogger)
+		{
+
+		}
+
+
+		public override void Execute()
+		{
+			_taskLogger.StepLog(TaskStepEntity, $"Копирование: {TaskStepEntity.Source} => {TaskStepEntity.Destination}");
+			_taskLogger.OperationLog(TaskStepEntity);
+
+			using (var scope = _serviceProvider.CreateScope())
+			{
+				using (var dbContext = scope.ServiceProvider.GetService<AppDbContext>())
+				{
+					if (dbContext == null)
+					{
+						throw new ArgumentNullException(nameof(dbContext));
+					}
+
+
+					string[] files = [];
+					string fileNameDestination, fileName;
+					bool isCopyFile = true;
+					List<FileInformation> filesSet = new();
+					List<FileInformation> sortedFilesSet = new();
+
+
+
+					files = Directory.GetFiles(TaskStepEntity.Source, TaskStepEntity.FileMask);
+					_taskLogger.StepLog(TaskStepEntity, $"Количество найденный файлов по маске '{TaskStepEntity.FileMask}': {files.Count()}");
+					OperationCopyEntity operation = dbContext.OperationCopy.First(x => x.StepId == TaskStepEntity.StepId);
+
+					// список файлов с атрибутами
+					List<FileInfo> infoFiles = new List<FileInfo>();
+					foreach (var file in files)
+					{
+						infoFiles.Add(new FileInfo(file));
+					}
+
+					if (operation != null)
+					{
+						// сортировка
+						switch (operation.Sort)
+						{
+							case SortFiles.NoSortFiles:
+								break;
+							case SortFiles.NameAscending:
+								infoFiles = infoFiles.OrderBy(o => o.Name).ToList();
+								break;
+							case SortFiles.NameDescending:
+								infoFiles = infoFiles.OrderByDescending(o => o.Name).ToList();
+								break;
+							case SortFiles.TimeAscending:
+								infoFiles = infoFiles.OrderBy(o => o.CreationTime).ToList();
+								break;
+							case SortFiles.TimeDescending:
+								infoFiles = infoFiles.OrderByDescending(o => o.CreationTime).ToList();
+								break;
+							case SortFiles.SizeAscending:
+								infoFiles = infoFiles.OrderBy(o => o.Length).ToList();
+								break;
+							case SortFiles.SizeDescending:
+								infoFiles = infoFiles.OrderByDescending(o => o.Length).ToList();
+								break;
+							default:
+								break;
+						}
+
+
+						// макс файлов
+						if (operation.FilesForProcessing != 0 & operation.FilesForProcessing < infoFiles.Count - 2)
+						{
+							infoFiles.RemoveRange(operation.FilesForProcessing, infoFiles.Count - 2);
+						}
+
+
+					}
+					bool isOverwriteFile = false;
+					foreach (string file in files)
+					{
+						FileAttributes attributs = File.GetAttributes(file);
+
+
+						fileName = Path.GetFileName(file);
+
+						if (operation != null)
+						{
+							isCopyFile = true;
+
+							// дубль по журналу и файл в источнике
+							TaskLogEntity taskLogs = dbContext.TaskLog.FirstOrDefault(x => x.StepId == TaskStepEntity.StepId &&
+																							x.FileName == fileName);
+							if (taskLogs != null)
+							{
+								if (operation.FileInSource == FileInSource.OneDay && operation.FileInLog == true)
+								{
+									isCopyFile = false;
+								}
+								else if (operation.FileInSource == FileInSource.Always && operation.FileInLog == true)
+								{
+									// stop task
+								}
+								else if (operation.FileInSource == FileInSource.OneDay && operation.FileInLog == false)
+								{
+									isCopyFile = false;
+								}
+							}
+
+
+
+
+							// файл в назначении
+
+							if (operation.FileInDestination == FileInDestination.OVR)
+							{
+								isOverwriteFile = true;
+							}
+							else if (operation.FileInDestination == FileInDestination.RNM)
+							{
+								isOverwriteFile = true;
+							}
+							else if (operation.FileInDestination == FileInDestination.ERR)
+							{
+								isOverwriteFile = false;
+							}
+
+
+
+							// атрибуты
+
+							switch (operation.FileAttribute)
+							{
+								case AttributeFile.H:
+									isCopyFile = false;
+									if ((attributs & FileAttributes.Hidden) == FileAttributes.Hidden)
+									{
+										isCopyFile = true;
+									}
+									break;
+								case AttributeFile.A:
+									isCopyFile = false;
+									if ((attributs & FileAttributes.Compressed) == FileAttributes.Compressed)
+									{
+										isCopyFile = true;
+									}
+									break;
+								case AttributeFile.R:
+									isCopyFile = false;
+									if ((attributs & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+									{
+										isCopyFile = true;
+									}
+									break;
+								case AttributeFile.X:
+									isCopyFile = true;
+									break;
+								case AttributeFile.V:
+									isCopyFile = false;
+									if ((attributs & FileAttributes.Archive) == FileAttributes.Archive)
+									{
+										isCopyFile = true;
+									}
+									if ((attributs & FileAttributes.Hidden) == FileAttributes.Hidden)
+									{
+										isCopyFile = false;
+									}
+									break;
+								default:
+									break;
+							}
+
+						}
+						else
+						{
+							isCopyFile = true;
+						}
+
+						if (isCopyFile)
+						{
+							fileNameDestination = Path.Combine(TaskStepEntity.Destination, fileName);
+							FileInfo destinationFileInfo = new FileInfo(fileNameDestination);
+							if (destinationFileInfo.Exists && destinationFileInfo.IsReadOnly && isOverwriteFile)
+							{
+								destinationFileInfo.IsReadOnly = false;
+								File.Copy(file, fileNameDestination, isOverwriteFile);
+								_taskLogger.StepLog(TaskStepEntity, "Файл успешно скопирован", fileName);
+								destinationFileInfo.IsReadOnly = true;
+							}
+							else
+							{
+								File.Copy(file, fileNameDestination, isOverwriteFile);
+								_taskLogger.StepLog(TaskStepEntity, "Файл успешно скопирован", fileName);
+							}
+
+
+							// log - результат операции над конкретным файлом: успешно или нет
+
+
+						}
+
+					}
+
+				}
+			}
+
+
+
+
+			if (_nextStep != null)
+			{
+				_nextStep.Execute();
+			}
+
+		}
+	}
+
+	public class Move : TaskStep
+	{
+		public Move(TaskStepEntity step, TaskOperation operation, IServiceProvider serviceProvider, ITaskLogger taskLogger)
+			: base(step, operation, serviceProvider, taskLogger)
+		{
+		}
+
+		public override void Execute()
+		{
+			_taskLogger.StepLog(TaskStepEntity, $"Перемещение: {TaskStepEntity.Source} => {TaskStepEntity.Destination}");
+			_taskLogger.OperationLog(TaskStepEntity);
+
+			using (var scope = _serviceProvider.CreateScope())
+			{
+				using (var dbContext = scope.ServiceProvider.GetService<AppDbContext>())
+				{
+					if (dbContext == null)
+					{
+						throw new ArgumentNullException(nameof(dbContext));
+					}
+
+
+					string[] files = [];
+					string fileNameDestination, fileName;
+					bool isCopyFile = true;
+					List<FileInformation> filesSet = new();
+					List<FileInformation> sortedFilesSet = new();
+
+					files = Directory.GetFiles(TaskStepEntity.Source, TaskStepEntity.FileMask);
+					_taskLogger.StepLog(TaskStepEntity, $"Количество найденный файлов по маске '{TaskStepEntity.FileMask}': {files.Count()}");
+					OperationMoveEntity operation = dbContext.OperationMove.First(x => x.StepId == TaskStepEntity.StepId);
+
+					// список файлов с атрибутами
+					List<FileInfo> infoFiles = new List<FileInfo>();
+					foreach (var file in files)
+					{
+						infoFiles.Add(new FileInfo(file));
+					}
+
+					if (operation != null)
+					{
+						// сортировка
+						switch (operation.Sort)
+						{
+							case SortFiles.NoSortFiles:
+								break;
+							case SortFiles.NameAscending:
+								infoFiles = infoFiles.OrderBy(o => o.Name).ToList();
+								break;
+							case SortFiles.NameDescending:
+								infoFiles = infoFiles.OrderByDescending(o => o.Name).ToList();
+								break;
+							case SortFiles.TimeAscending:
+								infoFiles = infoFiles.OrderBy(o => o.CreationTime).ToList();
+								break;
+							case SortFiles.TimeDescending:
+								infoFiles = infoFiles.OrderByDescending(o => o.CreationTime).ToList();
+								break;
+							case SortFiles.SizeAscending:
+								infoFiles = infoFiles.OrderBy(o => o.Length).ToList();
+								break;
+							case SortFiles.SizeDescending:
+								infoFiles = infoFiles.OrderByDescending(o => o.Length).ToList();
+								break;
+							default:
+								break;
+						}
+
+
+						// макс файлов
+						if (operation.FilesForProcessing != 0 & operation.FilesForProcessing < infoFiles.Count - 2)
+						{
+							infoFiles.RemoveRange(operation.FilesForProcessing, infoFiles.Count - 2);
+						}
+
+
+					}
+					bool isOverwriteFile = false;
+					foreach (string file in files)
+					{
+						FileAttributes attributs = File.GetAttributes(file);
+
+
+						fileName = Path.GetFileName(file);
+
+						if (operation != null)
+						{
+							isCopyFile = true;
+
+							// дубль по журналу
+							TaskLogEntity taskLogs = dbContext.TaskLog.FirstOrDefault(x => x.StepId == TaskStepEntity.StepId &&
+																							x.FileName == fileName);
+							if (taskLogs != null)
+							{
+								if (operation.FileInLog)
+								{
+									isCopyFile = false;
+								}
+								else
+								{
+									isCopyFile = true;
+								}
+							}
+
+
+
+
+
+							// файл в назначении
+
+							if (operation.FileInDestination == FileInDestination.OVR)
+							{
+								isOverwriteFile = true;
+							}
+							else if (operation.FileInDestination == FileInDestination.RNM)
+							{
+								isOverwriteFile = true;
+							}
+							else if (operation.FileInDestination == FileInDestination.ERR)
+							{
+								isOverwriteFile = false;
+							}
+
+
+
+							// атрибуты
+
+							switch (operation.FileAttribute)
+							{
+								case AttributeFile.H:
+									isCopyFile = false;
+									if ((attributs & FileAttributes.Hidden) == FileAttributes.Hidden)
+									{
+										isCopyFile = true;
+									}
+									break;
+								case AttributeFile.A:
+									isCopyFile = false;
+									if ((attributs & FileAttributes.Compressed) == FileAttributes.Compressed)
+									{
+										isCopyFile = true;
+									}
+									break;
+								case AttributeFile.R:
+									isCopyFile = false;
+									if ((attributs & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+									{
+										isCopyFile = true;
+									}
+									break;
+								case AttributeFile.X:
+									isCopyFile = true;
+									break;
+								case AttributeFile.V:
+									isCopyFile = false;
+									if ((attributs & FileAttributes.Archive) == FileAttributes.Archive)
+									{
+										isCopyFile = true;
+									}
+									if ((attributs & FileAttributes.Hidden) == FileAttributes.Hidden)
+									{
+										isCopyFile = false;
+									}
+									break;
+								default:
+									break;
+							}
+
+						}
+						else
+						{
+							isCopyFile = true;
+						}
+
+						if (isCopyFile)
+						{
+							fileNameDestination = Path.Combine(TaskStepEntity.Destination, fileName);
+							FileInfo destinationFileInfo = new FileInfo(fileNameDestination);
+							if (destinationFileInfo.Exists && destinationFileInfo.IsReadOnly && isOverwriteFile)
+							{
+								destinationFileInfo.IsReadOnly = false;
+								File.Move(file, fileNameDestination, isOverwriteFile);
+								_taskLogger.StepLog(TaskStepEntity, "Файл успешно перемещён", fileName);
+								destinationFileInfo.IsReadOnly = true;
+							}
+							else
+							{
+								File.Move(file, fileNameDestination, isOverwriteFile);
+								_taskLogger.StepLog(TaskStepEntity, "Файл успешно перемещён", fileName);
+							}
+
+						}
+
+					}
+
+				}
+			}
+
+			if (_nextStep != null)
+			{
+				_nextStep.Execute();
+			}
+		}
+	}
+
+
+	public class Read : TaskStep
+	{
+		public Read(TaskStepEntity step, TaskOperation operation, IServiceProvider serviceProvider, ITaskLogger taskLogger)
+			: base(step, operation, serviceProvider, taskLogger)
+		{
+		}
+
+		public override void Execute()
+		{
+			if (_nextStep != null)
+			{
+				_nextStep.Execute();
+			}
+		}
+	}
+
+	public class Delete : TaskStep
+	{
+		public Delete(TaskStepEntity step, TaskOperation operation, IServiceProvider serviceProvider, ITaskLogger taskLogger)
+			: base(step, operation, serviceProvider, taskLogger)
+		{
+		}
+
+		public override void Execute()
+		{
+
+
+			_taskLogger.StepLog(TaskStepEntity, $"Копирование: {TaskStepEntity.Source} => {TaskStepEntity.Destination}");
+			_taskLogger.OperationLog(TaskStepEntity);
+
+			using (var scope = _serviceProvider.CreateScope())
+			{
+				using (var dbContext = scope.ServiceProvider.GetService<AppDbContext>())
+				{
+					if (dbContext == null)
+					{
+						throw new ArgumentNullException(nameof(dbContext));
+					}
+
+
+					string[] files = [];
+					string fileNameDestination, fileName;
+					bool isCopyFile = true;
+					List<FileInformation> filesSet = new();
+					List<FileInformation> sortedFilesSet = new();
+
+
+
+					files = Directory.GetFiles(TaskStepEntity.Source, TaskStepEntity.FileMask);
+					_taskLogger.StepLog(TaskStepEntity, $"Количество найденный файлов по маске '{TaskStepEntity.FileMask}': {files.Count()}");
+					OperationDeleteEntity operation = dbContext.OperationDelete.First(x => x.StepId == TaskStepEntity.StepId);
+
+					// список файлов с атрибутами
+					List<FileInfo> infoFiles = new List<FileInfo>();
+					foreach (var file in files)
+					{
+						infoFiles.Add(new FileInfo(file));
+					}
+
+					
+					bool isOverwriteFile = false;
+					foreach (string file in files)
+					{
+						FileAttributes attributs = File.GetAttributes(file);
+
+
+						fileName = Path.GetFileName(file);
+
+						File.Delete(file);
+						_taskLogger.StepLog(TaskStepEntity, "Файл успешно удалён", fileName);
+
+					}
+
+				}
+			}
+
+
+
+
+			if (_nextStep != null)
+			{
+				_nextStep.Execute();
+			}
+		}
+	}
+
+	public class Exist : TaskStep
+	{
+		public Exist(TaskStepEntity step, TaskOperation operation, IServiceProvider serviceProvider, ITaskLogger taskLogger)
+			: base(step, operation, serviceProvider, taskLogger)
+		{
+		}
+
+		public override void Execute()
+		{
+			if (_nextStep != null)
+			{
+				_nextStep.Execute();
+			}
+		}
+	}
+
+	public class Rename : TaskStep
+	{
+		public Rename(TaskStepEntity step, TaskOperation operation, IServiceProvider serviceProvider, ITaskLogger taskLogger)
+			: base(step, operation, serviceProvider, taskLogger)
+		{
+		}
+
+		public override void Execute()
+		{
+			if (_nextStep != null)
+			{
+				_nextStep.Execute();
+			}
+		}
+	}
+
+
+
+
+
+
+
+	public abstract class CreatorFactoryMethod
+	{
+		internal abstract ITaskStep FactoryMethod(TaskStepEntity step, TaskOperation operation, IServiceProvider serviceProvider, ITaskLogger taskLogger);
+	}
+
+	public class CopyCreator : CreatorFactoryMethod
+	{
+		internal override ITaskStep FactoryMethod(TaskStepEntity step, TaskOperation operation, IServiceProvider serviceProvider, ITaskLogger taskLogger)
+		{
+			return new Copy(step, operation, serviceProvider, taskLogger);
+		}
+	}
+
+	public class MoveCreator : CreatorFactoryMethod
+	{
+		internal override ITaskStep FactoryMethod(TaskStepEntity step, TaskOperation operation, IServiceProvider serviceProvider, ITaskLogger taskLogger)
+		{
+			return new Move(step, operation, serviceProvider, taskLogger);
+		}
+	}
+	public class ReadCreator : CreatorFactoryMethod
+	{
+		internal override ITaskStep FactoryMethod(TaskStepEntity step, TaskOperation operation, IServiceProvider serviceProvider, ITaskLogger taskLogger)
+		{
+			return new Read(step, operation, serviceProvider, taskLogger);
+		}
+	}
+	public class DeleteCreator : CreatorFactoryMethod
+	{
+		internal override ITaskStep FactoryMethod(TaskStepEntity step, TaskOperation operation, IServiceProvider serviceProvider, ITaskLogger taskLogger)
+		{
+			return new Delete(step, operation, serviceProvider, taskLogger);
+		}
+	}
+
+	public class ExistCreator : CreatorFactoryMethod
+	{
+		internal override ITaskStep FactoryMethod(TaskStepEntity step, TaskOperation operation, IServiceProvider serviceProvider, ITaskLogger taskLogger)
+		{
+			return new Exist(step, operation, serviceProvider, taskLogger);
+		}
+	}
+
+	public class RenameCreator : CreatorFactoryMethod
+	{
+		internal override ITaskStep FactoryMethod(TaskStepEntity step, TaskOperation operation, IServiceProvider serviceProvider, ITaskLogger taskLogger)
+		{
+			return new Rename(step, operation, serviceProvider, taskLogger);
+		}
+	}
+
+
+
+
+
+
+
+
+
 }
+
+

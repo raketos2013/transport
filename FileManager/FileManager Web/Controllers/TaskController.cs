@@ -2,6 +2,8 @@
 using FileManager.Domain.Entity;
 using FileManager.Domain.Enum;
 using FileManager.Domain.ViewModels.Task;
+using FileManager.Services.Implementations;
+using FileManager.Services.Interfaces;
 using FileManager_Web.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,34 +19,25 @@ namespace FileManager_Web.Controllers
         private readonly ILogger<TaskController> _logger;
         private readonly UserLogging _userLogging;
         private readonly AppDbContext _appDbContext;
-        public TaskController(ILogger<TaskController> logger, UserLogging userLogging, AppDbContext appDbContext)
+		private readonly ITaskService _taskService;
+        public TaskController(ILogger<TaskController> logger, UserLogging userLogging, AppDbContext appDbContext, ITaskService taskService)
         {
             _logger = logger;
             _userLogging = userLogging;
             _appDbContext = appDbContext;
+			_taskService = taskService;
         }
 
         public IActionResult Tasks()
         {
-            List<TaskGroupEntity> tasksGroups = _appDbContext.TaskGroup.ToList();
-            return View(tasksGroups);
+			List<TaskGroupEntity> tasksGroups = _taskService.GetAllGroups();
+			return View(tasksGroups);
         }
 
         [HttpPost]
         public IActionResult TasksList(string taskGroup)
         {
-            List<TaskEntity> tasks;
-			TaskGroupEntity taskGroupEntity = _appDbContext.TaskGroup.FirstOrDefault(x => x.Name == taskGroup);
-            if (taskGroup == "Все")
-            {
-			    tasks = _appDbContext.Task.OrderByDescending(x => x.IsActive).ThenBy(x => x.TaskId).ToList();
-			} else
-            {
-				tasks = _appDbContext.Task.Where(x => x.TaskGroupId == taskGroupEntity.Id)
-													   .OrderByDescending(x => x.IsActive).ThenBy(x => x.TaskId)
-													   .ToList();
-			}
-			
+			List<TaskEntity> tasks = _taskService.GetTasksByGroup(taskGroup);
             return PartialView(tasks);
         }
 

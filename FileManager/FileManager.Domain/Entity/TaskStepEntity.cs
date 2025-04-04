@@ -23,8 +23,8 @@ namespace FileManager.Domain.Entity
 
         [Display(Name = "Идентификатор операции")]
         public int OperationId { get; set; }
-        [ForeignKey(nameof(OperationId))]
-        public TaskOperation Operation { get; set; }
+/*        [ForeignKey(nameof(OperationId))]
+        public TaskOperation Operation { get; set; }*/
 		[Display(Name = "Операция")]
 		public OperationName OperationName { get; set; }
 		[Display(Name = "Номер шага")]

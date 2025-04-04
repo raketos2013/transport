@@ -14,15 +14,15 @@ namespace FileManager.Domain.Entity
         public DateTime DateTimeLog { get; set; }
         [Display(Name = "Id задачи")]
         public string TaskId { get; set; }
-		[Display(Name = "Id шага")]
-		public int StepId { get; set; }
-		[Display(Name = "Id операции")]
+        [Display(Name = "Id шага")]
+        public int? StepId { get; set; }
+        [Display(Name = "Id операции")]
         public int? OperationId { get; set; }
         [Display(Name = "Результат операции")]
-        public ResultOperation ResultOperation { get; set; }
+        public ResultOperation? ResultOperation { get; set; }
         [Display(Name = "Имя файла")]
-        public string FileName { get; set; }
+        public string? FileName { get; set; }
         [Display(Name = "Сообщение")]
-        public string ResultText { get; set; }
+        public string? ResultText { get; set; }
     }
 }

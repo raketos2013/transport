@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace FileManager_Server
 {
@@ -76,22 +77,6 @@ namespace FileManager_Server
 								break;
 						}
 
-						switch (operation.FileAttribute)
-						{
-							case AttributeFile.V:
-								break;
-							case AttributeFile.H:
-								infoFiles.RemoveAll(x => x.Attributes == FileAttributes.Hidden);
-								break;
-							case AttributeFile.A:
-								break;
-							case AttributeFile.R:
-								break;
-							case AttributeFile.X:
-								break;
-							default:
-								break;
-						}
 
 						// макс файлов
 						if (operation.FilesForProcessing != 0 & operation.FilesForProcessing < infoFiles.Count - 2)
@@ -104,23 +89,36 @@ namespace FileManager_Server
 					bool isOverwriteFile = false;
 					foreach (string file in files)
 					{
+						FileAttributes attributs = File.GetAttributes(file);
+
+
 						fileName = Path.GetFileName(file);
 
 						if (operation != null)
 						{
-							// дубль по журналу
 							isCopyFile = true;
-							if (operation.FileInSource == FileInSource.OneDay)
-							{
-								TaskLogEntity taskLogs = dbContext.TaskLog.First(x => x.StepId == taskStep.StepId &&
+
+							// дубль по журналу и файл в источнике
+							TaskLogEntity taskLogs = dbContext.TaskLog.FirstOrDefault(x => x.StepId == taskStep.StepId &&
 																							x.FileName == fileName);
-								if (taskLogs != null)
-								{
-									isCopyFile = false;
-								}
+							if (operation.FileInSource == FileInSource.OneDay && operation.FileInLog == true)
+							{
+								isCopyFile = false;
 							}
+							else if (operation.FileInSource == FileInSource.Always && operation.FileInLog == true)
+							{
+								// stop task
+							}
+							else if (operation.FileInSource == FileInSource.OneDay && operation.FileInLog == false)
+							{
+								isCopyFile = false;
+							}
+
+
+
+
 							// файл в назначении
-							
+
 							if (operation.FileInDestination == FileInDestination.OVR)
 							{
 								isOverwriteFile = true;
@@ -134,12 +132,50 @@ namespace FileManager_Server
 								isOverwriteFile = false;
 							}
 
-							// дубль по журналу
+
+
 							// атрибуты
 
-							
-
-
+							switch (operation.FileAttribute)
+							{
+								case AttributeFile.H:
+									isCopyFile = false;
+									if ((attributs & FileAttributes.Hidden) == FileAttributes.Hidden)
+									{
+										isCopyFile = true;
+									}
+									break;
+								case AttributeFile.A:
+									isCopyFile = false;
+									if ((attributs & FileAttributes.Compressed) == FileAttributes.Compressed)
+									{
+										isCopyFile = true;
+									}
+									break;
+								case AttributeFile.R:
+									isCopyFile = false;
+									if ((attributs & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+									{
+										isCopyFile = true;
+									}
+									break;
+								case AttributeFile.X:
+									isCopyFile = true;
+									break;
+								case AttributeFile.V:
+									isCopyFile = false;
+									if ((attributs & FileAttributes.Archive) == FileAttributes.Archive)
+									{
+										isCopyFile = true;
+									}
+									if ((attributs & FileAttributes.Hidden) == FileAttributes.Hidden)
+									{
+										isCopyFile = false;
+									}
+									break;
+								default:
+									break;
+							}
 
 						}
 						else
@@ -147,12 +183,21 @@ namespace FileManager_Server
 							isCopyFile = true;
 						}
 
-						if (isCopyFile) 
+						if (isCopyFile)
 						{
-							
-
 							fileNameDestination = Path.Combine(taskStep.Destination, fileName);
-							File.Copy(file, fileNameDestination, isOverwriteFile);
+							FileInfo destinationFileInfo = new FileInfo(fileNameDestination);
+							if (destinationFileInfo.Exists && destinationFileInfo.IsReadOnly && isOverwriteFile)
+							{
+								destinationFileInfo.IsReadOnly = false;
+								File.Copy(file, fileNameDestination, isOverwriteFile);
+								destinationFileInfo.IsReadOnly = true;
+							}
+							else
+							{
+								File.Copy(file, fileNameDestination, isOverwriteFile);
+							}
+
 						}
 
 					}
@@ -162,7 +207,20 @@ namespace FileManager_Server
 		}
 		public void Move()
 		{
+			using (var scope = _serviceProvider.CreateScope())
+			{
+				using (var dbContext = scope.ServiceProvider.GetService<AppDbContext>())
+				{
+					if (dbContext == null)
+					{
+						throw new ArgumentNullException(nameof(dbContext));
+					}
 
+
+
+
+				}
+			}
 		}
 		public void Delete()
 		{

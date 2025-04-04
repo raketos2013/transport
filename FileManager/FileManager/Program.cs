@@ -5,7 +5,8 @@ using FileManager_Server;
 
 var builder = Host.CreateApplicationBuilder(args);
 builder.Logging.AddFile(Path.Combine(Directory.GetCurrentDirectory(), $"logger_{DateOnly.FromDateTime(DateTime.Now)}.txt"));
-builder.Services.AddDbContext<AppDbContext>();  
+builder.Services.AddDbContext<AppDbContext>();
+builder.Services.AddScoped<ITaskLogger, TaskLogger>();
 
 builder.Services.AddQuartz(q => {
 

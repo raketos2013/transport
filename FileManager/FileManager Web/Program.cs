@@ -1,4 +1,8 @@
 using FileManager.DAL;
+using FileManager.DAL.Repositories.Interfaces;
+using FileManager.DAL.Repositories.Implementations;
+using FileManager.Services.Implementations;
+using FileManager.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using FileManager_Web.Logging;
 
@@ -21,14 +25,14 @@ namespace FileManager_Web
                 option.AccessDeniedPath = "/Account/Login";
                 option.ExpireTimeSpan = TimeSpan.FromMinutes(60);
             });
-            /*builder.Services.AddScoped<IBaseRepository<TaskEntity>, TaskRepository>();
-            builder.Services.AddScoped<TaskOperationRepository>();*/
-           /* builder.Services.AddScoped<ITaskService, TaskService>();
-            builder.Services.AddScoped<ITaskOperationService, TaskOperationService>();*/
-            /*builder.Services.AddScoped<IBaseRepository<MailGroups>, GroupRepository>();*/
-            /*builder.Services.AddScoped<IMailGroupService, MailGroupService>();*/
-            builder.Services.AddHttpContextAccessor().AddHttpContextAccessor();
-            builder.Services.AddDbContext<AppDbContext>();
+
+			builder.Services.AddDbContext<AppDbContext>();
+			builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+            builder.Services.AddScoped<IStepRepository, StepRepository>();
+			builder.Services.AddScoped<ITaskService, TaskService>();
+			builder.Services.AddScoped<IStepService, StepService>();
+			builder.Services.AddHttpContextAccessor().AddHttpContextAccessor();
+            
             builder.Logging.ClearProviders();
            /* builder.Logging.AddDbLogger(options =>
             {

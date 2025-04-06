@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace FileManager.Domain.Enum
 {
@@ -11,17 +8,26 @@ namespace FileManager.Domain.Enum
     {
         /*[Display(Name = "")]
         None = 0,*/
-        [Display(Name = "Копировать")]
+        [Display(Name = "Копирование")]
+        [Description("Копирование")]
         Copy = 1,
-        [Display(Name = "Переместить")]
+        [Display(Name = "Перемещение")]
+        [Description("Перемещение")]
         Move = 2,
-        [Display(Name = "Прочитать")]
+        [Display(Name = "Чтение")]
+        [Description("Чтение")]
         Read = 3,
-        [Display(Name = "Наличие")]
+        [Display(Name = "Проверка наличия/отсутствия")]
+        [Description("Проверка наличия/отсутствия")]
         Exist = 4,
-        [Display(Name = "Переименовать")]
+        [Display(Name = "Переименование")]
+        [Description("Переименование")]
         Rename = 5,
-        [Display(Name = "Удалить")]
+        [Display(Name = "Удаление")]
+        [Description("Удаление")]
         Delete = 6,
+        [Display(Name = "Очистка буфера")]
+        [Description("Очистка буфера")]
+        Clrbuf = 7
     }
 }

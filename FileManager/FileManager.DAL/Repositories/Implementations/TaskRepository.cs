@@ -20,7 +20,12 @@ namespace FileManager.DAL.Repositories.Implementations
 		{
 			try
 			{
-				_appDbContext.Task.Add(task);
+                task.LastModified = DateTime.Now;
+                _appDbContext.Task.Add(task);
+                TaskStatusEntity taskStatus = new TaskStatusEntity();
+                taskStatus.TaskId = task.TaskId;
+                _appDbContext.TaskStatuse.Add(taskStatus);
+				_appDbContext.SaveChanges();
 				return true;
 			}
 			catch (Exception)
@@ -59,9 +64,30 @@ namespace FileManager.DAL.Repositories.Implementations
 			return _appDbContext.Task.Where(x => x.TaskGroupId == idGroup).ToList();
 		}
 
-		public bool UpdateTask(TaskEntity task)
+		public bool EditTask(TaskEntity task)
 		{
 			throw new NotImplementedException();
 		}
-	}
+
+        public bool UpdateLastModifiedTask(string idTask)
+        {
+			try
+			{
+				TaskEntity task = _appDbContext.Task.FirstOrDefault(x =>x.TaskId == idTask);
+				if (task != null) 
+				{
+					task.LastModified = DateTime.Now;
+                    _appDbContext.Task.Update(task);
+                    _appDbContext.SaveChanges();
+                    return true;
+                }
+				return false;
+				
+			}
+			catch (Exception)
+			{
+				return false;
+			}
+        }
+    }
 }

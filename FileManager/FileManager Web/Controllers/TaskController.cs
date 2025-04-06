@@ -13,24 +13,33 @@ using System.Threading.Tasks;
 
 namespace FileManager_Web.Controllers
 {
-    [Authorize(Roles = "o.br.ДИТ")]
+    //[Authorize(Roles = "o.br.ДИТ")]
     public class TaskController : Controller
     {
         private readonly ILogger<TaskController> _logger;
         private readonly UserLogging _userLogging;
         private readonly AppDbContext _appDbContext;
 		private readonly ITaskService _taskService;
-        public TaskController(ILogger<TaskController> logger, UserLogging userLogging, AppDbContext appDbContext, ITaskService taskService)
+		private readonly IAddresseeService _addresseeService;
+		private readonly IStepService _stepService;
+        public TaskController(ILogger<TaskController> logger, 
+								UserLogging userLogging, 
+								AppDbContext appDbContext, 
+								ITaskService taskService,
+								IAddresseeService addresseeService,
+								IStepService stepService)
         {
             _logger = logger;
             _userLogging = userLogging;
             _appDbContext = appDbContext;
 			_taskService = taskService;
+			_addresseeService = addresseeService;
+			_stepService = stepService;
         }
 
         public IActionResult Tasks()
         {
-			List<TaskGroupEntity> tasksGroups = _taskService.GetAllGroups();
+			List<TaskGroupEntity> tasksGroups = _taskService.GetAllGroups().OrderBy(x => x.Id).ToList();
 			return View(tasksGroups);
         }
 
@@ -44,46 +53,21 @@ namespace FileManager_Web.Controllers
         [HttpGet]
         public IActionResult CreateTask()
         {
-            List<AddresseeGroupEntity> addresseeGroups = _appDbContext.AddresseeGroup.ToList();
-            ViewBag.AddresseeGroups = addresseeGroups;
-            List<TaskGroupEntity> taskGroups = _appDbContext.TaskGroup.ToList();
-            ViewBag.TaskGroups = taskGroups;
-
-            return View();
+            ViewBag.AddresseeGroups = _addresseeService.GetAllAddresseeGroups();
+            ViewBag.TaskGroups = _taskService.GetAllGroups();
+            TaskEntity task = new TaskEntity();
+            return View(task);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult CreateTask(IFormCollection collection)
+        public IActionResult CreateTask(TaskEntity task)
         {
             try
             {
-                List<AddresseeGroupEntity> addresseeGroups = _appDbContext.AddresseeGroup.ToList();
-                ViewBag.AddresseeGroups = addresseeGroups;
-                List<TaskGroupEntity> taskGroups = _appDbContext.TaskGroup.ToList();
-                ViewBag.TaskGroups = taskGroups;
-
                 if (ModelState.IsValid)
                 {
-                    TaskEntity entity = new TaskEntity();
-                    entity.TaskId = collection["TaskId"];
-                    entity.Name = collection["Name"];
-                    entity.TimeBegin = TimeOnly.Parse(collection["TimeBegin"]);
-                    entity.TimeEnd = TimeOnly.Parse(collection["TimeEnd"]);
-                    entity.DayActive = (DayActive)Enum.Parse(typeof(DayActive), collection["DayActive"]);
-                    entity.AddresseeGroupId = int.Parse(collection["AddresseeGroupId"]);
-                    entity.TaskGroupId = int.Parse(collection["TaskGroupId"]);
-                    entity.LastModified = DateTime.Now;
-                    _appDbContext.Task.Add(entity);
-
-
-                    TaskStatusEntity taskStatus = new TaskStatusEntity();
-                    taskStatus.TaskId = collection["TaskId"];
-                    _appDbContext.TaskStatuse.Add(taskStatus);
-
-
-                    _appDbContext.SaveChanges();
-
+					_taskService.CreateTask(task);
                     return RedirectToAction(nameof(Tasks));
                 }
                 return View();
@@ -96,60 +80,32 @@ namespace FileManager_Web.Controllers
 
         public IActionResult TaskDetails(string taskId)
         {
-            TaskEntity task = _appDbContext.Task.FirstOrDefault(x => x.TaskId == taskId);
-            List<TaskStepEntity> steps = _appDbContext.TaskStep.Where(x => x.TaskId == taskId).OrderBy(x => x.StepNumber).ToList();
+            TaskEntity task = _taskService.GetTaskById(taskId);
+            List<TaskStepEntity> steps = _stepService.GetAllStepsByTaskId(taskId).OrderBy(x => x.StepNumber).ToList();
             TaskDetailsViewModel taskDetails = new TaskDetailsViewModel(task, steps);
-			List<AddresseeGroupEntity> addresseeGroups = _appDbContext.AddresseeGroup.ToList();
-			ViewBag.AddresseeGroups = addresseeGroups;
-			List<TaskGroupEntity> taskGroups = _appDbContext.TaskGroup.ToList();
-			ViewBag.TaskGroups = taskGroups;
-			return View(taskDetails);
+            ViewBag.AddresseeGroups = _addresseeService.GetAllAddresseeGroups();
+            ViewBag.TaskGroups = _taskService.GetAllGroups();
+            return View(taskDetails);
         }
 
         [HttpGet]
         public IActionResult CreateStep(string idTask)
         {
-			ViewBag.MaxNumber = _appDbContext.TaskStep.Where(_x => _x.TaskId == idTask).ToList().Count + 1;
+			ViewBag.MaxNumber = _stepService.GetAllStepsByTaskId(idTask).Count + 1;
             ViewBag.TaskId = idTask;
-			return View();
+			TaskStepEntity step = new TaskStepEntity();
+			step.TaskId = idTask;
+			return View(step);
         }
 
 		[HttpPost]
-		public IActionResult CreateStep(IFormCollection collection, string taskId)
+		public IActionResult CreateStep(TaskStepEntity modelStep, string taskId)
 		{
 			try
 			{
-				List<TaskStepEntity> steps = _appDbContext.TaskStep.Where(x => x.TaskId == taskId).ToList();
-
 				if (ModelState.IsValid)
 				{
-					TaskStepEntity stepEntity = new TaskStepEntity();
-					stepEntity.TaskId = taskId;
-					stepEntity.StepNumber = int.Parse(collection["StepNumber"]);
-					stepEntity.Description = collection["Description"];
-                    stepEntity.Source = collection["Source"];
-                    stepEntity.Destination = collection["Destination"];
-                    stepEntity.FileMask = collection["FileMask"];
-					stepEntity.IsActive = Convert.ToBoolean(collection["IsActive"].ToString().Split(',')[0]);
-					stepEntity.IsBreak = Convert.ToBoolean(collection["IsBreak"].ToString().Split(',')[0]);
-					stepEntity.OperationName = (OperationName)Enum.Parse(typeof(OperationName), collection["OperationName"]);
-
-					foreach (var step in steps)
-					{
-						if (step.StepNumber >= stepEntity.StepNumber)
-						{
-							step.StepNumber++;
-						}
-					}
-					_appDbContext.TaskStep.UpdateRange(steps);
-
-					_appDbContext.TaskStep.Add(stepEntity);
-					TaskEntity task = _appDbContext.Task.FirstOrDefault(x => x.TaskId == taskId);
-					task.LastModified = DateTime.Now;
-					_appDbContext.Task.Update(task);
-
-					_appDbContext.SaveChanges();
-
+                    _stepService.CreateStep(modelStep);
 					return RedirectToAction("TaskDetails", new { taskId = taskId });
 				}
 				return View();
@@ -163,60 +119,7 @@ namespace FileManager_Web.Controllers
         [HttpPost]
         public IActionResult ReplaceStep(string taskId, string numberStep, string operation)
         {
-			List<TaskStepEntity> steps = _appDbContext.TaskStep.Where(x => x.TaskId == taskId).OrderBy(x => x.StepNumber).ToList();
-            TaskStepEntity step1, step2, tmpStep;
-            switch (operation)
-            {
-                case "up":
-                    if (int.Parse(numberStep) > 1)
-                    {
-                        step1 = steps.FirstOrDefault(x => x.StepNumber == int.Parse(numberStep));
-						step2 = steps.FirstOrDefault(x => x.StepNumber == int.Parse(numberStep) - 1);
-						step1.StepNumber = int.Parse(numberStep) - 1;
-						step2.StepNumber = int.Parse(numberStep);
-					}
-                    break;
-                case "down":
-					if (int.Parse(numberStep) < steps.Count)
-					{
-						step1 = steps.FirstOrDefault(x => x.StepNumber == int.Parse(numberStep));
-						step2 = steps.FirstOrDefault(x => x.StepNumber == int.Parse(numberStep) + 1);
-						step1.StepNumber = int.Parse(numberStep) + 1;
-						step2.StepNumber = int.Parse(numberStep);
-					}
-					break;
-                case "maxup":
-					if (int.Parse(numberStep) > 1)
-					{
-                        for (int i = int.Parse(numberStep) - 1; i > 0; i--)
-                        {
-                            steps[i].StepNumber = i;
-                            steps[i-1].StepNumber = i + 1;
-                            tmpStep = steps[i];
-                            steps[i] = steps[i - 1];
-                            steps[i - 1] = tmpStep;
-                        }
-					}
-					break;
-                case "maxdown":
-					if (int.Parse(numberStep) < steps.Count)
-					{
-                        for (int i = int.Parse(numberStep) - 1; i < steps.Count - 1; i++)
-                        {
-							steps[i].StepNumber = i + 2;
-							steps[i + 1].StepNumber = i + 1;
-							tmpStep = steps[i];
-							steps[i] = steps[i + 1];
-							steps[i + 1] = tmpStep;
-						}
-					}
-					break;
-                default:
-                    break;
-            }
-			_appDbContext.SaveChanges();
-
-
+			_stepService.ReplaceSteps(taskId, numberStep, operation);
 			return RedirectToAction("TaskDetails", new { taskId = taskId });
 		}
 
@@ -227,7 +130,7 @@ namespace FileManager_Web.Controllers
 
 			List<TaskLogEntity> taskLogs = _appDbContext.TaskLog.Where(x => x.TaskId == taskId && 
                                                                             x.DateTimeLog.Date >= date &&
-																			x.DateTimeLog.Date <= date2).OrderByDescending(x => x.DateTimeLog).ToList();
+																			x.DateTimeLog.Date <= date2).OrderBy(x => x.DateTimeLog).ToList();
 			ViewBag.FilterDateFrom = date.ToString("yyyy-MM-dd");
 			ViewBag.FilterDateTo = date2.ToString("yyyy-MM-dd");
 			ViewBag.TaskId = taskId;

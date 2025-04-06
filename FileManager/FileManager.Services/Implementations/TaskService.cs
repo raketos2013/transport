@@ -1,22 +1,13 @@
-﻿using FileManager.DAL;
-using FileManager.DAL.Repositories.Implementations;
-using FileManager.DAL.Repositories.Interfaces;
+﻿using FileManager.DAL.Repositories.Interfaces;
 using FileManager.Domain.Entity;
 using FileManager.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace FileManager.Services.Implementations
 {
     public class TaskService : ITaskService
 	{
         private readonly ITaskRepository _taskRepository;
-		private readonly IServiceProvider _serviceProvider;
-		private readonly IStepService _stepRepository;
 		public TaskService(ITaskRepository taskRepository)
 		{
 			_taskRepository = taskRepository;
@@ -64,9 +55,14 @@ namespace FileManager.Services.Implementations
 			return tasks;
 		}
 
-		public bool UpdateTask(TaskEntity task)
+		public bool EditTask(TaskEntity task)
 		{
-			return _taskRepository.UpdateTask(task);
+			return _taskRepository.EditTask(task);
 		}
-	}
+
+        public bool UpdateLastModifiedTask(string idTask)
+        {
+            return _taskRepository.UpdateLastModifiedTask(idTask);
+        }
+    }
 }

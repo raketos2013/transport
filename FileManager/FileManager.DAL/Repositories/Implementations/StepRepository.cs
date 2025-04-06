@@ -1,10 +1,6 @@
 ﻿using FileManager.DAL.Repositories.Interfaces;
 using FileManager.Domain.Entity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace FileManager.DAL.Repositories.Implementations
 {
@@ -21,7 +17,17 @@ namespace FileManager.DAL.Repositories.Implementations
 		{
 			try
 			{
-				_appDbContext.TaskStep.Add(taskStep);
+
+                List<TaskStepEntity> steps = GetAllStepsByTaskId(taskStep.TaskId).OrderBy(x => x.StepNumber).ToList();
+                foreach (var step in steps)
+                {
+                    if (step.StepNumber >= taskStep.StepNumber)
+                    {
+                        step.StepNumber++;
+                    }
+                }
+                _appDbContext.TaskStep.UpdateRange(steps);
+                _appDbContext.TaskStep.Add(taskStep);
 				_appDbContext.SaveChanges();
 				return true;
 			}
@@ -46,10 +52,24 @@ namespace FileManager.DAL.Repositories.Implementations
 			return _appDbContext.TaskStep.Where(x => x.TaskId == taskId).ToList();
 		}
 
-		public TaskStepEntity GetStepByTaskId(string taskId, int stepNumber)
+		public TaskStepEntity? GetStepByTaskId(string taskId, int stepNumber)
 		{
 			return _appDbContext.TaskStep.FirstOrDefault(x => x.TaskId == taskId &&
 																x.StepNumber == stepNumber);
 		}
-	}
+
+        public bool UpdateRangeSteps(List<TaskStepEntity> steps)
+        {
+			try
+			{
+				_appDbContext.TaskStep.UpdateRange(steps);
+				_appDbContext.SaveChanges();
+				return true;
+			}
+			catch (Exception)
+			{
+				return false;
+			}
+        }
+    }
 }

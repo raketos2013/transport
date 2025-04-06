@@ -12,9 +12,10 @@ namespace FileManager.Services.Interfaces
 		List<TaskEntity> GetAllTasks();
 		TaskEntity GetTaskById(string idTask);
 		bool CreateTask(TaskEntity task);
-		bool UpdateTask(TaskEntity task);
+		bool EditTask(TaskEntity task);
 		bool DeleteTask(string idTask);
 		List<TaskEntity> GetTasksByGroup(string nameGroup);
 		List<TaskGroupEntity> GetAllGroups();
+		bool UpdateLastModifiedTask(string idTask);
 	}
 }

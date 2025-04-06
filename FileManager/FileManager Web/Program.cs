@@ -29,9 +29,11 @@ namespace FileManager_Web
 			builder.Services.AddDbContext<AppDbContext>();
 			builder.Services.AddScoped<ITaskRepository, TaskRepository>();
             builder.Services.AddScoped<IStepRepository, StepRepository>();
-			builder.Services.AddScoped<ITaskService, TaskService>();
+            builder.Services.AddScoped<IAddresseeRepository, AddresseeRepository>();
+            builder.Services.AddScoped<ITaskService, TaskService>();
 			builder.Services.AddScoped<IStepService, StepService>();
-			builder.Services.AddHttpContextAccessor().AddHttpContextAccessor();
+            builder.Services.AddScoped<IAddresseeService, AddresseeService>();
+            builder.Services.AddHttpContextAccessor().AddHttpContextAccessor();
             
             builder.Logging.ClearProviders();
            /* builder.Logging.AddDbLogger(options =>

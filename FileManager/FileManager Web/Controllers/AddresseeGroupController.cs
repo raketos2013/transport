@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace FileManager_Web.Controllers
 {
-    [Authorize(Roles = "o.br.ДИТ")]
+    //[Authorize(Roles = "o.br.ДИТ")]
     public class AddresseeGroupController : Controller
     {
         private readonly ILogger<AddresseeGroupController> _logger;

@@ -11,7 +11,7 @@ namespace FileManager_Server.Operations
 {
     public class Rename : StepOperation
     {
-        public Rename(TaskStepEntity step, TaskOperation operation, ITaskLogger taskLogger, AppDbContext appDbContext)
+        public Rename(TaskStepEntity step, TaskOperation? operation, ITaskLogger taskLogger, AppDbContext appDbContext)
             : base(step, operation, taskLogger, appDbContext)
         {
         }

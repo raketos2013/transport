@@ -17,5 +17,8 @@ namespace FileManager.Services.Interfaces
 		List<TaskEntity> GetTasksByGroup(string nameGroup);
 		List<TaskGroupEntity> GetAllGroups();
 		bool UpdateLastModifiedTask(string idTask);
+		bool CreateTaskGroup(string name);
+		bool DeleteTaskGroup(int idGroup);
+		bool ActivatedTask(string idTask);
 	}
 }

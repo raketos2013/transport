@@ -35,6 +35,7 @@ namespace FileManager.DAL
 		public DbSet<OperationDeleteEntity> OperationDelete { get; set; }
 		public DbSet<OperationExistEntity> OperationExist { get; set; }
 		public DbSet<OperationRenameEntity> OperationRename { get; set; }
+		public DbSet<OperationClrbufEntity> OperationClrbuf { get; set; }
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

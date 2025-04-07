@@ -64,5 +64,20 @@ namespace FileManager.Services.Implementations
         {
             return _taskRepository.UpdateLastModifiedTask(idTask);
         }
-    }
+
+		public bool CreateTaskGroup(string name)
+		{
+			return _taskRepository.CreateTaskGroup(name);
+		}
+
+		public bool DeleteTaskGroup(int idGroup)
+		{
+			return _taskRepository.DeleteTaskGroup(idGroup);
+		}
+
+		public bool ActivatedTask(string idTask)
+		{
+			return _taskRepository.ActivatedTask(idTask);
+		}
+	}
 }

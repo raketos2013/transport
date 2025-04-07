@@ -13,7 +13,7 @@ namespace FileManager_Server.Operations
 {
     public class Move : StepOperation
     {
-        public Move(TaskStepEntity step, TaskOperation operation, ITaskLogger taskLogger, AppDbContext appDbContext)
+        public Move(TaskStepEntity step, TaskOperation? operation, ITaskLogger taskLogger, AppDbContext appDbContext)
             : base(step, operation, taskLogger, appDbContext)
         {
         }
@@ -25,11 +25,11 @@ namespace FileManager_Server.Operations
 
             string[] files = [];
             string fileNameDestination, fileName;
-            bool isCopyFile = true;
+            bool isMoveFile = true;
 
             files = Directory.GetFiles(TaskStep.Source, TaskStep.FileMask);
             _taskLogger.StepLog(TaskStep, $"Количество найденный файлов по маске '{TaskStep.FileMask}': {files.Count()}");
-            OperationMoveEntity operation = _appDbContext.OperationMove.First(x => x.StepId == TaskStep.StepId);
+            OperationMoveEntity? operation = _appDbContext.OperationMove.FirstOrDefault(x => x.StepId == TaskStep.StepId);
 
             // список файлов с атрибутами
             List<FileInfo> infoFiles = new List<FileInfo>();
@@ -78,22 +78,22 @@ namespace FileManager_Server.Operations
             {
                 FileAttributes attributs = File.GetAttributes(file.FullName);
                 fileName = Path.GetFileName(file.FullName);
-                if (operation != null)
-                {
-                    isCopyFile = true;
+				isMoveFile = true;
 
+				if (operation != null)
+                {
                     // дубль по журналу
-                    TaskLogEntity taskLogs = _appDbContext.TaskLog.FirstOrDefault(x => x.StepId == TaskStep.StepId &&
+                    TaskLogEntity? taskLogs = _appDbContext.TaskLog.FirstOrDefault(x => x.StepId == TaskStep.StepId &&
                                                                                     x.FileName == fileName);
                     if (taskLogs != null)
                     {
                         if (operation.FileInLog)
                         {
-                            isCopyFile = false;
+                            isMoveFile = false;
                         }
                         else
                         {
-                            isCopyFile = true;
+                            isMoveFile = true;
                         }
                     }
 
@@ -115,50 +115,46 @@ namespace FileManager_Server.Operations
                     switch (operation.FileAttribute)
                     {
                         case AttributeFile.H:
-                            isCopyFile = false;
+                            isMoveFile = false;
                             if ((attributs & FileAttributes.Hidden) == FileAttributes.Hidden)
                             {
-                                isCopyFile = true;
+                                isMoveFile = true;
                             }
                             break;
                         case AttributeFile.A:
-                            isCopyFile = false;
+                            isMoveFile = false;
                             if ((attributs & FileAttributes.Compressed) == FileAttributes.Compressed)
                             {
-                                isCopyFile = true;
+                                isMoveFile = true;
                             }
                             break;
                         case AttributeFile.R:
-                            isCopyFile = false;
+                            isMoveFile = false;
                             if ((attributs & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
                             {
-                                isCopyFile = true;
+                                isMoveFile = true;
                             }
                             break;
                         case AttributeFile.X:
-                            isCopyFile = true;
+                            isMoveFile = true;
                             break;
                         case AttributeFile.V:
-                            isCopyFile = false;
+                            isMoveFile = false;
                             if ((attributs & FileAttributes.Archive) == FileAttributes.Archive)
                             {
-                                isCopyFile = true;
+                                isMoveFile = true;
                             }
                             if ((attributs & FileAttributes.Hidden) == FileAttributes.Hidden)
                             {
-                                isCopyFile = false;
+                                isMoveFile = false;
                             }
                             break;
                         default:
                             break;
                     }
                 }
-                else
-                {
-                    isCopyFile = true;
-                }
 
-                if (isCopyFile)
+                if (isMoveFile)
                 {
                     fileNameDestination = Path.Combine(TaskStep.Destination, fileName);
                     FileInfo destinationFileInfo = new FileInfo(fileNameDestination);

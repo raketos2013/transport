@@ -270,7 +270,7 @@
 	function OkOnOffTask() {
 		var id = document.getElementById('idTaskInfo').innerText
 		$.ajax({
-			method: 'POST',
+			type: 'POST',
 			url: '@Url.Action("ActivatedTask", "Task")',
 			data: { "id": id },
 			dataType: 'html',

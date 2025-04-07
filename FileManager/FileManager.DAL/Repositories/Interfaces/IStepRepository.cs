@@ -15,5 +15,6 @@ namespace FileManager.DAL.Repositories.Interfaces
         bool CreateStep(TaskStepEntity taskStep);
         bool EditStep(TaskStepEntity taskStep);
         bool UpdateRangeSteps(List<TaskStepEntity> steps);
+        bool ActivatedStep(int stepId);
     }
 }

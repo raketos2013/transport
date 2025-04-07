@@ -11,7 +11,7 @@ namespace FileManager_Server.Operations
 {
     public class Delete : StepOperation
     {
-        public Delete(TaskStepEntity step, TaskOperation operation, ITaskLogger taskLogger, AppDbContext appDbContext)
+        public Delete(TaskStepEntity step, TaskOperation? operation, ITaskLogger taskLogger, AppDbContext appDbContext)
             : base(step, operation, taskLogger, appDbContext)
         {
         }
@@ -27,7 +27,7 @@ namespace FileManager_Server.Operations
             files = Directory.GetFiles(TaskStep.Source, TaskStep.FileMask);
             _taskLogger.StepLog(TaskStep, $"Количество найденный файлов по маске '{TaskStep.FileMask}': {files.Count()}");
 
-            OperationDeleteEntity operation = _appDbContext.OperationDelete.First(x => x.StepId == TaskStep.StepId);
+            OperationDeleteEntity? operation = _appDbContext.OperationDelete.FirstOrDefault(x => x.StepId == TaskStep.StepId);
 
             foreach (string file in files)
             {

@@ -11,7 +11,7 @@ namespace FileManager_Server.Operations
 {
     public class Clrbuf : StepOperation
     {
-        public Clrbuf(TaskStepEntity step, TaskOperation operation, ITaskLogger taskLogger, AppDbContext appDbContext)
+        public Clrbuf(TaskStepEntity step, TaskOperation? operation, ITaskLogger taskLogger, AppDbContext appDbContext)
             : base(step, operation, taskLogger, appDbContext)
         {
         }

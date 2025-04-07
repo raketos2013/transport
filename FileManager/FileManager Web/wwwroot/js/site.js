@@ -62,8 +62,6 @@ function MakeRowHover(row, numRow) {
             }
         }
     });
-
-
 }
 
 function SelectTask() {

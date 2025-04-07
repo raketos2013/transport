@@ -18,5 +18,8 @@ namespace FileManager.DAL.Repositories.Interfaces
         TaskGroupEntity GetTaskGroupByName(string groupName);
         List<TaskGroupEntity> GetAllGroups();
         bool UpdateLastModifiedTask(string idTask);
+        bool CreateTaskGroup(string name);
+        bool DeleteTaskGroup(int idGroup);
+        bool ActivatedTask(string idTask);
     }
 }

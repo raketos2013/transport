@@ -11,7 +11,7 @@ namespace FileManager_Server.Operations
 {
     public class Read : StepOperation
     {
-        public Read(TaskStepEntity step, TaskOperation operation, ITaskLogger taskLogger, AppDbContext appDbContext)
+        public Read(TaskStepEntity step, TaskOperation? operation, ITaskLogger taskLogger, AppDbContext appDbContext)
             : base(step, operation, taskLogger, appDbContext)
         {
         }

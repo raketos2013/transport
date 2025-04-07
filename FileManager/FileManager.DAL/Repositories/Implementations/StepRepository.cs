@@ -1,5 +1,6 @@
 ﻿using FileManager.DAL.Repositories.Interfaces;
 using FileManager.Domain.Entity;
+using System.Threading.Tasks;
 
 
 namespace FileManager.DAL.Repositories.Implementations
@@ -11,6 +12,42 @@ namespace FileManager.DAL.Repositories.Implementations
 		public StepRepository(AppDbContext appDbContext)
 		{
 			_appDbContext = appDbContext;
+		}
+
+		public bool ActivatedStep(int stepId)
+		{
+			try
+			{
+				TaskStepEntity? step = _appDbContext.TaskStep.FirstOrDefault(x => x.StepId ==stepId);
+				
+				if (step != null)
+				{
+					TaskEntity? task = _appDbContext.Task.FirstOrDefault(x => x.TaskId == step.TaskId);
+					if (task != null)
+					{
+						step.IsActive = !step.IsActive;
+						_appDbContext.TaskStep.Update(step);
+						_appDbContext.SaveChanges();
+						task.LastModified = DateTime.Now;
+						_appDbContext.Task.Update(task);
+						_appDbContext.SaveChanges();
+						return true;
+					}
+				}
+				return false;
+				//if (task.IsActive)
+				//{
+				//	_userLogging.Logging(HttpContext.User.Identity.Name, $"Включение задачи: {task.TaskId}", JsonSerializer.Serialize(task));
+				//}
+				//else
+				//{
+				//	_userLogging.Logging(HttpContext.User.Identity.Name, $"Выключение задачи: {task.TaskId}", JsonSerializer.Serialize(task));
+				//}
+			}
+			catch (Exception)
+			{
+				return false;
+			}
 		}
 
 		public bool CreateStep(TaskStepEntity taskStep)

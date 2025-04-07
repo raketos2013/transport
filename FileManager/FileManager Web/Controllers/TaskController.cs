@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace FileManager_Web.Controllers
 {
-    //[Authorize(Roles = "o.br.ДИТ")]
+    [Authorize(Roles = "o.br.ДИТ")]
     public class TaskController : Controller
     {
         private readonly ILogger<TaskController> _logger;
@@ -140,18 +140,7 @@ namespace FileManager_Web.Controllers
 		[HttpPost]
 		public IActionResult CreateTaskGroup(string nameGroup)
 		{
-			TaskGroupEntity taskGroups = _appDbContext.TaskGroup.FirstOrDefault(x => x.Name == nameGroup);
-			if (taskGroups == null)
-			{
-				TaskGroupEntity taskGroupEntity = new TaskGroupEntity();
-				taskGroupEntity.Name = nameGroup;
-				_appDbContext.TaskGroup.Add(taskGroupEntity);
-				_appDbContext.SaveChanges();
-
-				_userLogging.Logging(HttpContext.User.Identity.Name, $"Создание группы задач: {taskGroupEntity.Id}", JsonSerializer.Serialize(taskGroupEntity));
-			}
-
-
+			_taskService.CreateTaskGroup(nameGroup);
 			return RedirectToAction("Tasks");
 		}
 
@@ -161,61 +150,26 @@ namespace FileManager_Web.Controllers
 			{
 				return RedirectToAction("Tasks");
 			}
-			List<TaskEntity> tasks = _appDbContext.Task.Where(x => x.TaskGroupId == idDeleteGroup).ToList();
-			foreach (var task in tasks)
-			{
-				task.TaskGroupId = 0;
-			}
-			_appDbContext.SaveChanges();
-
-			TaskGroupEntity taskGroup = _appDbContext.TaskGroup.FirstOrDefault(x => x.Id == idDeleteGroup);
-			_appDbContext.TaskGroup.Remove(taskGroup);
-			_appDbContext.SaveChanges();
-
-			_userLogging.Logging(HttpContext.User.Identity.Name, $"Удаление группы задач: {taskGroup.Id}", JsonSerializer.Serialize(taskGroup));
-
+			_taskService.DeleteTaskGroup(idDeleteGroup);
+			//_userLogging.Logging(HttpContext.User.Identity.Name, $"Удаление группы задач: {taskGroup.Id}", JsonSerializer.Serialize(taskGroup));
 			return RedirectToAction("Tasks");
 		}
 
 		[HttpPost]
 		public IActionResult ActivatedTask(string id)
 		{
-			TaskEntity task = _appDbContext.Task.FirstOrDefault(x => x.TaskId == id);
-			task.IsActive = !task.IsActive;
-			task.LastModified = DateTime.Now;
-			_appDbContext.Task.Update(task);
-			_appDbContext.SaveChanges();
-			if (task.IsActive)
-			{
-				_userLogging.Logging(HttpContext.User.Identity.Name, $"Включение задачи: {task.TaskId}", JsonSerializer.Serialize(task));
-			}
-			else
-			{
-				_userLogging.Logging(HttpContext.User.Identity.Name, $"Выключение задачи: {task.TaskId}", JsonSerializer.Serialize(task));
-			}
-
-			List<TaskEntity> entities = _appDbContext.Task.ToList();
+			_taskService.ActivatedTask(id);
 			return RedirectToAction("Tasks");
 		}
 
 		[HttpPost]
-		public IActionResult EditTask(IFormCollection collection, string taskId)
+		public IActionResult EditTask(TaskEntity task, string taskId)
 		{
 			try
 			{
 				if (ModelState.IsValid)
 				{
-					TaskEntity entity = _appDbContext.Task.FirstOrDefault(x => x.TaskId == taskId);
-					entity.Name = collection["Task.Name"];
-					entity.TimeBegin = TimeOnly.Parse(collection["Task.TimeBegin"]);
-					entity.TimeEnd = TimeOnly.Parse(collection["Task.TimeEnd"]);
-					entity.DayActive = (DayActive)Enum.Parse(typeof(DayActive), collection["Task.DayActive"]);
-					entity.AddresseeGroupId = int.Parse(collection["Task.AddresseeGroupId"]);
-					entity.TaskGroupId = int.Parse(collection["Task.TaskGroupId"]);
-					entity.LastModified = DateTime.Now;
-					_appDbContext.Task.Update(entity);
-					_appDbContext.SaveChanges();
-
+					_taskService.EditTask(task);
 					return RedirectToAction("TaskDetails", new { taskId = taskId });
 				}
 				return RedirectToAction("TaskDetails", new { taskId = taskId });
@@ -228,37 +182,15 @@ namespace FileManager_Web.Controllers
 		}
 
 		[HttpPost]
-		public IActionResult ActivatedStep(string taskId, string stepNumber)
+		public IActionResult ActivatedStep(string taskId, int stepId)
 		{
-			TaskStepEntity taskStep = _appDbContext.TaskStep.FirstOrDefault(x => x.TaskId == taskId &&
-																				 x.StepNumber == int.Parse(stepNumber));
-			taskStep.IsActive = !taskStep.IsActive;
-			TaskEntity task = _appDbContext.Task.FirstOrDefault(x => x.TaskId == taskId);
-			task.LastModified = DateTime.Now;
-			_appDbContext.Task.Update(task);
-			_appDbContext.TaskStep.Update(taskStep); 
-			_appDbContext.SaveChanges();
-			if (taskStep.IsActive)
-			{
-				_userLogging.Logging(HttpContext.User.Identity.Name, 
-									$"Включение шага номер {taskStep.StepNumber} задачи {task.TaskId}", 
-									JsonSerializer.Serialize(task));
-			}
-			else
-			{
-				_userLogging.Logging(HttpContext.User.Identity.Name, 
-									$"Выключение шага номер {taskStep.StepNumber} задачи {task.TaskId}", 
-									JsonSerializer.Serialize(task));
-			}
+			_stepService.ActivatedStep(stepId);
 			return RedirectToAction("TaskDetails", new { taskId = taskId });
 		}
 		
 		public IActionResult StepDetails(string taskId, string stepNumber)
 		{
-			TaskEntity task;
-			task = _appDbContext.Task.FirstOrDefault(x => x.TaskId == taskId);
-			TaskStepEntity taskStep = _appDbContext.TaskStep.FirstOrDefault(x => x.TaskId == taskId && 
-																				 x.StepNumber == int.Parse(stepNumber));
+			TaskStepEntity? taskStep = _stepService.GetStepByTaskId(taskId, int.Parse(stepNumber));
 			return View(taskStep);
 		}
 
@@ -320,6 +252,13 @@ namespace FileManager_Web.Controllers
 							if (delete != null)
 							{
 								_appDbContext.OperationDelete.Remove(delete);
+							}
+							break;
+						case OperationName.Clrbuf:
+							OperationClrbufEntity clrbuf = _appDbContext.OperationClrbuf.FirstOrDefault(x => x.StepId == step.StepId);
+							if (clrbuf != null)
+							{
+								_appDbContext.OperationClrbuf.Remove(clrbuf);
 							}
 							break;
 						default:

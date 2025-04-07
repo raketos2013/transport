@@ -36,7 +36,7 @@ namespace FileManager.Domain.Entity
 		[Display(Name = "Источник")]
 		public string Source { get; set; }
 		[Display(Name = "Назначение")]
-		public string Destination { get; set; }
+		public string? Destination { get; set; }
 		[Display(Name = "Прерывание")]
 		public bool IsBreak {  get; set; }
 		[Display(Name = "Активно")]

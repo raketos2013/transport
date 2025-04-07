@@ -11,16 +11,16 @@ namespace FileManager_Server.Operations
 {
     public abstract class StepOperation : IStepOperation
     {
-        protected IStepOperation _nextStep;
+        protected IStepOperation? _nextStep;
 
         public TaskStepEntity TaskStep { get; set; }
         
-        public TaskOperation TaskOperation { get; set; }
+        public TaskOperation? TaskOperation { get; set; }
 
         protected readonly ITaskLogger _taskLogger;
         protected readonly AppDbContext _appDbContext;
 
-        public StepOperation(TaskStepEntity step, TaskOperation operation, ITaskLogger taskLogger, AppDbContext appDbContext)
+        public StepOperation(TaskStepEntity step, TaskOperation? operation, ITaskLogger taskLogger, AppDbContext appDbContext)
         {
             TaskStep = step;
             TaskOperation = operation;

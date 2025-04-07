@@ -50,37 +50,37 @@ namespace FileManager_Server
                         switch (step.OperationName)
                         {
                             case OperationName.Copy:
-                                operation = _appDbContext.OperationCopy.First(x => x.StepId == step.StepId);
+                                operation = _appDbContext.OperationCopy.FirstOrDefault(x => x.StepId == step.StepId);
                                 CreatorFactoryMethod copyCreator = new CopyCreator();
                                 steps.Add(copyCreator.FactoryMethod(step, operation, _taskLogger, _appDbContext));
                                 break;
                             case OperationName.Move:
-                                operation = _appDbContext.OperationMove.First(x => x.StepId == step.StepId);
+                                operation = _appDbContext.OperationMove.FirstOrDefault(x => x.StepId == step.StepId);
                                 CreatorFactoryMethod moveCreator = new MoveCreator();
                                 steps.Add(moveCreator.FactoryMethod(step, operation, _taskLogger, _appDbContext));
                                 break;
                             case OperationName.Read:
-                                operation = _appDbContext.OperationRead.First(x => x.StepId == step.StepId);
+                                operation = _appDbContext.OperationRead.FirstOrDefault(x => x.StepId == step.StepId);
                                 CreatorFactoryMethod readCreator = new ReadCreator();
                                 steps.Add(readCreator.FactoryMethod(step, operation, _taskLogger, _appDbContext));
                                 break;
                             case OperationName.Exist:
-                                operation = _appDbContext.OperationExist.First(x => x.StepId == step.StepId);
+                                operation = _appDbContext.OperationExist.FirstOrDefault(x => x.StepId == step.StepId);
                                 CreatorFactoryMethod existCreator = new ExistCreator();
                                 steps.Add(existCreator.FactoryMethod(step, operation, _taskLogger, _appDbContext));
                                 break;
                             case OperationName.Rename:
-								operation = _appDbContext.OperationRename.First(x => x.StepId == step.StepId);
+								operation = _appDbContext.OperationRename.FirstOrDefault(x => x.StepId == step.StepId);
                                 CreatorFactoryMethod renameCreator = new RenameCreator();
                                 steps.Add(renameCreator.FactoryMethod(step, operation, _taskLogger, _appDbContext));
                                 break;
                             case OperationName.Delete:
-                                operation = _appDbContext.OperationDelete.First(x => x.StepId == step.StepId);
+                                operation = _appDbContext.OperationDelete.FirstOrDefault(x => x.StepId == step.StepId);
                                 CreatorFactoryMethod deleteCreator = new DeleteCreator();
                                 steps.Add(deleteCreator.FactoryMethod(step, operation, _taskLogger, _appDbContext));
                                 break;
 							case OperationName.Clrbuf:
-                                operation = _appDbContext.OperationRead.First(x => x.StepId == step.StepId);
+                                operation = _appDbContext.OperationRead.FirstOrDefault(x => x.StepId == step.StepId);
                                 CreatorFactoryMethod clrbufCreator = new ClrbufCreator();
                                 steps.Add(clrbufCreator.FactoryMethod(step, operation, _taskLogger, _appDbContext));
                                 break;
@@ -133,10 +133,7 @@ namespace FileManager_Server
 				throw new JobExecutionException(msg: "", refireImmediately: true, cause: ex);*/
 			}
 		}
-
-
 	}
-
 }
 
 

@@ -8,7 +8,7 @@ namespace FileManager_Server.Operations
 {
     public class Copy : StepOperation
     {
-        public Copy(TaskStepEntity step, TaskOperation operation, ITaskLogger taskLogger, AppDbContext appDbContext)
+        public Copy(TaskStepEntity step, TaskOperation? operation, ITaskLogger taskLogger, AppDbContext appDbContext)
             : base(step, operation, taskLogger, appDbContext)
         {
         }
@@ -25,7 +25,7 @@ namespace FileManager_Server.Operations
 
             files = Directory.GetFiles(TaskStep.Source, TaskStep.FileMask);
             _taskLogger.StepLog(TaskStep, $"Количество найденный файлов по маске '{TaskStep.FileMask}': {files.Count()}");
-            OperationCopyEntity operation = _appDbContext.OperationCopy.First(x => x.StepId == TaskStep.StepId);
+            OperationCopyEntity? operation = _appDbContext.OperationCopy.FirstOrDefault(x => x.StepId == TaskStep.StepId);
 
             // список файлов с атрибутами
             List<FileInfo> infoFiles = new List<FileInfo>();
@@ -74,15 +74,13 @@ namespace FileManager_Server.Operations
             foreach (var file in infoFiles)
             {
                 FileAttributes attributs = File.GetAttributes(file.FullName);
-
                 fileName = Path.GetFileName(file.FullName);
+				isCopyFile = true;
 
-                if (operation != null)
+				if (operation != null)
                 {
-                    isCopyFile = true;
-
                     // дубль по журналу и файл в источнике
-                    TaskLogEntity taskLogs = _appDbContext.TaskLog.FirstOrDefault(x => x.StepId == TaskStep.StepId &&
+                    TaskLogEntity? taskLogs = _appDbContext.TaskLog.FirstOrDefault(x => x.StepId == TaskStep.StepId &&
                                                                                     x.FileName == fileName);
                     if (taskLogs != null)
                     {
@@ -159,10 +157,6 @@ namespace FileManager_Server.Operations
                                 break;
                         }
                     }
-                }
-                else
-                {
-                    isCopyFile = true;
                 }
 
                 if (isCopyFile)

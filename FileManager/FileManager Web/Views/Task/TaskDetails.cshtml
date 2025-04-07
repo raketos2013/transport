@@ -51,7 +51,7 @@
 					{
 						@addresseeGroups.FirstOrDefault(x => x.Id == Model.Task.AddresseeGroupId).Name
 					}
-					
+
 				</p>
 				<p>Группа задач - @taskGroups.FirstOrDefault(x => x.Id == Model.Task.TaskGroupId).Name</p>
 				<p>Последнее изменение - @Model.Task.LastModified</p>
@@ -59,7 +59,11 @@
 			</div>
 			<div id="taskDetailsEdit" style="display:none">
 				<form asp-action="EditTask" method="post" asp-route-taskId="@Model.Task.TaskId">
-					<p> Задача <b>@Model.Task.TaskId</b></p>
+					<div class="form-group">
+						<label asp-for="Task.TaskId" class="control-label"></label>
+						<input asp-for="Task.TaskId" class="form-control" readonly/>
+						<span asp-validation-for="Task.TaskId" class="text-danger"></span>
+					</div>
 					<div class="form-group">
 						<label asp-for="Task.Name" class="control-label"></label>
 						<input asp-for="Task.Name" class="form-control" />
@@ -89,6 +93,12 @@
 						<label asp-for="Task.TaskGroupId" class="control-label"></label>
 						<select asp-for="Task.TaskGroupId" class="form-select mb-3" asp-items=@taskGroupsSelect></select>
 						<span asp-validation-for="Task.TaskGroupId" class="text-danger"></span>
+					</div>
+					<div class="form-group">
+						<label asp-for="Task.IsActive" class="form-check-label">
+							Активно
+							<input type="checkbox" class="form-check-input" asp-for="Task.IsActive"/>
+						</label>
 					</div>
 					<button type="submit" class="btn btn-success">Сохранить</button>
 				</form>
@@ -142,40 +152,40 @@
 				<tbody>
 					@foreach (var item in Model.TaskSteps)
 					{
-						<tr ondblclick="stepDetails('@item.TaskId.ToString()', '@item.StepNumber.ToString()')">
+							<tr ondblclick="stepDetails('@item.TaskId.ToString()', '@item.StepNumber.ToString()')">
 
-							<td>
+								<td>
 								@Html.DisplayFor(modelItem => item.StepNumber)
-							</td>
-							<td>
-								<div class="form-check form-switch">
-									<label class="form-check-label" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-										<input type="checkbox" class="form-check-input" asp-for="@item.IsActive" 
-																onclick="OnOffTask('@item.TaskId.ToString()', '@item.StepNumber.ToString()')" />
-									</label>
-								</div>
-							</td>
-							<td>
+								</td>
+								<td>
+									<div class="form-check form-switch">
+										<label class="form-check-label" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+											<input type="checkbox" class="form-check-input" asp-for="@item.IsActive" 
+																	onclick="OnOffTask('@item.TaskId.ToString()', '@item.StepNumber', '@item.StepId')" />
+										</label>
+									</div>
+								</td>
+								<td>
 								@Html.DisplayFor(modelItem => item.Description)
-							</td>
-							<td>
+								</td>
+								<td>
 								@Html.DisplayFor(modelItem => item.FileMask)
-							</td>
-							<td>
+								</td>
+								<td>
 								@Html.DisplayFor(modelItem => item.OperationName)
-							</td>
-							<td>
+								</td>
+								<td>
 								@Html.DisplayFor(modelItem => item.IsBreak)
-							</td>
-							<td>
-							</td>
-							<td>
+								</td>
+								<td>
+								</td>
+								<td>
 								@Html.DisplayFor(modelItem => item.Source)
-							</td>
-							<td>
+								</td>
+								<td>
 								@Html.DisplayFor(modelItem => item.Destination)
-							</td>
-						</tr>
+								</td>
+							</tr>
 					}
 				</tbody>
 
@@ -235,6 +245,7 @@
 	}
 
 	var isEditTask = false;
+	var onOffStepId;
 
 	function ReadEditTask() {
 		if(isEditTask){
@@ -250,8 +261,8 @@
 		isEditTask = !isEditTask;		
 	}
 
-	function OnOffTask(taskId, stepNumber) {
-
+	function OnOffTask(taskId, stepNumber, stepId) {
+		onOffStepId = stepId;
 		var table, tr, td, i, txtValue, valueCheck;
 
 		table = document.getElementById("tableSteps");
@@ -261,14 +272,14 @@
 			td = tr[i].getElementsByTagName("td")[0];
 			if (td) {
 				txtValue = td.innerText;
-				if (txtValue == taskId) {
+				if (txtValue == stepNumber) {
 					var qwe = tr[i].getElementsByTagName("td")[1];
 					var chl1 = qwe.firstElementChild.firstElementChild.firstElementChild.checked;
 
 				}
 			}
 		}
-		if (chl1 == true) {
+		if (chl1) {
 			document.getElementById('titleInfo').innerText = "Включить";
 		} else {
 			document.getElementById('titleInfo').innerText = "Выключить";
@@ -285,7 +296,7 @@
 			method: 'POST',
 			url: '@Url.Action("ActivatedStep", "Task")',
 			data: { "taskId": taskId,
-					"stepNumber": stepNumber },
+					"stepId": onOffStepId },
 			dataType: 'html',
 			success: function (result) {
 				//f1();
@@ -345,11 +356,11 @@
 	}
 
 	function stepDetails(taskId, stepNumber) {
-		location.href = "@Url.Action("StepDetails","Task", new { taskId = "cid", stepNumber = "cnum" })"
+		location.href = "@Url.Action("StepDetails", "Task", new { taskId = "cid", stepNumber = "cnum" })"
 			.replace("cid", taskId.toString()).replace("cnum", stepNumber.toString()).replace("amp;", "");
-			
-		
-																										
+
+
+
 	}
 
 </script>

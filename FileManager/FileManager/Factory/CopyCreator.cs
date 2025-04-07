@@ -8,7 +8,7 @@ namespace FileManager_Server.Factory
 {
     public class CopyCreator : CreatorFactoryMethod
     {
-        internal override IStepOperation FactoryMethod(TaskStepEntity step, TaskOperation operation, ITaskLogger taskLogger, AppDbContext dbContext)
+        internal override IStepOperation FactoryMethod(TaskStepEntity step, TaskOperation? operation, ITaskLogger taskLogger, AppDbContext dbContext)
         {
             return new Copy(step, operation, taskLogger, dbContext);
         }

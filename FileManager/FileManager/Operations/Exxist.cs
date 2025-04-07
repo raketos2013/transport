@@ -11,7 +11,7 @@ namespace FileManager_Server.Operations
 {
     public class Exist : StepOperation
     {
-        public Exist(TaskStepEntity step, TaskOperation operation, ITaskLogger taskLogger, AppDbContext appDbContext)
+        public Exist(TaskStepEntity step, TaskOperation? operation, ITaskLogger taskLogger, AppDbContext appDbContext)
             : base(step, operation, taskLogger, appDbContext)
         {
         }

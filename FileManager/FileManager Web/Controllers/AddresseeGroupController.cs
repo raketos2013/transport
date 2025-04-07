@@ -1,14 +1,14 @@
 ﻿using FileManager.DAL;
 using FileManager.Domain.Entity;
-using FileManager.Domain.Enum;
 using FileManager_Web.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 
+
 namespace FileManager_Web.Controllers
 {
-    //[Authorize(Roles = "o.br.ДИТ")]
+    [Authorize(Roles = "o.br.ДИТ")]
     public class AddresseeGroupController : Controller
     {
         private readonly ILogger<AddresseeGroupController> _logger;

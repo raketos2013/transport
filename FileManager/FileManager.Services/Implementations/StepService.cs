@@ -20,7 +20,12 @@ namespace FileManager.Services.Implementations
             _taskService = taskService;
 		}
 
-        public bool CreateStep(TaskStepEntity taskStep)
+		public bool ActivatedStep(int stepId)
+		{
+			return _stepRepository.ActivatedStep(stepId);
+		}
+
+		public bool CreateStep(TaskStepEntity taskStep)
         {
             _stepRepository.CreateStep(taskStep);
             _taskService.UpdateLastModifiedTask(taskStep.TaskId);

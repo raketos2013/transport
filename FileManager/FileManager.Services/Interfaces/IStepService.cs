@@ -15,5 +15,6 @@ namespace FileManager.Services.Interfaces
         bool CreateStep(TaskStepEntity taskStep);
         bool EditStep(TaskStepEntity taskStep);
         bool ReplaceSteps(string taskId, string numberStep, string operation);
+        bool ActivatedStep(int stepId);
     }
 }

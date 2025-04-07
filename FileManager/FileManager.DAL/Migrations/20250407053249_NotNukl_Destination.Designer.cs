@@ -3,6 +3,7 @@ using System;
 using FileManager.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FileManager.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250407053249_NotNukl_Destination")]
+    partial class NotNukl_Destination
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -310,15 +313,6 @@ namespace FileManager.DAL.Migrations
                     b.ToTable("UserLog");
                 });
 
-            modelBuilder.Entity("FileManager.Domain.Entity.OperationClrbufEntity", b =>
-                {
-                    b.HasBaseType("FileManager.Domain.Entity.TaskOperation");
-
-                    b.HasIndex("StepId");
-
-                    b.ToTable("OperationClrbuf");
-                });
-
             modelBuilder.Entity("FileManager.Domain.Entity.OperationCopyEntity", b =>
                 {
                     b.HasBaseType("FileManager.Domain.Entity.TaskOperation");
@@ -473,17 +467,6 @@ namespace FileManager.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Task");
-                });
-
-            modelBuilder.Entity("FileManager.Domain.Entity.OperationClrbufEntity", b =>
-                {
-                    b.HasOne("FileManager.Domain.Entity.TaskStepEntity", "Step")
-                        .WithMany()
-                        .HasForeignKey("StepId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Step");
                 });
 
             modelBuilder.Entity("FileManager.Domain.Entity.OperationCopyEntity", b =>

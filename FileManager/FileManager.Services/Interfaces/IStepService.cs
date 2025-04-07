@@ -11,6 +11,7 @@ namespace FileManager.Services.Interfaces
     {
         List<TaskStepEntity> GetAllSteps();
         TaskStepEntity? GetStepByTaskId(string taskId, int stepNumber);
+        TaskStepEntity? GetStepByStepId(int stepId);
         List<TaskStepEntity> GetAllStepsByTaskId(string taskId);
         bool CreateStep(TaskStepEntity taskStep);
         bool EditStep(TaskStepEntity taskStep);

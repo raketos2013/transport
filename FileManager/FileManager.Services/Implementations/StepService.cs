@@ -1,6 +1,7 @@
 ﻿using FileManager.DAL;
 using FileManager.DAL.Repositories.Interfaces;
 using FileManager.Domain.Entity;
+using FileManager.Domain.Enum;
 using FileManager.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -14,10 +15,14 @@ namespace FileManager.Services.Implementations
     {
 		private readonly IStepRepository _stepRepository;
         private readonly ITaskService _taskService;
-		public StepService(IStepRepository stepRepository, ITaskService taskService)
+        private readonly IOperationRepository _operationRepository;
+		public StepService(IStepRepository stepRepository, 
+                            ITaskService taskService, 
+                            IOperationRepository operationRepository)
 		{
 			_stepRepository = stepRepository;
             _taskService = taskService;
+            _operationRepository = operationRepository;
 		}
 
 		public bool ActivatedStep(int stepId)
@@ -34,6 +39,75 @@ namespace FileManager.Services.Implementations
 
         public bool EditStep(TaskStepEntity taskStep)
         {
+            TaskStepEntity? step = _stepRepository.GetStepByTaskId(taskStep.TaskId, taskStep.StepNumber);
+            if (step == null)
+            {
+                return false;
+            }
+            step.Description = taskStep.Description;
+            step.Source = taskStep.Source;
+            step.Destination = taskStep.Destination;
+            step.FileMask = taskStep.FileMask;
+            step.IsActive = taskStep.IsActive;
+            step.IsBreak = taskStep.IsBreak;
+            if (taskStep.OperationName != step.OperationName)
+            {
+                step.OperationName = taskStep.OperationName;
+                switch (step.OperationName)
+                {
+                    case OperationName.Copy:
+                        OperationCopyEntity? copy = _operationRepository.GetCopyByStepId(step.StepId);
+                        if (copy != null)
+                        {
+                            _operationRepository.DeleteCopy(copy);
+                        }
+                        break;
+                    case OperationName.Move:
+                        OperationMoveEntity? move = _operationRepository.GetMoveByStepId(step.StepId);
+                        if (move != null)
+                        {
+                            _operationRepository.DeleteMove(move);
+                        }
+                        break;
+                    case OperationName.Read:
+                        OperationReadEntity? read = _operationRepository.GetReadByStepId(step.StepId);
+                        if (read != null)
+                        {
+                            _operationRepository.DeleteRead(read);
+                        }
+                        break;
+                    case OperationName.Exist:
+                        OperationExistEntity? exist = _operationRepository.GetExistByStepId(step.StepId);
+                        if (exist != null)
+                        {
+                            _operationRepository.DeleteExist(exist);
+                        }
+                        break;
+                    case OperationName.Rename:
+                        OperationRenameEntity? rename = _operationRepository.GetRenameByStepId(step.StepId);
+                        if (rename != null)
+                        {
+                            _operationRepository.DeleteRename(rename);
+                        }
+                        break;
+                    case OperationName.Delete:
+                        OperationDeleteEntity? delete = _operationRepository.GetDeleteByStepId(step.StepId);
+                        if (delete != null)
+                        {
+                            _operationRepository.DeleteDelete(delete);
+                        }
+                        break;
+                    case OperationName.Clrbuf:
+                        OperationClrbufEntity? clrbuf = _operationRepository.GetClrbufByStepId(step.StepId);
+                        if (clrbuf != null)
+                        {
+                            _operationRepository.DeleteClrbuf(clrbuf);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
             return _stepRepository.EditStep(taskStep);
         }
 
@@ -45,6 +119,11 @@ namespace FileManager.Services.Implementations
         public List<TaskStepEntity> GetAllStepsByTaskId(string taskId)
         {
             return _stepRepository.GetAllStepsByTaskId(taskId);
+        }
+
+        public TaskStepEntity? GetStepByStepId(int stepId)
+        {
+            return _stepRepository.GetStepByStepId(stepId);
         }
 
         public TaskStepEntity? GetStepByTaskId(string taskId, int stepNumber)

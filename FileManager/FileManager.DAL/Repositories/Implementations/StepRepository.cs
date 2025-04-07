@@ -1,5 +1,6 @@
 ﻿using FileManager.DAL.Repositories.Interfaces;
 using FileManager.Domain.Entity;
+using FileManager.Domain.Enum;
 using System.Threading.Tasks;
 
 
@@ -14,7 +15,7 @@ namespace FileManager.DAL.Repositories.Implementations
 			_appDbContext = appDbContext;
 		}
 
-		public bool ActivatedStep(int stepId)
+        public bool ActivatedStep(int stepId)
 		{
 			try
 			{
@@ -35,14 +36,6 @@ namespace FileManager.DAL.Repositories.Implementations
 					}
 				}
 				return false;
-				//if (task.IsActive)
-				//{
-				//	_userLogging.Logging(HttpContext.User.Identity.Name, $"Включение задачи: {task.TaskId}", JsonSerializer.Serialize(task));
-				//}
-				//else
-				//{
-				//	_userLogging.Logging(HttpContext.User.Identity.Name, $"Выключение задачи: {task.TaskId}", JsonSerializer.Serialize(task));
-				//}
 			}
 			catch (Exception)
 			{
@@ -76,7 +69,16 @@ namespace FileManager.DAL.Repositories.Implementations
 
 		public bool EditStep(TaskStepEntity taskStep)
 		{
-			throw new NotImplementedException();
+			try
+			{
+				_appDbContext.TaskStep.Update(taskStep);
+				_appDbContext.SaveChanges();
+                return true;
+			}
+			catch (Exception)
+			{
+				return false;
+			}
 		}
 
 		public List<TaskStepEntity> GetAllSteps()
@@ -89,7 +91,12 @@ namespace FileManager.DAL.Repositories.Implementations
 			return _appDbContext.TaskStep.Where(x => x.TaskId == taskId).ToList();
 		}
 
-		public TaskStepEntity? GetStepByTaskId(string taskId, int stepNumber)
+        public TaskStepEntity? GetStepByStepId(int stepId)
+        {
+			return _appDbContext.TaskStep.FirstOrDefault(x => x.StepId == stepId);
+        }
+
+        public TaskStepEntity? GetStepByTaskId(string taskId, int stepNumber)
 		{
 			return _appDbContext.TaskStep.FirstOrDefault(x => x.TaskId == taskId &&
 																x.StepNumber == stepNumber);

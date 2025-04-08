@@ -246,7 +246,11 @@ namespace FileManager_Web.Controllers
                     _stepService.EditStep(taskStep);
                 }
             }
-            return RedirectToAction("StepDetails", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+            else
+            {
+                
+            }
+                return RedirectToAction("StepDetails", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
         }
 
         public IActionResult EditOperationCopy(IFormCollection collection, string operationId)

@@ -16,7 +16,7 @@ namespace FileManager_Server.Operations
         {
         }
 
-        public override void Execute()
+        public override void Execute(List<string>? bufferFiles)
         {
             _taskLogger.StepLog(TaskStep, $"Удаление: {TaskStep.Source} => {TaskStep.Destination}");
             _taskLogger.OperationLog(TaskStep);
@@ -39,7 +39,7 @@ namespace FileManager_Server.Operations
 
             if (_nextStep != null)
             {
-                _nextStep.Execute();
+                _nextStep.Execute(bufferFiles);
             }
         }
     }

@@ -41,6 +41,7 @@ namespace FileManager_Server
                 List<TaskStepEntity> taskSteps = _appDbContext.TaskStep.Where(x => x.TaskId == taskEntity.TaskId).OrderBy(x => x.StepNumber).ToList();
 
                 List<IStepOperation> steps = new List<IStepOperation>();
+                List<string> bufferFiles = new List<string>();
                 int numberChainLink = 0;
                 TaskOperation? operation;
                 foreach (var step in taskSteps)
@@ -96,7 +97,7 @@ namespace FileManager_Server
                 }
                 if (steps.Count > 0)
                 {
-                    steps[0].Execute();
+                    steps[0].Execute(bufferFiles);
                 }
                 await Task.CompletedTask;
 

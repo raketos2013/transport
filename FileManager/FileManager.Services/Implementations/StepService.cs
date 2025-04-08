@@ -108,7 +108,7 @@ namespace FileManager.Services.Implementations
                         break;
                 }
             }
-            return _stepRepository.EditStep(taskStep);
+            return _stepRepository.EditStep(step);
         }
 
         public List<TaskStepEntity> GetAllSteps()

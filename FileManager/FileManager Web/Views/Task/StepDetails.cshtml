@@ -33,6 +33,21 @@
 				<form asp-action="EditStep" method="post" asp-route-TaskId="@Model.TaskId" asp-route-StepNumber="@Model.StepNumber">
 					<p> Задача <b>@Model.TaskId</b></p>
 					<p>Номер шага - @Model.StepNumber</p>
+					<div class="form-group" style="display: none;">
+						<label asp-for="StepId" class="control-label"></label>
+						<input asp-for="StepId" class="form-control" readonly/>
+						<span asp-validation-for="StepId" class="text-danger"></span>
+					</div>
+					<div class="form-group">
+						<label asp-for="TaskId" class="control-label"></label>
+						<input asp-for="TaskId" class="form-control" readonly/>
+						<span asp-validation-for="TaskId" class="text-danger"></span>
+					</div>
+					<div class="form-group">
+						<label asp-for="StepNumber" class="control-label"></label>
+						<input asp-for="StepNumber" class="form-control" readonly/>
+						<span asp-validation-for="StepNumber" class="text-danger"></span>
+					</div>
 					<div class="form-group">
 						<label asp-for="TaskId" class="control-label"></label>
 						<input asp-for="TaskId" class="form-control" readonly/>

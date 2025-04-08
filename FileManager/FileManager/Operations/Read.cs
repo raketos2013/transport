@@ -1,11 +1,7 @@
 ﻿using FileManager.DAL;
 using FileManager.Domain.Entity;
 using FileManager_Server.Loggers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace FileManager_Server.Operations
 {
@@ -16,11 +12,33 @@ namespace FileManager_Server.Operations
         {
         }
 
-        public override void Execute()
+        public override void Execute(List<string>? bufferFiles)
         {
-            if (_nextStep != null)
+			_taskLogger.StepLog(TaskStep, $"Копирование: {TaskStep.Source} => {TaskStep.Destination}");
+			_taskLogger.OperationLog(TaskStep);
+
+			string[] files = [];
+			string fileNameDestination, fileName;
+			bool isCopyFile = true;
+			List<FileInfo> infoFiles = new List<FileInfo>();
+			OperationCopyEntity? operation = null;
+
+			files = Directory.GetFiles(TaskStep.Source, TaskStep.FileMask);
+			foreach (var file in files)
+			{
+				infoFiles.Add(new FileInfo(file));
+			}
+			_taskLogger.StepLog(TaskStep, $"Количество найденный файлов по маске '{TaskStep.FileMask}': {infoFiles.Count()}");
+			if (infoFiles.Count > 0)
+			{
+				operation = _appDbContext.
+			}
+
+
+
+			if (_nextStep != null)
             {
-                _nextStep.Execute();
+                _nextStep.Execute(bufferFiles);
             }
         }
     }

@@ -30,9 +30,11 @@ namespace FileManager_Web
 			builder.Services.AddScoped<ITaskRepository, TaskRepository>();
             builder.Services.AddScoped<IStepRepository, StepRepository>();
             builder.Services.AddScoped<IAddresseeRepository, AddresseeRepository>();
+            builder.Services.AddScoped<IOperationRepository, OperationRepository>();
             builder.Services.AddScoped<ITaskService, TaskService>();
 			builder.Services.AddScoped<IStepService, StepService>();
             builder.Services.AddScoped<IAddresseeService, AddresseeService>();
+            builder.Services.AddScoped<IOperationService, OperationService>();
             builder.Services.AddHttpContextAccessor().AddHttpContextAccessor();
             
             builder.Logging.ClearProviders();

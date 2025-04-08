@@ -87,7 +87,7 @@
 		<button class="btn btn-warning" onclick="HideCreateForm()" id="btnCancelCreate" style="display:none;">Отмена</button>
 		<h3 id="headr">Свойства операции не настроены</h3>
 
-		<form asp-action="CreateOperationCopy" asp-route-stepId="@ViewBag.StepId" method="post" id="createForm" style="display: none;">
+		<form asp-action="CreateOperationCopy" asp-route-operationModel="@Model" asp-route-stepId="@ViewBag.StepId" method="post" id="createForm" style="display: none;">
 			<div class="form-group">
 				<label asp-for="StepId" class="control-label"></label>
 				<input asp-for="StepId" class="form-control" readonly/>
@@ -132,7 +132,7 @@
 			</div>
 			<div class="form-group">
 				<label asp-for="FilesForProcessing" class="control-label"></label>
-				<input asp-for="FilesForProcessing" class="form-control" />
+				<input type="number" asp-for="FilesForProcessing" class="form-control" value="0"/>
 				<span asp-validation-for="FilesForProcessing" class="text-danger"></span>
 			</div>
 			<div class="form-group">

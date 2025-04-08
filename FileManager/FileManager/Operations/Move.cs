@@ -18,7 +18,7 @@ namespace FileManager_Server.Operations
         {
         }
 
-        public override void Execute()
+        public override void Execute(List<string>? bufferFiles)
         {
             _taskLogger.StepLog(TaskStep, $"Перемещение: {TaskStep.Source} => {TaskStep.Destination}");
             _taskLogger.OperationLog(TaskStep);
@@ -26,53 +26,76 @@ namespace FileManager_Server.Operations
             string[] files = [];
             string fileNameDestination, fileName;
             bool isMoveFile = true;
+			List<FileInfo> infoFiles = new List<FileInfo>();
+            OperationMoveEntity? operation = null;
 
-            files = Directory.GetFiles(TaskStep.Source, TaskStep.FileMask);
-            _taskLogger.StepLog(TaskStep, $"Количество найденный файлов по маске '{TaskStep.FileMask}': {files.Count()}");
-            OperationMoveEntity? operation = _appDbContext.OperationMove.FirstOrDefault(x => x.StepId == TaskStep.StepId);
+			if (TaskStep.FileMask == "{BUFFER}")
+			{
+				if (bufferFiles != null)
+				{
+					foreach (var file in bufferFiles)
+					{
+						infoFiles.Add(new FileInfo(file));
+					}
+				}
+			}
+			else
+			{
+				files = Directory.GetFiles(TaskStep.Source, TaskStep.FileMask);
+				foreach (var file in files)
+				{
+					infoFiles.Add(new FileInfo(file));
+				}
+			}
+			_taskLogger.StepLog(TaskStep, $"Количество найденный файлов по маске '{TaskStep.FileMask}': {infoFiles.Count()}");
 
-            // список файлов с атрибутами
-            List<FileInfo> infoFiles = new List<FileInfo>();
-            foreach (var file in files)
+            if (infoFiles.Count > 0)
             {
-                infoFiles.Add(new FileInfo(file));
-            }
+				operation = _appDbContext.OperationMove.FirstOrDefault(x => x.StepId == TaskStep.StepId);
+				// список файлов с атрибутами
 
-            if (operation != null)
-            {
-                // сортировка
-                switch (operation.Sort)
-                {
-                    case SortFiles.NoSortFiles:
-                        break;
-                    case SortFiles.NameAscending:
-                        infoFiles = infoFiles.OrderBy(o => o.Name).ToList();
-                        break;
-                    case SortFiles.NameDescending:
-                        infoFiles = infoFiles.OrderByDescending(o => o.Name).ToList();
-                        break;
-                    case SortFiles.TimeAscending:
-                        infoFiles = infoFiles.OrderBy(o => o.CreationTime).ToList();
-                        break;
-                    case SortFiles.TimeDescending:
-                        infoFiles = infoFiles.OrderByDescending(o => o.CreationTime).ToList();
-                        break;
-                    case SortFiles.SizeAscending:
-                        infoFiles = infoFiles.OrderBy(o => o.Length).ToList();
-                        break;
-                    case SortFiles.SizeDescending:
-                        infoFiles = infoFiles.OrderByDescending(o => o.Length).ToList();
-                        break;
-                    default:
-                        break;
-                }
+				foreach (var file in files)
+				{
+					infoFiles.Add(new FileInfo(file));
+				}
+				if (operation != null)
+				{
+					// сортировка
+					switch (operation.Sort)
+					{
+						case SortFiles.NoSortFiles:
+							break;
+						case SortFiles.NameAscending:
+							infoFiles = infoFiles.OrderBy(o => o.Name).ToList();
+							break;
+						case SortFiles.NameDescending:
+							infoFiles = infoFiles.OrderByDescending(o => o.Name).ToList();
+							break;
+						case SortFiles.TimeAscending:
+							infoFiles = infoFiles.OrderBy(o => o.CreationTime).ToList();
+							break;
+						case SortFiles.TimeDescending:
+							infoFiles = infoFiles.OrderByDescending(o => o.CreationTime).ToList();
+							break;
+						case SortFiles.SizeAscending:
+							infoFiles = infoFiles.OrderBy(o => o.Length).ToList();
+							break;
+						case SortFiles.SizeDescending:
+							infoFiles = infoFiles.OrderByDescending(o => o.Length).ToList();
+							break;
+						default:
+							break;
+					}
+					// макс файлов
+					if (operation.FilesForProcessing != 0 & operation.FilesForProcessing < infoFiles.Count - 2)
+					{
+						infoFiles.RemoveRange(operation.FilesForProcessing, infoFiles.Count - 2);
+					}
+				}
+			}
+            
 
-                // макс файлов
-                if (operation.FilesForProcessing != 0 & operation.FilesForProcessing < infoFiles.Count - 2)
-                {
-                    infoFiles.RemoveRange(operation.FilesForProcessing, infoFiles.Count - 2);
-                }
-            }
+            
             bool isOverwriteFile = false;
             foreach (var file in infoFiles)
             {
@@ -165,8 +188,8 @@ namespace FileManager_Server.Operations
                         _taskLogger.StepLog(TaskStep, "Файл успешно перемещён", fileName);
                         destinationFileInfo.IsReadOnly = true;
                     }
-                    else
-                    {
+					else if ((destinationFileInfo.Exists && isOverwriteFile) || !destinationFileInfo.Exists)
+					{
                         File.Move(file.FullName, fileNameDestination, isOverwriteFile);
                         _taskLogger.StepLog(TaskStep, "Файл успешно перемещён", fileName);
                     }
@@ -175,7 +198,7 @@ namespace FileManager_Server.Operations
 
             if (_nextStep != null)
             {
-                _nextStep.Execute();
+                _nextStep.Execute(bufferFiles);
             }
         }
     }

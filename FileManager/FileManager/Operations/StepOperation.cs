@@ -28,7 +28,7 @@ namespace FileManager_Server.Operations
             _appDbContext = appDbContext;
         }
 
-        public abstract void Execute();
+        public abstract void Execute(List<string>? bufferFiles);
 
         public void SetNext(IStepOperation nextStep)
         {

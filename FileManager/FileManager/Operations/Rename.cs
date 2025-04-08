@@ -16,11 +16,11 @@ namespace FileManager_Server.Operations
         {
         }
 
-        public override void Execute()
+        public override void Execute(List<string>? bufferFiles)
         {
             if (_nextStep != null)
             {
-                _nextStep.Execute();
+                _nextStep.Execute(bufferFiles);
             }
         }
     }

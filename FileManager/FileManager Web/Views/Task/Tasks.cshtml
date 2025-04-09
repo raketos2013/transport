@@ -3,7 +3,7 @@
 *@
 @model IEnumerable<FileManager.Domain.Entity.TaskGroupEntity>
 @{
-    ViewData["Title"] = "Задачи";
+	ViewData["Title"] = "Задачи";
 }
 
 <div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
@@ -86,7 +86,7 @@
 				</div>
 
 
-				
+
 
 				<table class="tabl1">
 					<tr class="list-group-item py-3 lh-tight " onclick="foo('Все')">
@@ -96,45 +96,60 @@
 							</div>
 						</td>
 						<td style="display: none;">
-							
+
 						</td>
 					</tr>
-						@foreach (var item in Model)
-						{
-							<tr class="list-group-item py-3 lh-tight " onclick="foo('@item.Name')">
-								<td>
-									<div class="col-11">
-										<span>@item.Name</span>
-									</div>
-								</td>
-								<td style="display: none;">
-									@if (item.Name != "Без группы" && item.Name != "Все")
-									{
-										<div class="col-1">
-											<a data-bs-toggle="modal" data-bs-target="#modalDeleteGroup" onclick="modalDelete('@item.Id', '@item.Name')">
-												<img src="~/images/delete_icon.png" alt="Удалить" title="Удалить" />
-											</a>
+					@foreach (var item in Model)
+					{
+								<tr class="list-group-item py-3 lh-tight " onclick="foo('@item.Name')">
+									<td>
+										<div class="col-11">
+											<span>@item.Name</span>
 										</div>
-									}
-								</td>
-							</tr>
-						}
-					
+									</td>
+									<td style="display: none;">
+								@if (item.Name != "Без группы" && item.Name != "Все")
+								{
+												<div class="col-1">
+													<a data-bs-toggle="modal" data-bs-target="#modalDeleteGroup" onclick="modalDelete('@item.Id', '@item.Name')">
+														<img src="~/images/delete_icon.png" alt="Удалить" title="Удалить" />
+													</a>
+												</div>
+								}
+									</td>
+								</tr>
+					}
+
 				</table>
 
 			</div>
 		</div>
 
-		<div class="b-example-divider scrollarea padding-top-container" id="tasks">
+
+		<div class="b-example-divider scrollarea padding-top-container">
+			<div class="row">
+				<div class="">
+					<div>
+						<a asp-action="CreateTask" class="btn btn-info" method="post">Новая задача</a>
+						<button class="btn btn-outline-primary" onclick="ShowActiveTask()"><span id="titleButton">Скрыть</span> неактивные</button>
+						<button class="btn btn-primary">Копировать задачу</button>
+					</div>
+				</div>
+			</div>
+			<div class="row"  id="tasks">
+
+			</div>
 		</div>
+
+
 	</div>
 </div>
 
 
 <script>
-	
+
 	var selectGroup = "Все";
-	
+
 	window.addEventListener('load', () => {
 		var firstGroup = document.querySelectorAll("tbody tr");
 		firstGroup[0].classList.add('selected-row');
@@ -166,16 +181,16 @@
 				}
 			}
 		});
-		
+
 
 	}
 
 
 
 
-	
+
 	function func() {
-		
+
 		window.progressID = setInterval(f1, 10000);
 	}
 	function f1() {
@@ -300,8 +315,8 @@
 
 	}
 
-	
 
-	
+
+
 
 </script>

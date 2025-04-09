@@ -51,6 +51,7 @@
 				<select asp-for="ExpectedResult" class="form-select mb-3" asp-items="Html.GetEnumSelectList<ExpectedResult>()"></select>
 				<span asp-validation-for="ExpectedResult" class="text-danger"></span>
 			</div>
+				
 			<div class="form-group">
 				<label asp-for="BreakTaskAfterError" class="form-check-label">
 					Прервать задачу

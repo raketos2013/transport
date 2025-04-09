@@ -16,9 +16,27 @@ namespace FileManager_Server.Operations
         {
         }
 
-        public override void Execute(List<string>? bufferFiles)
-        {
-            if (_nextStep != null)
+		public override void Execute(List<string>? bufferFiles)
+		{
+			_taskLogger.StepLog(TaskStep, $"Проверка наличия: {TaskStep.Source} => {TaskStep.Destination}");
+			_taskLogger.OperationLog(TaskStep);
+
+			string[] files = [];
+			string fileName;
+			OperationExistEntity? operation = null;
+
+			files = Directory.GetFiles(TaskStep.Source, TaskStep.FileMask);
+			_taskLogger.StepLog(TaskStep, $"Количество найденный файлов по маске '{TaskStep.FileMask}': {files.Count()}");
+			if (files.Count() > 0)
+			{
+
+			}
+			
+			/*if (infoFiles.Count > 0)
+			{
+				operation = _appDbContext.
+			}*/
+			if (_nextStep != null)
             {
                 _nextStep.Execute(bufferFiles);
             }

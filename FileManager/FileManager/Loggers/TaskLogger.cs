@@ -30,11 +30,12 @@ namespace FileManager_Server.Loggers
 			taskLog.OperationId = step.OperationId;
 			taskLog.StepId = step.StepId;
 			taskLog.TaskId = step.TaskId;
-			OperationCopyEntity operation;
+			
 			string text;
 			switch (step.OperationName)
 			{
 				case OperationName.Copy:
+					OperationCopyEntity operation;
 					operation = _appDbContext.OperationCopy.FirstOrDefault(x => x.OperationId == step.OperationId);
 					if (operation != null)
 					{
@@ -60,11 +61,23 @@ namespace FileManager_Server.Loggers
 					//operation = _appDbContext.OperationMove.FirstOrDefault();
 					break;
 				case OperationName.Read:
-					//operation = _appDbContext.OperationRead.FirstOrDefault();
-					/*if (operation != null)
+					OperationReadEntity operationRead;
+					operationRead = _appDbContext.OperationRead.FirstOrDefault(x => x.OperationId == step.OperationId);
+					if (operationRead != null)
 					{
-						text = "";
-					}*/
+						taskLog.ResultText = "Свойства операции - ";
+						taskLog.DateTimeLog = DateTime.Now;
+						_appDbContext.TaskLog.Add(taskLog);
+						_appDbContext.SaveChanges();
+						taskLog.ResultText = $"Кодировка - {operationRead.Encode}";
+						taskLog.DateTimeLog = DateTime.Now;
+						_appDbContext.TaskLog.Add(taskLog);
+						_appDbContext.SaveChanges();
+						taskLog.ResultText = $"Контроль Файл есть в назначении - {operationRead.FileInSource.GetDescription()}";
+						taskLog.DateTimeLog = DateTime.Now;
+						_appDbContext.TaskLog.Add(taskLog);
+						_appDbContext.SaveChanges();
+					}
 					break;
 				case OperationName.Exist:
 					//operation = _appDbContext.OperationExist.FirstOrDefault();

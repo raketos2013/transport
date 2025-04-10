@@ -34,6 +34,7 @@ function myFunction(select) {
     }
 }
 
+var idSelectedTask;
 var selectedTask = 0;
 var isShowActive = false;
 var tableTasks;
@@ -50,8 +51,10 @@ function MakeRowHover(row, numRow) {
             if (tr[i] == this) {
                 //td[1].style.display = 'block';
                 tr[i].classList.add('selected-row');
+                idSelectedTask = tr[i].querySelectorAll('td')[0].innerText;
                 selectedTask = i;
                 document.cookie = "selectedTask=" + i;
+                document.cookie = "idSelectedTask=" + idSelectedTask;
             }
         }
         for (var i = 1; i < tr.length; i++) {
@@ -225,4 +228,10 @@ function HideEditForm() {
     document.getElementById("editForm").style.display = 'none';
     document.getElementById("btnEdit").style.display = 'block';
     document.getElementById("btnCancelEdit").style.display = 'none';
+}
+
+
+
+function CopySteps() {
+    document.getElementById('copyIdTask').value = idSelectedTask;
 }

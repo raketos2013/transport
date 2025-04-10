@@ -19,7 +19,8 @@
                     
                     <ul class="navbar-nav flex-grow-1 list-group">
                        @*  <li class="list-group-item" style="opacity: 0;"></li> *@
-                        <li class="nav-item list-group-item nav_li" id="nav_li_1" >
+                        <li class="nav-item list-group-item nav_li" id="nav_li_1">
+                            <div></div>
                             <a id="a1" class="linka not_active_link navbar-menu_item" asp-area="" asp-controller="Task" asp-action="Tasks">Задачи</a>
                         </li>
                         <li class="nav-item list-group-item  nav_li" id="nav_li_2">
@@ -63,7 +64,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-	@* <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script> *@
+	<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

@@ -5,115 +5,119 @@
 @{
 }
 <div class ="container-fluid position-relative" style=" min-height: 100%;">
-    <div class="row justify-content-between">
-        <div class="col-3">
 
-        </div>
-        <div class="col-5" style=" display: flex; justify-content: flex-end;">
-            <div class="input-group" style="max-width: 500px; min-width: 300px;">
-
-                <div class="input-group-append">
-
-                    <select class="form-select" id="inputSelect">
-                        <option selected value="0">Id</option>
-                        <option value="1">Наименование</option>
-                        <option value="5">Вход. каталог</option>
-                        <option value="6">Маска</option>
-                    </select>
-                </div>
-                <input type="text" class="form-control" id="myInput" onkeyup="myFunction(document.querySelector('#inputSelect'))">
-
-            </div>
-        </div>
+	
 
 
-    </div>
-    <table class="table table-hover" id="tableTasks">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.TaskId)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Name)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.TimeBegin)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.TimeEnd)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.DayActive)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.AddresseeGroupId)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.TaskGroupId)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.IsActive)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ExecutionLeft)
-                </th>
-                <th>
-                    Статус
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr class="trs_task" ondblclick="detailsTask('@item.TaskId.ToString()')">
-                    <td>
-                        @Html.DisplayFor(modelItem => item.TaskId)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Name)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.TimeBegin)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.TimeEnd)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.DayActive)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.AddresseeGroupId)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.TaskGroupId)
-                    </td>
-                    <td>
-                        <div class="form-check form-switch">
-                            <label class="form-check-label" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                                <input type="checkbox" class="form-check-input" asp-for="@item.IsActive" onclick="OnOffTask('@item.TaskId.ToString()')" />
-                            </label>
-                        </div>
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.ExecutionLeft)
-                    </td>
-                    <td>
-                        status
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+	<div class="row justify-content-between">
+		<div class="col-7">
+			<a asp-action="CreateTask" class="btn btn-info" method="post">Новая задача</a>
+			<button class="btn btn-outline-primary" onclick="ShowActiveTask()"><span id="titleButton">Скрыть</span> неактивные</button>
+			<a data-bs-toggle="modal" data-bs-target="#modalCopyTask" class="btn btn-primary" onclick="CopySteps()">Копировать задачу</a>
+		</div>
+
+		<div class="col-5" style=" display: flex; justify-content: flex-end;">
+			<div class="input-group" style="max-width: 500px; min-width: 300px;">
+
+				<div class="input-group-append">
+
+					<select class="form-select" id="inputSelect">
+						<option selected value="0">Id</option>
+						<option value="1">Наименование</option>
+						<option value="5">Вход. каталог</option>
+						<option value="6">Маска</option>
+					</select>
+				</div>
+				<input type="text" class="form-control" id="myInput" onkeyup="myFunction(document.querySelector('#inputSelect'))">
+
+			</div>
+		</div>
+
+
+	</div>
+
+	<table class="table table-hover" id="tableTasks">
+		<thead>
+			<tr>
+				<th>
+					@Html.DisplayNameFor(model => model.TaskId)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => model.Name)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => model.TimeBegin)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => model.TimeEnd)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => model.DayActive)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => model.AddresseeGroupId)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => model.TaskGroupId)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => model.IsActive)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => model.ExecutionLeft)
+				</th>
+				<th>
+					Статус
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var item in Model)
+			{
+						<tr class="trs_task" ondblclick="detailsTask('@item.TaskId.ToString()')">
+							<td>
+						@Html.DisplayFor(modelItem => item.TaskId)
+							</td>
+							<td>
+						@Html.DisplayFor(modelItem => item.Name)
+							</td>
+							<td>
+						@Html.DisplayFor(modelItem => item.TimeBegin)
+							</td>
+							<td>
+						@Html.DisplayFor(modelItem => item.TimeEnd)
+							</td>
+							<td>
+						@Html.DisplayFor(modelItem => item.DayActive)
+							</td>
+							<td>
+						@Html.DisplayFor(modelItem => item.AddresseeGroupId)
+							</td>
+							<td>
+						@Html.DisplayFor(modelItem => item.TaskGroupId)
+							</td>
+							<td>
+								<div class="form-check form-switch">
+									<label class="form-check-label" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+										<input type="checkbox" class="form-check-input" asp-for="@item.IsActive" onclick="OnOffTask('@item.TaskId.ToString()')" />
+									</label>
+								</div>
+							</td>
+							<td>
+						@Html.DisplayFor(modelItem => item.ExecutionLeft)
+							</td>
+							<td>
+								status
+							</td>
+						</tr>
+			}
+		</tbody>
+	</table>
 </div>
 
 
 <script>
+	ActiveTask();
+	SelectTask();
 
-
-    ActiveTask();
-    SelectTask();
-    
-
-    
 </script>

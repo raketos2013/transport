@@ -58,7 +58,7 @@ namespace FileManager_Web.Controllers
         {
             ViewBag.AddresseeGroups = _addresseeService.GetAllAddresseeGroups();
             ViewBag.TaskGroups = _taskService.GetAllGroups();
-            TaskEntity task = new TaskEntity();
+            TaskEntity task = new TaskEntity();                    
             return View(task);
         }
 

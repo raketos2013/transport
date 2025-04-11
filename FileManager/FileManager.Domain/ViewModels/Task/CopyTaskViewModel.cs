@@ -10,7 +10,7 @@ namespace FileManager.Domain.ViewModels.Task
     public class CopyTaskViewModel
     {
         public string TaskId { get; set; }
-        public List<CopyStepViewModel> CopySteps { get; set; }
+        public List<CopyStepViewModel> CopySteps { get; set; } = new List<CopyStepViewModel>();
 
     }
 }

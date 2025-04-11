@@ -12,7 +12,7 @@
          data-bs-keyboard="false" tabindex="-1"
          aria-labelledby="modalCopyTaskLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <form class="modal-content">
+            <form method="post" class="modal-content" asp-action="CopyTask" asp-controller="Task">
 
                 <div class="modal-header">
                     <h5 class="modal-title" id="staticBackdropLabelCopy">Копирование задачи</h5>
@@ -31,15 +31,15 @@
                     <div class="form-check form-switch">
                         <label class="form-check-label">
                             Копировать Шаги
-                            <input name="isCopy" id="isCopyStepS" type="checkbox" class="form-check-input" onclick="CopySteps()" />
+                            <input name="isCopySteps" id="isCopySteps" type="checkbox" class="form-check-input" onclick="ShowCopySteps()" />
                         </label>
                     </div>
                     <div id="copySteps" style="display: none;">
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="CancelCopyTask()">Отмена</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="OkCopyTask()">Ок</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="">Отмена</button>
+                    <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" onclick="">Ок</button>
                 </div>
             </form>
 
@@ -346,6 +346,30 @@
     }
 
 
+    function CopySteps() {
+        document.getElementById('copyIdTask').value = idSelectedTask;
 
+       
+    }
+
+    function ShowCopySteps() {
+         $.ajax({
+            method: 'POST',
+            url: '@Url.Action("StepsForCopy", "Task")',
+            data: { "taskId": idSelectedTask },
+            dataType: 'html',
+            success: function (result) {
+                $('#copySteps').empty();
+                $('#copySteps').append(result);
+            }
+        });
+
+        var st = document.getElementById('isCopySteps');
+        if (st.checked) {
+            document.getElementById('copySteps').style.display = 'block';
+        } else {
+            document.getElementById('copySteps').style.display = 'none';
+        }
+    }
 
 </script>

@@ -1,7 +1,57 @@
 ﻿@using FileManager.Domain.Entity
+@using FileManager.Domain.ViewModels.Step
+@using FileManager.Domain.ViewModels.Task
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
-@model List<TaskStepEntity>;
+@* @model CopyTaskViewModel; *@
+@model IEnumerable<CopyStepViewModel>
 @{
 }
+
+<div>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>
+                    Копировать
+                </th>
+                <th>
+                    Номер шага
+                </th>
+                <th>
+                    Описание шага
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int i = 0;
+                foreach (var item in Model)
+                {
+                    string isCopy, number, description;
+                    isCopy = $"copyStep[{i}].IsCopy";
+                    number = $"copyStep[{i}].StepNumber";
+                    description = $"copyStep[{i}].Description";
+                    <tr>
+                        <td>
+                            <div class="form-group form-check">
+                                <div class="form-check form-switch">
+                                    <input name="@isCopy" class="form-check-input" type="checkbox" id="isDelSource" asp-for="@item.IsCopy">
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <input name="@number" asp-for="@item.StepNumber" class="form-control" readonly />
+                        </td>
+                        <td>
+                            <input name="@description" asp-for="@item.Description" class="form-control" readonly />
+                        </td>
+                    </tr>
+                    i++;
+                }
+            }
+            
+        </tbody>
+    </table>
+</div>

@@ -232,6 +232,3 @@ function HideEditForm() {
 
 
 
-function CopySteps() {
-    document.getElementById('copyIdTask').value = idSelectedTask;
-}

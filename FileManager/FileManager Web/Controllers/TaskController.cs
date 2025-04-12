@@ -1,6 +1,7 @@
 ﻿using FileManager.DAL;
 using FileManager.Domain.Entity;
 using FileManager.Domain.Enum;
+using FileManager.Domain.ViewModels.Step;
 using FileManager.Domain.ViewModels.Task;
 using FileManager.Services.Implementations;
 using FileManager.Services.Interfaces;
@@ -191,6 +192,36 @@ namespace FileManager_Web.Controllers
             _stepService.EditStep(stepModel);
             return RedirectToAction("StepDetails", new { taskId = stepModel.TaskId, stepNumber = stepModel.StepNumber });
         }
+
+        [HttpPost]
+        public IActionResult StepsForCopy(string taskId)
+        {
+            List<TaskStepEntity> steps = _stepService.GetAllStepsByTaskId(taskId).OrderBy(x => x.StepNumber).ToList();
+            CopyTaskViewModel task = new CopyTaskViewModel();
+            List<CopyStepViewModel> copySteps = new List<CopyStepViewModel>();
+            task.TaskId = taskId;
+            foreach (var step in steps)
+            {
+                CopyStepViewModel stepViewModel = new CopyStepViewModel();
+                stepViewModel.StepNumber = step.StepNumber;
+                stepViewModel.Description = step.Description;
+                stepViewModel.IsCopy = false;
+                copySteps.Add(stepViewModel);
+            }
+            return PartialView(copySteps);
+        }
+
+        [HttpPost]
+        public IActionResult CopyTask(string idTask, string newIdTask, string isCopySteps, CopyStepViewModel[] copyStep, IFormCollection collection)
+        {
+            int i = 0;
+            foreach (var item in copyStep)
+            {
+                i++;
+            }
+            return RedirectToAction("Tasks");
+        }
+
 
         [HttpPost]
         public IActionResult Operation(string stepId, string operationName)

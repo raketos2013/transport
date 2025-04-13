@@ -1,4 +1,5 @@
 ﻿using FileManager.Domain.Entity;
+using FileManager.Domain.ViewModels.Step;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,5 +21,9 @@ namespace FileManager.Services.Interfaces
 		bool CreateTaskGroup(string name);
 		bool DeleteTaskGroup(int idGroup);
 		bool ActivatedTask(string idTask);
+		bool CopyTask(string idTask, string newIdTask, string isCopySteps,
+                                        CopyStepViewModel[] copyStep);
+
+		bool CreateTaskStatuse(string idTask);
 	}
 }

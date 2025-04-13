@@ -12,7 +12,7 @@
 
 	<div class="row">
 		<div class="col-3" style="border-right: 1px solid;">
-			<a asp-area="" asp-controller="Task" asp-action="TaskDetails"
+			<a asp-controller="Task" asp-action="TaskDetails"
 			   asp-route-TaskId="@Model.TaskId" class="btn btn-warning">Назад</a>
 			<button class="btn btn-info" onclick="ReadEditStep()" id="btnEditStep">Редактирование</button>
 
@@ -30,7 +30,8 @@
 			</div>
 
 			<div id="stepDetailsEdit" style="display:none">
-				<form asp-action="EditStep" method="post" asp-route-TaskId="@Model.TaskId" asp-route-StepNumber="@Model.StepNumber">
+				<form asp-action="EditStep" asp-controller="Step" method="post" 
+					asp-route-TaskId="@Model.TaskId" asp-route-StepNumber="@Model.StepNumber">
 					<p> Задача <b>@Model.TaskId</b></p>
 					<p>Номер шага - @Model.StepNumber</p>
 					<div class="form-group" style="display: none;">
@@ -115,7 +116,7 @@
 		var stepId = document.getElementById("stepId").innerText;
 		$.ajax({
 			method: 'POST',
-			url: 'Operation',
+			url: '@Url.Action("Operation", "Operation")',//'Operation',
 			data: {"stepId": stepId,
 					"operationName": operation},
 			dataType: 'html',

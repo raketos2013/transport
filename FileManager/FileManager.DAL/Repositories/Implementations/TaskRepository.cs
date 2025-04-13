@@ -182,5 +182,21 @@ namespace FileManager.DAL.Repositories.Implementations
 			}
 		}
 
-	}
+        public bool CreateTaskStatuse(string idTask)
+		{
+			try
+			{
+                TaskStatusEntity taskStatuse = new TaskStatusEntity();
+                taskStatuse.TaskId = idTask;
+                _appDbContext.TaskStatuse.Add(taskStatuse);
+                _appDbContext.SaveChanges();
+                return true;
+			}
+			catch (Exception)
+			{
+				return false;
+			}
+        }
+
+    }
 }

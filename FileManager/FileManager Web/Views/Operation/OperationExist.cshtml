@@ -2,7 +2,7 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @using FileManager.Domain.Enum
-@model FileManager.Domain.Entity.OperationReadEntity
+@model FileManager.Domain.Entity.OperationExistEntity
 @{
     SelectList addresseeGroups = new SelectList(ViewBag.AddresseeGroups, "Id", "Name");
 }
@@ -21,15 +21,15 @@
 			<p>Дополнительный текст - @Model.AdditionalText</p>
 			<br />
 
-			<p>Файл есть в источнике - @Model.FileInSource</p>
-			<p>Кодировка - @Model.Encode</p>
-			<p>Поиск по шаблону - @Model.SearchRegex</p>
-			<p>Строка поиска - @Model.FindString</p>
+			
 			<p>Ожидаемый результат - @Model.ExpectedResult</p>
 			<p>Прервать задачу - @Model.BreakTaskAfterError</p>
 		</div>
 
-		<form asp-action="EditOperationRead" asp-route-operationId="@Model.OperationId" method="post" id="editForm" style="display: none;">
+		<form asp-action="EditOperationExist" asp-controller="Operation"  
+			asp-route-operationId="@Model.OperationId" 
+			method="post" id="editForm" style="display: none;">
+
 			<div class="form-group">
 				<label asp-for="InformSuccess" class="form-check-label">
 					Информировать об успехе
@@ -47,22 +47,6 @@
 				<span asp-validation-for="AdditionalText" class="text-danger"></span>
 			</div>
 
-			<div class="form-group">
-				<label asp-for="FileInSource" class="control-label"></label>
-				<select asp-for="FileInSource" class="form-select mb-3" asp-items="Html.GetEnumSelectList<FileInSource>()"></select>
-				<span asp-validation-for="FileInSource" class="text-danger"></span>
-			</div>
-			<div class="form-group">
-				<label asp-for="Encode" class="control-label"></label>
-				<select asp-for="Encode" class="form-select mb-3" asp-items="Html.GetEnumSelectList<Encode>()"></select>
-				<span asp-validation-for="Encode" class="text-danger"></span>
-			</div>
-			@* <div class="form-group">
-				<label asp-for="SearchRegex" class="form-check-label">
-					Поиск по шаблону
-					<input type="checkbox" asp-for="SearchRegex" class="form-check-input" />
-				</label>
-			</div>*@
 			
 
 			<div class="form-group">
@@ -70,23 +54,14 @@
 				<select asp-for="ExpectedResult" class="form-select mb-3" asp-items="Html.GetEnumSelectList<ExpectedResult>()"></select>
 				<span asp-validation-for="ExpectedResult" class="text-danger"></span>
 			</div>
+				
 			<div class="form-group">
 				<label asp-for="BreakTaskAfterError" class="form-check-label">
 					Прервать задачу
 					<input type="checkbox" asp-for="BreakTaskAfterError" class="form-check-input" />
 				</label>
-				</div>
-				<div class="form-group">
-					<label asp-for="FindString" class="control-label"></label>
-					<input asp-for="FindString" class="form-control" readonly/>
-					<span asp-validation-for="FindString" class="text-danger"></span>
-				</div> 
-				<div class="" >
-							<label class="control-label">Выполнить иное действие</label>
-							<select asp-for="ExpectedResult" class="form-select mb-3" asp-items="Html.GetEnumSelectList<ExecuteFm>()" style="max-width: 300px;"></select>
-						<span asp-validation-for="ExpectedResult" class="text-danger"></span>
-					</div>
-			
+			</div>
+
 			<button type="submit" class="btn btn-success" onclick="HideEditForm()">Сохранить</button>
 		</form>
 
@@ -97,7 +72,10 @@
 		<button class="btn btn-warning" onclick="HideCreateForm()" id="btnCancelCreate" style="display:none;">Отмена</button>
 		<h3 id="headr">Свойства операции не настроены</h3>
 
-		<form asp-action="CreateOperationRead" asp-route-stepId="@ViewBag.StepId" method="post" id="createForm" style="display: none;">
+		<form asp-action="CreateOperationExist" asp-controller="Operation" 
+			asp-route-stepId="@ViewBag.StepId" 
+			method="post" id="createForm" style="display: none;">
+
 			<div class="form-group">
 				<label asp-for="InformSuccess" class="form-check-label">
 					Информировать об успехе
@@ -115,28 +93,7 @@
 				<span asp-validation-for="AdditionalText" class="text-danger"></span>
 			</div>
 
-			<div class="form-group">
-				<label asp-for="FileInSource" class="control-label"></label>
-				<select asp-for="FileInSource" class="form-select mb-3" asp-items="Html.GetEnumSelectList<FileInSource>()"></select>
-				<span asp-validation-for="FileInSource" class="text-danger"></span>
-			</div>
-			<div class="form-group">
-				<label asp-for="Encode" class="control-label"></label>
-				<select asp-for="Encode" class="form-select mb-3" asp-items="Html.GetEnumSelectList<Encode>()"></select>
-				<span asp-validation-for="Encode" class="text-danger"></span>
-			</div>
-			<div class="form-group">
-				<label asp-for="SearchRegex" class="form-check-label">
-					Поиск по шаблону
-					<input type="checkbox" asp-for="SearchRegex" class="form-check-input" />
-				</label>
-			</div>
-			<div class="form-group">
-				<label asp-for="FindString" class="control-label"></label>
-				<input asp-for="FindString" class="form-control" />
-				<span asp-validation-for="FindString" class="text-danger"></span>
-			</div>
-
+			
 			<div class="form-group">
 				<label asp-for="ExpectedResult" class="control-label"></label>
 				<select asp-for="ExpectedResult" class="form-select mb-3" asp-items="Html.GetEnumSelectList<ExpectedResult>()"></select>

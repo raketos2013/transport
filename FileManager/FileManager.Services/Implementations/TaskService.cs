@@ -1,5 +1,7 @@
-﻿using FileManager.DAL.Repositories.Interfaces;
+﻿using FileManager.DAL;
+using FileManager.DAL.Repositories.Interfaces;
 using FileManager.Domain.Entity;
+using FileManager.Domain.ViewModels.Step;
 using FileManager.Services.Interfaces;
 
 
@@ -8,9 +10,11 @@ namespace FileManager.Services.Implementations
     public class TaskService : ITaskService
 	{
         private readonly ITaskRepository _taskRepository;
-		public TaskService(ITaskRepository taskRepository)
+		private readonly IStepRepository _stepRepository;
+		public TaskService(ITaskRepository taskRepository, IStepRepository stepRepository)
 		{
 			_taskRepository = taskRepository;
+			_stepRepository = stepRepository;
 		}
 
 		public bool CreateTask(TaskEntity task)
@@ -79,5 +83,49 @@ namespace FileManager.Services.Implementations
 		{
 			return _taskRepository.ActivatedTask(idTask);
 		}
-	}
+
+        public bool CopyTask(string idTask, string newIdTask, string isCopySteps, CopyStepViewModel[] copyStep)
+        {
+            TaskEntity copiedTask = GetTaskById(idTask);
+            if (copiedTask == null)
+            {
+                return false;
+            }
+            copiedTask.TaskId = newIdTask;
+            EditTask(copiedTask);
+			CreateTaskStatuse(newIdTask);
+            
+            if (isCopySteps == "on")
+            {
+                List<TaskStepEntity> steps = _stepRepository.GetAllStepsByTaskId(idTask);
+                foreach (var item in copyStep)
+                {
+                    if (item.IsCopy)
+                    {
+                        TaskStepEntity oldStep = steps.FirstOrDefault(x => x.TaskId == idTask &&
+                                                                            x.StepNumber == item.StepNumber);
+                        TaskStepEntity newStep = new TaskStepEntity();
+                        if (oldStep != null)
+                        {
+                            newStep.TaskId = newIdTask;
+                            newStep.StepNumber = oldStep.StepNumber;
+                            newStep.OperationName = oldStep.OperationName;
+                            newStep.Description = oldStep.Description;
+                            newStep.FileMask = oldStep.FileMask;
+                            newStep.Source = oldStep.Source;
+                            newStep.Destination = oldStep.Destination;
+                            newStep.IsBreak = oldStep.IsBreak;
+                            newStep.IsActive = oldStep.IsActive;
+                        }
+                    }
+                }
+            }
+			return true;
+        }
+
+        public bool CreateTaskStatuse(string idTask)
+        {
+            return _taskRepository.CreateTaskStatuse(idTask);
+        }
+    }
 }

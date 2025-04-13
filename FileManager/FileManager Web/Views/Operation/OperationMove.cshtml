@@ -2,7 +2,7 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @using FileManager.Domain.Enum
-@model FileManager.Domain.Entity.OperationCopyEntity
+@model FileManager.Domain.Entity.OperationMoveEntity
 @{
 	SelectList addresseeGroups = new SelectList(ViewBag.AddresseeGroups, "Id", "Name");
 }
@@ -21,7 +21,6 @@
 			<p>Дополнительный текст - @Model.AdditionalText</p>
 			<br />
 
-			<p>Файл есть в источнике - @Model.FileInSource</p>
 			<p>Файл есть в назначении - @Model.FileInDestination</p>
 			<p>Дубль по журналу - @Model.FileInLog</p>
 			<p>Сортировка - @Model.Sort</p>
@@ -29,7 +28,10 @@
 			<p>Аттрибуты - @Model.FileAttribute</p>
 		</div>
 
-		<form asp-action="EditOperationCopy" asp-route-operationId="@Model.OperationId" method="post" id="editForm" style="display: none;">
+		<form asp-action="EditOperationMove" asp-controller="Operation"  
+			asp-route-operationId="@Model.OperationId" 
+			method="post" id="editForm" style="display: none;">
+
 			<div class="form-group">
 				<label asp-for="InformSuccess" class="form-check-label">
 					Информировать об успехе
@@ -46,11 +48,7 @@
 				<input asp-for="AdditionalText" class="form-control" />
 				<span asp-validation-for="AdditionalText" class="text-danger"></span>
 			</div>
-			<div class="form-group">
-				<label asp-for="FileInSource" class="control-label"></label>
-				<select asp-for="FileInSource" class="form-select mb-3" asp-items="Html.GetEnumSelectList<FileInSource>()"></select>
-				<span asp-validation-for="FileInSource" class="text-danger"></span>
-			</div>
+			
 			<div class="form-group">
 				<label asp-for="FileInDestination" class="control-label"></label>
 				<select asp-for="FileInDestination" class="form-select mb-3" asp-items="Html.GetEnumSelectList<FileInDestination>()"></select>
@@ -87,17 +85,10 @@
 		<button class="btn btn-warning" onclick="HideCreateForm()" id="btnCancelCreate" style="display:none;">Отмена</button>
 		<h3 id="headr">Свойства операции не настроены</h3>
 
-		<form asp-action="CreateOperationCopy" asp-route-operationModel="@Model" asp-route-stepId="@ViewBag.StepId" method="post" id="createForm" style="display: none;">
-			<div class="form-group">
-				<label asp-for="StepId" class="control-label"></label>
-				<input asp-for="StepId" class="form-control" readonly/>
-				<span asp-validation-for="StepId" class="text-danger"></span>
-			</div>
-			<div class="form-group">
-				<label asp-for="StepId" class="control-label"></label>
-				<input asp-for="StepId" class="form-control" readonly/>
-				<span asp-validation-for="StepId" class="text-danger"></span>
-			</div>
+		<form asp-action="CreateOperationMove" asp-controller="Operation" 
+			asp-route-stepId="@ViewBag.StepId" 
+			method="post" id="createForm" style="display: none;">
+
 			<div class="form-group">
 				<label asp-for="InformSuccess" class="form-check-label">
 					Информировать об успехе
@@ -114,11 +105,7 @@
 				<input asp-for="AdditionalText" class="form-control" />
 				<span asp-validation-for="AdditionalText" class="text-danger"></span>
 			</div>
-			<div class="form-group">
-				<label asp-for="FileInSource" class="control-label"></label>
-				<select asp-for="FileInSource" class="form-select mb-3" asp-items="Html.GetEnumSelectList<FileInSource>()"></select>
-				<span asp-validation-for="FileInSource" class="text-danger"></span>
-			</div>
+			
 			<div class="form-group">
 				<label asp-for="FileInDestination" class="control-label"></label>
 				<select asp-for="FileInDestination" class="form-select mb-3" asp-items="Html.GetEnumSelectList<FileInDestination>()"></select>
@@ -137,7 +124,7 @@
 			</div>
 			<div class="form-group">
 				<label asp-for="FilesForProcessing" class="control-label"></label>
-				<input type="number" asp-for="FilesForProcessing" class="form-control" value="0"/>
+				<input asp-for="FilesForProcessing" class="form-control" />
 				<span asp-validation-for="FilesForProcessing" class="text-danger"></span>
 			</div>
 			<div class="form-group">

@@ -4,6 +4,7 @@ using FileManager.Services.Interfaces;
 using FileManager_Web.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace FileManager_Web.Controllers
 {
@@ -21,44 +22,58 @@ namespace FileManager_Web.Controllers
             _stepService = stepService;
 		}
 
-		public IActionResult Index()
-        {
-            return View();
-        }
-
         [HttpGet]
-        public IActionResult CreateStep(string taskId)
+        public IActionResult CreateStep(string idTask)
         {
-            TaskStepEntity taskStep = new TaskStepEntity();
-            return View(taskStep);
+            ViewBag.MaxNumber = _stepService.GetAllStepsByTaskId(idTask).Count + 1;
+            ViewBag.TaskId = idTask;
+            TaskStepEntity step = new TaskStepEntity();
+            step.TaskId = idTask;
+            return View(step);
         }
         [HttpPost]
-        public IActionResult CreateStep(TaskStepEntity taskStep)
+        public IActionResult CreateStep(TaskStepEntity modelStep, string taskId)
         {
-            return View();
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    _stepService.CreateStep(modelStep);
+                    return RedirectToAction("TaskDetails", new { taskId = taskId });
+                }
+                return View();
+            }
+            catch (Exception)
+            {
+                return View();
+            }
         }
 
         [HttpPost]
         public IActionResult ReplaceStep(string taskId, string numberStep, string operation)
         {
-            return View();
+            _stepService.ReplaceSteps(taskId, numberStep, operation);
+            return RedirectToAction("TaskDetails", "Task",  new { taskId = taskId });
         }
 
         [HttpPost]
-        public IActionResult ActivatedStep(string taskId, string stepNumber)
+        public IActionResult ActivatedStep(string taskId, int stepId)
         {
-            return View();
+            _stepService.ActivatedStep(stepId);
+            return RedirectToAction("TaskDetails", "Task", new { taskId = taskId });
         }
 
         public IActionResult StepDetails(string taskId, string stepNumber)
         {
-            return View();
+            TaskStepEntity? taskStep = _stepService.GetStepByTaskId(taskId, int.Parse(stepNumber));
+            return View(taskStep);
         }
 
         [HttpPost]
-        public IActionResult EditStep(string taskId, string stepNumber) 
+        public IActionResult EditStep(TaskStepEntity stepModel) 
         {
-            return View();
+            _stepService.EditStep(stepModel);
+            return RedirectToAction("StepDetails", new { taskId = stepModel.TaskId, stepNumber = stepModel.StepNumber });
         }
 
     }

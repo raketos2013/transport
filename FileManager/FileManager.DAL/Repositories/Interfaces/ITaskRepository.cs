@@ -21,5 +21,6 @@ namespace FileManager.DAL.Repositories.Interfaces
         bool CreateTaskGroup(string name);
         bool DeleteTaskGroup(int idGroup);
         bool ActivatedTask(string idTask);
+        bool CreateTaskStatuse(string idTask);
     }
 }

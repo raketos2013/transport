@@ -22,7 +22,10 @@
 			
 		</div>
 
-		<form asp-action="EditOperationDelete" asp-route-operationId="@Model.OperationId" method="post" id="editForm" style="display: none;">
+		<form asp-action="EditOperationDelete" asp-controller="Operation" 
+			asp-route-operationId="@Model.OperationId" 
+			method="post" id="editForm" style="display: none;">
+
 			<div class="form-group">
 				<label asp-for="InformSuccess" class="form-check-label">
 					Информировать об успехе
@@ -51,7 +54,10 @@
 		<button class="btn btn-warning" onclick="HideCreateForm()" id="btnCancelCreate" style="display:none;">Отмена</button>
 		<h3 id="headr">Свойства операции не настроены</h3>
 
-		<form asp-action="CreateOperationDelete" asp-route-stepId="@ViewBag.StepId" method="post" id="createForm" style="display: none;">
+		<form asp-action="CreateOperationDelete" asp-controller="Operation"  
+			asp-route-stepId="@ViewBag.StepId" 
+			method="post" id="createForm" style="display: none;">
+
 			<div class="form-group">
 				<label asp-for="InformSuccess" class="form-check-label">
 					Информировать об успехе

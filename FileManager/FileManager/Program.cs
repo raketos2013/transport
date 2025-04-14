@@ -3,11 +3,13 @@ using FileManager;
 using Quartz;
 using FileManager_Server;
 using FileManager_Server.Loggers;
+using FileManager_Server.MailSender;
 
 var builder = Host.CreateApplicationBuilder(args);
 builder.Logging.AddFile(Path.Combine(Directory.GetCurrentDirectory(), $"logger_{DateOnly.FromDateTime(DateTime.Now)}.txt"));
 builder.Services.AddDbContext<AppDbContext>();
 builder.Services.AddScoped<ITaskLogger, TaskLogger>();
+builder.Services.AddScoped<IMailSender, MailSender>();
 
 builder.Services.AddQuartz(q => {
 

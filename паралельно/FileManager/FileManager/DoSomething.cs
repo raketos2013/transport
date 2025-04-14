@@ -487,7 +487,10 @@ namespace FileManager_Server
         }
 
 
-        public void SendErrorMailForDestination(Dictionary<string, Dictionary<string, string>> notCopiedFiles, string Subject, string caption, TaskOperationEntity destinationEntity, List<MailList> recipients, string? attachFile = null)
+        public void SendErrorMailForDestination(Dictionary<string, Dictionary<string, string>> notCopiedFiles, 
+                                                string Subject, string caption, 
+                                                TaskOperationEntity destinationEntity, 
+                                                List<MailList> recipients, string? attachFile = null)
         {
             StringBuilder message = new StringBuilder();
             try

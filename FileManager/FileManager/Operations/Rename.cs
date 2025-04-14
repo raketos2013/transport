@@ -13,11 +13,14 @@ namespace FileManager_Server.Operations
     {
         public Rename(TaskStepEntity step, TaskOperation? operation, ITaskLogger taskLogger, AppDbContext appDbContext)
             : base(step, operation, taskLogger, appDbContext)
-        {
-        }
+        { }
 
+        
         public override void Execute(List<string>? bufferFiles)
         {
+            _taskLogger.StepLog(TaskStep, $"ПЕРЕИМЕНОВАНИЕ: {TaskStep.Source}");
+            _taskLogger.OperationLog(TaskStep);
+
             if (_nextStep != null)
             {
                 _nextStep.Execute(bufferFiles);

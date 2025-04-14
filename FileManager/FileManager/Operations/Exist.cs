@@ -1,6 +1,7 @@
 ﻿using FileManager.DAL;
 using FileManager.Domain.Entity;
 using FileManager.Domain.Enum;
+using FileManager.Services;
 using FileManager_Server.Loggers;
 using System;
 using System.Collections.Generic;
@@ -32,24 +33,33 @@ namespace FileManager_Server.Operations
             operation = _appDbContext.OperationExist.FirstOrDefault(x => x.StepId == TaskStep.StepId);
             if (operation != null)
             {
+                //_taskLogger.StepLog(TaskStep, $"Ожидаемый результат - {operation.ExpectedResult.GetDescription()}");
                 switch (operation.ExpectedResult)
                 {
                     case ExpectedResult.Success:
+                        if (files.Count() == 0)
+                        {
+                            if (operation.BreakTaskAfterError)
+                            {
+
+                            }
+                            throw new Exception("Exist 0 files");
+                        }
                         break;
                     case ExpectedResult.Error:
+                        if (files.Count() > 0 && operation.BreakTaskAfterError)
+                        {
+                            throw new Exception("Exist > 0 files");
+                        }
                         break;
                     case ExpectedResult.Any:
+
                         break;
                     default:
                         break;
                 }
             }
 
-
-            /*if (infoFiles.Count > 0)
-			{
-				operation = _appDbContext.
-			}*/
             if (_nextStep != null)
             {
                 _nextStep.Execute(bufferFiles);

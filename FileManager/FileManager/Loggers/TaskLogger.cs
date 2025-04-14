@@ -32,21 +32,20 @@ namespace FileManager_Server.Loggers
 			taskLog.TaskId = step.TaskId;
 			
 			string text;
-			switch (step.OperationName)
-			{
-				case OperationName.Copy:
-					OperationCopyEntity operation;
-					operation = _appDbContext.OperationCopy.FirstOrDefault(x => x.OperationId == step.OperationId);
-					if (operation != null)
-					{
-						taskLog.ResultText = "Свойства операции - ";
+            switch (step.OperationName)
+            {
+                case OperationName.Copy:
+                    OperationCopyEntity? operation = _appDbContext.OperationCopy.FirstOrDefault(x => x.OperationId == step.OperationId);
+                    if (operation != null)
+                    {
+                        taskLog.ResultText = "Свойства операции - ";
                         taskLog.DateTimeLog = DateTime.Now;
                         _appDbContext.TaskLog.Add(taskLog);
                         _appDbContext.SaveChanges();
                         taskLog.ResultText = $"Сортировка - {operation.Sort.GetDescription()}";
                         taskLog.DateTimeLog = DateTime.Now;
                         _appDbContext.TaskLog.Add(taskLog);
-						_appDbContext.SaveChanges();
+                        _appDbContext.SaveChanges();
                         taskLog.ResultText = $"Контроль дублирования по журналу - {operation.FileInLog}";
                         taskLog.DateTimeLog = DateTime.Now;
                         _appDbContext.TaskLog.Add(taskLog);
@@ -55,47 +54,99 @@ namespace FileManager_Server.Loggers
                         taskLog.DateTimeLog = DateTime.Now;
                         _appDbContext.TaskLog.Add(taskLog);
                         _appDbContext.SaveChanges();
+                        taskLog.ResultText = $"Аттрибуты файла - {operation.FileAttribute.GetDescription()}";
+                        taskLog.DateTimeLog = DateTime.Now;
+                        _appDbContext.TaskLog.Add(taskLog);
+                        _appDbContext.SaveChanges();
+
                     }
-					break;
-				case OperationName.Move:
-					//operation = _appDbContext.OperationMove.FirstOrDefault();
-					break;
-				case OperationName.Read:
-					OperationReadEntity operationRead;
-					operationRead = _appDbContext.OperationRead.FirstOrDefault(x => x.OperationId == step.OperationId);
-					if (operationRead != null)
-					{
-						taskLog.ResultText = "Свойства операции - ";
-						taskLog.DateTimeLog = DateTime.Now;
-						_appDbContext.TaskLog.Add(taskLog);
-						_appDbContext.SaveChanges();
-						taskLog.ResultText = $"Кодировка - {operationRead.Encode}";
-						taskLog.DateTimeLog = DateTime.Now;
-						_appDbContext.TaskLog.Add(taskLog);
-						_appDbContext.SaveChanges();
-						taskLog.ResultText = $"Контроль Файл есть в назначении - {operationRead.FileInSource.GetDescription()}";
-						taskLog.DateTimeLog = DateTime.Now;
-						_appDbContext.TaskLog.Add(taskLog);
-						_appDbContext.SaveChanges();
-					}
-					break;
-				case OperationName.Exist:
-					//operation = _appDbContext.OperationExist.FirstOrDefault();
-					break;
-				case OperationName.Rename:
-					//operation = _appDbContext.OperationRename.FirstOrDefault();
-					break;
-				case OperationName.Delete:
-					//operation = _appDbContext.OperationDelete.FirstOrDefault();
-					break;
-			}
-			
+                    break;
+                case OperationName.Move:
+                    OperationMoveEntity? move = _appDbContext.OperationMove.FirstOrDefault(x => x.OperationId == step.OperationId);
+                    if (move != null)
+                    {
+                        taskLog.ResultText = "Свойства операции - ";
+                        taskLog.DateTimeLog = DateTime.Now;
+                        _appDbContext.TaskLog.Add(taskLog);
+                        _appDbContext.SaveChanges();
+                        taskLog.ResultText = $"Контроль дублирования по журналу - {move.FileInLog}";
+                        taskLog.DateTimeLog = DateTime.Now;
+                        _appDbContext.TaskLog.Add(taskLog);
+                        _appDbContext.SaveChanges();
+                        taskLog.ResultText = $"Сортировка - {move.Sort.GetDescription()}";
+                        taskLog.DateTimeLog = DateTime.Now;
+                        _appDbContext.TaskLog.Add(taskLog);
+                        _appDbContext.SaveChanges();
+                        taskLog.ResultText = $"Аттрибуты файла - {move.FileAttribute.GetDescription()}";
+                        taskLog.DateTimeLog = DateTime.Now;
+                        _appDbContext.TaskLog.Add(taskLog);
+                        _appDbContext.SaveChanges();
+                    }
+                    break;
+                case OperationName.Read:
+                    OperationReadEntity? operationRead = _appDbContext.OperationRead.FirstOrDefault(x => x.OperationId == step.OperationId);
+                    if (operationRead != null)
+                    {
+                        taskLog.ResultText = "Свойства операции - ";
+                        taskLog.DateTimeLog = DateTime.Now;
+                        _appDbContext.TaskLog.Add(taskLog);
+                        _appDbContext.SaveChanges();
+                        taskLog.ResultText = $"Кодировка - {operationRead.Encode}";
+                        taskLog.DateTimeLog = DateTime.Now;
+                        _appDbContext.TaskLog.Add(taskLog);
+                        _appDbContext.SaveChanges();
+                        taskLog.ResultText = $"Контроль Файл есть в назначении - {operationRead.FileInSource.GetDescription()}";
+                        taskLog.DateTimeLog = DateTime.Now;
+                        _appDbContext.TaskLog.Add(taskLog);
+                        _appDbContext.SaveChanges();
+                    }
+                    break;
+                case OperationName.Exist:
+                    OperationExistEntity? exist = _appDbContext.OperationExist.FirstOrDefault(x => x.OperationId == step.OperationId);
+                    if (exist != null)
+                    {
+                        taskLog.ResultText = "Свойства операции - ";
+                        taskLog.DateTimeLog = DateTime.Now;
+                        _appDbContext.TaskLog.Add(taskLog);
+                        _appDbContext.SaveChanges();
+                        taskLog.ResultText = $"Ожидаемый результат - {exist.ExpectedResult.GetDescription()}";
+                        taskLog.DateTimeLog = DateTime.Now;
+                        _appDbContext.TaskLog.Add(taskLog);
+                        _appDbContext.SaveChanges();
+                        taskLog.ResultText = $"Прервать задачу - {exist.BreakTaskAfterError}";
+                        taskLog.DateTimeLog = DateTime.Now;
+                        _appDbContext.TaskLog.Add(taskLog);
+                        _appDbContext.SaveChanges();
+                    }
+                    break;
+                case OperationName.Rename:
+                    OperationRenameEntity? rename = _appDbContext.OperationRename.FirstOrDefault(x => x.OperationId == step.OperationId);
+                    if (rename != null)
+                    {
+                        taskLog.ResultText = "Свойства операции - ";
+                        taskLog.DateTimeLog = DateTime.Now;
+                        _appDbContext.TaskLog.Add(taskLog);
+                        _appDbContext.SaveChanges();
+                        taskLog.ResultText = $"Шаблон - {rename.Pattern}";
+                        taskLog.DateTimeLog = DateTime.Now;
+                        _appDbContext.TaskLog.Add(taskLog);
+                        _appDbContext.SaveChanges();
+                        
+                    }
+                    break;
+                case OperationName.Delete:
+                    //operation = _appDbContext.OperationDelete.FirstOrDefault();
+                    break;
+                case OperationName.Clrbuf:
+                    break;
+            }
 
-			
-			
-		}
 
-		public void StepLog(TaskStepEntity step, string text, string filename = "")
+
+
+        }
+
+        public void StepLog(TaskStepEntity step, string text, string filename = "")
 		{
 			TaskLogEntity taskLog = new TaskLogEntity();
 			taskLog.DateTimeLog = DateTime.Now;
@@ -123,5 +174,5 @@ namespace FileManager_Server.Loggers
 			_appDbContext.TaskLog.Add(taskLog);
 			_appDbContext.SaveChanges();
 		}
-	}
+    }
 }

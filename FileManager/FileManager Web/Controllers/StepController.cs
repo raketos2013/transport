@@ -1,10 +1,8 @@
-﻿using FileManager.DAL.Repositories.Interfaces;
-using FileManager.Domain.Entity;
+﻿using FileManager.Domain.Entity;
 using FileManager.Services.Interfaces;
 using FileManager_Web.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace FileManager_Web.Controllers
 {
@@ -14,12 +12,17 @@ namespace FileManager_Web.Controllers
         private readonly ILogger<StepController> _logger;
         private readonly UserLogging _userLogging;
         private readonly IStepService _stepService;
+        private readonly IAddresseeService _addresseeService;
+        private readonly IOperationService _operationService;
 
-		public StepController(ILogger<StepController> logger, UserLogging userLogging, IStepService stepService)
+        public StepController(ILogger<StepController> logger, UserLogging userLogging, IStepService stepService,
+                                IAddresseeService addresseeService, IOperationService operationService)
 		{
 			_logger = logger;
             _userLogging = userLogging;
             _stepService = stepService;
+            _operationService = operationService;
+            _addresseeService = addresseeService;
 		}
 
         [HttpGet]
@@ -75,6 +78,8 @@ namespace FileManager_Web.Controllers
             _stepService.EditStep(stepModel);
             return RedirectToAction("StepDetails", new { taskId = stepModel.TaskId, stepNumber = stepModel.StepNumber });
         }
+
+        
 
     }
 }

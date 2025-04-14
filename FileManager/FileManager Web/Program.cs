@@ -31,12 +31,15 @@ namespace FileManager_Web
             builder.Services.AddScoped<IStepRepository, StepRepository>();
             builder.Services.AddScoped<IAddresseeRepository, AddresseeRepository>();
             builder.Services.AddScoped<IOperationRepository, OperationRepository>();
+            builder.Services.AddScoped<ITaskLogRepository, TaskLogRepository>();
             builder.Services.AddScoped<ITaskService, TaskService>();
 			builder.Services.AddScoped<IStepService, StepService>();
             builder.Services.AddScoped<IAddresseeService, AddresseeService>();
             builder.Services.AddScoped<IOperationService, OperationService>();
+            builder.Services.AddScoped<ITaskLogService, TaskLogService>();
             builder.Services.AddHttpContextAccessor().AddHttpContextAccessor();
-            
+            builder.Services.AddAntiforgery(options => options.HeaderName = "XSRF-TOKEN");
+
             builder.Logging.ClearProviders();
            /* builder.Logging.AddDbLogger(options =>
             {

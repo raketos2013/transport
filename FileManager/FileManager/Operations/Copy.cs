@@ -106,6 +106,7 @@ namespace FileManager_Server.Operations
                         else if (operation.FileInSource == FileInSource.Always && operation.FileInLog == true)
                         {
                             // stop task
+                            throw new Exception("Дублирование файла по журналу!");
 
                         }
                         else if (operation.FileInSource == FileInSource.OneDay && operation.FileInLog == false)

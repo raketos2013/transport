@@ -10,7 +10,7 @@
 	<h1 class="text-center">Добавление шага в задачу @ViewBag.TaskId</h1>
 
 
-	<form asp-action="CreateStep" method="post" asp-route-taskId="@ViewBag.TaskId">
+	<form asp-action="CreateStep" asp-controller="Step" method="post" asp-route-taskId="@ViewBag.TaskId">
 
 		<div class="row justify-content-md-center">
 
@@ -98,7 +98,7 @@
 		<div class="row  justify-content-md-center">
 			<div class="col-1">
 				<div class="form-group">
-					<a asp-action="Tasks" class="btn btn-warning">Назад</a>
+					<a asp-action="Tasks" asp-controller="Task" class="btn btn-warning">Назад</a>
 				</div>
 			</div>
 			<div class="col-1">

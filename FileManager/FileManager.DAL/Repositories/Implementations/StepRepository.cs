@@ -49,14 +49,18 @@ namespace FileManager.DAL.Repositories.Implementations
 			{
 
                 List<TaskStepEntity> steps = GetAllStepsByTaskId(taskStep.TaskId).OrderBy(x => x.StepNumber).ToList();
-                foreach (var step in steps)
-                {
-                    if (step.StepNumber >= taskStep.StepNumber)
+				if (steps.Count != 0)
+				{
+                    foreach (var step in steps)
                     {
-                        step.StepNumber++;
+                        if (step.StepNumber >= taskStep.StepNumber)
+                        {
+                            step.StepNumber++;
+                        }
                     }
+                    _appDbContext.TaskStep.UpdateRange(steps);
                 }
-                _appDbContext.TaskStep.UpdateRange(steps);
+                
                 _appDbContext.TaskStep.Add(taskStep);
 				_appDbContext.SaveChanges();
 				return true;

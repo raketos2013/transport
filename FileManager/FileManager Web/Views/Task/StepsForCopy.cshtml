@@ -22,6 +22,9 @@
                 <th>
                     Описание шага
                 </th>
+                <th>
+                    Копировать св-ва операции
+                </th>
             </tr>
         </thead>
         <tbody>
@@ -29,15 +32,16 @@
                 int i = 0;
                 foreach (var item in Model)
                 {
-                    string isCopy, number, description;
+                    string isCopy, number, description, isCopyOperation;
                     isCopy = $"copyStep[{i}].IsCopy";
                     number = $"copyStep[{i}].StepNumber";
                     description = $"copyStep[{i}].Description";
+                    isCopyOperation = $"copyStep[{i}].IsCopyOperation";
                     <tr>
                         <td>
                             <div class="form-group form-check">
                                 <div class="form-check form-switch">
-                                    <input name="@isCopy" class="form-check-input" type="checkbox" id="isDelSource" asp-for="@item.IsCopy">
+                                    <input name="@isCopy" class="form-check-input" type="checkbox" asp-for="@item.IsCopy">
                                 </div>
                             </div>
                         </td>
@@ -46,6 +50,13 @@
                         </td>
                         <td>
                             <input name="@description" asp-for="@item.Description" class="form-control" readonly />
+                        </td>
+                        <td>
+                            <div class="form-group form-check">
+                                <div class="form-check form-switch">
+                                    <input name="@isCopyOperation" class="form-check-input" type="checkbox" asp-for="@item.IsCopyOperation">
+                                </div>
+                            </div>
                         </td>
                     </tr>
                     i++;

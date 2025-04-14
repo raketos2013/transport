@@ -24,10 +24,8 @@ namespace FileManager.DAL.Repositories.Implementations
 			{
                 task.LastModified = DateTime.Now;
                 _appDbContext.Task.Add(task);
-                TaskStatusEntity taskStatus = new TaskStatusEntity();
-                taskStatus.TaskId = task.TaskId;
-                _appDbContext.TaskStatuse.Add(taskStatus);
 				_appDbContext.SaveChanges();
+				CreateTaskStatuse(task.TaskId);
 				return true;
 			}
 			catch (Exception)

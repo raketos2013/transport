@@ -10,29 +10,29 @@ using Quartz;
 namespace FileManager_Server
 {
 
-	[DisallowConcurrentExecution]
-	public class JobForTask : IJob
-	{
-		private readonly ILogger<JobForTask> _logger;
-		private readonly ITaskLogger _taskLogger;
-		private readonly AppDbContext _appDbContext;
+    [DisallowConcurrentExecution]
+    public class JobForTask : IJob
+    {
+        private readonly ILogger<JobForTask> _logger;
+        private readonly ITaskLogger _taskLogger;
+        private readonly AppDbContext _appDbContext;
 
-		public JobForTask(AppDbContext appDbContext, ILogger<JobForTask> logger, ITaskLogger taskLogger)
-		{
-			_appDbContext = appDbContext;
-			_logger = logger;
-			_taskLogger = taskLogger;
-		}
+        public JobForTask(AppDbContext appDbContext, ILogger<JobForTask> logger, ITaskLogger taskLogger)
+        {
+            _appDbContext = appDbContext;
+            _logger = logger;
+            _taskLogger = taskLogger;
+        }
 
-		public async Task Execute(IJobExecutionContext context)
-		{
-			_taskLogger.TaskLog(context.JobDetail.Key.Name, $"<<< Начало работы задачи {context.JobDetail.Key.Name} >>>");
-			if (context.RefireCount > 5)
-			{
-				_logger.LogError($"{DateTime.Now} задача: {context.JobDetail.Key.Name} - RefireCount > 5");
-			}
-			try
-			{
+        public async Task Execute(IJobExecutionContext context)
+        {
+            _taskLogger.TaskLog(context.JobDetail.Key.Name, $"<<< Начало работы задачи {context.JobDetail.Key.Name} >>>");
+            if (context.RefireCount > 5)
+            {
+                _logger.LogError($"{DateTime.Now} задача: {context.JobDetail.Key.Name} - RefireCount > 5");
+            }
+            try
+            {
                 TaskEntity? taskEntity = _appDbContext.Task.First(x => x.TaskId == context.JobDetail.Key.Name);
                 if (taskEntity is null)
                 {
@@ -71,7 +71,7 @@ namespace FileManager_Server
                                 steps.Add(existCreator.FactoryMethod(step, operation, _taskLogger, _appDbContext));
                                 break;
                             case OperationName.Rename:
-								operation = _appDbContext.OperationRename.FirstOrDefault(x => x.StepId == step.StepId);
+                                operation = _appDbContext.OperationRename.FirstOrDefault(x => x.StepId == step.StepId);
                                 CreatorFactoryMethod renameCreator = new RenameCreator();
                                 steps.Add(renameCreator.FactoryMethod(step, operation, _taskLogger, _appDbContext));
                                 break;
@@ -80,7 +80,7 @@ namespace FileManager_Server
                                 CreatorFactoryMethod deleteCreator = new DeleteCreator();
                                 steps.Add(deleteCreator.FactoryMethod(step, operation, _taskLogger, _appDbContext));
                                 break;
-							case OperationName.Clrbuf:
+                            case OperationName.Clrbuf:
                                 operation = _appDbContext.OperationRead.FirstOrDefault(x => x.StepId == step.StepId);
                                 CreatorFactoryMethod clrbufCreator = new ClrbufCreator();
                                 steps.Add(clrbufCreator.FactoryMethod(step, operation, _taskLogger, _appDbContext));
@@ -102,39 +102,40 @@ namespace FileManager_Server
                 await Task.CompletedTask;
 
                 _taskLogger.TaskLog(context.JobDetail.Key.Name, $"<<< Окончание работы задачи {context.JobDetail.Key.Name} >>>");
-			}
-			catch (Exception ex)
-			{
-				/*using (var scope = _serviceProvider.CreateScope())
-				{
-					try
-					{
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    TaskStatusEntity status = _appDbContext.TaskStatuse.First(x => x.TaskId == context.JobDetail.Key.Name);
+                    if (status != null)
+                    {
+                        status.IsProgress = false;
+                        status.IsError = true;
+                        status.DateLastExecute = DateTime.Now;
+                        _appDbContext.TaskStatuse.Update(status);
+                        _appDbContext.SaveChanges();
+                    }
+                    TaskEntity task = _appDbContext.Task.FirstOrDefault(x => x.TaskId == context.JobDetail.Key.Name);
+                    if (task != null)
+                    {
+                        task.IsActive = false;
+                    }
+                    _appDbContext.Task.Update(task);
+                    _appDbContext.SaveChanges();
 
-						var service = scope.ServiceProvider.GetService<AppDbContext>();
-						if (service != null)
-						{
-							TaskStatusEntity status = service.TaskStatuse.First(x => x.TaskId == context.JobDetail.Key.Name);
-							if (status != null)
-							{
-								status.IsProgress = false;
-								status.IsError = true;
-								status.DateLastExecute = DateTime.Now;
-								service.TaskStatuse.Update(status);
-								service.SaveChanges();
-							}
-						}
-						_logger.LogError($"{DateTime.Now} задача: {context.JobDetail.Key.Name} - {ex.Message}");
-					}
-					catch (Exception ex2)
-					{
-						_logger.LogError($"{DateTime.Now} задача: {context.JobDetail.Key.Name} - {ex2.Message}");
-					}
+                    _logger.LogError($"{DateTime.Now} задача: {context.JobDetail.Key.Name} - {ex.Message}");
+                }
+                catch (Exception ex2)
+                {
+                    _logger.LogError($"{DateTime.Now} задача: {context.JobDetail.Key.Name} - {ex2.Message}");
+                }
 
-				}
-				throw new JobExecutionException(msg: "", refireImmediately: true, cause: ex);*/
-			}
-		}
-	}
+
+                //throw new JobExecutionException(msg: "", refireImmediately: true, cause: ex);
+            }
+        }
+    }
 }
 
 

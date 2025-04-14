@@ -23,12 +23,14 @@ namespace FileManager_Web.Controllers
         private readonly IAddresseeService _addresseeService;
         private readonly IStepService _stepService;
         private readonly ITaskLogService _taskLogService;
+        private readonly IOperationService _operationService;
         public TaskController(ILogger<TaskController> logger,
                                 UserLogging userLogging,
                                 ITaskService taskService,
                                 IAddresseeService addresseeService,
                                 IStepService stepService,
-                                ITaskLogService taskLogService)
+                                ITaskLogService taskLogService,
+                                IOperationService operationService)
         {
             _logger = logger;
             _userLogging = userLogging;
@@ -36,6 +38,7 @@ namespace FileManager_Web.Controllers
             _addresseeService = addresseeService;
             _stepService = stepService;
             _taskLogService = taskLogService;
+            _operationService = operationService;
         }
 
         public IActionResult Tasks()
@@ -153,7 +156,8 @@ namespace FileManager_Web.Controllers
                 CopyStepViewModel stepViewModel = new CopyStepViewModel();
                 stepViewModel.StepNumber = step.StepNumber;
                 stepViewModel.Description = step.Description;
-                stepViewModel.IsCopy = false;
+                stepViewModel.IsCopy = true;
+                stepViewModel.IsCopyOperation = true;
                 copySteps.Add(stepViewModel);
             }
             return PartialView(copySteps);
@@ -166,5 +170,7 @@ namespace FileManager_Web.Controllers
             _taskService.CopyTask(idTask, newIdTask, isCopySteps, copyStep);
             return RedirectToAction("Tasks");
         }
+
+        
     }
 }

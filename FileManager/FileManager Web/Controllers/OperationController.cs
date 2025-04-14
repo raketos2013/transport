@@ -1,13 +1,9 @@
 ﻿using FileManager.DAL;
-using FileManager.DAL.Repositories.Interfaces;
 using FileManager.Domain.Entity;
 using FileManager.Domain.Enum;
-using FileManager.Services.Implementations;
 using FileManager.Services.Interfaces;
-using FileManager_Web.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 
 namespace FileManager_Web.Controllers
@@ -15,13 +11,13 @@ namespace FileManager_Web.Controllers
     [Authorize(Roles = "o.br.ДИТ")]
     public class OperationController : Controller
     {
-        private readonly ILogger _logger;
+        private readonly ILogger<OperationController> _logger;
         private readonly IOperationService _operationService;
         private readonly IStepService _stepService;
         private readonly IAddresseeService _addresseeService;
         private readonly AppDbContext _appDbContext;
 
-        public OperationController(ILogger logger, 
+        public OperationController(ILogger<OperationController> logger, 
                                     IOperationService operationService,
                                     IStepService stepService,
                                     IAddresseeService addresseeService,
@@ -34,8 +30,8 @@ namespace FileManager_Web.Controllers
             _appDbContext = appDbContext;
         }
 
-        [HttpPost]
-        public IActionResult Operation(string stepId, string operationName)
+        [HttpGet]
+        public IActionResult Operations(string stepId, string operationName)
         {
             TaskOperation? taskOperation;
             ViewBag.OperationName = operationName;
@@ -67,7 +63,7 @@ namespace FileManager_Web.Controllers
                 default:
                     break;
             }
-            return RedirectToAction("Tasks");
+            return RedirectToAction("Tasks", "Task");
         }
 
         public IActionResult CreateOperationCopy(OperationCopyEntity operationModel, string stepId)

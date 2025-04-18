@@ -210,7 +210,8 @@ namespace FileManager.Services.Implementations
                                             newRename.InformSuccess = oldRename.InformSuccess;
                                             newRename.AddresseeGroupId = oldRename.AddresseeGroupId;
                                             newRename.AdditionalText = oldRename.AdditionalText;
-                                            newRename.Pattern = oldRename.Pattern;
+                                            newRename.OldPattern = oldRename.OldPattern;
+                                            newRename.NewPattern = oldRename.NewPattern;
                                             _operationRepository.CreateRename(newRename);
                                         }
                                         break;

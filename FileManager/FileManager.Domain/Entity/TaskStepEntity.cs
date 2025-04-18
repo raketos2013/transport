@@ -34,7 +34,7 @@ namespace FileManager.Domain.Entity
 		[Display(Name = "Маска файла")]
 		public string FileMask { get; set; }
 		[Display(Name = "Источник")]
-		public string Source { get; set; }
+		public string? Source { get; set; }
 		[Display(Name = "Назначение")]
 		public string? Destination { get; set; }
 		[Display(Name = "Прерывание")]

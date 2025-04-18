@@ -127,7 +127,7 @@ namespace FileManager_Server.Loggers
                         taskLog.DateTimeLog = DateTime.Now;
                         _appDbContext.TaskLog.Add(taskLog);
                         _appDbContext.SaveChanges();
-                        taskLog.ResultText = $"Шаблон - {rename.Pattern}";
+                        taskLog.ResultText = $"Шаблон - {rename.OldPattern}, Новый шаблон - {rename.NewPattern}";
                         taskLog.DateTimeLog = DateTime.Now;
                         _appDbContext.TaskLog.Add(taskLog);
                         _appDbContext.SaveChanges();

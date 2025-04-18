@@ -139,7 +139,7 @@ namespace FileManager_Web.Controllers
         public IActionResult EditTask(TaskEntity task, string taskId)
         {
             _taskService.EditTask(task);
-            return RedirectToAction("TaskDetails", new { taskId = taskId });
+            return RedirectToAction("TaskDetails", "Task", new { taskId = taskId });
         }
 
         [HttpPost]

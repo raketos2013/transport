@@ -59,7 +59,7 @@ namespace FileManager_Web.Controllers
                     return PartialView("OperationDelete", taskOperation);
                 case "Clrbuf":
                     taskOperation = _operationService.GetClrbufByStepId(int.Parse(stepId));
-                    break;
+                    return PartialView("OperationClrbuf", taskOperation);
                 default:
                     break;
             }
@@ -71,7 +71,7 @@ namespace FileManager_Web.Controllers
             TaskStepEntity? taskStep = _stepService.GetStepByStepId(int.Parse(stepId));
             if (taskStep == null)
             {
-                return RedirectToAction("StepDetails", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+                return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
             }
             if (ModelState.IsValid)
             {
@@ -84,7 +84,7 @@ namespace FileManager_Web.Controllers
                     _stepService.EditStep(taskStep);
                 }
             }
-            return RedirectToAction("StepDetails", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+            return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
         }
 
         public IActionResult EditOperationCopy(IFormCollection collection, string operationId)
@@ -121,7 +121,7 @@ namespace FileManager_Web.Controllers
             }
 
 
-            return RedirectToAction("StepDetails", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+            return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
         }
 
         public IActionResult CreateOperationMove(OperationMoveEntity operationModel, string stepId)
@@ -129,7 +129,7 @@ namespace FileManager_Web.Controllers
             TaskStepEntity? taskStep = _stepService.GetStepByStepId(int.Parse(stepId));
             if (taskStep == null)
             {
-                return RedirectToAction("StepDetails", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+                return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
             }
             if (ModelState.IsValid)
             {
@@ -142,7 +142,7 @@ namespace FileManager_Web.Controllers
                     _stepService.EditStep(taskStep);
                 }
             }
-            return RedirectToAction("StepDetails", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+            return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
         }
 
         public IActionResult EditOperationMove(IFormCollection collection, string operationId)
@@ -178,7 +178,7 @@ namespace FileManager_Web.Controllers
             }
 
 
-            return RedirectToAction("StepDetails", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+            return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
         }
 
         public IActionResult CreateOperationDelete(OperationDeleteEntity operationModel, string stepId)
@@ -186,7 +186,7 @@ namespace FileManager_Web.Controllers
             TaskStepEntity? taskStep = _stepService.GetStepByStepId(int.Parse(stepId));
             if (taskStep == null)
             {
-                return RedirectToAction("StepDetails", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+                return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
             }
             if (ModelState.IsValid)
             {
@@ -199,7 +199,7 @@ namespace FileManager_Web.Controllers
                     _stepService.EditStep(taskStep);
                 }
             }
-            return RedirectToAction("StepDetails", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+            return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
         }
 
         public IActionResult EditOperationDelete(IFormCollection collection, string operationId)
@@ -223,7 +223,7 @@ namespace FileManager_Web.Controllers
             }
 
 
-            return RedirectToAction("StepDetails", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+            return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
         }
 
 
@@ -232,7 +232,7 @@ namespace FileManager_Web.Controllers
             TaskStepEntity? taskStep = _stepService.GetStepByStepId(int.Parse(stepId));
             if (taskStep == null)
             {
-                return RedirectToAction("StepDetails", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+                return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
             }
             if (ModelState.IsValid)
             {
@@ -245,7 +245,7 @@ namespace FileManager_Web.Controllers
                     _stepService.EditStep(taskStep);
                 }
             }
-            return RedirectToAction("StepDetails", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+            return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
         }
 
         public IActionResult EditOperationRead(IFormCollection collection, string operationId)
@@ -274,7 +274,7 @@ namespace FileManager_Web.Controllers
             }
 
 
-            return RedirectToAction("StepDetails", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+            return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
         }
 
 
@@ -283,7 +283,7 @@ namespace FileManager_Web.Controllers
             TaskStepEntity? taskStep = _stepService.GetStepByStepId(int.Parse(stepId));
             if (taskStep == null)
             {
-                return RedirectToAction("StepDetails", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+                return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
             }
             if (ModelState.IsValid)
             {
@@ -296,7 +296,7 @@ namespace FileManager_Web.Controllers
                     _stepService.EditStep(taskStep);
                 }
             }
-            return RedirectToAction("StepDetails", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+            return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
         }
 
         public IActionResult EditOperationExist(IFormCollection collection, string operationId)
@@ -321,7 +321,7 @@ namespace FileManager_Web.Controllers
             }
 
 
-            return RedirectToAction("StepDetails", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+            return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
         }
 
 
@@ -330,7 +330,7 @@ namespace FileManager_Web.Controllers
             TaskStepEntity? taskStep = _stepService.GetStepByStepId(int.Parse(stepId));
             if (taskStep == null)
             {
-                return RedirectToAction("StepDetails", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+                return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
             }
             if (ModelState.IsValid)
             {
@@ -343,7 +343,7 @@ namespace FileManager_Web.Controllers
                     _stepService.EditStep(taskStep);
                 }
             }
-            return RedirectToAction("StepDetails", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+            return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
         }
 
         public IActionResult EditOperationRename(IFormCollection collection, string operationId)
@@ -359,7 +359,8 @@ namespace FileManager_Web.Controllers
                     operation.AddresseeGroupId = int.Parse(collection["AddresseeGroupId"]);
                 }
                 operation.AdditionalText = collection["AdditionalText"];
-                operation.Pattern = collection["Pattern"];
+                operation.OldPattern = collection["OldPattern"];
+                operation.NewPattern = collection["NewPattern"];
 
                 _appDbContext.OperationRename.Update(operation);
                 _appDbContext.SaveChanges();
@@ -367,7 +368,52 @@ namespace FileManager_Web.Controllers
             }
 
 
-            return RedirectToAction("StepDetails", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+            return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+        }
+
+        public IActionResult CreateOperationClrbuf(OperationClrbufEntity operationModel, string stepId)
+        {
+            TaskStepEntity? taskStep = _stepService.GetStepByStepId(int.Parse(stepId));
+            if (taskStep == null)
+            {
+                return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+            }
+            if (ModelState.IsValid)
+            {
+                operationModel.StepId = int.Parse(stepId);
+                _operationService.CreateClrbuf(operationModel);
+                OperationClrbufEntity? operation = _operationService.GetClrbufByStepId(operationModel.StepId);
+                if (operation != null)
+                {
+                    taskStep.OperationId = operation.OperationId;
+                    _stepService.EditStep(taskStep);
+                }
+            }
+            return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+        }
+
+        public IActionResult EditOperationClrbuf(IFormCollection collection, string operationId)
+        {
+            OperationClrbufEntity operation = _appDbContext.OperationClrbuf.FirstOrDefault(x => x.OperationId == int.Parse(operationId));
+            TaskStepEntity taskStep = _appDbContext.TaskStep.FirstOrDefault(x => x.StepId == operation.StepId);
+
+            if (ModelState.IsValid)
+            {
+                operation.InformSuccess = Convert.ToBoolean(collection["InformSuccess"].ToString().Split(',')[0]);
+                if (operation.InformSuccess)
+                {
+                    operation.AddresseeGroupId = int.Parse(collection["AddresseeGroupId"]);
+                }
+                operation.AdditionalText = collection["AdditionalText"];
+
+
+                _appDbContext.OperationClrbuf.Update(operation);
+                _appDbContext.SaveChanges();
+
+            }
+
+
+            return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
         }
 
 

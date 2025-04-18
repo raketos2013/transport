@@ -2,9 +2,9 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @using FileManager.Domain.Enum
-@model FileManager.Domain.Entity.OperationRenameEntity
+@model FileManager.Domain.Entity.OperationClrbufEntity
 @{
-    SelectList addresseeGroups = new SelectList(ViewBag.AddresseeGroups, "Id", "Name");
+	SelectList addresseeGroups = new SelectList(ViewBag.AddresseeGroups, "Id", "Name");
 }
 <div class="container-fluid position-relative" style=" min-height: 100%;">
 	@if (Model != null)
@@ -19,15 +19,12 @@
 			<p>Информировать об успехе - @Model.InformSuccess</p>
 			<p>Группа рассылки - @Model.AddresseeGroupId</p>
 			<p>Дополнительный текст - @Model.AdditionalText</p>
-			<br />
-			<p>Шаблон имени файла - @Model.OldPattern</p>
-			<p>Шаблон нового имени файла - @Model.NewPattern</p>
 
 		</div>
 
-		<form asp-action="EditOperationRename" asp-controller="Operation" 
-			asp-route-operationId="@Model.OperationId" 
-			method="post" id="editForm" style="display: none;">
+		<form asp-action="EditOperationClrbuf" asp-controller="Operation"
+			  asp-route-operationId="@Model.OperationId"
+			  method="post" id="editForm" style="display: none;">
 
 			<div class="form-group">
 				<label asp-for="InformSuccess" class="form-check-label">
@@ -46,18 +43,6 @@
 				<span asp-validation-for="AdditionalText" class="text-danger"></span>
 			</div>
 
-			<div class="form-group">
-				<label asp-for="OldPattern" class="control-label"></label>
-				<input asp-for="OldPattern" class="form-control" />
-				<span asp-validation-for="OldPattern" class="text-danger"></span>
-			</div>
-			<div class="form-group">
-				<label asp-for="NewPattern" class="control-label"></label>
-				<input asp-for="NewPattern" class="form-control" />
-				<span asp-validation-for="NewPattern" class="text-danger"></span>
-			</div>
-
-			
 
 			<button type="submit" class="btn btn-success" onclick="HideEditForm()">Сохранить</button>
 		</form>
@@ -69,9 +54,9 @@
 		<button class="btn btn-warning" onclick="HideCreateForm()" id="btnCancelCreate" style="display:none;">Отмена</button>
 		<h3 id="headr">Свойства операции не настроены</h3>
 
-		<form asp-action="CreateOperationRename" asp-controller="Operation" 
-			asp-route-stepId="@ViewBag.StepId" 
-			method="post" id="createForm" style="display: none;">
+		<form asp-action="CreateOperationClrbuf" asp-controller="Operation"
+			  asp-route-stepId="@ViewBag.StepId"
+			  method="post" id="createForm" style="display: none;">
 
 			<div class="form-group">
 				<label asp-for="InformSuccess" class="form-check-label">
@@ -90,16 +75,7 @@
 				<span asp-validation-for="AdditionalText" class="text-danger"></span>
 			</div>
 
-			<div class="form-group">
-				<label asp-for="OldPattern" class="control-label"></label>
-				<input asp-for="OldPattern" class="form-control" />
-				<span asp-validation-for="OldPattern" class="text-danger"></span>
-			</div>
-			<div class="form-group">
-				<label asp-for="NewPattern" class="control-label"></label>
-				<input asp-for="NewPattern" class="form-control" />
-				<span asp-validation-for="NewPattern" class="text-danger"></span>
-			</div>
+
 			<button type="submit" class="btn btn-success" onclick="HideCreateForm()">Сохранить</button>
 		</form>
 

@@ -42,7 +42,7 @@ namespace FileManager_Web.Controllers
                 if (ModelState.IsValid)
                 {
                     _stepService.CreateStep(modelStep);
-                    return RedirectToAction("TaskDetails", new { taskId = taskId });
+                    return RedirectToAction("TaskDetails", "Task", new { taskId = taskId });
                 }
                 return View();
             }
@@ -76,7 +76,7 @@ namespace FileManager_Web.Controllers
         public IActionResult EditStep(TaskStepEntity stepModel) 
         {
             _stepService.EditStep(stepModel);
-            return RedirectToAction("StepDetails", new { taskId = stepModel.TaskId, stepNumber = stepModel.StepNumber });
+            return RedirectToAction("StepDetails", "Step", new { taskId = stepModel.TaskId, stepNumber = stepModel.StepNumber });
         }
 
         

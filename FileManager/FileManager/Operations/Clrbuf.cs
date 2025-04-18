@@ -1,6 +1,7 @@
 ﻿using FileManager.DAL;
 using FileManager.Domain.Entity;
 using FileManager_Server.Loggers;
+using FileManager_Server.MailSender;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,15 +12,15 @@ namespace FileManager_Server.Operations
 {
     public class Clrbuf : StepOperation
     {
-        public Clrbuf(TaskStepEntity step, TaskOperation? operation, ITaskLogger taskLogger, AppDbContext appDbContext)
-            : base(step, operation, taskLogger, appDbContext)
+        public Clrbuf(TaskStepEntity step, TaskOperation? operation, ITaskLogger taskLogger, AppDbContext appDbContext, IMailSender mailSender)
+            : base(step, operation, taskLogger, appDbContext, mailSender)
         { }
 
         public override void Execute(List<string>? bufferFiles)
         {
             _taskLogger.StepLog(TaskStep, $"Очистка буфера: {TaskStep.Source}");
             int countFiles = 0;
-            if ( bufferFiles != null )
+            if (bufferFiles != null)
             {
                 countFiles = bufferFiles.Count;
                 bufferFiles = null;

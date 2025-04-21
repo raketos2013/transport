@@ -16,7 +16,7 @@ namespace FileManager_Server.MailSender
                 From = new MailAddress("FileTransport@lotus.asb.by")
             };
 
-
+           
 
 
             throw new NotImplementedException();

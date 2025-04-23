@@ -17,7 +17,7 @@ namespace FileManager_Server.Operations
 
         public override void Execute(List<string>? bufferFiles)
         {
-            _taskLogger.StepLog(TaskStep, $"Чтение (проверка контента): {TaskStep.Source} => {TaskStep.Destination}");
+            _taskLogger.StepLog(TaskStep, $"ЧТЕНИЕ: {TaskStep.Source} => {TaskStep.Destination}");
             _taskLogger.OperationLog(TaskStep);
 
             string[] files = [];
@@ -65,8 +65,8 @@ namespace FileManager_Server.Operations
                     }
 
                     Encoding encoding = Encoding.Default;
-                    string fileText = File.ReadAllText("d:\\transportFiles\\time.txt", encoding);
-                    _taskLogger.StepLog(TaskStep, "Файл успешно прочитан", "time.txt");
+                    /*string fileText = File.ReadAllText("d:\\transportFiles\\time.txt", encoding);
+                    _taskLogger.StepLog(TaskStep, "Файл успешно прочитан", "time.txt");*/
                     isReadFile = true;
 
                     foreach (var file in files)

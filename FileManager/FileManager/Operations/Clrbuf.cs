@@ -18,7 +18,7 @@ namespace FileManager_Server.Operations
 
         public override void Execute(List<string>? bufferFiles)
         {
-            _taskLogger.StepLog(TaskStep, $"Очистка буфера: {TaskStep.Source}");
+            _taskLogger.StepLog(TaskStep, $"ОЧИСТКА БУФЕРА: {TaskStep.Source}");
             int countFiles = 0;
             if (bufferFiles != null)
             {

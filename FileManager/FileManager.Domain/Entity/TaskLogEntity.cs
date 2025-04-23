@@ -16,8 +16,12 @@ namespace FileManager.Domain.Entity
         public string TaskId { get; set; }
         [Display(Name = "Id шага")]
         public int? StepId { get; set; }
+        [Display(Name = "Номер шага")]
+        public int? StepNumber { get; set; }
         [Display(Name = "Id операции")]
         public int? OperationId { get; set; }
+        [Display(Name = "Операция")]
+        public string? OperationName { get; set; }
         [Display(Name = "Результат операции")]
         public ResultOperation? ResultOperation { get; set; }
         [Display(Name = "Имя файла")]

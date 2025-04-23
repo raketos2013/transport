@@ -10,11 +10,13 @@ namespace FileManager.Domain.Enum
 {
     public enum ResultOperation
     {
-        [Display(Name = "Успешно")]
-        [Description("Успешно")]
-        Success,
+        [Display(Name = "")]
+        N,
+        [Display(Name = "Инфо")]
+        I,
         [Display(Name = "Ошибка")]
-        [Description("Ошибка")]
-        Error
+        E,
+        [Display(Name = "Предупреждение")]
+        W
 	}
 }

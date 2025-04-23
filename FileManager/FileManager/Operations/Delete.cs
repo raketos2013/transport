@@ -19,7 +19,7 @@ namespace FileManager_Server.Operations
 
         public override void Execute(List<string>? bufferFiles)
         {
-            _taskLogger.StepLog(TaskStep, $"Удаление: {TaskStep.Source} => {TaskStep.Destination}");
+            _taskLogger.StepLog(TaskStep, $"УДАЛЕНИЕ: {TaskStep.Source} => {TaskStep.Destination}");
             _taskLogger.OperationLog(TaskStep);
 
             string[] files = [];

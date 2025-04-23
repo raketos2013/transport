@@ -1,248 +1,178 @@
-﻿@*
+﻿@using FileManager.Domain.Entity
+@using FileManager.Domain.Enum
+@using FileManager_Web.ViewModels
+@using X.PagedList;
+@using X.PagedList.Mvc.Core;
+@using X.PagedList.Web.Common;
+@using X.PagedList.Mvc.Bootstrap4.Core
+@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
-@model IEnumerable<FileManager.Domain.Entity.TaskLogEntity>
+
+@* @model X.PagedList.IPagedList<TaskLogEntity> *@
+	@model TaskLogViewModel
 @{
+
 }
 <div class="container-fluid padding-top-container" style="padding-left: 0px; padding-right: 0px;">
+    <form method="get">
+        <div class="row">
 
-	<div class="row">
-
-		<div class="col-xl-3">
-			<h3 class="text-center">Статус задачи </h3>
-			<hr />
-			<dl class="row">
-				@* <span>Выполнений за день : @ViewBag.taskStatus.CountExecute</span>
-				<span>Обработано файлов : @ViewBag.taskStatus.CountProcessedFiles</span>
-				<span>Осталось в каталоге файлов : @ViewBag.taskStatus.CountLeftFiles</span>
-				<span>Последний запуск : @ViewBag.taskStatus.DateLastExecute</span>
-				<span>
-					Выполняется сейчас :
-					@if (@ViewBag.taskStatus.IsProgress)
-					{
-						<span>Да</span>
-					}
-					else
-					{
-						<span>Нет</span>
-					}
-				</span>
-				<span>
-					Есть ошибки :
-					@if (@ViewBag.taskStatus.IsError)
-					{
-						<span>Да</span>
-					}
-					else
-					{
-						<span>Нет</span>
-					}
-				</span> *@
-				fhafh
-				sd
-				hsdf
-				h
-				dsfh
-				sdfh
-				sdfh
-
-			</dl>
-			@* <a asp-controller="TaskOperationEntity" asp-action="Index" asp-route-id="@ViewBag.taskStatus.TaskId" asp-route-contr="Home" asp-route-act="Details" class="btn">
-				<img src="~/images/operations_icon.png" alt="Назначения" title="Назначения" />
-			</a>
-			<a asp-controller="TaskEntity" asp-action="Edit" asp-route-id="@ViewBag.taskStatus.TaskId" asp-route-contr="Home" asp-route-act="Details" class="btn">
-				<img src="~/images/edit_icon.png" alt="Редактировать" title="Редактировать" />
-			</a>
-			<a asp-controller="TaskEntity" asp-action="Details" asp-route-id="@ViewBag.taskStatus.TaskId" asp-route-contr="Home" asp-route-act="Details" class="btn">
-				<img src="~/images/details_icon(2).png" alt="Подробно" title="Подробно" />
-			</a> *@
-			<div>
-				<a asp-controller="Task" asp-action="TaskDetails" asp-route-taskId="@ViewBag.TaskId" class="btn btn-warning">Назад</a>
-			</div>
-
-			<br />
-
-			<div class="accordion" id="accordionExample">
-				<div class="accordion-item">
-					<h2 class="accordion-header" id="headingTwo">
-						<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-							Фильтр
-						</button>
-					</h2>
-					<div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-						<div class="accordion-body">
-							<form method="get">
-								<div class="row">
-
-									<div class="input-group col">
-										<input name="dateFrom" type="date" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" id="dateInputFrom" value="@ViewBag.FilterDateFrom" style="max-width: 150px;">
-									</div>
-									<div class="input-group col">
-										<input name="dateTo" type="date" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" id="dateInputTo" value="@ViewBag.FilterDateTo" style="max-width: 150px;">
-									</div>
-
-									<div class="input-group">
-										<label for="SearchId" class="control-label">
-											Id операции
-											<input name="SearchId" class="form-control" type="text" value="@ViewBag.SearchId" />
-										</label>
-									</div>
-									<div class="input-group">
-										<label for="SearchFileName" class="control-label">
-											Имя файла
-											<input name="SearchFileName" class="form-control" type="text" value="@ViewBag.SearchFileName" />
-										</label>
-									</div>
-									<div class="input-group-append">
-										<label for="searchResult">
-											Результат
-
-											<select name="searchResult" class="form-select">
-												<option value="6"></option>
-												<option value="0">Успешно</option>
-												<option value="1">Ошибка</option>
-												<option value="2">Переименован</option>
-											</select>
-										</label>
-
-									</div>
-									<div class="input-group">
-										<label for="SearchText" class="control-label">
-											Сообщение
-											<input name="SearchText" class="form-control" type="text" value="@ViewBag.SearchText" />
-										</label>
-									</div>
-									<br />
-									<div class="form-group">
-										<input type="submit" value="Поиск" class="btn btn-secondary form-control" style="max-width: 200px;" />
-
-									</div>
+            <div class="col-xl-2">
+                <div>
+                    <a asp-controller="Task" asp-action="TaskDetails" asp-route-taskId="@ViewBag.TaskId" class="btn btn-warning">Назад</a>
+                </div>
 
 
-								</div>
-							</form>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="col-xl-9">
+                <div class="accordion" id="accordionExample">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingTwo">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                Фильтр
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                @*  <form method="get" asp-route-taskId="@ViewBag.TaskId"> *@
+                                <div class="row">
+                                    <div class="form-group">
+                                        <label asp-for="PageSize" class="control-label"></label>
+                                        <input asp-for="PageSize" class="form-control" type="number" />
+                                        <span asp-validation-for="PageSize" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="DateFrom" class="control-label"></label>
+                                        <input asp-for="DateFrom" class="form-control" type="date" />
+                                        <span asp-validation-for="DateFrom" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="DateTo" class="control-label"></label>
+                                        <input asp-for="DateTo" class="form-control" type="date" />
+                                        <span asp-validation-for="DateTo" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="TaskId" class="control-label"></label>
+                                        <input asp-for="TaskId" class="form-control"/>
+                                        <span asp-validation-for="TaskId" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="StepNumber" class="control-label"></label>
+                                        <input asp-for="StepNumber" class="form-control" type="number" />
+                                        <span asp-validation-for="StepNumber" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="OperationName" class="control-label"></label>
+                                        <select asp-for="OperationName" class="form-select mb-3" asp-items="Html.GetEnumSelectList<OperationName>()"></select>
+                                        <span asp-validation-for="OperationName" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="ResultOperation" class="control-label"></label>
+                                        <select asp-for="ResultOperation" class="form-select mb-3" asp-items="Html.GetEnumSelectList<ResultOperation>()"></select>
+                                        <span asp-validation-for="ResultOperation" class="text-danger"></span>
+                                    </div>
 
-			<table class="table table-striped" id="myTable">
-				<caption class="caption-top">Список обработанных файлов</caption>
-				<thead>
-					<tr>
-						<th onclick="sortTable(0)">
-							Дата-время события
-						</th>
-						<th onclick="sortTable(1)">
-							Id операции
-						</th>
-						<th onclick="sortTable(2)">
-							Имя файла
-						</th>
-						<th onclick="sortTable(3)">
-							Результат операции
-						</th>
-						<th onclick="sortTable(4)">
-							Сообщение
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					@foreach (var item in Model)
-					{
-						<tr>
-							<td>
-								@Html.DisplayFor(model => item.DateTimeLog)
-							</td>
-							<td>
-								@Html.DisplayFor(model => item.OperationId)
-							</td>
-							<td>
-								@Html.DisplayFor(model => item.FileName)
-							</td>
-							<td>
-								@Html.DisplayFor(model => item.ResultOperation)
-							</td>
-							<td>
-								@Html.DisplayFor(model => item.ResultText)
-							</td>
-						</tr>
-					}
-				</tbody>
-			</table>
+                                    <div class="form-group">
+                                        <label asp-for="FileName" class="control-label"></label>
+                                        <input asp-for="FileName" class="form-control" />
+                                        <span asp-validation-for="FileName" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="Text" class="control-label"></label>
+                                        <input asp-for="Text" class="form-control" />
+                                        <span asp-validation-for="Text" class="text-danger"></span>
+                                    </div>
 
-			@* Страница @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) из @Model.PageCount
+                                    <div class="form-group">
+                                        <input type="submit" value="Поиск" class="btn btn-secondary form-control" style="max-width: 200px;" />
+                                    </div>
 
-			@Html.PagedListPager(Model,
-							page => Url.Action("Details",
-							new
-							{
-								id = ViewBag.taskStatus.TaskId,
-								dateFrom = @ViewBag.FilterDateFrom,
-								dateTo = @ViewBag.FilterDateTo,
-								page = page,
-								searchId = @ViewBag.SearchId,
-								searchFileName = @ViewBag.SearchFileName,
-								searchResult = @ViewBag.SearchResult,
-								searchText = @ViewBag.SearchText
-							}),
-							new PagedListRenderOptions
-			{
-				DisplayEllipsesWhenNotShowingAllPageNumbers = true,
-				LiElementClasses = new string[] { "page-item" },
-				PageClasses = new string[] { "page-link" }
-			}) *@
+                                </div>
+                                @* </form> *@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-10" id="tableAndPaginationDiv">
+
+                <table class="table table-striped" id="myTable">
+                    <caption class="caption-top">Список обработанных файлов</caption>
+                    <thead>
+                        <tr>
+                            <th onclick="sortTable(0)">
+                                Дата-время события
+                            </th>
+                            <th onclick="sortTable(1)">
+                                Задача
+                            </th>
+                            <th onclick="sortTable(3)">
+                                Номер шага
+                            </th>
+                            <th onclick="sortTable(3)">
+                                Операция
+                            </th>
+                            <th onclick="sortTable(3)">
+                                Результат
+                            </th>
+                            <th onclick="sortTable(2)">
+                                Имя файла
+                            </th>
+                            <th onclick="sortTable(4)">
+                                Сообщение
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Logs)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(model => item.DateTimeLog)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(model => item.TaskId)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(model => item.StepNumber)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(model => item.OperationName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(model => item.ResultOperation)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(model => item.FileName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(model => item.ResultText)
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+                Страница @(Model.Logs.PageCount < Model.Logs.PageNumber ? 0 : Model.Logs.PageNumber) из @Model.Logs.PageCount
+                @{
+                    var viewModel = Model;
+                }
+            @Html.PagedListPager(Model.Logs,
+                     page => Url.Action("TaskLog",
+                     new
+                     {
+                         model = viewModel,
+                         page = page
+                     }),
+                     new PagedListRenderOptions
+            {
+                DisplayEllipsesWhenNotShowingAllPageNumbers = true,
+                LiElementClasses = new string[] { "page-item" },
+                PageClasses = new string[] { "page-link" }
+            })
 
 
-
-		</div>
-	</div>
-
-
-	@* <table class="table table-striped" id="myTable">
-		<caption class="caption-top">Список обработанных файлов</caption>
-		<thead>
-			<tr>
-				<th onclick="sortTable(0)">
-					Дата-время события
-				</th>
-				<th onclick="sortTable(1)">
-					Id операции
-				</th>
-				<th onclick="sortTable(2)">
-					Имя файла
-				</th>
-				<th onclick="sortTable(3)">
-					Результат операции
-				</th>
-				<th onclick="sortTable(4)">
-					Сообщение
-				</th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach (var item in Model)
-			{
-				<tr>
-					<td>
-						@Html.DisplayFor(model => item.DateTimeLog)
-					</td>
-					<td>
-						@Html.DisplayFor(model => item.OperationId)
-					</td>
-					<td>
-						@Html.DisplayFor(model => item.FileName)
-					</td>
-					<td>
-						@Html.DisplayFor(model => item.ResultOperation)
-					</td>
-					<td>
-						@Html.DisplayFor(model => item.ResultText)
-					</td>
-				</tr>
-			}
-		</tbody>
-	</table> *@
+        </div>
+        
+    </div>
+    </form>
 </div>

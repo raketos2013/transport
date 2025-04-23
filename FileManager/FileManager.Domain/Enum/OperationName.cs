@@ -6,8 +6,8 @@ namespace FileManager.Domain.Enum
 {
     public enum OperationName
     {
-        /*[Display(Name = "")]
-        None = 0,*/
+        [Display(Name = "")]
+        None = 0,
         [Display(Name = "Копирование")]
         [Description("Копирование")]
         Copy = 1,

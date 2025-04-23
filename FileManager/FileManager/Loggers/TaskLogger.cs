@@ -2,12 +2,7 @@
 using FileManager.Domain.Entity;
 using FileManager.Domain.Enum;
 using FileManager.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
+
 
 namespace FileManager_Server.Loggers
 {
@@ -30,6 +25,8 @@ namespace FileManager_Server.Loggers
 			taskLog.OperationId = step.OperationId;
 			taskLog.StepId = step.StepId;
 			taskLog.TaskId = step.TaskId;
+            taskLog.StepNumber = step.StepNumber;
+            taskLog.OperationName = step.OperationName.ToString();
 			
 			string text;
             switch (step.OperationName)
@@ -42,19 +39,19 @@ namespace FileManager_Server.Loggers
                         taskLog.DateTimeLog = DateTime.Now;
                         _appDbContext.TaskLog.Add(taskLog);
                         _appDbContext.SaveChanges();
-                        taskLog.ResultText = $"Сортировка - {operation.Sort.GetDescription()}";
+                        taskLog.ResultText = $"---Сортировка: {operation.Sort.GetDescription()}";
                         taskLog.DateTimeLog = DateTime.Now;
                         _appDbContext.TaskLog.Add(taskLog);
                         _appDbContext.SaveChanges();
-                        taskLog.ResultText = $"Контроль дублирования по журналу - {operation.FileInLog}";
+                        taskLog.ResultText = $"---Контроль дублирования по журналу: {operation.FileInLog}";
                         taskLog.DateTimeLog = DateTime.Now;
                         _appDbContext.TaskLog.Add(taskLog);
                         _appDbContext.SaveChanges();
-                        taskLog.ResultText = $"Контроль Файл есть в назначении - {operation.FileInSource.GetDescription()}";
+                        taskLog.ResultText = $"---Контроль Файл есть в назначении: {operation.FileInSource.GetDescription()}";
                         taskLog.DateTimeLog = DateTime.Now;
                         _appDbContext.TaskLog.Add(taskLog);
                         _appDbContext.SaveChanges();
-                        taskLog.ResultText = $"Аттрибуты файла - {operation.FileAttribute.GetDescription()}";
+                        taskLog.ResultText = $"---Аттрибуты файла: {operation.FileAttribute.GetDescription()}";
                         taskLog.DateTimeLog = DateTime.Now;
                         _appDbContext.TaskLog.Add(taskLog);
                         _appDbContext.SaveChanges();
@@ -69,15 +66,15 @@ namespace FileManager_Server.Loggers
                         taskLog.DateTimeLog = DateTime.Now;
                         _appDbContext.TaskLog.Add(taskLog);
                         _appDbContext.SaveChanges();
-                        taskLog.ResultText = $"Контроль дублирования по журналу - {move.FileInLog}";
+                        taskLog.ResultText = $"---Контроль дублирования по журналу: {move.FileInLog}";
                         taskLog.DateTimeLog = DateTime.Now;
                         _appDbContext.TaskLog.Add(taskLog);
                         _appDbContext.SaveChanges();
-                        taskLog.ResultText = $"Сортировка - {move.Sort.GetDescription()}";
+                        taskLog.ResultText = $"---Сортировка: {move.Sort.GetDescription()}";
                         taskLog.DateTimeLog = DateTime.Now;
                         _appDbContext.TaskLog.Add(taskLog);
                         _appDbContext.SaveChanges();
-                        taskLog.ResultText = $"Аттрибуты файла - {move.FileAttribute.GetDescription()}";
+                        taskLog.ResultText = $"---Аттрибуты файла: {move.FileAttribute.GetDescription()}";
                         taskLog.DateTimeLog = DateTime.Now;
                         _appDbContext.TaskLog.Add(taskLog);
                         _appDbContext.SaveChanges();
@@ -91,11 +88,11 @@ namespace FileManager_Server.Loggers
                         taskLog.DateTimeLog = DateTime.Now;
                         _appDbContext.TaskLog.Add(taskLog);
                         _appDbContext.SaveChanges();
-                        taskLog.ResultText = $"Кодировка - {operationRead.Encode}";
+                        taskLog.ResultText = $"---Кодировка: {operationRead.Encode}";
                         taskLog.DateTimeLog = DateTime.Now;
                         _appDbContext.TaskLog.Add(taskLog);
                         _appDbContext.SaveChanges();
-                        taskLog.ResultText = $"Контроль Файл есть в назначении - {operationRead.FileInSource.GetDescription()}";
+                        taskLog.ResultText = $"--Контроль Файл есть в назначении: {operationRead.FileInSource.GetDescription()}";
                         taskLog.DateTimeLog = DateTime.Now;
                         _appDbContext.TaskLog.Add(taskLog);
                         _appDbContext.SaveChanges();
@@ -109,11 +106,11 @@ namespace FileManager_Server.Loggers
                         taskLog.DateTimeLog = DateTime.Now;
                         _appDbContext.TaskLog.Add(taskLog);
                         _appDbContext.SaveChanges();
-                        taskLog.ResultText = $"Ожидаемый результат - {exist.ExpectedResult.GetDescription()}";
+                        taskLog.ResultText = $"---Ожидаемый результат: {exist.ExpectedResult.GetDescription()}";
                         taskLog.DateTimeLog = DateTime.Now;
                         _appDbContext.TaskLog.Add(taskLog);
                         _appDbContext.SaveChanges();
-                        taskLog.ResultText = $"Прервать задачу - {exist.BreakTaskAfterError}";
+                        taskLog.ResultText = $"---Прервать задачу: {exist.BreakTaskAfterError}";
                         taskLog.DateTimeLog = DateTime.Now;
                         _appDbContext.TaskLog.Add(taskLog);
                         _appDbContext.SaveChanges();
@@ -127,11 +124,14 @@ namespace FileManager_Server.Loggers
                         taskLog.DateTimeLog = DateTime.Now;
                         _appDbContext.TaskLog.Add(taskLog);
                         _appDbContext.SaveChanges();
-                        taskLog.ResultText = $"Шаблон - {rename.OldPattern}, Новый шаблон - {rename.NewPattern}";
+                        taskLog.ResultText = $"---Шаблон: {rename.OldPattern}";
                         taskLog.DateTimeLog = DateTime.Now;
                         _appDbContext.TaskLog.Add(taskLog);
                         _appDbContext.SaveChanges();
-                        
+                        taskLog.ResultText = $"---Новый шаблон: {rename.NewPattern}";
+                        taskLog.DateTimeLog = DateTime.Now;
+                        _appDbContext.TaskLog.Add(taskLog);
+                        _appDbContext.SaveChanges();
                     }
                     break;
                 case OperationName.Delete:
@@ -154,11 +154,13 @@ namespace FileManager_Server.Loggers
 			taskLog.ResultText = text;
 			taskLog.StepId = step.StepId;
 			taskLog.TaskId = step.TaskId;
-			if(filename != "")
+            taskLog.StepNumber = step.StepNumber;
+            taskLog.OperationName = step.OperationName.ToString();
+            if (filename != "")
 			{
 				taskLog.FileName = filename;
 			}
-			taskLog.ResultOperation = ResultOperation.Success;
+			taskLog.ResultOperation = ResultOperation.I;
 
 			_appDbContext.TaskLog.Add(taskLog);
 			_appDbContext.SaveChanges();

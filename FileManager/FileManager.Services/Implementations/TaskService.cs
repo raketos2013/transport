@@ -46,7 +46,7 @@ namespace FileManager.Services.Implementations
 
 		public List<TaskEntity> GetTasksByGroup(string nameGroup)
 		{
-			List<TaskEntity> tasks = new List<TaskEntity>();
+			List<TaskEntity> tasks = [];
 			TaskGroupEntity taskGroup = _taskRepository.GetTaskGroupByName(nameGroup);
 			if (nameGroup == "Все")
 			{
@@ -93,20 +93,22 @@ namespace FileManager.Services.Implementations
             {
                 return false;
             }
-			TaskEntity newTask = new TaskEntity();
-            newTask.TaskId = newIdTask;
-			newTask.Name = copiedTask.Name;
-			newTask.TimeBegin = copiedTask.TimeBegin;
-			newTask.TimeEnd = copiedTask.TimeEnd;
-			newTask.DayActive = copiedTask.DayActive;
-			newTask.AddresseeGroupId = copiedTask.AddresseeGroupId;
-			newTask.IsActive = copiedTask.IsActive;
-			newTask.LastModified = DateTime.Now;
-			newTask.TaskGroupId = copiedTask.TaskGroupId;
-			newTask.ExecutionLeft = copiedTask.ExecutionLimit;
-			newTask.ExecutionLimit = copiedTask.ExecutionLimit;
-			newTask.IsProgress = copiedTask.IsProgress;
-			CreateTask(newTask);
+            TaskEntity newTask = new TaskEntity
+            {
+                TaskId = newIdTask,
+                Name = copiedTask.Name,
+                TimeBegin = copiedTask.TimeBegin,
+                TimeEnd = copiedTask.TimeEnd,
+                DayActive = copiedTask.DayActive,
+                AddresseeGroupId = copiedTask.AddresseeGroupId,
+                IsActive = copiedTask.IsActive,
+                LastModified = DateTime.Now,
+                TaskGroupId = copiedTask.TaskGroupId,
+                ExecutionLeft = copiedTask.ExecutionLimit,
+                ExecutionLimit = copiedTask.ExecutionLimit,
+                IsProgress = copiedTask.IsProgress
+            };
+            CreateTask(newTask);
             
             if (isCopySteps == "on")
             {
@@ -120,24 +122,26 @@ namespace FileManager.Services.Implementations
                                                                             x.StepNumber == item.StepNumber);
                         if (oldStep != null)
                         {
-                            TaskStepEntity newStep = new TaskStepEntity();
-                            newStep.TaskId = newIdTask;
-                            newStep.StepNumber = i;
-                            newStep.OperationName = oldStep.OperationName;
-                            newStep.Description = oldStep.Description;
-                            newStep.FileMask = oldStep.FileMask;
-                            newStep.Source = oldStep.Source;
-                            newStep.Destination = oldStep.Destination;
-                            newStep.IsBreak = oldStep.IsBreak;
-                            newStep.IsActive = oldStep.IsActive;
-							_stepRepository.CreateStep(newStep);
+                            TaskStepEntity newStep = new()
+                            {
+                                TaskId = newIdTask,
+                                StepNumber = i,
+                                OperationName = oldStep.OperationName,
+                                Description = oldStep.Description,
+                                FileMask = oldStep.FileMask,
+                                Source = oldStep.Source,
+                                Destination = oldStep.Destination,
+                                IsBreak = oldStep.IsBreak,
+                                IsActive = oldStep.IsActive
+                            };
+                            _stepRepository.CreateStep(newStep);
 							i++;
 							if (item.IsCopyOperation)
 							{
                                 switch (newStep.OperationName)
                                 {
                                     case OperationName.Copy:
-										OperationCopyEntity newCopy = new OperationCopyEntity();
+										OperationCopyEntity newCopy = new();
 										OperationCopyEntity? oldCopy = _operationRepository.GetCopyByStepId(oldStep.StepId);
 										if (oldCopy != null)
 										{
@@ -154,7 +158,7 @@ namespace FileManager.Services.Implementations
 										}
                                         break;
                                     case OperationName.Move:
-                                        OperationMoveEntity newMove = new OperationMoveEntity();
+                                        OperationMoveEntity newMove = new();
                                         OperationMoveEntity? oldMove = _operationRepository.GetMoveByStepId(oldStep.StepId);
                                         if (oldMove != null)
                                         {
@@ -170,7 +174,7 @@ namespace FileManager.Services.Implementations
                                         }
                                         break;
                                     case OperationName.Read:
-                                        OperationReadEntity newRead = new OperationReadEntity();
+                                        OperationReadEntity newRead = new();
                                         OperationReadEntity? oldRead = _operationRepository.GetReadByStepId(oldStep.StepId);
                                         if (oldRead != null)
                                         {
@@ -188,7 +192,7 @@ namespace FileManager.Services.Implementations
                                         }
                                         break;
                                     case OperationName.Exist:
-                                        OperationExistEntity newExist = new OperationExistEntity();
+                                        OperationExistEntity newExist = new();
                                         OperationExistEntity? oldExist = _operationRepository.GetExistByStepId(oldStep.StepId);
                                         if (oldExist != null)
                                         {
@@ -202,7 +206,7 @@ namespace FileManager.Services.Implementations
                                         }
                                         break;
                                     case OperationName.Rename:
-                                        OperationRenameEntity newRename = new OperationRenameEntity();
+                                        OperationRenameEntity newRename = new();
                                         OperationRenameEntity? oldRename = _operationRepository.GetRenameByStepId(oldStep.StepId);
                                         if (oldRename != null)
                                         {
@@ -216,7 +220,7 @@ namespace FileManager.Services.Implementations
                                         }
                                         break;
                                     case OperationName.Delete:
-                                        OperationDeleteEntity newDelete = new OperationDeleteEntity();
+                                        OperationDeleteEntity newDelete = new();
                                         OperationDeleteEntity? oldDelete = _operationRepository.GetDeleteByStepId(oldStep.StepId);
                                         if (oldDelete != null)
                                         {
@@ -228,7 +232,7 @@ namespace FileManager.Services.Implementations
                                         }
                                         break;
                                     case OperationName.Clrbuf:
-                                        OperationClrbufEntity newClrbuf = new OperationClrbufEntity();
+                                        OperationClrbufEntity newClrbuf = new();
                                         OperationClrbufEntity? oldClrbuf = _operationRepository.GetClrbufByStepId(oldStep.StepId);
                                         if (oldClrbuf != null)
                                         {

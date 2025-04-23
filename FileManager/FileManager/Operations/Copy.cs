@@ -18,7 +18,7 @@ namespace FileManager_Server.Operations
 
         public override void Execute(List<string>? bufferFiles)
         {
-            _taskLogger.StepLog(TaskStep, $"Копирование: {TaskStep.Source} => {TaskStep.Destination}");
+            _taskLogger.StepLog(TaskStep, $"КОПИРОВАНИЕ: {TaskStep.Source} => {TaskStep.Destination}");
             _taskLogger.OperationLog(TaskStep);
 
             string[] files = [];

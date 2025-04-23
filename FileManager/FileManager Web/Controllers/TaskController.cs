@@ -8,9 +8,15 @@ using FileManager.Services.Interfaces;
 using FileManager_Web.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using X.PagedList;
+
+
 //using Microsoft.Build.Framework;
 using System.Text.Json;
 using System.Threading.Tasks;
+using FileManager_Web.ViewModels;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FileManager_Web.Controllers
 {
@@ -59,7 +65,7 @@ namespace FileManager_Web.Controllers
         {
             ViewBag.AddresseeGroups = _addresseeService.GetAllAddresseeGroups();
             ViewBag.TaskGroups = _taskService.GetAllGroups();
-            TaskEntity task = new TaskEntity();                    
+            TaskEntity task = new();
             return View(task);
         }
 
@@ -88,26 +94,66 @@ namespace FileManager_Web.Controllers
             List<TaskStepEntity> steps = _stepService.GetAllStepsByTaskId(taskId)
                                                         .OrderBy(x => x.StepNumber)
                                                         .ToList();
-            TaskDetailsViewModel taskDetails = new TaskDetailsViewModel(task, steps);
+            TaskDetailsViewModel taskDetails = new(task, steps);
             ViewBag.AddresseeGroups = _addresseeService.GetAllAddresseeGroups();
             ViewBag.TaskGroups = _taskService.GetAllGroups();
             return View(taskDetails);
         }
 
-        public IActionResult TaskLog(string dateFrom, string dateTo, string taskId)
-        {
-            DateTime date = dateFrom == null ? DateTime.Today : DateTime.Parse(dateFrom);
-            DateTime date2 = dateTo == null ? DateTime.Today : DateTime.Parse(dateTo);
+        /* public IActionResult TaskLog(string dateFrom, string dateTo, string taskId, int? page)
+         {
+             DateTime date = dateFrom == null ? DateTime.Today : DateTime.Parse(dateFrom);
+             DateTime date2 = dateTo == null ? DateTime.Today : DateTime.Parse(dateTo);
 
-            List<TaskLogEntity> taskLogs = _taskLogService.GetLogsByTaskId(taskId)
+             List<TaskLogEntity> taskLogs = _taskLogService.GetLogsByTaskId(taskId)
+                                                             .Where(x => x.DateTimeLog.Date >= date &&
+                                                                         x.DateTimeLog.Date <= date2)
+                                                             .OrderBy(x => x.DateTimeLog)
+                                                             .ToList();
+             ViewBag.FilterDateFrom = date.ToString("yyyy-MM-dd");
+             ViewBag.FilterDateTo = date2.ToString("yyyy-MM-dd");
+             ViewBag.TaskId = taskId;
+
+             int pageSize = 40;
+             int pageNumber = (page ?? 1);
+
+             return View(taskLogs.ToPagedList(pageNumber, pageSize));
+         }*/
+
+        
+        public IActionResult TaskLog(TaskLogViewModel model, string? taskId, int? page)
+        {
+            DateTime date = model.DateFrom == DateTime.MinValue ? DateTime.Today : model.DateFrom;
+            DateTime date2 = model.DateTo == DateTime.MinValue ? DateTime.Today : model.DateTo;
+
+            List<TaskLogEntity> taskLogs = _taskLogService.GetLogsByTaskId(model.TaskId)
                                                             .Where(x => x.DateTimeLog.Date >= date &&
                                                                         x.DateTimeLog.Date <= date2)
                                                             .OrderBy(x => x.DateTimeLog)
                                                             .ToList();
-            ViewBag.FilterDateFrom = date.ToString("yyyy-MM-dd");
-            ViewBag.FilterDateTo = date2.ToString("yyyy-MM-dd");
-            ViewBag.TaskId = taskId;
-            return View(taskLogs);
+
+            if (model.PageSize == 0)
+            {
+                model.PageSize = 40;
+            }
+
+            if (model.OperationName != OperationName.None)
+            {
+                
+            }
+
+            int pageNumber = (page ?? 1);
+
+
+            TaskLogViewModel viewModel = new()
+            {
+                TaskId = model.TaskId,
+                DateFrom = date,
+                DateTo = date2,
+                Logs = taskLogs.ToPagedList(pageNumber, model.PageSize)
+            };
+
+            return View(viewModel);
         }
 
         [HttpPost]
@@ -139,7 +185,7 @@ namespace FileManager_Web.Controllers
         public IActionResult EditTask(TaskEntity task, string taskId)
         {
             _taskService.EditTask(task);
-            return RedirectToAction("TaskDetails", "Task", new { taskId = taskId });
+            return RedirectToAction("TaskDetails", "Task", new { taskId });
         }
 
         [HttpPost]
@@ -148,29 +194,31 @@ namespace FileManager_Web.Controllers
             List<TaskStepEntity> steps = _stepService.GetAllStepsByTaskId(taskId)
                                                         .OrderBy(x => x.StepNumber)
                                                         .ToList();
-            CopyTaskViewModel task = new CopyTaskViewModel();
-            List<CopyStepViewModel> copySteps = new List<CopyStepViewModel>();
+            CopyTaskViewModel task = new();
+            List<CopyStepViewModel> copySteps = [];
             task.TaskId = taskId;
             foreach (var step in steps)
             {
-                CopyStepViewModel stepViewModel = new CopyStepViewModel();
-                stepViewModel.StepNumber = step.StepNumber;
-                stepViewModel.Description = step.Description;
-                stepViewModel.IsCopy = true;
-                stepViewModel.IsCopyOperation = true;
+                CopyStepViewModel stepViewModel = new()
+                {
+                    StepNumber = step.StepNumber,
+                    Description = step.Description,
+                    IsCopy = true,
+                    IsCopyOperation = true
+                };
                 copySteps.Add(stepViewModel);
             }
             return PartialView(copySteps);
         }
 
         [HttpPost]
-        public IActionResult CopyTask(string idTask, string newIdTask, string isCopySteps, 
+        public IActionResult CopyTask(string idTask, string newIdTask, string isCopySteps,
                                         CopyStepViewModel[] copyStep)
         {
             _taskService.CopyTask(idTask, newIdTask, isCopySteps, copyStep);
             return RedirectToAction("Tasks");
         }
 
-        
+
     }
 }

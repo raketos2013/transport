@@ -28,8 +28,8 @@ namespace FileManager_Server.Operations
             string[] files = [];
             string fileNameDestination, fileName, newFileName;
             bool isCopyFile = true;
-            List<FileInfo> infoFiles = new List<FileInfo>();
-            List<string> successFiles = new List<string>();
+            List<FileInfo> infoFiles = [];
+            List<string> successFiles = [];
             OperationRenameEntity? operation = null;
 
             if (TaskStep.FileMask == "{BUFFER}")
@@ -50,8 +50,8 @@ namespace FileManager_Server.Operations
                     infoFiles.Add(new FileInfo(file));
                 }
             }
-            List<AddresseeEntity> addresses = new List<AddresseeEntity>();
-            _taskLogger.StepLog(TaskStep, $"Количество найденный файлов по маске '{TaskStep.FileMask}': {infoFiles.Count()}");
+            List<AddresseeEntity> addresses = [];
+            _taskLogger.StepLog(TaskStep, $"Количество найденный файлов по маске '{TaskStep.FileMask}': {infoFiles.Count}");
 
             if (infoFiles.Count > 0)
             {
@@ -78,11 +78,11 @@ namespace FileManager_Server.Operations
 
         private string RenameFileNew(string filename, string old_pattern, string new_pattern)
         {
-            StringBuilder stringBuilder = new StringBuilder(new_pattern);
+            StringBuilder stringBuilder = new(new_pattern);
 
             if (Regex.IsMatch(filename, old_pattern, RegexOptions.IgnoreCase))
             {
-                Regex regex = new Regex(old_pattern, RegexOptions.IgnoreCase);
+                Regex regex = new(old_pattern, RegexOptions.IgnoreCase);
 
                 MatchCollection matches = regex.Matches(filename);
                 foreach (Match match in matches)

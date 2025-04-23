@@ -21,7 +21,7 @@ namespace FileManager_Server.Operations
 
         public override void Execute(List<string>? bufferFiles)
         {
-            _taskLogger.StepLog(TaskStep, $"Проверка наличия: {TaskStep.Source} => {TaskStep.Destination}");
+            _taskLogger.StepLog(TaskStep, $"ПРОВЕРКА НАЛИЧИЯ: {TaskStep.Source} => {TaskStep.Destination}");
             _taskLogger.OperationLog(TaskStep);
 
             string[] files = [];

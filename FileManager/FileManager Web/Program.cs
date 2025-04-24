@@ -40,6 +40,9 @@ namespace FileManager_Web
             builder.Services.AddHttpContextAccessor().AddHttpContextAccessor();
             builder.Services.AddAntiforgery(options => options.HeaderName = "XSRF-TOKEN");
 
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession();
+
             builder.Logging.ClearProviders();
            /* builder.Logging.AddDbLogger(options =>
             {
@@ -64,6 +67,7 @@ namespace FileManager_Web
             app.UseStaticFiles();
 
             app.UseRouting();
+            app.UseSession();
 
             app.UseAuthentication();
             app.UseAuthorization();

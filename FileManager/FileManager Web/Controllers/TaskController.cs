@@ -17,6 +17,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using FileManager_Web.ViewModels;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using FileManager_Web.Session;
 
 namespace FileManager_Web.Controllers
 {
@@ -120,41 +121,170 @@ namespace FileManager_Web.Controllers
              return View(taskLogs.ToPagedList(pageNumber, pageSize));
          }*/
 
-        
+
         public IActionResult TaskLog(TaskLogViewModel model, string? taskId, int? page)
         {
+            if (taskId != null)
+            {
+                @ViewBag.TaskId = taskId;
+            }
+
             DateTime date = model.DateFrom == DateTime.MinValue ? DateTime.Today : model.DateFrom;
             DateTime date2 = model.DateTo == DateTime.MinValue ? DateTime.Today : model.DateTo;
 
-            List<TaskLogEntity> taskLogs = _taskLogService.GetLogsByTaskId(model.TaskId)
-                                                            .Where(x => x.DateTimeLog.Date >= date &&
-                                                                        x.DateTimeLog.Date <= date2)
-                                                            .OrderBy(x => x.DateTimeLog)
-                                                            .ToList();
+            
+            int pageNumber = (page ?? 1);
+
 
             if (model.PageSize == 0)
             {
                 model.PageSize = 40;
             }
 
-            if (model.OperationName != OperationName.None)
+
+            TaskLogViewModel sessionModel = HttpContext?.Session.Get<TaskLogViewModel>("LogFilters");
+            if (sessionModel != null)
             {
+                if (sessionModel.TaskId != null)
+                {
+                    date = sessionModel.DateFrom;
+                    date2 = sessionModel.DateTo;
+                    var taskLogs = _taskLogService.GetLogsByTaskId(sessionModel.TaskId)
+                                                            .OrderBy(x => x.DateTimeLog)
+                                                            .Where(x => x.DateTimeLog.Date >= date &&
+                                                                        x.DateTimeLog.Date <= date2);
+                    if (taskLogs != null)
+                    {
+                        if (sessionModel.OperationName != OperationName.None)
+                        {
+                            taskLogs = taskLogs.Where(x => x.OperationName == sessionModel.OperationName.ToString());
+                        }
+                        if (sessionModel.StepNumber != 0)
+                        {
+                            taskLogs = taskLogs.Where(x => x.StepNumber == sessionModel.StepNumber);
+                        }
+                        if (sessionModel.ResultOperation != ResultOperation.N)
+                        {
+                            taskLogs = taskLogs.Where(x => x.ResultOperation == sessionModel.ResultOperation);
+                        }
+                        if (!string.IsNullOrEmpty(sessionModel.FileName))
+                        {
+                            taskLogs = taskLogs.Where(x => x.FileName == sessionModel.FileName);
+                        }
+                        if (!string.IsNullOrEmpty(sessionModel.Text))
+                        {
+                            taskLogs = taskLogs.Where(x => x.ResultText == sessionModel.Text);
+                        }
+
+                        //taskLogs = taskLogs.Skip(sessionModel.PageSize * (page ?? 1)).Take(sessionModel.PageSize);
+
+                        TaskLogViewModel viewModel = new()
+                        {
+                            PageSize = sessionModel.PageSize,
+                            TaskId = sessionModel.TaskId,
+                            DateFrom = date,
+                            DateTo = date2,
+                            Logs = taskLogs.ToPagedList(pageNumber, model.PageSize),
+                            StepNumber = sessionModel.StepNumber,
+                            OperationName = sessionModel.OperationName,
+                            ResultOperation = sessionModel.ResultOperation,
+                            FileName = sessionModel.FileName,
+                            Text = sessionModel.Text
+                        };
+
+                        return View(viewModel);
+                    }
+                }
                 
             }
 
-            int pageNumber = (page ?? 1);
+            var taskLogs2 = _taskLogService.GetLogsByTaskId(taskId)
+                                                            .OrderBy(x => x.DateTimeLog)
+                                                            .Where(x => x.DateTimeLog.Date >= date &&
+                                                                        x.DateTimeLog.Date <= date2)
+                                                            //.Skip(1)
+                                                            .Take(40);
+
+            TaskLogViewModel viewModel2 = new()
+            {
+                TaskId = taskId,
+                DateFrom = date,
+                DateTo = date2,
+                Logs = taskLogs2.ToPagedList(pageNumber, model.PageSize)
+            };
+
+            return View(viewModel2);
+        }
+
+        [HttpPost]
+        public IActionResult TaskLog(TaskLogViewModel model)
+        {
+            DateTime date = model.DateFrom == DateTime.MinValue ? DateTime.Today : model.DateFrom;
+            DateTime date2 = model.DateTo == DateTime.MinValue ? DateTime.Today : model.DateTo;
+
+            var taskLogs = _taskLogService.GetLogsByTaskId(model.TaskId)
+                                                            .OrderBy(x => x.DateTimeLog)
+                                                            .Where(x => x.DateTimeLog.Date >= date &&
+                                                                        x.DateTimeLog.Date <= date2);
+                                                            
+            if (taskLogs != null)
+            {
+                if (model.OperationName != OperationName.None)
+                {
+                    taskLogs = taskLogs.Where(x => x.OperationName == model.OperationName.ToString());
+                }
+                if (model.StepNumber != 0)
+                {
+                    taskLogs = taskLogs.Where(x => x.StepNumber == model.StepNumber);
+                }
+                if (model.ResultOperation != ResultOperation.N)
+                {
+                    taskLogs = taskLogs.Where(x => x.ResultOperation == model.ResultOperation);
+                }
+                if (!string.IsNullOrEmpty(model.FileName))
+                {
+                    taskLogs = taskLogs.Where(x => x.FileName == model.FileName);
+                }
+                if (!string.IsNullOrEmpty(model.Text))
+                {
+                    taskLogs = taskLogs.Where(x => x.ResultText == model.Text);
+                }
+                
+            }
+            
+
+            model.Logs = null;
+            HttpContext?.Session.Set<TaskLogViewModel>("LogFilters", model);
+
+
+
+
+            if (model.PageSize == 0)
+            {
+                model.PageSize = 40;
+            }
+            int pageNumber = 1;
 
 
             TaskLogViewModel viewModel = new()
             {
+                PageSize = model.PageSize,
                 TaskId = model.TaskId,
                 DateFrom = date,
                 DateTo = date2,
-                Logs = taskLogs.ToPagedList(pageNumber, model.PageSize)
+                Logs = taskLogs.ToPagedList(pageNumber, model.PageSize),
+                StepNumber = model.StepNumber,
+                ResultOperation = model.ResultOperation,
+                OperationName = model.OperationName,
+                FileName = model.FileName,
+                Text = model.Text
             };
 
             return View(viewModel);
         }
+
+
+
 
         [HttpPost]
         public IActionResult CreateTaskGroup(string nameGroup)

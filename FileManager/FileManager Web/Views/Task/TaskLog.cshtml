@@ -15,12 +15,11 @@
 
 }
 <div class="container-fluid padding-top-container" style="padding-left: 0px; padding-right: 0px;">
-    <form method="get">
         <div class="row">
 
             <div class="col-xl-2">
                 <div>
-                    <a asp-controller="Task" asp-action="TaskDetails" asp-route-taskId="@ViewBag.TaskId" class="btn btn-warning">Назад</a>
+                    <a asp-controller="Task" asp-action="TaskDetails" asp-route-taskId="@Model.TaskId" class="btn btn-warning">Назад</a>
                 </div>
 
 
@@ -33,7 +32,7 @@
                         </h2>
                         <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
                             <div class="accordion-body">
-                                @*  <form method="get" asp-route-taskId="@ViewBag.TaskId"> *@
+                                 <form method="post" asp-route-taskId="@ViewBag.TaskId">
                                 <div class="row">
                                     <div class="form-group">
                                         <label asp-for="PageSize" class="control-label"></label>
@@ -87,7 +86,7 @@
                                     </div>
 
                                 </div>
-                                @* </form> *@
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -153,14 +152,10 @@
                 </table>
 
                 Страница @(Model.Logs.PageCount < Model.Logs.PageNumber ? 0 : Model.Logs.PageNumber) из @Model.Logs.PageCount
-                @{
-                    var viewModel = Model;
-                }
             @Html.PagedListPager(Model.Logs,
                      page => Url.Action("TaskLog",
                      new
                      {
-                         model = viewModel,
                          page = page
                      }),
                      new PagedListRenderOptions
@@ -174,5 +169,5 @@
         </div>
         
     </div>
-    </form>
+    
 </div>

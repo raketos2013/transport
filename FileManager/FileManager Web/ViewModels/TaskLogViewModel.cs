@@ -26,6 +26,6 @@ namespace FileManager_Web.ViewModels
         [Display(Name = "Сообщение")]
         public string? Text { get; set; }
         public int? PageNumber {  get; set; }
-        public IPagedList<TaskLogEntity> Logs {  get; set; }
+        public IPagedList<TaskLogEntity> Logs { get; set; } = new List<TaskLogEntity>().ToPagedList();
     }
 }

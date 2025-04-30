@@ -2,20 +2,17 @@
 using FileManager.Domain.Entity;
 using FileManager_Server.Loggers;
 using FileManager_Server.MailSender;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace FileManager_Server.Operations
 {
-    public class Clrbuf : StepOperation
+    public class Clrbuf(TaskStepEntity step, 
+                        TaskOperation? operation, 
+                        ITaskLogger taskLogger, 
+                        AppDbContext appDbContext, 
+                        IMailSender mailSender) 
+                : StepOperation(step, operation, taskLogger, appDbContext, mailSender)
     {
-        public Clrbuf(TaskStepEntity step, TaskOperation? operation, ITaskLogger taskLogger, AppDbContext appDbContext, IMailSender mailSender)
-            : base(step, operation, taskLogger, appDbContext, mailSender)
-        { }
-
         public override void Execute(List<string>? bufferFiles)
         {
             _taskLogger.StepLog(TaskStep, $"ОЧИСТКА БУФЕРА: {TaskStep.Source}");
@@ -27,10 +24,7 @@ namespace FileManager_Server.Operations
             }
             _taskLogger.StepLog(TaskStep, $"Удалено файлов из буфера: {countFiles}");
 
-            if (_nextStep != null)
-            {
-                _nextStep.Execute(bufferFiles);
-            }
+            _nextStep?.Execute(bufferFiles);
         }
     }
 }

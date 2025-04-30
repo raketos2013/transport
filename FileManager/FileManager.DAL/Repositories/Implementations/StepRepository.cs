@@ -1,37 +1,28 @@
 ﻿using FileManager.DAL.Repositories.Interfaces;
 using FileManager.Domain.Entity;
-using FileManager.Domain.Enum;
-using System.Threading.Tasks;
 
 
 namespace FileManager.DAL.Repositories.Implementations
 {
-	public class StepRepository : IStepRepository
+	public class StepRepository(AppDbContext appDbContext) : IStepRepository
 	{
-		private readonly AppDbContext _appDbContext;
-
-		public StepRepository(AppDbContext appDbContext)
-		{
-			_appDbContext = appDbContext;
-		}
-
         public bool ActivatedStep(int stepId)
 		{
 			try
 			{
-				TaskStepEntity? step = _appDbContext.TaskStep.FirstOrDefault(x => x.StepId ==stepId);
+				TaskStepEntity? step = appDbContext.TaskStep.FirstOrDefault(x => x.StepId ==stepId);
 				
 				if (step != null)
 				{
-					TaskEntity? task = _appDbContext.Task.FirstOrDefault(x => x.TaskId == step.TaskId);
+					TaskEntity? task = appDbContext.Task.FirstOrDefault(x => x.TaskId == step.TaskId);
 					if (task != null)
 					{
 						step.IsActive = !step.IsActive;
-						_appDbContext.TaskStep.Update(step);
-						_appDbContext.SaveChanges();
+						appDbContext.TaskStep.Update(step);
+						appDbContext.SaveChanges();
 						task.LastModified = DateTime.Now;
-						_appDbContext.Task.Update(task);
-						_appDbContext.SaveChanges();
+						appDbContext.Task.Update(task);
+						appDbContext.SaveChanges();
 						return true;
 					}
 				}
@@ -58,11 +49,11 @@ namespace FileManager.DAL.Repositories.Implementations
                             step.StepNumber++;
                         }
                     }
-                    _appDbContext.TaskStep.UpdateRange(steps);
+                    appDbContext.TaskStep.UpdateRange(steps);
                 }
                 
-                _appDbContext.TaskStep.Add(taskStep);
-				_appDbContext.SaveChanges();
+                appDbContext.TaskStep.Add(taskStep);
+				appDbContext.SaveChanges();
 				return true;
 			}
 			catch (Exception)
@@ -75,8 +66,8 @@ namespace FileManager.DAL.Repositories.Implementations
 		{
 			try
 			{
-				_appDbContext.TaskStep.Update(taskStep);
-				_appDbContext.SaveChanges();
+				appDbContext.TaskStep.Update(taskStep);
+				appDbContext.SaveChanges();
                 return true;
 			}
 			catch (Exception)
@@ -87,22 +78,22 @@ namespace FileManager.DAL.Repositories.Implementations
 
 		public List<TaskStepEntity> GetAllSteps()
 		{
-			return _appDbContext.TaskStep.ToList();
+			return appDbContext.TaskStep.ToList();
 		}
 
 		public List<TaskStepEntity> GetAllStepsByTaskId(string taskId)
 		{
-			return _appDbContext.TaskStep.Where(x => x.TaskId == taskId).ToList();
+			return appDbContext.TaskStep.Where(x => x.TaskId == taskId).ToList();
 		}
 
         public TaskStepEntity? GetStepByStepId(int stepId)
         {
-			return _appDbContext.TaskStep.FirstOrDefault(x => x.StepId == stepId);
+			return appDbContext.TaskStep.FirstOrDefault(x => x.StepId == stepId);
         }
 
         public TaskStepEntity? GetStepByTaskId(string taskId, int stepNumber)
 		{
-			return _appDbContext.TaskStep.FirstOrDefault(x => x.TaskId == taskId &&
+			return appDbContext.TaskStep.FirstOrDefault(x => x.TaskId == taskId &&
 																x.StepNumber == stepNumber);
 		}
 
@@ -110,8 +101,8 @@ namespace FileManager.DAL.Repositories.Implementations
         {
 			try
 			{
-				_appDbContext.TaskStep.UpdateRange(steps);
-				_appDbContext.SaveChanges();
+				appDbContext.TaskStep.UpdateRange(steps);
+				appDbContext.SaveChanges();
 				return true;
 			}
 			catch (Exception)

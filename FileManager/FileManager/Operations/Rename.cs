@@ -3,31 +3,26 @@ using FileManager.Domain.Entity;
 using FileManager_Server.Loggers;
 using FileManager_Server.MailSender;
 using Microsoft.VisualBasic;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+
 
 namespace FileManager_Server.Operations
 {
-    public class Rename : StepOperation
+    public class Rename(TaskStepEntity step, 
+                        TaskOperation? operation, 
+                        ITaskLogger taskLogger, 
+                        AppDbContext appDbContext, 
+                        IMailSender mailSender) 
+                : StepOperation(step, operation, taskLogger, appDbContext, mailSender)
     {
-        public Rename(TaskStepEntity step, TaskOperation? operation, ITaskLogger taskLogger, AppDbContext appDbContext, IMailSender mailSender)
-            : base(step, operation, taskLogger, appDbContext, mailSender)
-        { }
-
-
         public override void Execute(List<string>? bufferFiles)
         {
             _taskLogger.StepLog(TaskStep, $"ПЕРЕИМЕНОВАНИЕ: {TaskStep.Source}");
             _taskLogger.OperationLog(TaskStep);
 
-
             string[] files = [];
-            string fileNameDestination, fileName, newFileName;
-            bool isCopyFile = true;
+            string fileName, newFileName;
             List<FileInfo> infoFiles = [];
             List<string> successFiles = [];
             OperationRenameEntity? operation = null;
@@ -68,12 +63,7 @@ namespace FileManager_Server.Operations
                 }
             }
 
-
-
-            if (_nextStep != null)
-            {
-                _nextStep.Execute(bufferFiles);
-            }
+            _nextStep?.Execute(bufferFiles);
         }
 
         private string RenameFileNew(string filename, string old_pattern, string new_pattern)
@@ -87,17 +77,15 @@ namespace FileManager_Server.Operations
                 MatchCollection matches = regex.Matches(filename);
                 foreach (Match match in matches)
                 {
-                    foreach (Group item in match.Groups)
+                    foreach (var item in from Group item in match.Groups
+                                         where item.Name != "0"
+                                         select item)
                     {
-                        if (item.Name != "0")
-                        {
-                            stringBuilder.Replace($"({item.Name})", $"{item.Value}");
-                        }
+                        stringBuilder.Replace($"({item.Name})", $"{item.Value}");
                     }
                 }
             }
             return stringBuilder.ToString();
         }
-
     }
 }

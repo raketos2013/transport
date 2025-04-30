@@ -1,24 +1,19 @@
 ﻿using FileManager.DAL;
 using FileManager.Domain.Entity;
 using FileManager.Domain.Enum;
-using FileManager.Services;
 using FileManager_Server.Loggers;
 using FileManager_Server.MailSender;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace FileManager_Server.Operations
 {
-    public class Exist : StepOperation
+    public class Exist(TaskStepEntity step, 
+                        TaskOperation? operation, 
+                        ITaskLogger taskLogger, 
+                        AppDbContext appDbContext, 
+                        IMailSender mailSender) 
+                : StepOperation(step, operation, taskLogger, appDbContext, mailSender)
     {
-        public Exist(TaskStepEntity step, TaskOperation? operation, ITaskLogger taskLogger, AppDbContext appDbContext, IMailSender mailSender)
-            : base(step, operation, taskLogger, appDbContext, mailSender)
-        {
-        }
-
         public override void Execute(List<string>? bufferFiles)
         {
             _taskLogger.StepLog(TaskStep, $"ПРОВЕРКА НАЛИЧИЯ: {TaskStep.Source} => {TaskStep.Destination}");
@@ -27,11 +22,11 @@ namespace FileManager_Server.Operations
             string[] files = [];
             string fileName;
             OperationExistEntity? operation = null;
-            List<AddresseeEntity> addresses = new List<AddresseeEntity>();
-            List<string> successFiles = new List<string>();
+            List<AddresseeEntity> addresses = [];
+            List<string> successFiles = [];
 
             files = Directory.GetFiles(TaskStep.Source, TaskStep.FileMask);
-            _taskLogger.StepLog(TaskStep, $"Количество найденный файлов по маске '{TaskStep.FileMask}': {files.Count()}");
+            _taskLogger.StepLog(TaskStep, $"Количество найденный файлов по маске '{TaskStep.FileMask}': {files.Length}");
 
             operation = _appDbContext.OperationExist.FirstOrDefault(x => x.StepId == TaskStep.StepId);
             if (operation != null)
@@ -47,7 +42,7 @@ namespace FileManager_Server.Operations
                 switch (operation.ExpectedResult)
                 {
                     case ExpectedResult.Success:
-                        if (files.Count() > 0)
+                        if (files.Length > 0)
                         {
                             if (operation.BreakTaskAfterError)
                             {
@@ -71,7 +66,7 @@ namespace FileManager_Server.Operations
                         }
                         break;
                     case ExpectedResult.Error:
-                        if (files.Count() == 0)
+                        if (files.Length == 0)
                         {
                             if (operation.BreakTaskAfterError)
                             {
@@ -122,10 +117,7 @@ namespace FileManager_Server.Operations
                 _mailSender.Send(TaskStep, addresses, successFiles);
             }
 
-            if (_nextStep != null)
-            {
-                _nextStep.Execute(bufferFiles);
-            }
+            _nextStep?.Execute(bufferFiles);
         }
     }
 }

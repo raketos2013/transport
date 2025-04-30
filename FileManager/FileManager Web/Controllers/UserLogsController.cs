@@ -30,7 +30,9 @@ namespace FileManager_Web.Controllers
             DateTime date2 = dateTo == null ? DateTime.Today : DateTime.Parse(dateTo);
 
             List<UserLogEntity> userLogs = _appDbContext.UserLog.Where(x => x.DateTimeLog.Date >= date &&
-                                                                             x.DateTimeLog.Date <= date2 ).OrderByDescending(x => x.DateTimeLog).ToList();
+                                                                             x.DateTimeLog.Date <= date2 )
+                                                                .OrderByDescending(x => x.DateTimeLog)
+                                                                .ToList();
             ViewBag.FilterDateFrom = date.ToString("yyyy-MM-dd");
             ViewBag.FilterDateTo = date2.ToString("yyyy-MM-dd");
             return View(userLogs);

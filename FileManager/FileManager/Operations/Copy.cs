@@ -3,19 +3,17 @@ using FileManager.Domain.Entity;
 using FileManager.Domain.Enum;
 using FileManager_Server.Loggers;
 using FileManager_Server.MailSender;
-using Microsoft.EntityFrameworkCore;
+
 
 namespace FileManager_Server.Operations
 {
-    public class Copy : StepOperation
+    public class Copy(TaskStepEntity step, 
+                        TaskOperation? operation, 
+                        ITaskLogger taskLogger, 
+                        AppDbContext appDbContext, 
+                        IMailSender mailSender) 
+                : StepOperation(step, operation, taskLogger, appDbContext, mailSender)
     {
-
-        public Copy(TaskStepEntity step, TaskOperation? operation, ITaskLogger taskLogger, AppDbContext appDbContext, IMailSender mailSender)
-            : base(step, operation, taskLogger, appDbContext, mailSender)
-        {
-        }
-
-
         public override void Execute(List<string>? bufferFiles)
         {
             _taskLogger.StepLog(TaskStep, $"КОПИРОВАНИЕ: {TaskStep.Source} => {TaskStep.Destination}");
@@ -24,8 +22,8 @@ namespace FileManager_Server.Operations
             string[] files = [];
             string fileNameDestination, fileName;
             bool isCopyFile = true;
-            List<FileInfo> infoFiles = new List<FileInfo>();
-            List<string> successFiles = new List<string>();
+            List<FileInfo> infoFiles = [];
+            List<string> successFiles = [];
             OperationCopyEntity? operation = null;
 
             if (TaskStep.FileMask == "{BUFFER}")
@@ -46,8 +44,8 @@ namespace FileManager_Server.Operations
                     infoFiles.Add(new FileInfo(file));
                 }
             }
-            List<AddresseeEntity> addresses = new List<AddresseeEntity>();
-            _taskLogger.StepLog(TaskStep, $"Количество найденный файлов по маске '{TaskStep.FileMask}': {infoFiles.Count()}");
+            List<AddresseeEntity> addresses = [];
+            _taskLogger.StepLog(TaskStep, $"Количество найденный файлов по маске '{TaskStep.FileMask}': {infoFiles.Count}");
             if (infoFiles.Count > 0)
             {
                 operation = _appDbContext.OperationCopy.FirstOrDefault(x => x.StepId == TaskStep.StepId);
@@ -189,7 +187,7 @@ namespace FileManager_Server.Operations
                 if (isCopyFile)
                 {
                     fileNameDestination = Path.Combine(TaskStep.Destination, fileName);
-                    FileInfo destinationFileInfo = new FileInfo(fileNameDestination);
+                    FileInfo destinationFileInfo = new(fileNameDestination);
                     if (destinationFileInfo.Exists && destinationFileInfo.IsReadOnly && isOverwriteFile)
                     {
                         destinationFileInfo.IsReadOnly = false;
@@ -214,10 +212,7 @@ namespace FileManager_Server.Operations
             }
 
 
-            if (_nextStep != null)
-            {
-                _nextStep.Execute(bufferFiles);
-            }
+            _nextStep?.Execute(bufferFiles);
         }
     }
 }

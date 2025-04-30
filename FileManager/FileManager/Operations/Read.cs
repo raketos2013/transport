@@ -8,13 +8,13 @@ using System.Text;
 
 namespace FileManager_Server.Operations
 {
-    public class Read : StepOperation
+    public class Read(TaskStepEntity step, 
+                        TaskOperation? operation, 
+                        ITaskLogger taskLogger, 
+                        AppDbContext appDbContext, 
+                        IMailSender mailSender) 
+                : StepOperation(step, operation, taskLogger, appDbContext, mailSender)
     {
-        public Read(TaskStepEntity step, TaskOperation? operation, ITaskLogger taskLogger, AppDbContext appDbContext, IMailSender mailSender)
-            : base(step, operation, taskLogger, appDbContext, mailSender)
-        {
-        }
-
         public override void Execute(List<string>? bufferFiles)
         {
             _taskLogger.StepLog(TaskStep, $"ЧТЕНИЕ: {TaskStep.Source} => {TaskStep.Destination}");
@@ -22,15 +22,12 @@ namespace FileManager_Server.Operations
 
             string[] files = [];
             string fileName;
-            List<FileInfo> infoFiles = new List<FileInfo>();
+            List<FileInfo> infoFiles = [];
             OperationReadEntity? operation = null;
-            List<AddresseeEntity> addresses = new List<AddresseeEntity>();
-            List<string> successFiles = new List<string>();
+            List<AddresseeEntity> addresses = [];
+            List<string> successFiles = [];
 
-            if (bufferFiles == null)
-            {
-                bufferFiles = new List<string>();
-            }
+            bufferFiles ??= [];
 
             if (TaskStep.FileMask == "{BUFFER}")
             {
@@ -50,7 +47,7 @@ namespace FileManager_Server.Operations
                     infoFiles.Add(new FileInfo(file));
                 }
             }
-            _taskLogger.StepLog(TaskStep, $"Количество найденных файлов по маске '{TaskStep.FileMask}': {files.Count()}");
+            _taskLogger.StepLog(TaskStep, $"Количество найденных файлов по маске '{TaskStep.FileMask}': {files.Length}");
             bool isReadFile = true;
             if (infoFiles.Count > 0)
             {
@@ -107,10 +104,8 @@ namespace FileManager_Server.Operations
             }
 
             _taskLogger.StepLog(TaskStep, "Переход к следующему шагу");
-            if (_nextStep != null)
-            {
-                _nextStep.Execute(bufferFiles);
-            }
+
+            _nextStep?.Execute(bufferFiles);
         }
     }
 }

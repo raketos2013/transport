@@ -1,21 +1,11 @@
 ﻿using FileManager.DAL.Repositories.Interfaces;
 using FileManager.Domain.Entity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace FileManager.DAL.Repositories.Implementations
 {
-    public class AddresseeRepository : IAddresseeRepository
+    public class AddresseeRepository(AppDbContext appDbContext) : IAddresseeRepository
     {
-        private readonly AppDbContext _appDbContext;
-        public AddresseeRepository(AppDbContext appDbContext)
-        {
-            _appDbContext = appDbContext;
-        }
-
         public bool CreateAddressee(AddresseeEntity addressee)
         {
             throw new NotImplementedException();
@@ -48,22 +38,22 @@ namespace FileManager.DAL.Repositories.Implementations
 
         public AddresseeEntity? GetAddresseeById(string id)
         {
-            return _appDbContext.Addressee.FirstOrDefault(x => x.PersonalNumber == id); 
+            return appDbContext.Addressee.FirstOrDefault(x => x.PersonalNumber == id); 
         }
 
         public AddresseeGroupEntity? GetAddresseeGroupById(int id)
         {
-            return _appDbContext.AddresseeGroup.FirstOrDefault(x => x.Id == id);
+            return appDbContext.AddresseeGroup.FirstOrDefault(x => x.Id == id);
         }
 
         public List<AddresseeGroupEntity> GetAllAddresseeGroups()
         {
-            return _appDbContext.AddresseeGroup.ToList();
+            return appDbContext.AddresseeGroup.ToList();
         }
 
         public List<AddresseeEntity> GetAllAddressees()
         {
-            return _appDbContext.Addressee.ToList();
+            return appDbContext.Addressee.ToList();
         }
     }
 }

@@ -1,21 +1,13 @@
 ﻿using FileManager.DAL.Repositories.Interfaces;
 using FileManager.Domain.Entity;
 using FileManager.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace FileManager.Services.Implementations
 {
-    public class AddresseeService : IAddresseeService
+    public class AddresseeService(IAddresseeRepository addresseeRepository) 
+                : IAddresseeService
     {
-        private readonly IAddresseeRepository _addresseeRepository;
-        public AddresseeService(IAddresseeRepository addresseeRepository)
-        {
-            _addresseeRepository = addresseeRepository;
-        }
         public bool CreateAddressee(AddresseeEntity addressee)
         {
             throw new NotImplementedException();
@@ -48,22 +40,22 @@ namespace FileManager.Services.Implementations
 
         public AddresseeEntity? GetAddresseeById(string id)
         {
-            return _addresseeRepository.GetAddresseeById(id);
+            return addresseeRepository.GetAddresseeById(id);
         }
 
         public AddresseeGroupEntity? GetAddresseeGroupById(int id)
         {
-            return _addresseeRepository.GetAddresseeGroupById(id);
+            return addresseeRepository.GetAddresseeGroupById(id);
         }
 
         public List<AddresseeGroupEntity> GetAllAddresseeGroups()
         {
-            return _addresseeRepository.GetAllAddresseeGroups();
+            return addresseeRepository.GetAllAddresseeGroups();
         }
 
         public List<AddresseeEntity> GetAllAddressees()
         {
-            return _addresseeRepository.GetAllAddressees();
+            return addresseeRepository.GetAllAddressees();
         }
     }
 }

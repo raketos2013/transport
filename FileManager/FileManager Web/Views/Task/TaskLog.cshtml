@@ -1,10 +1,10 @@
 ﻿@using FileManager.Domain.Entity
 @using FileManager.Domain.Enum
 @using FileManager_Web.ViewModels
+@using System.Web;
 @using X.PagedList;
-@using X.PagedList.Mvc.Core;
-@using X.PagedList.Web.Common;
-@using X.PagedList.Mvc.Bootstrap4.Core
+@using X.PagedList.Mvc.Core
+
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
@@ -15,24 +15,24 @@
 
 }
 <div class="container-fluid padding-top-container" style="padding-left: 0px; padding-right: 0px;">
-        <div class="row">
+    <div class="row">
 
-            <div class="col-xl-2">
-                <div>
-                    <a asp-controller="Task" asp-action="TaskDetails" asp-route-taskId="@Model.TaskId" class="btn btn-warning">Назад</a>
-                </div>
+        <div class="col-xl-2">
+            <div>
+                <a asp-controller="Task" asp-action="TaskDetails" asp-route-taskId="@Model.TaskId" class="btn btn-warning">Назад</a>
+            </div>
 
 
-                <div class="accordion" id="accordionExample">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingTwo">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                Фильтр
-                            </button>
-                        </h2>
-                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-                            <div class="accordion-body">
-                                 <form method="post" asp-route-taskId="@ViewBag.TaskId">
+            <div class="accordion" id="accordionExample">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingTwo">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            Фильтр
+                        </button>
+                    </h2>
+                    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                            <form method="post" asp-route-taskId="@ViewBag.TaskId">
                                 <div class="row">
                                     <div class="form-group">
                                         <label asp-for="PageSize" class="control-label"></label>
@@ -51,7 +51,7 @@
                                     </div>
                                     <div class="form-group">
                                         <label asp-for="TaskId" class="control-label"></label>
-                                        <input asp-for="TaskId" class="form-control"/>
+                                        <input asp-for="TaskId" class="form-control" readonly />
                                         <span asp-validation-for="TaskId" class="text-danger"></span>
                                     </div>
                                     <div class="form-group">
@@ -86,72 +86,75 @@
                                     </div>
 
                                 </div>
-                                </form>
-                            </div>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-xl-10" id="tableAndPaginationDiv">
+        </div>
+        <div class="col-xl-10" id="tableAndPaginationDiv">
 
-                <table class="table table-striped" id="myTable">
-                    <caption class="caption-top">Список обработанных файлов</caption>
-                    <thead>
+            <table class="table table-striped" id="myTable">
+                <caption class="caption-top">Список обработанных файлов</caption>
+                <thead>
+                    <tr>
+                        <th onclick="sortTable(0)">
+                            Дата-время события
+                        </th>
+                        <th onclick="sortTable(1)">
+                            Задача
+                        </th>
+                        <th onclick="sortTable(3)">
+                            Номер шага
+                        </th>
+                        <th onclick="sortTable(3)">
+                            Операция
+                        </th>
+                        <th onclick="sortTable(3)">
+                            Результат
+                        </th>
+                        <th onclick="sortTable(2)">
+                            Имя файла
+                        </th>
+                        <th onclick="sortTable(4)">
+                            Сообщение
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Logs)
+                    {
                         <tr>
-                            <th onclick="sortTable(0)">
-                                Дата-время события
-                            </th>
-                            <th onclick="sortTable(1)">
-                                Задача
-                            </th>
-                            <th onclick="sortTable(3)">
-                                Номер шага
-                            </th>
-                            <th onclick="sortTable(3)">
-                                Операция
-                            </th>
-                            <th onclick="sortTable(3)">
-                                Результат
-                            </th>
-                            <th onclick="sortTable(2)">
-                                Имя файла
-                            </th>
-                            <th onclick="sortTable(4)">
-                                Сообщение
-                            </th>
+                            <td>
+                                @Html.DisplayFor(model => item.DateTimeLog)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(model => item.TaskId)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(model => item.StepNumber)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(model => item.OperationName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(model => item.ResultOperation)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(model => item.FileName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(model => item.ResultText)
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model.Logs)
-                        {
-                            <tr>
-                                <td>
-                                    @Html.DisplayFor(model => item.DateTimeLog)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(model => item.TaskId)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(model => item.StepNumber)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(model => item.OperationName)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(model => item.ResultOperation)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(model => item.FileName)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(model => item.ResultText)
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+                    }
+                </tbody>
+            </table>
 
-                Страница @(Model.Logs.PageCount < Model.Logs.PageNumber ? 0 : Model.Logs.PageNumber) из @Model.Logs.PageCount
+            <p>Страница @(Model.Logs.PageCount < Model.Logs.PageNumber ? 0 : Model.Logs.PageNumber) из @Model.Logs.PageCount</p>
+
+            
+
             @Html.PagedListPager(Model.Logs,
                      page => Url.Action("TaskLog",
                      new
@@ -163,11 +166,14 @@
                 DisplayEllipsesWhenNotShowingAllPageNumbers = true,
                 LiElementClasses = new string[] { "page-item" },
                 PageClasses = new string[] { "page-link" }
-            })
+            }
+
+                     )
+            
 
 
         </div>
-        
+
     </div>
-    
+
 </div>

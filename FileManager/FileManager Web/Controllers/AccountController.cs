@@ -2,29 +2,20 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
-using System.DirectoryServices.ActiveDirectory;
-using System.Net;
-using System.DirectoryServices;
 using System.DirectoryServices.AccountManagement;
-using System.Security.Principal;
-using System.Runtime.InteropServices;
 using FileManager_Web.Logging;
+using System.Threading.Tasks;
+using System.Text.Json;
+
 
 namespace FileManager_Web.Controllers
 {
 
 
-    public class AccountController : Controller
+    public class AccountController(ILogger<AccountController> logger, UserLogging userLogging) : Controller
     {
 
-        private readonly ILogger _logger;
-        private readonly UserLogging _userLogging;
-
-        public AccountController(ILogger<AccountController> logger, UserLogging userLogging)
-        {
-            _logger = logger;
-            _userLogging = userLogging; 
-        }
+        private readonly ILogger _logger = logger;
 
         public IActionResult Login()
         {
@@ -36,7 +27,7 @@ namespace FileManager_Web.Controllers
         public IActionResult Logout()
         {
             HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            _userLogging.Logging(HttpContext.User.Identity.Name, "Выход из системы", "");
+            userLogging.Logging(HttpContext.User.Identity.Name, "Выход из системы", JsonSerializer.Serialize(""));
             return RedirectToAction("Login");
         }
 
@@ -44,7 +35,7 @@ namespace FileManager_Web.Controllers
         public void LogoutX()
         {
             HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            _userLogging.Logging(HttpContext.User.Identity.Name, "Выход из системы", "");
+            userLogging.Logging(HttpContext.User.Identity.Name, "Выход из системы", JsonSerializer.Serialize(""));
         }
 
 
@@ -66,37 +57,37 @@ namespace FileManager_Web.Controllers
                 }
 
                 ContextType authenticationType = ContextType.Domain;
-                PrincipalContext principalContext = new PrincipalContext(authenticationType);
+                PrincipalContext principalContext = new(authenticationType);
 
                 isAuthenticated = principalContext.ValidateCredentials(username, password, ContextOptions.Negotiate);
                 if (isAuthenticated)
                 {
                     userPrincipal = UserPrincipal.FindByIdentity(principalContext, username);
                     groups = userPrincipal.GetAuthorizationGroups();
-                    _userLogging.Logging(username, "Пользователь авторизован", "");
+                    //userLogging.Logging(username, "Пользователь авторизован", JsonSerializer.Serialize(""));
                 }
                 if (!isAuthenticated || userPrincipal == null)
                 {
                     ViewBag.MessageAuthenticate = "Имя пользователя или пароль не верны";
-                    _userLogging.Logging(username, ViewBag.MessageAuthenticate, "");
+                    userLogging.Logging(username, ViewBag.MessageAuthenticate, JsonSerializer.Serialize(""));
                     return View();
                 }
                 else if (userPrincipal.IsAccountLockedOut())
                 {
                     ViewBag.MessageAuthenticate = "Пользователь блокирован";
-                    _userLogging.Logging(username, ViewBag.MessageAuthenticate, "");
+                    userLogging.Logging(username, ViewBag.MessageAuthenticate, JsonSerializer.Serialize(""));
                     return View();
                 }
                 else if (userPrincipal.Enabled.HasValue && userPrincipal.Enabled.Value == false)
                 {
                     ViewBag.MessageAuthenticate = "Пользователь блокирован";
-                    _userLogging.Logging(username, ViewBag.MessageAuthenticate, "");
+                    userLogging.Logging(username, ViewBag.MessageAuthenticate, JsonSerializer.Serialize(""));
                     return View();
                 }
 
                 //Create the identity for the user  
 
-                List<Claim> claims = new List<Claim>();
+                List<Claim> claims = [];
                 foreach (var gr in groups)
                 {
                     if (gr is GroupPrincipal)
@@ -120,7 +111,7 @@ namespace FileManager_Web.Controllers
 
                 principal = new ClaimsPrincipal(identity);
                 HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-                _userLogging.Logging(username, "Вход в систему", "");
+                userLogging.Logging(username, "Вход в систему", JsonSerializer.Serialize(""));
                 return RedirectToAction("Tasks", "Task");
 
             }

@@ -1,71 +1,48 @@
-﻿using FileManager.DAL;
-using FileManager.Domain.Entity;
+﻿using FileManager.Domain.Entity;
 using FileManager.Domain.Enum;
 using FileManager.Domain.ViewModels.Step;
 using FileManager.Domain.ViewModels.Task;
-using FileManager.Services.Implementations;
 using FileManager.Services.Interfaces;
 using FileManager_Web.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using X.PagedList;
-
-
-//using Microsoft.Build.Framework;
-using System.Text.Json;
-using System.Threading.Tasks;
 using FileManager_Web.ViewModels;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using FileManager_Web.Session;
+using X.PagedList;
+using X.PagedList.Extensions;
+using System.Text.Json;
+
+
 
 namespace FileManager_Web.Controllers
 {
     [Authorize(Roles = "o.br.ДИТ")]
-    public class TaskController : Controller
-    {
-        private readonly ILogger<TaskController> _logger;
-        private readonly UserLogging _userLogging;
-        private readonly ITaskService _taskService;
-        private readonly IAddresseeService _addresseeService;
-        private readonly IStepService _stepService;
-        private readonly ITaskLogService _taskLogService;
-        private readonly IOperationService _operationService;
-        public TaskController(ILogger<TaskController> logger,
+    public class TaskController(ILogger<TaskController> logger,
                                 UserLogging userLogging,
                                 ITaskService taskService,
                                 IAddresseeService addresseeService,
                                 IStepService stepService,
-                                ITaskLogService taskLogService,
-                                IOperationService operationService)
-        {
-            _logger = logger;
-            _userLogging = userLogging;
-            _taskService = taskService;
-            _addresseeService = addresseeService;
-            _stepService = stepService;
-            _taskLogService = taskLogService;
-            _operationService = operationService;
-        }
-
+                                ITaskLogService taskLogService)
+                : Controller
+    {
         public IActionResult Tasks()
         {
-            List<TaskGroupEntity> tasksGroups = _taskService.GetAllGroups().OrderBy(x => x.Id).ToList();
+            List<TaskGroupEntity> tasksGroups = taskService.GetAllGroups().OrderBy(x => x.Id).ToList();
             return View(tasksGroups);
         }
 
         [HttpPost]
         public IActionResult TasksList(string taskGroup)
         {
-            List<TaskEntity> tasks = _taskService.GetTasksByGroup(taskGroup);
+            List<TaskEntity> tasks = taskService.GetTasksByGroup(taskGroup);
             return PartialView(tasks);
         }
 
         [HttpGet]
         public IActionResult CreateTask()
         {
-            ViewBag.AddresseeGroups = _addresseeService.GetAllAddresseeGroups();
-            ViewBag.TaskGroups = _taskService.GetAllGroups();
+            ViewBag.AddresseeGroups = addresseeService.GetAllAddresseeGroups();
+            ViewBag.TaskGroups = taskService.GetAllGroups();
             TaskEntity task = new();
             return View(task);
         }
@@ -78,7 +55,7 @@ namespace FileManager_Web.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    _taskService.CreateTask(task);
+                    taskService.CreateTask(task);
                     return RedirectToAction(nameof(Tasks));
                 }
                 return View();
@@ -91,36 +68,15 @@ namespace FileManager_Web.Controllers
 
         public IActionResult TaskDetails(string taskId)
         {
-            TaskEntity task = _taskService.GetTaskById(taskId);
-            List<TaskStepEntity> steps = _stepService.GetAllStepsByTaskId(taskId)
+            TaskEntity task = taskService.GetTaskById(taskId);
+            List<TaskStepEntity> steps = stepService.GetAllStepsByTaskId(taskId)
                                                         .OrderBy(x => x.StepNumber)
                                                         .ToList();
             TaskDetailsViewModel taskDetails = new(task, steps);
-            ViewBag.AddresseeGroups = _addresseeService.GetAllAddresseeGroups();
-            ViewBag.TaskGroups = _taskService.GetAllGroups();
+            ViewBag.AddresseeGroups = addresseeService.GetAllAddresseeGroups();
+            ViewBag.TaskGroups = taskService.GetAllGroups();
             return View(taskDetails);
         }
-
-        /* public IActionResult TaskLog(string dateFrom, string dateTo, string taskId, int? page)
-         {
-             DateTime date = dateFrom == null ? DateTime.Today : DateTime.Parse(dateFrom);
-             DateTime date2 = dateTo == null ? DateTime.Today : DateTime.Parse(dateTo);
-
-             List<TaskLogEntity> taskLogs = _taskLogService.GetLogsByTaskId(taskId)
-                                                             .Where(x => x.DateTimeLog.Date >= date &&
-                                                                         x.DateTimeLog.Date <= date2)
-                                                             .OrderBy(x => x.DateTimeLog)
-                                                             .ToList();
-             ViewBag.FilterDateFrom = date.ToString("yyyy-MM-dd");
-             ViewBag.FilterDateTo = date2.ToString("yyyy-MM-dd");
-             ViewBag.TaskId = taskId;
-
-             int pageSize = 40;
-             int pageNumber = (page ?? 1);
-
-             return View(taskLogs.ToPagedList(pageNumber, pageSize));
-         }*/
-
 
         public IActionResult TaskLog(TaskLogViewModel model, string? taskId, int? page)
         {
@@ -132,7 +88,7 @@ namespace FileManager_Web.Controllers
             DateTime date = model.DateFrom == DateTime.MinValue ? DateTime.Today : model.DateFrom;
             DateTime date2 = model.DateTo == DateTime.MinValue ? DateTime.Today : model.DateTo;
 
-            
+
             int pageNumber = (page ?? 1);
 
 
@@ -149,7 +105,7 @@ namespace FileManager_Web.Controllers
                 {
                     date = sessionModel.DateFrom;
                     date2 = sessionModel.DateTo;
-                    var taskLogs = _taskLogService.GetLogsByTaskId(sessionModel.TaskId)
+                    var taskLogs = taskLogService.GetLogsByTaskId(sessionModel.TaskId)
                                                             .OrderBy(x => x.DateTimeLog)
                                                             .Where(x => x.DateTimeLog.Date >= date &&
                                                                         x.DateTimeLog.Date <= date2);
@@ -176,8 +132,6 @@ namespace FileManager_Web.Controllers
                             taskLogs = taskLogs.Where(x => x.ResultText == sessionModel.Text);
                         }
 
-                        //taskLogs = taskLogs.Skip(sessionModel.PageSize * (page ?? 1)).Take(sessionModel.PageSize);
-
                         TaskLogViewModel viewModel = new()
                         {
                             PageSize = sessionModel.PageSize,
@@ -195,15 +149,12 @@ namespace FileManager_Web.Controllers
                         return View(viewModel);
                     }
                 }
-                
             }
 
-            var taskLogs2 = _taskLogService.GetLogsByTaskId(taskId)
+            var taskLogs2 = taskLogService.GetLogsByTaskId(taskId)
                                                             .OrderBy(x => x.DateTimeLog)
                                                             .Where(x => x.DateTimeLog.Date >= date &&
-                                                                        x.DateTimeLog.Date <= date2)
-                                                            //.Skip(1)
-                                                            .Take(40);
+                                                                        x.DateTimeLog.Date <= date2);
 
             TaskLogViewModel viewModel2 = new()
             {
@@ -222,11 +173,11 @@ namespace FileManager_Web.Controllers
             DateTime date = model.DateFrom == DateTime.MinValue ? DateTime.Today : model.DateFrom;
             DateTime date2 = model.DateTo == DateTime.MinValue ? DateTime.Today : model.DateTo;
 
-            var taskLogs = _taskLogService.GetLogsByTaskId(model.TaskId)
+            var taskLogs = taskLogService.GetLogsByTaskId(model.TaskId)
                                                             .OrderBy(x => x.DateTimeLog)
                                                             .Where(x => x.DateTimeLog.Date >= date &&
                                                                         x.DateTimeLog.Date <= date2);
-                                                            
+
             if (taskLogs != null)
             {
                 if (model.OperationName != OperationName.None)
@@ -249,9 +200,9 @@ namespace FileManager_Web.Controllers
                 {
                     taskLogs = taskLogs.Where(x => x.ResultText == model.Text);
                 }
-                
+
             }
-            
+
 
             model.Logs = null;
             HttpContext?.Session.Set<TaskLogViewModel>("LogFilters", model);
@@ -289,7 +240,11 @@ namespace FileManager_Web.Controllers
         [HttpPost]
         public IActionResult CreateTaskGroup(string nameGroup)
         {
-            _taskService.CreateTaskGroup(nameGroup);
+            TaskGroupEntity? newTaskGroup = taskService.CreateTaskGroup(nameGroup);
+            if (newTaskGroup != null)
+            {
+                userLogging.Logging(HttpContext.User.Identity.Name, $"Создание группы задач: {newTaskGroup.Name}", JsonSerializer.Serialize(newTaskGroup));
+            }
             return RedirectToAction("Tasks");
         }
 
@@ -299,7 +254,7 @@ namespace FileManager_Web.Controllers
             {
                 return RedirectToAction("Tasks");
             }
-            _taskService.DeleteTaskGroup(idDeleteGroup);
+            taskService.DeleteTaskGroup(idDeleteGroup);
             //_userLogging.Logging(HttpContext.User.Identity.Name, $"Удаление группы задач: {taskGroup.Id}", JsonSerializer.Serialize(taskGroup));
             return RedirectToAction("Tasks");
         }
@@ -307,21 +262,32 @@ namespace FileManager_Web.Controllers
         [HttpPost]
         public IActionResult ActivatedTask(string id)
         {
-            _taskService.ActivatedTask(id);
+            taskService.ActivatedTask(id);
+            TaskEntity task = taskService.GetTaskById(id);
+            string message;
+            if (task.IsActive)
+            {
+                message = $"Включил задачу: {id}";
+            }
+            else
+            {
+                message = $"Выключил задачу: {id}";
+            }
+            userLogging.Logging(HttpContext.User.Identity.Name, message, JsonSerializer.Serialize(task));
             return RedirectToAction("Tasks");
         }
 
         [HttpPost]
         public IActionResult EditTask(TaskEntity task, string taskId)
         {
-            _taskService.EditTask(task);
+            taskService.EditTask(task);
             return RedirectToAction("TaskDetails", "Task", new { taskId });
         }
 
         [HttpPost]
         public IActionResult StepsForCopy(string taskId)
         {
-            List<TaskStepEntity> steps = _stepService.GetAllStepsByTaskId(taskId)
+            List<TaskStepEntity> steps = stepService.GetAllStepsByTaskId(taskId)
                                                         .OrderBy(x => x.StepNumber)
                                                         .ToList();
             CopyTaskViewModel task = new();
@@ -345,7 +311,7 @@ namespace FileManager_Web.Controllers
         public IActionResult CopyTask(string idTask, string newIdTask, string isCopySteps,
                                         CopyStepViewModel[] copyStep)
         {
-            _taskService.CopyTask(idTask, newIdTask, isCopySteps, copyStep);
+            taskService.CopyTask(idTask, newIdTask, isCopySteps, copyStep);
             return RedirectToAction("Tasks");
         }
 

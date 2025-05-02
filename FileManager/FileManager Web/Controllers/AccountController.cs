@@ -6,13 +6,14 @@ using System.DirectoryServices.AccountManagement;
 using FileManager_Web.Logging;
 using System.Threading.Tasks;
 using System.Text.Json;
+using FileManager.Services.Interfaces;
 
 
 namespace FileManager_Web.Controllers
 {
 
 
-    public class AccountController(ILogger<AccountController> logger, UserLogging userLogging) : Controller
+    public class AccountController(ILogger<AccountController> logger, IUserLogService userLogService) : Controller
     {
 
         private readonly ILogger _logger = logger;
@@ -27,7 +28,7 @@ namespace FileManager_Web.Controllers
         public IActionResult Logout()
         {
             HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            userLogging.Logging(HttpContext.User.Identity.Name, "Выход из системы", JsonSerializer.Serialize(""));
+            userLogService.AddLog(HttpContext.User.Identity.Name, "Выход из системы", JsonSerializer.Serialize(""));
             return RedirectToAction("Login");
         }
 
@@ -35,7 +36,7 @@ namespace FileManager_Web.Controllers
         public void LogoutX()
         {
             HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            userLogging.Logging(HttpContext.User.Identity.Name, "Выход из системы", JsonSerializer.Serialize(""));
+            userLogService.AddLog(HttpContext.User.Identity.Name, "Выход из системы", JsonSerializer.Serialize(""));
         }
 
 
@@ -44,10 +45,10 @@ namespace FileManager_Web.Controllers
         {
 
             UserPrincipal userPrincipal = null;
-            bool isAuthenticated = false;
-            ClaimsIdentity identity = null;
+            bool isAuthenticated;
             ClaimsPrincipal principal = null;
             PrincipalSearchResult<Principal> groups = null;
+            ClaimsIdentity identity;
             try
             {
                 if (!string.IsNullOrEmpty(username) && string.IsNullOrEmpty(password))
@@ -69,19 +70,19 @@ namespace FileManager_Web.Controllers
                 if (!isAuthenticated || userPrincipal == null)
                 {
                     ViewBag.MessageAuthenticate = "Имя пользователя или пароль не верны";
-                    userLogging.Logging(username, ViewBag.MessageAuthenticate, JsonSerializer.Serialize(""));
+                    userLogService.AddLog(username, ViewBag.MessageAuthenticate, JsonSerializer.Serialize(""));
                     return View();
                 }
                 else if (userPrincipal.IsAccountLockedOut())
                 {
                     ViewBag.MessageAuthenticate = "Пользователь блокирован";
-                    userLogging.Logging(username, ViewBag.MessageAuthenticate, JsonSerializer.Serialize(""));
+                    userLogService.AddLog(username, ViewBag.MessageAuthenticate, JsonSerializer.Serialize(""));
                     return View();
                 }
                 else if (userPrincipal.Enabled.HasValue && userPrincipal.Enabled.Value == false)
                 {
                     ViewBag.MessageAuthenticate = "Пользователь блокирован";
-                    userLogging.Logging(username, ViewBag.MessageAuthenticate, JsonSerializer.Serialize(""));
+                    userLogService.AddLog(username, ViewBag.MessageAuthenticate, JsonSerializer.Serialize(""));
                     return View();
                 }
 
@@ -96,7 +97,7 @@ namespace FileManager_Web.Controllers
                         {
                             claims.Add(new Claim(ClaimsIdentity.DefaultRoleClaimType, gr.Name));
                         }
-                        
+
                     }
                 }
                 claims.Add(new Claim(ClaimsIdentity.DefaultNameClaimType, userPrincipal.Name));
@@ -105,13 +106,13 @@ namespace FileManager_Web.Controllers
                 {
                     claims.Add(new Claim(ClaimTypes.Email, userPrincipal.EmailAddress));
                 }*/
-                
+
 
                 identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
                 principal = new ClaimsPrincipal(identity);
                 HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-                userLogging.Logging(username, "Вход в систему", JsonSerializer.Serialize(""));
+                userLogService.AddLog(username, "Вход в систему", JsonSerializer.Serialize(""));
                 return RedirectToAction("Tasks", "Task");
 
             }

@@ -3,22 +3,17 @@ using FileManager.Domain.Enum;
 using FileManager.Domain.ViewModels.Step;
 using FileManager.Domain.ViewModels.Task;
 using FileManager.Services.Interfaces;
-using FileManager_Web.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using FileManager_Web.ViewModels;
 using FileManager_Web.Session;
-using X.PagedList;
 using X.PagedList.Extensions;
-using System.Text.Json;
-
 
 
 namespace FileManager_Web.Controllers
 {
     [Authorize(Roles = "o.br.ДИТ")]
     public class TaskController(ILogger<TaskController> logger,
-                                UserLogging userLogging,
                                 ITaskService taskService,
                                 IAddresseeService addresseeService,
                                 IStepService stepService,
@@ -243,7 +238,7 @@ namespace FileManager_Web.Controllers
             TaskGroupEntity? newTaskGroup = taskService.CreateTaskGroup(nameGroup);
             if (newTaskGroup != null)
             {
-                userLogging.Logging(HttpContext.User.Identity.Name, $"Создание группы задач: {newTaskGroup.Name}", JsonSerializer.Serialize(newTaskGroup));
+                //userLogService.AddLog(HttpContext.User.Identity.Name, $"Создание группы задач: {newTaskGroup.Name}", JsonSerializer.Serialize(newTaskGroup));
             }
             return RedirectToAction("Tasks");
         }
@@ -263,8 +258,8 @@ namespace FileManager_Web.Controllers
         public IActionResult ActivatedTask(string id)
         {
             taskService.ActivatedTask(id);
-            TaskEntity task = taskService.GetTaskById(id);
-            string message;
+            //TaskEntity task = taskService.GetTaskById(id);
+            /*string message;
             if (task.IsActive)
             {
                 message = $"Включил задачу: {id}";
@@ -272,8 +267,8 @@ namespace FileManager_Web.Controllers
             else
             {
                 message = $"Выключил задачу: {id}";
-            }
-            userLogging.Logging(HttpContext.User.Identity.Name, message, JsonSerializer.Serialize(task));
+            }*/
+            //userLogService.AddLog(HttpContext.User.Identity.Name, message, JsonSerializer.Serialize(task));
             return RedirectToAction("Tasks");
         }
 

@@ -27,17 +27,25 @@ namespace FileManager_Web
             });
 
 			builder.Services.AddDbContext<AppDbContext>();
-			builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+
+            builder.Services.AddHttpContextAccessor();
+
+            builder.Services.AddScoped<ITaskRepository, TaskRepository>();
             builder.Services.AddScoped<IStepRepository, StepRepository>();
             builder.Services.AddScoped<IAddresseeRepository, AddresseeRepository>();
             builder.Services.AddScoped<IOperationRepository, OperationRepository>();
             builder.Services.AddScoped<ITaskLogRepository, TaskLogRepository>();
+            builder.Services.AddScoped<IUserLogRepository, UserLogRepository>();
             builder.Services.AddScoped<ITaskService, TaskService>();
 			builder.Services.AddScoped<IStepService, StepService>();
             builder.Services.AddScoped<IAddresseeService, AddresseeService>();
             builder.Services.AddScoped<IOperationService, OperationService>();
             builder.Services.AddScoped<ITaskLogService, TaskLogService>();
-            builder.Services.AddHttpContextAccessor().AddHttpContextAccessor();
+            builder.Services.AddScoped<IUserLogService, UserLogService>();
+
+            builder.Services.AddScoped<IUserLogging, UserLogging>();
+
+            
             builder.Services.AddAntiforgery(options => options.HeaderName = "XSRF-TOKEN");
 
             builder.Services.AddDistributedMemoryCache();
@@ -50,7 +58,7 @@ namespace FileManager_Web
                     builder.Configuration.GetSection("Database").GetSection("Options").Bind(options);
                 }
             });*/
-            builder.Services.AddTransient<UserLogging>();
+            
             
 
             var app = builder.Build();

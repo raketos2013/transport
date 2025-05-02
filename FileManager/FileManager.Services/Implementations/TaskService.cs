@@ -3,18 +3,23 @@ using FileManager.Domain.Entity;
 using FileManager.Domain.Enum;
 using FileManager.Domain.ViewModels.Step;
 using FileManager.Services.Interfaces;
-
+using Microsoft.AspNetCore.Http;
 
 namespace FileManager.Services.Implementations
 {
     public class TaskService(ITaskRepository taskRepository, 
                                 IStepRepository stepRepository, 
-                                IOperationRepository operationRepository) 
+                                IOperationRepository operationRepository,
+                                IUserLogService userLogService,
+                                IHttpContextAccessor httpContextAccessor
+                                ) 
                 : ITaskService
 	{
         public TaskEntity CreateTask(TaskEntity task)
 		{
-			return taskRepository.CreateTask(task);
+            TaskEntity taskEntity = taskRepository.CreateTask(task);
+            userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, "asd", "as");
+			return taskEntity;
 		}
 
 		public bool DeleteTask(string idTask)

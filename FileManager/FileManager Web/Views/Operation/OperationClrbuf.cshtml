@@ -1,0 +1,83 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@using FileManager.Domain.Enum
+@model FileManager.Domain.Entity.OperationClrbufEntity
+@{
+	SelectList addresseeGroups = new SelectList(ViewBag.AddresseeGroups, "Id", "Name");
+}
+<div class="container-fluid position-relative" style=" min-height: 100%;">
+	@if (Model != null)
+	{
+		<button class="btn btn-info" id="btnEdit" onclick="ShowEditForm()">Редактировать</button>
+		<button class="btn btn-warning" onclick="HideEditForm()" id="btnCancelEdit" style="display:none;">Отмена</button>
+
+		<div id="infoOperation">
+			<p>stepId - @Model.StepId</p>
+			<p>operId - @Model.OperationId</p>
+
+			<p>Информировать об успехе - @Model.InformSuccess</p>
+			<p>Группа рассылки - @Model.AddresseeGroupId</p>
+			<p>Дополнительный текст - @Model.AdditionalText</p>
+
+		</div>
+
+		<form asp-action="EditOperationClrbuf" asp-controller="Operation"
+			  asp-route-operationId="@Model.OperationId"
+			  method="post" id="editForm" style="display: none;">
+
+			<div class="form-group">
+				<label asp-for="InformSuccess" class="form-check-label">
+					Информировать об успехе
+					<input type="checkbox" class="form-check-input" asp-for="InformSuccess" />
+				</label>
+			</div>
+			<div class="form-group">
+				<label asp-for="AddresseeGroupId" class="control-label"></label>
+				<select asp-for="AddresseeGroupId" class="form-select mb-3" asp-items=@addresseeGroups></select>
+				<span asp-validation-for="AddresseeGroupId" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="AdditionalText" class="control-label"></label>
+				<input asp-for="AdditionalText" class="form-control" />
+				<span asp-validation-for="AdditionalText" class="text-danger"></span>
+			</div>
+
+
+			<button type="submit" class="btn btn-success" onclick="HideEditForm()">Сохранить</button>
+		</form>
+
+	}
+	else
+	{
+		<button class="btn btn-info" onclick="ShowCreateForm()" id="btnCreate">Добавить</button>
+		<button class="btn btn-warning" onclick="HideCreateForm()" id="btnCancelCreate" style="display:none;">Отмена</button>
+		<h3 id="headr">Свойства операции не настроены</h3>
+
+		<form asp-action="CreateOperationClrbuf" asp-controller="Operation"
+			  asp-route-stepId="@ViewBag.StepId"
+			  method="post" id="createForm" style="display: none;">
+
+			<div class="form-group">
+				<label asp-for="InformSuccess" class="form-check-label">
+					Информировать об успехе
+					<input type="checkbox" class="form-check-input" asp-for="InformSuccess" />
+				</label>
+			</div>
+			<div class="form-group">
+				<label asp-for="AddresseeGroupId" class="control-label"></label>
+				<select asp-for="AddresseeGroupId" class="form-select mb-3" asp-items=@addresseeGroups></select>
+				<span asp-validation-for="AddresseeGroupId" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="AdditionalText" class="control-label"></label>
+				<input asp-for="AdditionalText" class="form-control" />
+				<span asp-validation-for="AdditionalText" class="text-danger"></span>
+			</div>
+
+
+			<button type="submit" class="btn btn-success" onclick="HideCreateForm()">Сохранить</button>
+		</form>
+
+	}
+</div>

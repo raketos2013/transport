@@ -2,97 +2,105 @@
 using FileManager.Domain.Entity;
 using FileManager.Domain.Enum;
 using FileManager_Server.Loggers;
-using Microsoft.EntityFrameworkCore;
+using FileManager_Server.MailSender;
+
 
 namespace FileManager_Server.Operations
 {
-    public class Copy : StepOperation
+    public class Copy(TaskStepEntity step, 
+                        TaskOperation? operation, 
+                        ITaskLogger taskLogger, 
+                        AppDbContext appDbContext, 
+                        IMailSender mailSender) 
+                : StepOperation(step, operation, taskLogger, appDbContext, mailSender)
     {
-        public Copy(TaskStepEntity step, TaskOperation? operation, ITaskLogger taskLogger, AppDbContext appDbContext)
-            : base(step, operation, taskLogger, appDbContext)
-        {
-        }
-
-
         public override void Execute(List<string>? bufferFiles)
         {
-            _taskLogger.StepLog(TaskStep, $"Копирование: {TaskStep.Source} => {TaskStep.Destination}");
+            _taskLogger.StepLog(TaskStep, $"КОПИРОВАНИЕ: {TaskStep.Source} => {TaskStep.Destination}");
             _taskLogger.OperationLog(TaskStep);
 
             string[] files = [];
             string fileNameDestination, fileName;
             bool isCopyFile = true;
-			List<FileInfo> infoFiles = new List<FileInfo>();
-			OperationCopyEntity? operation = null;
+            List<FileInfo> infoFiles = [];
+            List<string> successFiles = [];
+            OperationCopyEntity? operation = null;
 
-			if (TaskStep.FileMask == "{BUFFER}")
+            if (TaskStep.FileMask == "{BUFFER}")
             {
                 if (bufferFiles != null)
                 {
-					foreach (var file in bufferFiles)
-					{
-						infoFiles.Add(new FileInfo(file));
-					}
-				}
-            } 
+                    foreach (var file in bufferFiles)
+                    {
+                        infoFiles.Add(new FileInfo(file));
+                    }
+                }
+            }
             else
             {
-				files = Directory.GetFiles(TaskStep.Source, TaskStep.FileMask);
-				foreach (var file in files)
-				{
-					infoFiles.Add(new FileInfo(file));
-				}
-			}
-
-			_taskLogger.StepLog(TaskStep, $"Количество найденный файлов по маске '{TaskStep.FileMask}': {infoFiles.Count()}");
+                files = Directory.GetFiles(TaskStep.Source, TaskStep.FileMask);
+                foreach (var file in files)
+                {
+                    infoFiles.Add(new FileInfo(file));
+                }
+            }
+            List<AddresseeEntity> addresses = [];
+            _taskLogger.StepLog(TaskStep, $"Количество найденный файлов по маске '{TaskStep.FileMask}': {infoFiles.Count}");
             if (infoFiles.Count > 0)
             {
-				 operation = _appDbContext.OperationCopy.FirstOrDefault(x => x.StepId == TaskStep.StepId);
+                operation = _appDbContext.OperationCopy.FirstOrDefault(x => x.StepId == TaskStep.StepId);
 
-				if (operation != null)
-				{
-					// сортировка
-					switch (operation.Sort)
-					{
-						case SortFiles.NoSortFiles:
-							break;
-						case SortFiles.NameAscending:
-							infoFiles = infoFiles.OrderBy(o => o.Name).ToList();
-							break;
-						case SortFiles.NameDescending:
-							infoFiles = infoFiles.OrderByDescending(o => o.Name).ToList();
-							break;
-						case SortFiles.TimeAscending:
-							infoFiles = infoFiles.OrderBy(o => o.CreationTime).ToList();
-							break;
-						case SortFiles.TimeDescending:
-							infoFiles = infoFiles.OrderByDescending(o => o.CreationTime).ToList();
-							break;
-						case SortFiles.SizeAscending:
-							infoFiles = infoFiles.OrderBy(o => o.Length).ToList();
-							break;
-						case SortFiles.SizeDescending:
-							infoFiles = infoFiles.OrderByDescending(o => o.Length).ToList();
-							break;
-						default:
-							break;
-					}
-					// макс файлов
-					if (operation.FilesForProcessing != 0 & operation.FilesForProcessing < infoFiles.Count - 2)
-					{
-						infoFiles.RemoveRange(operation.FilesForProcessing, infoFiles.Count - 2);
-					}
-				}
-			}
-            
+                if (operation != null)
+                {
+
+                    if (operation.InformSuccess)
+                    {
+                        addresses = _appDbContext.Addressee.Where(x => x.AddresseeGroupId == operation.AddresseeGroupId &&
+                                                                        x.IsActive == true).ToList();
+                    }
+
+                    // сортировка
+                    switch (operation.Sort)
+                    {
+                        case SortFiles.NoSortFiles:
+                            break;
+                        case SortFiles.NameAscending:
+                            infoFiles = infoFiles.OrderBy(o => o.Name).ToList();
+                            break;
+                        case SortFiles.NameDescending:
+                            infoFiles = infoFiles.OrderByDescending(o => o.Name).ToList();
+                            break;
+                        case SortFiles.TimeAscending:
+                            infoFiles = infoFiles.OrderBy(o => o.CreationTime).ToList();
+                            break;
+                        case SortFiles.TimeDescending:
+                            infoFiles = infoFiles.OrderByDescending(o => o.CreationTime).ToList();
+                            break;
+                        case SortFiles.SizeAscending:
+                            infoFiles = infoFiles.OrderBy(o => o.Length).ToList();
+                            break;
+                        case SortFiles.SizeDescending:
+                            infoFiles = infoFiles.OrderByDescending(o => o.Length).ToList();
+                            break;
+                        default:
+                            break;
+                    }
+                    // макс файлов
+                    if (operation.FilesForProcessing != 0 & operation.FilesForProcessing < infoFiles.Count - 2)
+                    {
+                        infoFiles.RemoveRange(operation.FilesForProcessing, infoFiles.Count - 2);
+                    }
+                }
+            }
+
             bool isOverwriteFile = false;
             foreach (var file in infoFiles)
             {
                 FileAttributes attributs = File.GetAttributes(file.FullName);
                 fileName = Path.GetFileName(file.FullName);
-				isCopyFile = true;
+                isCopyFile = true;
 
-				if (operation != null)
+                if (operation != null)
                 {
                     // дубль по журналу и файл в источнике
                     TaskLogEntity? taskLogs = _appDbContext.TaskLog.FirstOrDefault(x => x.StepId == TaskStep.StepId &&
@@ -106,6 +114,7 @@ namespace FileManager_Server.Operations
                         else if (operation.FileInSource == FileInSource.Always && operation.FileInLog == true)
                         {
                             // stop task
+                            _taskLogger.StepLog(TaskStep, "Сработал контроль: \"Дублирование по журналу\"", fileName);
                             throw new Exception("Дублирование файла по журналу!");
 
                         }
@@ -178,27 +187,32 @@ namespace FileManager_Server.Operations
                 if (isCopyFile)
                 {
                     fileNameDestination = Path.Combine(TaskStep.Destination, fileName);
-                    FileInfo destinationFileInfo = new FileInfo(fileNameDestination);
+                    FileInfo destinationFileInfo = new(fileNameDestination);
                     if (destinationFileInfo.Exists && destinationFileInfo.IsReadOnly && isOverwriteFile)
                     {
                         destinationFileInfo.IsReadOnly = false;
                         File.Copy(file.FullName, fileNameDestination, isOverwriteFile);
                         _taskLogger.StepLog(TaskStep, "Файл успешно скопирован", fileName);
                         destinationFileInfo.IsReadOnly = true;
+                        successFiles.Add(fileName);
                     }
-                    else if((destinationFileInfo.Exists && isOverwriteFile) || !destinationFileInfo.Exists)
+                    else if ((destinationFileInfo.Exists && isOverwriteFile) || !destinationFileInfo.Exists)
                     {
                         File.Copy(file.FullName, fileNameDestination, isOverwriteFile);
                         _taskLogger.StepLog(TaskStep, "Файл успешно скопирован", fileName);
+                        successFiles.Add(fileName);
                     }
                 }
 
             }
 
-            if (_nextStep != null)
+            if (addresses.Count > 0)
             {
-                _nextStep.Execute(bufferFiles);
+                _mailSender.Send(TaskStep, addresses, successFiles);
             }
+
+
+            _nextStep?.Execute(bufferFiles);
         }
     }
 }

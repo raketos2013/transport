@@ -1,7 +1,4 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@model IEnumerable<FileManager.Domain.Entity.AddresseeEntity>
+﻿@model IEnumerable<FileManager.Domain.Entity.AddresseeEntity>
 @{
 }
 <div class="container-fluid position-relative" style=" min-height: 100%;">
@@ -53,14 +50,14 @@
 
                 <div class="input-group-append">
 
-                    <select class="form-select" id="inputSelect">
-                        <option selected value="0">Id</option>
-                        <option value="1">Наименование</option>
-                        <option value="5">Вход. каталог</option>
-                        <option value="6">Маска</option>
+                    <select class="form-select" id="selectFind">
+                        <option selected value="0">Табельный</option>
+                        <option value="1">Почта</option>
+                        <option value="2">ФИО</option>
+                        <option value="3">Подразделение</option>
                     </select>
                 </div>
-                <input type="text" class="form-control" id="myInput" onkeyup="myFunction(document.querySelector('#inputSelect'))">
+                <input type="text" class="form-control" id="myInput" onkeyup="FindOfTable(document.querySelector('#selectFind'))">
 
             </div>
         </div>
@@ -132,7 +129,7 @@
     function OnOffAddressee(id) {
 
         // Объявить переменные
-        var table, tr, td, i, txtValue, valueCheck;
+        var table, tr, td, i, txtValue;
 
         table = document.getElementById("addresseeTable");
         tr = table.getElementsByTagName("tr");
@@ -171,7 +168,7 @@
 
     }
     function CancelOnOffAddressee() {
-        var table, tr, td, i, txtValue, valueCheck;
+        var table, tr, td, i, txtValue;
 
         table = document.getElementById("addresseeTable");
         tr = table.getElementsByTagName("tr");
@@ -212,6 +209,30 @@
                 window.location.href = '@Url.Action("Addressees", "AddresseeGroup")'
             }
         });
+    }
+
+
+    function FindOfTable(select) {
+        // Объявить переменные
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("myInput");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("addresseeTable");
+        tr = table.getElementsByTagName("tr");
+
+        // Перебирайте все строки таблицы и скрывайте тех, кто не соответствует поисковому запросу
+        var col = select.options[select.selectedIndex].value
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[col];
+            if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
     }
 
 

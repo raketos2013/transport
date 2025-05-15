@@ -207,51 +207,7 @@ namespace FileManager_Web.Logging
 
 
 
-    public class UserLogging
-    {
-
-        private readonly ILogger<UserLogging> _logger;
-        private readonly string _connectionString;
-
-        public UserLogging(IConfiguration configuration, ILogger<UserLogging> logger)
-        {
-            _logger = logger;
-            _connectionString = configuration.GetConnectionString("DefaultConnection");
-        }
-
-
-        public void Logging(string username, string action, string data)
-        {
-
-            try
-            {
-                using (var connection = new NpgsqlConnection(_connectionString))
-                {
-                    connection.Open();
-
-                    using (var command = new NpgsqlCommand())
-                    {
-                        command.Connection = connection;
-                        command.CommandType = System.Data.CommandType.Text;
-                        command.CommandText = $"INSERT INTO \"UserLog\" (\"UserName\", \"DateTimeLog\", \"Action\", \"Data\") VALUES (@Username, @DateTimeLog, @Action, @Data::json)";
-                        command.Parameters.AddWithValue("@UserName", username);
-                        command.Parameters.AddWithValue("@Action", action);
-                        command.Parameters.AddWithValue("@Data", data);
-                        command.Parameters.AddWithValue("@DateTimeLog", DateTimeOffset.UtcNow);
-                        command.ExecuteNonQuery();
-                    }
-                    connection.Close();
-                }
-
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, e.Message);
-                Console.WriteLine(e.Message);
-            }
-        }
-
-    }
+    
 
 
 

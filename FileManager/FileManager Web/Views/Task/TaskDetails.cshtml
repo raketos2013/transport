@@ -36,9 +36,7 @@
 	<div class="row">
 		<div class="col-3" style="border-right: 1px solid;">
 			<a asp-area="" asp-controller="Task" asp-action="Tasks" class="btn btn-warning">Назад</a>
-			<a asp-area="" asp-controller="Task" asp-action="TaskLog" class="btn btn-info" asp-route-dateFrom="@DateTime.Today"
-			   asp-route-dateTo="@DateTime.Today"
-			   asp-route-taskId="@Model.Task.TaskId">Журнал</a>
+			<a asp-area="" asp-controller="Task" asp-action="TaskLog" class="btn btn-info" asp-route-taskId="@Model.Task.TaskId">Журнал</a>
 			<button class="btn btn-info" onclick="ReadEditTask()" id="btnEditTask">Редактирование</button>
 			<div id="taskDetailsRead">
 				<p> Задача <b>@Model.Task.TaskId</b></p>

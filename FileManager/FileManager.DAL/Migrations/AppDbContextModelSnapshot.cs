@@ -17,7 +17,7 @@ namespace FileManager.DAL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "8.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -51,7 +51,7 @@ namespace FileManager.DAL.Migrations
 
                     b.HasIndex("AddresseeGroupId");
 
-                    b.ToTable("Addressee");
+                    b.ToTable("Addressee", (string)null);
                 });
 
             modelBuilder.Entity("FileManager.Domain.Entity.AddresseeGroupEntity", b =>
@@ -68,7 +68,7 @@ namespace FileManager.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AddresseeGroup");
+                    b.ToTable("AddresseeGroup", (string)null);
                 });
 
             modelBuilder.Entity("FileManager.Domain.Entity.ClientLogEntity", b =>
@@ -87,7 +87,7 @@ namespace FileManager.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ClientLog");
+                    b.ToTable("ClientLog", (string)null);
                 });
 
             modelBuilder.Entity("FileManager.Domain.Entity.TaskEntity", b =>
@@ -136,7 +136,7 @@ namespace FileManager.DAL.Migrations
 
                     b.HasIndex("TaskGroupEntityId");
 
-                    b.ToTable("Task");
+                    b.ToTable("Task", (string)null);
                 });
 
             modelBuilder.Entity("FileManager.Domain.Entity.TaskGroupEntity", b =>
@@ -153,7 +153,7 @@ namespace FileManager.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TaskGroup");
+                    b.ToTable("TaskGroup", (string)null);
                 });
 
             modelBuilder.Entity("FileManager.Domain.Entity.TaskLogEntity", b =>
@@ -170,6 +170,9 @@ namespace FileManager.DAL.Migrations
                     b.Property<int?>("OperationId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("OperationName")
+                        .HasColumnType("text");
+
                     b.Property<int?>("ResultOperation")
                         .HasColumnType("integer");
 
@@ -179,9 +182,12 @@ namespace FileManager.DAL.Migrations
                     b.Property<int?>("StepId")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("StepNumber")
+                        .HasColumnType("integer");
+
                     b.HasKey("DateTimeLog", "TaskId");
 
-                    b.ToTable("TaskLog");
+                    b.ToTable("TaskLog", (string)null);
                 });
 
             modelBuilder.Entity("FileManager.Domain.Entity.TaskOperation", b =>
@@ -237,7 +243,7 @@ namespace FileManager.DAL.Migrations
 
                     b.HasKey("TaskId");
 
-                    b.ToTable("TaskStatuse");
+                    b.ToTable("TaskStatuse", (string)null);
                 });
 
             modelBuilder.Entity("FileManager.Domain.Entity.TaskStepEntity", b =>
@@ -272,7 +278,6 @@ namespace FileManager.DAL.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("Source")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("StepNumber")
@@ -286,7 +291,7 @@ namespace FileManager.DAL.Migrations
 
                     b.HasIndex("TaskId");
 
-                    b.ToTable("TaskStep");
+                    b.ToTable("TaskStep", (string)null);
                 });
 
             modelBuilder.Entity("FileManager.Domain.Entity.UserLogEntity", b =>
@@ -307,7 +312,7 @@ namespace FileManager.DAL.Migrations
 
                     b.HasKey("DateTimeLog", "UserName");
 
-                    b.ToTable("UserLog");
+                    b.ToTable("UserLog", (string)null);
                 });
 
             modelBuilder.Entity("FileManager.Domain.Entity.OperationClrbufEntity", b =>
@@ -316,7 +321,7 @@ namespace FileManager.DAL.Migrations
 
                     b.HasIndex("StepId");
 
-                    b.ToTable("OperationClrbuf");
+                    b.ToTable("OperationClrbuf", (string)null);
                 });
 
             modelBuilder.Entity("FileManager.Domain.Entity.OperationCopyEntity", b =>
@@ -343,7 +348,7 @@ namespace FileManager.DAL.Migrations
 
                     b.HasIndex("StepId");
 
-                    b.ToTable("OperationCopy");
+                    b.ToTable("OperationCopy", (string)null);
                 });
 
             modelBuilder.Entity("FileManager.Domain.Entity.OperationDeleteEntity", b =>
@@ -352,7 +357,7 @@ namespace FileManager.DAL.Migrations
 
                     b.HasIndex("StepId");
 
-                    b.ToTable("OperationDelete");
+                    b.ToTable("OperationDelete", (string)null);
                 });
 
             modelBuilder.Entity("FileManager.Domain.Entity.OperationExistEntity", b =>
@@ -367,7 +372,7 @@ namespace FileManager.DAL.Migrations
 
                     b.HasIndex("StepId");
 
-                    b.ToTable("OperationExist");
+                    b.ToTable("OperationExist", (string)null);
                 });
 
             modelBuilder.Entity("FileManager.Domain.Entity.OperationMoveEntity", b =>
@@ -391,7 +396,7 @@ namespace FileManager.DAL.Migrations
 
                     b.HasIndex("StepId");
 
-                    b.ToTable("OperationMove");
+                    b.ToTable("OperationMove", (string)null);
                 });
 
             modelBuilder.Entity("FileManager.Domain.Entity.OperationReadEntity", b =>
@@ -419,20 +424,24 @@ namespace FileManager.DAL.Migrations
 
                     b.HasIndex("StepId");
 
-                    b.ToTable("OperationRead");
+                    b.ToTable("OperationRead", (string)null);
                 });
 
             modelBuilder.Entity("FileManager.Domain.Entity.OperationRenameEntity", b =>
                 {
                     b.HasBaseType("FileManager.Domain.Entity.TaskOperation");
 
-                    b.Property<string>("Pattern")
+                    b.Property<string>("NewPattern")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("OldPattern")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasIndex("StepId");
 
-                    b.ToTable("OperationRename");
+                    b.ToTable("OperationRename", (string)null);
                 });
 
             modelBuilder.Entity("FileManager.Domain.Entity.AddresseeEntity", b =>

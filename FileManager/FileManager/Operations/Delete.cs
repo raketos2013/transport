@@ -1,33 +1,40 @@
 ﻿using FileManager.DAL;
 using FileManager.Domain.Entity;
 using FileManager_Server.Loggers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using FileManager_Server.MailSender;
+
 
 namespace FileManager_Server.Operations
 {
-    public class Delete : StepOperation
+    public class Delete(TaskStepEntity step, 
+                        TaskOperation? operation, 
+                        ITaskLogger taskLogger, 
+                        AppDbContext appDbContext, 
+                        IMailSender mailSender) 
+                : StepOperation(step, operation, taskLogger, appDbContext, mailSender)
     {
-        public Delete(TaskStepEntity step, TaskOperation? operation, ITaskLogger taskLogger, AppDbContext appDbContext)
-            : base(step, operation, taskLogger, appDbContext)
-        {
-        }
-
         public override void Execute(List<string>? bufferFiles)
         {
-            _taskLogger.StepLog(TaskStep, $"Удаление: {TaskStep.Source} => {TaskStep.Destination}");
+            _taskLogger.StepLog(TaskStep, $"УДАЛЕНИЕ: {TaskStep.Source} => {TaskStep.Destination}");
             _taskLogger.OperationLog(TaskStep);
 
             string[] files = [];
-            string  fileName;
+            string fileName;
+            List<AddresseeEntity> addresses = [];
+            List<string> successFiles = [];
 
             files = Directory.GetFiles(TaskStep.Source, TaskStep.FileMask);
-            _taskLogger.StepLog(TaskStep, $"Количество найденный файлов по маске '{TaskStep.FileMask}': {files.Count()}");
+            _taskLogger.StepLog(TaskStep, $"Количество найденный файлов по маске '{TaskStep.FileMask}': {files.Length}");
 
             OperationDeleteEntity? operation = _appDbContext.OperationDelete.FirstOrDefault(x => x.StepId == TaskStep.StepId);
+            if (operation != null)
+            {
+                if (operation.InformSuccess && files.Length > 0)
+                {
+                    addresses = _appDbContext.Addressee.Where(x => x.AddresseeGroupId == operation.AddresseeGroupId &&
+                                                                    x.IsActive == true).ToList();
+                }
+            }
 
             foreach (string file in files)
             {
@@ -35,12 +42,15 @@ namespace FileManager_Server.Operations
 
                 File.Delete(file);
                 _taskLogger.StepLog(TaskStep, "Файл успешно удалён", fileName);
+                successFiles.Add(fileName);
             }
 
-            if (_nextStep != null)
+            if (addresses.Count > 0)
             {
-                _nextStep.Execute(bufferFiles);
+                _mailSender.Send(TaskStep, addresses, successFiles);
             }
+
+            _nextStep?.Execute(bufferFiles);
         }
     }
 }

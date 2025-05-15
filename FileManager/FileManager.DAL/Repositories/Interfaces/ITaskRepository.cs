@@ -1,9 +1,5 @@
 ﻿using FileManager.Domain.Entity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace FileManager.DAL.Repositories.Interfaces
 {
@@ -11,14 +7,14 @@ namespace FileManager.DAL.Repositories.Interfaces
     {
         List<TaskEntity> GetAllTasks();
         TaskEntity GetTaskById(string idTask);
-        bool CreateTask(TaskEntity task);
+        TaskEntity CreateTask(TaskEntity task);
         bool EditTask(TaskEntity task);
         bool DeleteTask(string idTask);
         List<TaskEntity> GetTasksByGroup(int idGroup);
         TaskGroupEntity GetTaskGroupByName(string groupName);
         List<TaskGroupEntity> GetAllGroups();
         bool UpdateLastModifiedTask(string idTask);
-        bool CreateTaskGroup(string name);
+        TaskGroupEntity? CreateTaskGroup(string name);
         bool DeleteTaskGroup(int idGroup);
         bool ActivatedTask(string idTask);
         bool CreateTaskStatuse(string idTask);

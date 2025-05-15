@@ -1,28 +1,17 @@
 ﻿using FileManager.DAL.Repositories.Interfaces;
 using FileManager.Domain.Entity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace FileManager.DAL.Repositories.Implementations
 {
-    public class OperationRepository : IOperationRepository
+    public class OperationRepository(AppDbContext appDbContext) : IOperationRepository
     {
-        private readonly AppDbContext _appDbContext;
-
-        public OperationRepository(AppDbContext appDbContext)
-        {
-            _appDbContext = appDbContext;
-        }
-
         public bool CreateClrbuf(OperationClrbufEntity operation)
         {
             try
             {
-                _appDbContext.OperationClrbuf.Add(operation);
-                _appDbContext.SaveChanges();
+                appDbContext.OperationClrbuf.Add(operation);
+                appDbContext.SaveChanges();
                 return true;
             }
             catch (Exception)
@@ -35,8 +24,8 @@ namespace FileManager.DAL.Repositories.Implementations
         {
             try
             {
-                _appDbContext.OperationCopy.Add(operation);
-                _appDbContext.SaveChanges();
+                appDbContext.OperationCopy.Add(operation);
+                appDbContext.SaveChanges();
                 return true;
             }
             catch (Exception)
@@ -49,8 +38,8 @@ namespace FileManager.DAL.Repositories.Implementations
         {
             try
             {
-                _appDbContext.OperationDelete.Add(operation);
-                _appDbContext.SaveChanges();
+                appDbContext.OperationDelete.Add(operation);
+                appDbContext.SaveChanges();
                 return true;
             }
             catch (Exception)
@@ -63,8 +52,8 @@ namespace FileManager.DAL.Repositories.Implementations
         {
             try
             {
-                _appDbContext.OperationExist.Add(operation);
-                _appDbContext.SaveChanges();
+                appDbContext.OperationExist.Add(operation);
+                appDbContext.SaveChanges();
                 return true;
             }
             catch (Exception)
@@ -77,8 +66,8 @@ namespace FileManager.DAL.Repositories.Implementations
         {
             try
             {
-                _appDbContext.OperationMove.Add(operation);
-                _appDbContext.SaveChanges();
+                appDbContext.OperationMove.Add(operation);
+                appDbContext.SaveChanges();
                 return true;
             }
             catch (Exception)
@@ -91,8 +80,8 @@ namespace FileManager.DAL.Repositories.Implementations
         {
             try
             {
-                _appDbContext.OperationRead.Add(operation);
-                _appDbContext.SaveChanges();
+                appDbContext.OperationRead.Add(operation);
+                appDbContext.SaveChanges();
                 return true;
             }
             catch (Exception)
@@ -105,8 +94,8 @@ namespace FileManager.DAL.Repositories.Implementations
         {
             try
             {
-                _appDbContext.OperationRename.Add(operation);
-                _appDbContext.SaveChanges();
+                appDbContext.OperationRename.Add(operation);
+                appDbContext.SaveChanges();
                 return true;
             }
             catch (Exception)
@@ -119,8 +108,8 @@ namespace FileManager.DAL.Repositories.Implementations
         {
             try
             {
-                _appDbContext.OperationClrbuf.Remove(operation);
-                _appDbContext.SaveChanges();
+                appDbContext.OperationClrbuf.Remove(operation);
+                appDbContext.SaveChanges();
                 return true;
             }
             catch (Exception)
@@ -133,8 +122,8 @@ namespace FileManager.DAL.Repositories.Implementations
         {
             try
             {
-                _appDbContext.OperationCopy.Remove(operation);
-                _appDbContext.SaveChanges();
+                appDbContext.OperationCopy.Remove(operation);
+                appDbContext.SaveChanges();
                 return true;
             }
             catch (Exception)
@@ -147,8 +136,8 @@ namespace FileManager.DAL.Repositories.Implementations
         {
             try
             {
-                _appDbContext.OperationDelete.Remove(operation);
-                _appDbContext.SaveChanges();
+                appDbContext.OperationDelete.Remove(operation);
+                appDbContext.SaveChanges();
                 return true;
             }
             catch (Exception)
@@ -161,8 +150,8 @@ namespace FileManager.DAL.Repositories.Implementations
         {
             try
             {
-                _appDbContext.OperationExist.Remove(operation);
-                _appDbContext.SaveChanges();
+                appDbContext.OperationExist.Remove(operation);
+                appDbContext.SaveChanges();
                 return true;
             }
             catch (Exception)
@@ -175,8 +164,8 @@ namespace FileManager.DAL.Repositories.Implementations
         {
             try
             {
-                _appDbContext.OperationMove.Remove(operation);
-                _appDbContext.SaveChanges();
+                appDbContext.OperationMove.Remove(operation);
+                appDbContext.SaveChanges();
                 return true;
             }
             catch (Exception)
@@ -189,8 +178,8 @@ namespace FileManager.DAL.Repositories.Implementations
         {
             try
             {
-                _appDbContext.OperationRead.Remove(operation);
-                _appDbContext.SaveChanges();
+                appDbContext.OperationRead.Remove(operation);
+                appDbContext.SaveChanges();
                 return true;
             }
             catch (Exception)
@@ -203,8 +192,8 @@ namespace FileManager.DAL.Repositories.Implementations
         {
             try
             {
-                _appDbContext.OperationRename.Remove(operation);
-                _appDbContext.SaveChanges();
+                appDbContext.OperationRename.Remove(operation);
+                appDbContext.SaveChanges();
                 return true;
             }
             catch (Exception)
@@ -215,37 +204,37 @@ namespace FileManager.DAL.Repositories.Implementations
 
         public OperationClrbufEntity? GetClrbufByStepId(int stepId)
         {
-            return _appDbContext.OperationClrbuf.FirstOrDefault(x => x.StepId == stepId);
+            return appDbContext.OperationClrbuf.FirstOrDefault(x => x.StepId == stepId);
         }
 
         public OperationCopyEntity? GetCopyByStepId(int stepId)
         {
-            return _appDbContext.OperationCopy.FirstOrDefault(x => x.StepId == stepId);
+            return appDbContext.OperationCopy.FirstOrDefault(x => x.StepId == stepId);
         }
 
         public OperationDeleteEntity? GetDeleteByStepId(int stepId)
         {
-            return _appDbContext.OperationDelete.FirstOrDefault(x => x.StepId == stepId);
+            return appDbContext.OperationDelete.FirstOrDefault(x => x.StepId == stepId);
         }
 
         public OperationExistEntity? GetExistByStepId(int stepId)
         {
-            return _appDbContext.OperationExist.FirstOrDefault(x => x.StepId == stepId);
+            return appDbContext.OperationExist.FirstOrDefault(x => x.StepId == stepId);
         }
 
         public OperationMoveEntity? GetMoveByStepId(int stepId)
         {
-            return _appDbContext.OperationMove.FirstOrDefault(x => x.StepId == stepId);
+            return appDbContext.OperationMove.FirstOrDefault(x => x.StepId == stepId);
         }
 
         public OperationReadEntity? GetReadByStepId(int stepId)
         {
-            return _appDbContext.OperationRead.FirstOrDefault(x => x.StepId == stepId);
+            return appDbContext.OperationRead.FirstOrDefault(x => x.StepId == stepId);
         }
 
         public OperationRenameEntity? GetRenameByStepId(int stepId)
         {
-            return _appDbContext.OperationRename.FirstOrDefault(x => x.StepId == stepId);
+            return appDbContext.OperationRename.FirstOrDefault(x => x.StepId == stepId);
         }
     }
 }

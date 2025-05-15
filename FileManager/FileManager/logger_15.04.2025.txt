@@ -1,0 +1,193 @@
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+15.04.2025 9:32:20 задача: test - Дублирование файла по журналу!
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+15.04.2025 12:02:30 задача: test - Could not find file 'D:\transportFiles\source\23123_move.bmp'.
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+15.04.2025 12:03:50 задача: test - Could not find file 'D:\transportFiles\source\23123_move.bmp'.
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+15.04.2025 12:06:50 задача: test - Could not find a part of the path 'D:\projects\FileManager\FileManager\{BUFFER}'.
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+15.04.2025 12:08:30 задача: test - Could not find a part of the path 'D:\projects\FileManager\FileManager\{BUFFER}'.
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+15.04.2025 12:11:09 задача: test - Could not find a part of the path 'D:\projects\FileManager\FileManager\{BUFFER}'.
+15.04.2025 12:11:10 задача: test - Could not find a part of the path 'D:\projects\FileManager\FileManager\{BUFFER}'.
+15.04.2025 12:11:20 задача: test - Could not find a part of the path 'D:\projects\FileManager\FileManager\{BUFFER}'.
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+15.04.2025 15:05:00 задача: test - Ошибка при операции Exist
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.

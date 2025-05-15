@@ -3,6 +3,7 @@ using FileManager.Domain.Entity;
 using FileManager.Domain.Enum;
 using FileManager_Server.Factory;
 using FileManager_Server.Loggers;
+using FileManager_Server.MailSender;
 using FileManager_Server.Operations;
 using Quartz;
 
@@ -16,12 +17,14 @@ namespace FileManager_Server
         private readonly ILogger<JobForTask> _logger;
         private readonly ITaskLogger _taskLogger;
         private readonly AppDbContext _appDbContext;
+        private readonly IMailSender _mailSender;
 
-        public JobForTask(AppDbContext appDbContext, ILogger<JobForTask> logger, ITaskLogger taskLogger)
+        public JobForTask(AppDbContext appDbContext, ILogger<JobForTask> logger, ITaskLogger taskLogger, IMailSender mailSender)
         {
             _appDbContext = appDbContext;
             _logger = logger;
             _taskLogger = taskLogger;
+            _mailSender = mailSender;
         }
 
         public async Task Execute(IJobExecutionContext context)
@@ -53,37 +56,37 @@ namespace FileManager_Server
                             case OperationName.Copy:
                                 operation = _appDbContext.OperationCopy.FirstOrDefault(x => x.StepId == step.StepId);
                                 CreatorFactoryMethod copyCreator = new CopyCreator();
-                                steps.Add(copyCreator.FactoryMethod(step, operation, _taskLogger, _appDbContext));
+                                steps.Add(copyCreator.FactoryMethod(step, operation, _taskLogger, _appDbContext, _mailSender));
                                 break;
                             case OperationName.Move:
                                 operation = _appDbContext.OperationMove.FirstOrDefault(x => x.StepId == step.StepId);
                                 CreatorFactoryMethod moveCreator = new MoveCreator();
-                                steps.Add(moveCreator.FactoryMethod(step, operation, _taskLogger, _appDbContext));
+                                steps.Add(moveCreator.FactoryMethod(step, operation, _taskLogger, _appDbContext, _mailSender));
                                 break;
                             case OperationName.Read:
                                 operation = _appDbContext.OperationRead.FirstOrDefault(x => x.StepId == step.StepId);
                                 CreatorFactoryMethod readCreator = new ReadCreator();
-                                steps.Add(readCreator.FactoryMethod(step, operation, _taskLogger, _appDbContext));
+                                steps.Add(readCreator.FactoryMethod(step, operation, _taskLogger, _appDbContext, _mailSender));
                                 break;
                             case OperationName.Exist:
                                 operation = _appDbContext.OperationExist.FirstOrDefault(x => x.StepId == step.StepId);
                                 CreatorFactoryMethod existCreator = new ExistCreator();
-                                steps.Add(existCreator.FactoryMethod(step, operation, _taskLogger, _appDbContext));
+                                steps.Add(existCreator.FactoryMethod(step, operation, _taskLogger, _appDbContext, _mailSender));
                                 break;
                             case OperationName.Rename:
                                 operation = _appDbContext.OperationRename.FirstOrDefault(x => x.StepId == step.StepId);
                                 CreatorFactoryMethod renameCreator = new RenameCreator();
-                                steps.Add(renameCreator.FactoryMethod(step, operation, _taskLogger, _appDbContext));
+                                steps.Add(renameCreator.FactoryMethod(step, operation, _taskLogger, _appDbContext, _mailSender));
                                 break;
                             case OperationName.Delete:
                                 operation = _appDbContext.OperationDelete.FirstOrDefault(x => x.StepId == step.StepId);
                                 CreatorFactoryMethod deleteCreator = new DeleteCreator();
-                                steps.Add(deleteCreator.FactoryMethod(step, operation, _taskLogger, _appDbContext));
+                                steps.Add(deleteCreator.FactoryMethod(step, operation, _taskLogger, _appDbContext, _mailSender));
                                 break;
                             case OperationName.Clrbuf:
                                 operation = _appDbContext.OperationRead.FirstOrDefault(x => x.StepId == step.StepId);
                                 CreatorFactoryMethod clrbufCreator = new ClrbufCreator();
-                                steps.Add(clrbufCreator.FactoryMethod(step, operation, _taskLogger, _appDbContext));
+                                steps.Add(clrbufCreator.FactoryMethod(step, operation, _taskLogger, _appDbContext, _mailSender));
                                 break;
                             default:
                                 break;

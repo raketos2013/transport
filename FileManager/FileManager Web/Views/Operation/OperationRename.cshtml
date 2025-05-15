@@ -20,7 +20,8 @@
 			<p>Группа рассылки - @Model.AddresseeGroupId</p>
 			<p>Дополнительный текст - @Model.AdditionalText</p>
 			<br />
-			<p>Шаблон имени файла - @Model.Pattern</p>
+			<p>Шаблон имени файла - @Model.OldPattern</p>
+			<p>Шаблон нового имени файла - @Model.NewPattern</p>
 
 		</div>
 
@@ -46,9 +47,14 @@
 			</div>
 
 			<div class="form-group">
-				<label asp-for="Pattern" class="control-label"></label>
-				<input asp-for="Pattern" class="form-control" />
-				<span asp-validation-for="Pattern" class="text-danger"></span>
+				<label asp-for="OldPattern" class="control-label"></label>
+				<input asp-for="OldPattern" class="form-control" />
+				<span asp-validation-for="OldPattern" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="NewPattern" class="control-label"></label>
+				<input asp-for="NewPattern" class="form-control" />
+				<span asp-validation-for="NewPattern" class="text-danger"></span>
 			</div>
 
 			
@@ -85,9 +91,14 @@
 			</div>
 
 			<div class="form-group">
-				<label asp-for="Pattern" class="control-label"></label>
-				<input asp-for="Pattern" class="form-control" />
-				<span asp-validation-for="Pattern" class="text-danger"></span>
+				<label asp-for="OldPattern" class="control-label"></label>
+				<input asp-for="OldPattern" class="form-control" />
+				<span asp-validation-for="OldPattern" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="NewPattern" class="control-label"></label>
+				<input asp-for="NewPattern" class="form-control" />
+				<span asp-validation-for="NewPattern" class="text-danger"></span>
 			</div>
 			<button type="submit" class="btn btn-success" onclick="HideCreateForm()">Сохранить</button>
 		</form>

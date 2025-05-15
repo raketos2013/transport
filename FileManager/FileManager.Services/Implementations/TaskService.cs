@@ -4,6 +4,10 @@ using FileManager.Domain.Enum;
 using FileManager.Domain.ViewModels.Step;
 using FileManager.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
+using System.Security.Principal;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace FileManager.Services.Implementations
 {
@@ -16,9 +20,14 @@ namespace FileManager.Services.Implementations
                 : ITaskService
 	{
         public TaskEntity CreateTask(TaskEntity task)
-		{
+        {
             TaskEntity taskEntity = taskRepository.CreateTask(task);
-            userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, "asd", "as");
+            JsonSerializerOptions options = new()
+            {
+                ReferenceHandler = ReferenceHandler.Preserve,
+                WriteIndented = true
+            };
+            userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, "Создание задачи", JsonSerializer.Serialize(taskEntity, options));
 			return taskEntity;
 		}
 
@@ -65,7 +74,14 @@ namespace FileManager.Services.Implementations
 
 		public bool EditTask(TaskEntity task)
 		{
-			return taskRepository.EditTask(task);
+            bool edited = taskRepository.EditTask(task);
+            JsonSerializerOptions options = new()
+            {
+                ReferenceHandler = ReferenceHandler.Preserve,
+                WriteIndented = true
+            };
+            userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, "Создание задачи", JsonSerializer.Serialize(task, options));
+            return edited;
 		}
 
         public bool UpdateLastModifiedTask(string idTask)

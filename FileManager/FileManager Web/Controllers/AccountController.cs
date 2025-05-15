@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 using System.DirectoryServices.AccountManagement;
-using FileManager_Web.Logging;
-using System.Threading.Tasks;
 using System.Text.Json;
 using FileManager.Services.Interfaces;
 

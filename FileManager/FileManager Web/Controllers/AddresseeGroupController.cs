@@ -10,7 +10,7 @@ namespace FileManager_Web.Controllers
 {
     [Authorize(Roles = "o.br.ДИТ")]
     public class AddresseeGroupController(ILogger<AddresseeGroupController> logger, 
-                                            UserLogging userLogging, 
+                                            //UserLogging userLogging, 
                                             AppDbContext context) 
                 : Controller
     {
@@ -40,7 +40,7 @@ namespace FileManager_Web.Controllers
 
             //_userLogging.Logging(HttpContext.User.Identity.Name, $"Создание группы рассылки: {group.Id}", JsonSerializer.Serialize(group));
 
-            return RedirectToAction("Addressees");
+            return RedirectToAction("Tasks", "Task");
         }
 
         [HttpGet]
@@ -118,9 +118,9 @@ namespace FileManager_Web.Controllers
             //_appDbContext.Task.UpdateRange(tasks);
             context.SaveChanges();
 
-            userLogging.Logging(HttpContext.User.Identity.Name, $"Удаление группы рассылки номер: {deletedGroup.Id}", JsonSerializer.Serialize(deletedGroup));
+            //userLogging.Logging(HttpContext.User.Identity.Name, $"Удаление группы рассылки номер: {deletedGroup.Id}", JsonSerializer.Serialize(deletedGroup));
 
-            return RedirectToAction("Addressees");
+            return RedirectToAction("Tasks", "Task");
         }
 
         public IActionResult DeleteAddressee(string number, int idGroup)
@@ -130,9 +130,9 @@ namespace FileManager_Web.Controllers
             {
                 context.Addressee.Remove(addressee);
                 context.SaveChanges();
-                userLogging.Logging(HttpContext.User.Identity.Name,
+               /* userLogging.Logging(HttpContext.User.Identity.Name,
                                      $"Удаление адресата {number} из группы номер {idGroup}", 
-                                     JsonSerializer.Serialize(addressee));
+                                     JsonSerializer.Serialize(addressee));*/
             }
             return RedirectToAction("Addressees");
         }

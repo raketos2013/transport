@@ -23,14 +23,20 @@ namespace FileManager_Web.Controllers
         public IActionResult Tasks()
         {
             List<TaskGroupEntity> tasksGroups = taskService.GetAllGroups().OrderBy(x => x.Id).ToList();
-            return View(tasksGroups);
+            List<AddresseeGroupEntity> addresseeGroups = addresseeService.GetAllAddresseeGroups().OrderBy(x => x.Id).ToList();
+            GroupsViewModel viewModel = new()
+            {
+                AddresseeGroups = addresseeGroups,
+                TaskGroups = tasksGroups
+            };
+            return View(viewModel);
         }
 
         [HttpPost]
         public IActionResult TasksList(string taskGroup)
         {
             List<TaskEntity> tasks = taskService.GetTasksByGroup(taskGroup);
-            return PartialView(tasks);
+            return PartialView("_TasksList", tasks);
         }
 
         [HttpGet]
@@ -39,13 +45,15 @@ namespace FileManager_Web.Controllers
             ViewBag.AddresseeGroups = addresseeService.GetAllAddresseeGroups();
             ViewBag.TaskGroups = taskService.GetAllGroups();
             TaskEntity task = new();
-            return View(task);
+            return PartialView("_CreateTask", task);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult CreateTask(TaskEntity task)
         {
+            ViewBag.AddresseeGroups = addresseeService.GetAllAddresseeGroups();
+            ViewBag.TaskGroups = taskService.GetAllGroups();
             try
             {
                 if (ModelState.IsValid)
@@ -53,14 +61,14 @@ namespace FileManager_Web.Controllers
                     taskService.CreateTask(task);
                     return RedirectToAction(nameof(Tasks));
                 }
-                return View();
+                return PartialView();
             }
             catch (Exception)
             {
-                return View();
+                return PartialView();
             }
         }
-
+        
         public IActionResult TaskDetails(string taskId)
         {
             TaskEntity task = taskService.GetTaskById(taskId);
@@ -70,7 +78,7 @@ namespace FileManager_Web.Controllers
             TaskDetailsViewModel taskDetails = new(task, steps);
             ViewBag.AddresseeGroups = addresseeService.GetAllAddresseeGroups();
             ViewBag.TaskGroups = taskService.GetAllGroups();
-            return View(taskDetails);
+            return PartialView("_TaskDetails", taskDetails);
         }
 
         public IActionResult TaskLog(TaskLogViewModel model, string? taskId, int? page)
@@ -270,6 +278,14 @@ namespace FileManager_Web.Controllers
             }*/
             //userLogService.AddLog(HttpContext.User.Identity.Name, message, JsonSerializer.Serialize(task));
             return RedirectToAction("Tasks");
+        }
+
+        public IActionResult EditTask(string taskId)
+        {
+            var task = taskService.GetTaskById(taskId);
+            ViewBag.AddresseeGroups = addresseeService.GetAllAddresseeGroups();
+            ViewBag.TaskGroups = taskService.GetAllGroups();
+            return PartialView("_EditTask", task);
         }
 
         [HttpPost]

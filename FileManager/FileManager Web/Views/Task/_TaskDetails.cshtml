@@ -1,0 +1,406 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@using FileManager.Domain.Enum
+@using FileManager.Domain.Entity
+@model FileManager.Domain.ViewModels.Task.TaskDetailsViewModel
+@{
+	//ViewData["Title"] = "Настройки задачи";
+
+	SelectList addresseeGroupsSelect = new SelectList(ViewBag.AddresseeGroups, "Id", "Name");
+	SelectList taskGroupsSelect = new SelectList(ViewBag.TaskGroups, "Id", "Name");
+	List<AddresseeGroupEntity> addresseeGroups = ViewBag.AddresseeGroups;
+	List<TaskGroupEntity> taskGroups = ViewBag.TaskGroups;
+}
+
+
+<div class="modal-body-content">
+	<div class="modal-row">
+		<div class="modal-td">
+			<p class="td-title">Задача</p>
+			<p class="td-text">@Model.Task.TaskId</p>
+		</div>
+		<div class="modal-td">
+			<p class="td-title">Наименование</p>
+			<p class="td-text">@Model.Task.Name</p>
+		</div>
+		<div class="modal-td">
+			<p class="td-title">Время начала</p>
+			<p class="td-text">@Model.Task.TimeBegin</p>
+		</div>
+		<div class="modal-td">
+			<p class="td-title">Время окончания</p>
+			<p class="td-text">@Model.Task.TimeEnd</p>
+		</div>
+		<div class="modal-td">
+			<p class="td-title">Последнее изменение</p>
+			<p class="td-text">@Model.Task.LastModified</p>
+		</div>
+	</div>
+	<div class="modal-row">
+		<div class="modal-td">
+			<p class="td-title">Дни активности</p>
+			<p class="td-text">@Model.Task.DayActive</p>
+		</div>
+		<div class="modal-td">
+			<p class="td-title">Группа рассылки</p>
+			<p class="td-text">@Model.Task.AddresseeGroupId</p>
+		</div>
+		<div class="modal-td">
+			<p class="td-title">Группа задач</p>
+			<p class="td-text">@Model.Task.TaskGroupId</p>
+		</div>
+		<div class="modal-td">
+			<p class="td-title">Статус</p>
+			<p class="td-text"></p>
+		</div>
+	</div>
+</div>
+
+
+@* <div class="container-fluid padding-top-container" style="padding-left: 0px; padding-right: 0px;">
+
+	<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" 
+												tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="CancelOnOffTask()"></button>
+				</div>
+				<div class="modal-body">
+					<p><span id="titleInfo"></span> шаг номер <span id="stepNumberInfo"></span> задачи <span id="idTaskInfo"></span> ?</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="CancelOnOffTask()">Отмена</button>
+					<button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="OkOnOffTask()">Ок</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-3" style="border-right: 1px solid;">
+			<a asp-area="" asp-controller="Task" asp-action="Tasks" class="btn btn-warning">Назад</a>
+			<a asp-area="" asp-controller="Task" asp-action="TaskLog" class="btn btn-info" asp-route-taskId="@Model.Task.TaskId">Журнал</a>
+			<button class="btn btn-info" onclick="ReadEditTask()" id="btnEditTask">Редактирование</button>
+			<div id="taskDetailsRead">
+				<p> Задача <b>@Model.Task.TaskId</b></p>
+				<p>@Model.Task.Name</p>
+				<p>Время начала - @Model.Task.TimeBegin</p>
+				<p>Время окончания - @Model.Task.TimeEnd</p>
+				<p>Дни активности - @Model.Task.DayActive</p>
+				<p>Группа рассылки - 
+					@if (Model.Task.AddresseeGroupId != null)
+					{
+						@addresseeGroups.FirstOrDefault(x => x.Id == Model.Task.AddresseeGroupId).Name
+					}
+
+				</p>
+				<p>Группа задач - @taskGroups.FirstOrDefault(x => x.Id == Model.Task.TaskGroupId).Name</p>
+				<p>Последнее изменение - @Model.Task.LastModified</p>
+				<p>Статус - @Model.Task.TaskStatus</p>
+			</div>
+			<div id="taskDetailsEdit" style="display:none">
+				<form asp-action="EditTask" method="post" asp-route-taskId="@Model.Task.TaskId">
+					<div class="form-group">
+						<label asp-for="Task.TaskId" class="control-label"></label>
+						<input asp-for="Task.TaskId" class="form-control" readonly/>
+						<span asp-validation-for="Task.TaskId" class="text-danger"></span>
+					</div>
+					<div class="form-group">
+						<label asp-for="Task.Name" class="control-label"></label>
+						<input asp-for="Task.Name" class="form-control" />
+						<span asp-validation-for="Task.Name" class="text-danger"></span>
+					</div>
+					<div class="form-group">
+						<label asp-for="Task.TimeBegin" class="control-label"></label>
+						<input asp-for="Task.TimeBegin" class="form-control" type="time"/>
+						<span asp-validation-for="Task.TimeBegin" class="text-danger"></span>
+					</div>
+					<div class="form-group">
+						<label asp-for="Task.TimeEnd" class="control-label"></label>
+						<input asp-for="Task.TimeEnd" class="form-control" type="time"/>
+						<span asp-validation-for="Task.TimeEnd" class="text-danger"></span>
+					</div>
+					<div class="form-group">
+						<label asp-for="Task.DayActive" class="control-label"></label>
+						<select asp-for="Task.DayActive" class="form-select mb-3" asp-items="Html.GetEnumSelectList<DayActive>()"></select>
+						<span asp-validation-for="Task.DayActive" class="text-danger"></span>
+					</div>
+					<div class="form-group">
+						<label asp-for="Task.AddresseeGroupId" class="control-label"></label>
+						<select asp-for="Task.AddresseeGroupId" class="form-select mb-3" asp-items=@addresseeGroupsSelect></select>
+						<span asp-validation-for="Task.AddresseeGroupId" class="text-danger"></span>
+					</div>
+					<div class="form-group">
+						<label asp-for="Task.TaskGroupId" class="control-label"></label>
+						<select asp-for="Task.TaskGroupId" class="form-select mb-3" asp-items=@taskGroupsSelect></select>
+						<span asp-validation-for="Task.TaskGroupId" class="text-danger"></span>
+					</div>
+					<div class="form-group">
+						<label asp-for="Task.IsActive" class="form-check-label">
+							Активно
+							<input type="checkbox" class="form-check-input" asp-for="Task.IsActive"/>
+						</label>
+					</div>
+					<button type="submit" class="btn btn-success">Сохранить</button>
+				</form>
+			</div>
+
+
+
+		</div>
+		<div class="col-9">
+			<a asp-action="CreateStep" asp-controller="Step" class="btn btn-info" asp-route-idTask="@Model.Task.TaskId">Добавить</a>
+			<button class="btn btn-outline-primary" onclick="ShowActiveStep()"><span id="titleButton">Скрыть</span> неактивные</button>
+			<div>
+				<a class="btn" onclick="replaceStep('up', '@Model.Task.TaskId.ToString()')"><img src="~/images/arrow_up_icon.png" /></a>
+				<a class="btn" onclick="replaceStep('down', '@Model.Task.TaskId.ToString()')"><img src="~/images/arrow_down_icon.png" /></a>
+				<a class="btn" onclick="replaceStep('maxup', '@Model.Task.TaskId.ToString()')"><img src="~/images/arrow_upmax_icon.png" /></a>
+				<a class="btn" onclick="replaceStep('maxdown', '@Model.Task.TaskId.ToString()')"><img src="~/images/arrow_downmax_icon.png" /></a>
+			</div>
+			<table class="table table-hover" id="tableSteps">
+				<thead>
+					<tr>
+
+						<th>
+							Номер шага
+						</th>
+						<th>
+							Вкл/Выкл
+						</th>
+						<th>
+							Краткое описание
+						</th>
+						<th>
+							Маска
+						</th>
+						<th>
+							Операция
+						</th>
+						<th>
+							Прерывание
+						</th>
+						<th>
+							Св-ва
+						</th>
+						<th>
+							Источник
+						</th>
+						<th>
+							Назначение
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var item in Model.TaskSteps)
+					{
+							<tr ondblclick="stepDetails('@item.TaskId.ToString()', '@item.StepNumber.ToString()')">
+
+								<td>
+								@Html.DisplayFor(modelItem => item.StepNumber)
+								</td>
+								<td>
+									<div class="form-check form-switch">
+										<label class="form-check-label" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+											<input type="checkbox" class="form-check-input" asp-for="@item.IsActive" 
+																	onclick="OnOffTask('@item.TaskId.ToString()', '@item.StepNumber', '@item.StepId')" />
+										</label>
+									</div>
+								</td>
+								<td>
+								@Html.DisplayFor(modelItem => item.Description)
+								</td>
+								<td>
+								@Html.DisplayFor(modelItem => item.FileMask)
+								</td>
+								<td>
+								@Html.DisplayFor(modelItem => item.OperationName)
+								</td>
+								<td>
+								@Html.DisplayFor(modelItem => item.IsBreak)
+								</td>
+								<td>
+								</td>
+								<td>
+								@Html.DisplayFor(modelItem => item.Source)
+								</td>
+								<td>
+								@Html.DisplayFor(modelItem => item.Destination)
+								</td>
+							</tr>
+					}
+				</tbody>
+
+
+			</table>
+
+		</div>
+	</div>
+
+
+
+
+
+
+</div> *@
+
+@* <script>
+	var selectStep;
+	var trs = document.querySelectorAll("tbody tr");
+	for (var i = 0; i < trs.length; i++) {
+		MakeRowHover(trs[i], i);
+	}
+	function MakeRowHover(row, numRow) {
+		row.addEventListener("click", function (numRow) {
+			//this.style.backgroundColor = "silver";
+			let td = this.querySelectorAll('td');
+			for (var i = 0; i < trs.length; i++) {
+				selectStep = td[0].innerText;
+				//td[1].style.display = 'block';
+				trs[i].classList.add('selected-row');
+			}
+			for (var i = 0; i < trs.length; i++) {
+				if (trs[i] != this) {
+					td = trs[i].querySelectorAll('td');
+					//td[1].style.display = 'none';
+					trs[i].classList.remove('selected-row');
+				}
+			}
+		});
+	}
+
+	function replaceStep(operation, taskId) {
+
+		$.ajax({
+			method: 'POST',
+			url: '@Url.Action("ReplaceStep", "Step")',
+			data: {
+				"taskId": taskId,
+				"numberStep": selectStep,
+				"operation": operation
+			},
+			dataType: 'html',
+			success: function (result) {
+				location.href = "@Url.Action("TaskDetails", "Task", new { taskId = "cid" })".replace("cid", taskId);
+			}
+		});
+	}
+
+	var isEditTask = false;
+	var onOffStepId;
+
+	function ReadEditTask() {
+		if(isEditTask){
+			document.getElementById("taskDetailsRead").style.display = "block";
+			document.getElementById("taskDetailsEdit").style.display = "none";
+			document.getElementById("btnEditTask").innerText = "Редактирование";
+		}
+		else {
+			document.getElementById("taskDetailsRead").style.display = "none";
+			document.getElementById("taskDetailsEdit").style.display = "block";
+			document.getElementById("btnEditTask").innerText = "Просмотр";
+		}
+		isEditTask = !isEditTask;		
+	}
+
+	function OnOffTask(taskId, stepNumber, stepId) {
+		onOffStepId = stepId;
+		var table, tr, td, i, txtValue, valueCheck;
+
+		table = document.getElementById("tableSteps");
+		tr = table.getElementsByTagName("tr");
+
+		for (i = 0; i < tr.length; i++) {
+			td = tr[i].getElementsByTagName("td")[0];
+			if (td) {
+				txtValue = td.innerText;
+				if (txtValue == stepNumber) {
+					var qwe = tr[i].getElementsByTagName("td")[1];
+					var chl1 = qwe.firstElementChild.firstElementChild.firstElementChild.checked;
+
+				}
+			}
+		}
+		if (chl1) {
+			document.getElementById('titleInfo').innerText = "Включить";
+		} else {
+			document.getElementById('titleInfo').innerText = "Выключить";
+		}
+		document.getElementById('idTaskInfo').innerText = taskId;
+		document.getElementById('stepNumberInfo').innerText = stepNumber;
+	}
+
+
+	function OkOnOffTask() {
+		var taskId = document.getElementById('idTaskInfo').innerText
+		var stepNumber = document.getElementById('stepNumberInfo').innerText
+		$.ajax({
+			method: 'POST',
+			url: '@Url.Action("ActivatedStep", "Step")',
+			data: { "taskId": taskId,
+					"stepId": onOffStepId },
+			dataType: 'html',
+			success: function (result) {
+				//f1();
+			}
+		});
+
+	}
+
+	function CancelOnOffTask() {
+		var table, tr, td, i, txtValue, valueCheck;
+
+		table = document.getElementById("tableSteps");
+		tr = table.getElementsByTagName("tr");
+
+		for (i = 0; i < tr.length; i++) {
+			td = tr[i].getElementsByTagName("td")[0];
+			if (td) {
+				txtValue = td.innerText;
+				if (txtValue == document.getElementById('stepNumberInfo').innerText) {
+					var qwe = tr[i].getElementsByTagName("td")[1];
+					qwe.firstElementChild.firstElementChild.firstElementChild.checked = !qwe.firstElementChild.firstElementChild.firstElementChild.checked;
+
+				}
+			}
+		}
+
+	}
+	var isShowActiveStep = false;
+	function ShowActiveStep() {
+
+		isShowActiveStep = !isShowActiveStep;
+		if (isShowActiveStep) {
+			document.getElementById('titleButton').innerText = "Показать";
+		} else {
+			document.getElementById('titleButton').innerText = "Скрыть";
+		}
+
+		var table, tr, td, i, txtValue, valueCheck;
+
+		table = document.getElementById("tableSteps");
+		tr = table.getElementsByTagName("tr");
+
+		// Перебирайте все строки таблицы и скрывайте тех, кто не соответствует поисковому запросу
+
+		for (i = 1; i < tr.length; i++) {
+			var qwe = tr[i].getElementsByTagName("td")[1];
+			var chl1 = qwe.firstElementChild.firstElementChild.firstElementChild.checked;
+			if (isShowActiveStep) {
+				if (!chl1) {
+					tr[i].style.display = "none";
+				}
+			} else {
+				tr[i].style.display = "";
+			}
+		}
+
+	}
+
+	function stepDetails(taskId, stepNumber) {
+		location.href = "@Url.Action("StepDetails", "Step", new { taskId = "cid", stepNumber = "cnum" })"
+			.replace("cid", taskId.toString()).replace("cnum", stepNumber.toString()).replace("amp;", "");
+	}
+
+</script> *@

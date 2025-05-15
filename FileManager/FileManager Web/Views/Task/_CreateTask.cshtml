@@ -1,0 +1,208 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@using FileManager.Domain.Enum
+@model FileManager.Domain.Entity.TaskEntity
+
+@{
+	ViewData["Title"] = "Создание задачи";
+	SelectList addresseeGroups = new SelectList(ViewBag.AddresseeGroups, "Id", "Name");
+	SelectList taskGroups = new SelectList(ViewBag.TaskGroups, "Id", "Name");
+
+}
+
+
+
+
+
+<div class="modal">
+	<div class="modal-header">
+		<p>Создание задачи</p>
+		<svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg" onclick="CloseModal('modal-add-task')">
+			<path d="M5.19281 4.69635L8 7.50342L10.7926 4.71089C10.8543 4.64524 10.9286 4.59272 11.0111 4.55648C11.0936 4.52024 11.1825 4.50103 11.2726 4.5C11.4655 4.5 11.6505 4.57662 11.7869 4.713C11.9233 4.84938 11.9999 5.03435 11.9999 5.22722C12.0016 5.31638 11.985 5.40494 11.9513 5.48748C11.9175 5.57001 11.8672 5.64478 11.8035 5.70719L8.97452 8.49971L11.8035 11.3286C11.9234 11.4459 11.9937 11.6046 11.9999 11.7722C11.9999 11.9651 11.9233 12.15 11.7869 12.2864C11.6505 12.4228 11.4655 12.4994 11.2726 12.4994C11.1799 12.5033 11.0875 12.4878 11.0011 12.454C10.9147 12.4202 10.8363 12.3688 10.7708 12.3031L8 9.496L5.20008 12.2958C5.13863 12.3593 5.06522 12.4099 4.98409 12.4449C4.90296 12.4798 4.8157 12.4984 4.72737 12.4994C4.53449 12.4994 4.34951 12.4228 4.21313 12.2864C4.07674 12.15 4.00012 11.9651 4.00012 11.7722C3.99842 11.683 4.01497 11.5945 4.04873 11.5119C4.0825 11.4294 4.13277 11.3546 4.19648 11.2922L7.02548 8.49971L4.19648 5.67082C4.07661 5.55357 4.00633 5.39478 4.00012 5.22722C4.00012 5.03435 4.07674 4.84938 4.21313 4.713C4.34951 4.57662 4.53449 4.5 4.72737 4.5C4.90191 4.50218 5.06918 4.57272 5.19281 4.69635Z" fill="white" />
+		</svg>
+	</div>
+	<div class="modal-body">
+		<div class="modal-body-content">
+			<div class="input-with-label">
+				<label>Идентификатор</label>
+				<input>
+			</div>
+			<div class="input-with-label">
+				<label>Наименование</label>
+				<input>
+			</div>
+			<div class="input-with-label">
+				<label>Время начала</label>
+				<input>
+			</div>
+			<div class="input-with-label">
+				<label>Время окончания</label>
+				<input>
+			</div>
+			<div class="input-with-label">
+				<label>Дни активности</label>
+				<div class="select-wrapper">
+					<select>
+						<option>Рабочие</option>
+						<option>Выходные</option>
+						<option>Все</option>
+					</select>
+				</div>
+			</div>
+			<div class="input-with-label">
+				<label>Группа рассылки</label>
+				<div class="select-wrapper">
+					<select>
+						<option>Первая группа</option>
+						<option>Рассылка ошибок</option>
+						<option>Новая группа рассылки</option>
+					</select>
+				</div>
+			</div>
+			<div class="input-with-label">
+				<label>Группа задач</label>
+				<div class="select-wrapper">
+					<select>
+						<option>Без группы</option>
+						<option>группа теста</option>
+						<option>Новая группа задач 123</option>
+						<option>ddddd</option>
+					</select>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<div class="btn-full">
+			Сохранить
+		</div>
+	</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+@* <div class="container padding-top-container">
+	<h1 class="text-center">Создание задачи</h1>
+
+
+	<form asp-action="CreateTask" method="post">
+
+		<div class="row justify-content-md-center">
+
+			<div class="col-md-3">
+				<div class="form-group">
+					<label asp-for="TaskId" class="control-label"></label>
+					<input asp-for="TaskId" class="form-control" />
+					<span asp-validation-for="TaskId" class="text-danger"></span>
+				</div>
+
+			</div>
+			<div class="col-md-2">
+				<div class="form-group">
+					<label asp-for="TimeBegin" class="control-label"></label>
+					<input asp-for="TimeBegin" class="form-control" type="time" value="00:00" />
+					<span asp-validation-for="TimeBegin" class="text-danger"></span>
+				</div>
+
+			</div>
+			<div class="col-md-4">
+				<div class="form-group">
+					<label asp-for="DayActive" class="control-label"></label>
+					<select asp-for="DayActive" class="form-select mb-3" asp-items="Html.GetEnumSelectList<DayActive>()"></select>
+					<span asp-validation-for="DayActive" class="text-danger"></span>
+				</div>
+			</div>
+		</div>
+
+
+		<div class="row  justify-content-md-center">
+			<div class="col-md-3">
+				<div class="form-group">
+					<label asp-for="Name" class="control-label"></label>
+					<input asp-for="Name" class="form-control" />
+					<span asp-validation-for="Name" class="text-danger"></span>
+				</div>
+
+			</div>
+			<div class="col-md-2">
+				<div class="form-group">
+					<label asp-for="TimeEnd" class="control-label"></label>
+					<input asp-for="TimeEnd" class="form-control" type="time" value="00:00" />
+					<span asp-validation-for="TimeEnd" class="text-danger"></span>
+				</div>
+
+
+			</div>
+			<div class="col-md-4">
+				<div class="form-group">
+					<label asp-for="AddresseeGroupId" class="control-label"></label>
+					<select asp-for="AddresseeGroupId" class="form-select mb-3" asp-items=@addresseeGroups></select>
+					<span asp-validation-for="AddresseeGroupId" class="text-danger"></span>
+				</div>
+			</div>
+		</div>
+
+
+		<div class="row  justify-content-md-center">
+			<div class="col-md-3">
+
+			</div>
+			<div class="col-md-2">
+				
+
+			</div>
+			<div class="col-md-4">
+				<div class="form-group">
+					<label asp-for="TaskGroupId" class="control-label"></label>
+					<select asp-for="TaskGroupId" class="form-select mb-3" asp-items=@taskGroups></select>
+					<span asp-validation-for="TaskGroupId" class="text-danger"></span>
+				</div>
+			</div>
+		</div>
+
+
+		
+
+		<div class="row justify-content-center">
+			<div class="col-3">
+				
+			</div>
+			<div class="col-2">
+			</div>
+			<div class="col-4">
+				
+			</div>
+		</div>
+
+		
+
+		<br />
+		<div class="row  justify-content-md-center">
+			<div class="col-1">
+				<div class="form-group">
+					<a asp-action="Tasks" class="btn btn-warning">Назад</a>
+				</div>
+			</div>
+			<div class="col-1">
+				<div class="form-group">
+					<input type="submit" value="Сохранить" class="btn btn-success" />
+				</div>
+			</div>
+		</div>
+
+	</form>
+
+
+</div> *@
+
+
+
+

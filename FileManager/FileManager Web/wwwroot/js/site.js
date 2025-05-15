@@ -372,3 +372,21 @@ function EditTask(taskId) {
         }
     });
 }
+
+function CreateTask() {
+    $.ajax({
+        method: 'GET',
+        url: 'Task/CreateTask',
+        //data: {},
+        dataType: 'html',
+        success: function (result) {
+            $('#create-task-content').empty();
+            $('#create-task-content').append(result);
+            ShowModal('modal-add-task');
+        }
+    });
+}
+
+function TaskSteps(taskId) {
+    location.href = "@Url.Action("", "Task", new { taskId = "cid" })".replace("cid", taskId.toString());
+}

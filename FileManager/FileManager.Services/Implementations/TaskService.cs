@@ -27,7 +27,7 @@ namespace FileManager.Services.Implementations
                 ReferenceHandler = ReferenceHandler.Preserve,
                 WriteIndented = true
             };
-            userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, "Создание задачи", JsonSerializer.Serialize(taskEntity, options));
+            //userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, "Создание задачи", JsonSerializer.Serialize(taskEntity, options));
 			return taskEntity;
 		}
 
@@ -80,7 +80,7 @@ namespace FileManager.Services.Implementations
                 ReferenceHandler = ReferenceHandler.Preserve,
                 WriteIndented = true
             };
-            userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, "Создание задачи", JsonSerializer.Serialize(task, options));
+            //userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, "Создание задачи", JsonSerializer.Serialize(task, options));
             return edited;
 		}
 

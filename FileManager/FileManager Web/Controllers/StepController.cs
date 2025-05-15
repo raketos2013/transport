@@ -6,12 +6,19 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FileManager_Web.Controllers
 {
-	[Authorize(Roles = "o.br.ДИТ")]
+	//[Authorize(Roles = "o.br.ДИТ")]
 	public class StepController(ILogger<StepController> logger, 
                                 UserLogging userLogging, 
                                 IStepService stepService) 
                 : Controller
     {
+
+        public IActionResult StepList(string taskId)
+        {
+            List<TaskStepEntity> steps = stepService.GetAllStepsByTaskId(taskId);
+            return PartialView("_StepList", steps);
+        }
+
         [HttpGet]
         public IActionResult CreateStep(string idTask)
         {

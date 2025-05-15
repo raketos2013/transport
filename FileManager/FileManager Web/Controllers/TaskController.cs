@@ -12,7 +12,7 @@ using X.PagedList.Extensions;
 
 namespace FileManager_Web.Controllers
 {
-    [Authorize(Roles = "o.br.ДИТ")]
+    //[Authorize(Roles = "o.br.ДИТ")]
     public class TaskController(ILogger<TaskController> logger,
                                 ITaskService taskService,
                                 IAddresseeService addresseeService,
@@ -292,7 +292,7 @@ namespace FileManager_Web.Controllers
         public IActionResult EditTask(TaskEntity task, string taskId)
         {
             taskService.EditTask(task);
-            return RedirectToAction("TaskDetails", "Task", new { taskId });
+            return RedirectToAction("Tasks", "Task", new { taskId });
         }
 
         [HttpPost]

@@ -10,7 +10,8 @@
     List<AddresseeGroupEntity> addresseeGroups = ViewBag.AddresseeGroups;
     List<TaskGroupEntity> taskGroups = ViewBag.TaskGroups;
 }
-<div class="modal-body-content">
+<form id="editTaskForm" method="post" asp-action="EditTask" asp-controller="Task" 
+        class="modal-body-content" asp-route-taskId="@Model.TaskId">
     <div class="input-with-label">
         <label asp-for="TaskId"></label>
         <input asp-for="TaskId" readonly />
@@ -52,4 +53,4 @@
         </label>
         <p>Активно</p>
     </div>
-</div>
+</form>

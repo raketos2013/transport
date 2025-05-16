@@ -9,7 +9,7 @@ using System.Globalization;
 
 namespace FileManager_Web.Controllers
 {
-	//[Authorize(Roles = "o.br.ДИТ")]
+	[Authorize(Roles = "o.br.ДИТ")]
 	public class UserLogsController(ILogger<UserLogsController> logger, IUserLogService userLogService, AppDbContext context) : Controller
     {
 

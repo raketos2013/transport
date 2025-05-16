@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FileManager_Web.Controllers
 {
-    //[Authorize(Roles = "o.br.ДИТ")]
+    [Authorize(Roles = "o.br.ДИТ")]
     public class OperationController(ILogger<OperationController> logger,
                                         IOperationService operationService,
                                         IStepService stepService,

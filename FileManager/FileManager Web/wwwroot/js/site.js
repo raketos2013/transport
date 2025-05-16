@@ -387,6 +387,6 @@ function CreateTask() {
     });
 }
 
-function TaskSteps(taskId) {
+/*function TaskSteps(taskId) {
     location.href = "@Url.Action("", "Task", new { taskId = "cid" })".replace("cid", taskId.toString());
-}
+}*/

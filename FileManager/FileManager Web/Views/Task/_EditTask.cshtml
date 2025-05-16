@@ -48,7 +48,7 @@
     </div>
     <div class="input-checkbox">
         <label asp-for="IsActive" class="toggle-checkbox">
-            <input type="checkbox" checked="@Model.IsActive">
+            <input type="checkbox" asp-for="@Model.IsActive" checked="@Model.IsActive">
             <span class="toggle-checkbox-switch"></span>
         </label>
         <p>Активно</p>

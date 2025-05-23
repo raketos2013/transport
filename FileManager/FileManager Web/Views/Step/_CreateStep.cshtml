@@ -1,0 +1,54 @@
+﻿@using FileManager.Domain.Entity
+@using FileManager.Domain.Enum
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model TaskStepEntity
+@{
+}
+<form method="post" asp-action="CreateStep" asp-controller="Step" class="modal-body-content" id="createStepForm">
+    <div class="input-with-label" style="display: none;">
+        <label asp-for="TaskId"></label>
+        <input asp-for="TaskId">
+    </div>
+    <div class="input-with-label">
+        <label asp-for="StepNumber"></label>
+        <input asp-for="StepNumber" min="1" max="@ViewBag.MaxNumber">
+    </div>
+    <div class="input-with-label">
+        <label asp-for="Description"></label>
+        <input asp-for="Description">
+    </div>
+    <div class="input-with-label">
+        <label asp-for="OperationName"></label>
+        <div class="select-wrapper">
+            <select asp-for="OperationName" asp-items="Html.GetEnumSelectList<OperationName>()"></select>
+        </div>
+    </div>
+    <div class="input-with-label">
+        <label asp-for="FileMask">Маска файла</label>
+        <input asp-for="FileMask">
+    </div>
+    <div class="input-with-label">
+        <label asp-for="Source"></label>
+        <input asp-for="Source">
+    </div>
+    <div class="input-with-label">
+        <label asp-for="Destination"></label>
+        <input asp-for="Destination">
+    </div>
+    <div class="input-checkbox">
+        <label asp-for="IsBreak" class="toggle-checkbox">
+            <input type="checkbox" asp-for="@Model.IsBreak" checked="@Model.IsBreak">
+            <span class="toggle-checkbox-switch"></span>
+        </label>
+        <p>Прерывание</p>
+    </div>
+    <div class="input-checkbox">
+        <label asp-for="IsActive" class="toggle-checkbox">
+            <input type="checkbox" asp-for="@Model.IsActive" checked="@Model.IsActive">
+            <span class="toggle-checkbox-switch"></span>
+        </label>
+        <p>Активно</p>
+    </div>
+</form>

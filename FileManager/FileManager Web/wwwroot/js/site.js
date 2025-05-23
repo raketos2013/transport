@@ -173,6 +173,9 @@ var isShowActive = false;
 var tableTasks;
 var tr;
 var isShowActiveAddressee = false;
+var selectGroup = "Все";
+var selectAddresseeGroup;
+var selectTask;
 function ShowActiveTask() {
 
     isShowActive = !isShowActive;
@@ -325,7 +328,7 @@ document.addEventListener('DOMContentLoaded', () => {
     })
 })
 
-document.addEventListener('DOMContentLoaded', () => {
+/*document.addEventListener('DOMContentLoaded', () => {
     const block = document.getElementById('filter');
     window.addEventListener('click', e => {
         const target = e.target
@@ -333,7 +336,7 @@ document.addEventListener('DOMContentLoaded', () => {
             block.style.display = "none";
         }
     })
-})
+})*/
 
 function ShowModal(element_id) {
     document.getElementById(element_id).style.display = "flex";
@@ -387,6 +390,226 @@ function CreateTask() {
     });
 }
 
-/*function TaskSteps(taskId) {
-    location.href = "@Url.Action("", "Task", new { taskId = "cid" })".replace("cid", taskId.toString());
-}*/
+function UserLogDetails(dateTime, userName) {
+    $.ajax({
+        method: 'GET',
+        url: '/UserLogs/Details',
+        data: { "dateTime": dateTime,
+                "username": userName },
+        dataType: 'html',
+        success: function (result) {
+            $('#userlog-details-content').empty();
+            $('#userlog-details-content').append(result);
+            ShowModal('modal-log-details');
+        }
+    });
+}
+function SetTaskGroup(taskGroup) {
+    //document.cookie = "selectedTaskGroup=" + taskGroup;
+    //selectGroup = taskGroup;
+}
+
+function getCookie(name) {
+    let matches = document.cookie.match(new RegExp(
+        "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+    ));
+    return matches ? decodeURIComponent(matches[1]) : undefined;
+}
+
+function CreateAddressee() {
+    $.ajax({
+        method: 'GET',
+        url: '/AddresseeGroup/CreateAddressee',
+        //data: {},
+        dataType: 'html',
+        success: function (result) {
+            $('#create-addressee-content').empty();
+            $('#create-addressee-content').append(result);
+            ShowModal('modal-add-group');
+        }
+    });
+    
+}
+
+function CreateTask() {
+    var cookieTask = getCookie("selectedTask");
+    $.ajax({
+        method: 'GET',
+        url: '/Step/CreateStep',
+        data: { "taskId": cookieTask },
+        dataType: 'html',
+        success: function (result) {
+            $('#create-step-content').empty();
+            $('#create-step-content').append(result);
+            ShowModal('modal-add-step');
+        }
+    });
+    
+}
+
+function ShowStepList() {
+    var cookieTask = getCookie("selectedTask");
+    if (cookieTask != undefined) {
+        selectTask = cookieTask;
+    }
+    document.getElementById('breadcrumbs-task').innerText = selectTask;
+    var cookieGroup = getCookie("selectedTaskGroup");
+    if (cookieGroup != undefined) {
+        document.getElementById('breadcrumbs-task-group').innerText = selectTask;
+    }
+    $.ajax({
+        method: 'POST',
+        url: '/Step/StepList',
+        data: { "taskId": selectTask },
+        dataType: 'html',
+        success: function (result) {
+            $('#steps').empty();
+            $('#steps').append(result);
+            SelectRow("tableSteps");
+            tableSteps = document.getElementById("tableSteps");
+            tr = tableSteps.getElementsByTagName("tr");
+            cookieStepNumber = getCookie("selectedStepNumber");
+            for (var i = 0; i < tr.length; i++) {
+                var td = tr[i].getElementsByTagName("td")[1];
+                if (td.innerText == cookieStepNumber) {
+                    tr[i].classList.add('selected-tr');
+                } else {
+                    tr[i].classList.remove('selected-tr');
+                }
+            }
+        }
+    });
+}
+
+function StepDetails(taskId, stepNumber) {
+    document.cookie = "selectedStepNumber=" + stepNumber + "; path=/";
+    $.ajax({
+        method: 'GET',
+        url: '/Step/StepDetails',
+        data: {
+            "taskId": taskId,
+            "stepNumber": stepNumber
+        },
+        dataType: 'html',
+        success: function (result) {
+            $('#info-step-content').empty();
+            $('#info-step-content').append(result);
+            ShowModal('modal-step-info');
+        }
+    });
+}
+
+function EditStep(taskId, stepNumber) {
+    $.ajax({
+        method: 'GET',
+        url: '/Step/EditStep',
+        data: {
+            "taskId": taskId,
+            "stepNumber": stepNumber
+        },
+        dataType: 'html',
+        success: function (result) {
+            $('#edit-step-content').empty();
+            $('#edit-step-content').append(result);
+            ShowModal('modal-edit-step');
+        }
+    });
+}
+
+function ShowEditStepModal() {
+    cookieTaskId = getCookie("selectedTask");
+    cookieStepNumber = getCookie("selectedStepNumber");
+    EditStep(cookieTaskId, cookieStepNumber);
+}
+
+function replaceStep(operation) {
+    var cookieTaskId = getCookie("selectedTask");
+    var cookieStepNumber = getCookie("selectedStepNumber");
+    $.ajax({
+        method: 'POST',
+        url: '/Step/ReplaceStep',
+        data: {
+            "taskId": cookieTaskId,
+            "numberStep": cookieStepNumber,
+            "operation": operation
+        },
+        dataType: 'html',
+        success: function (result) {
+            switch (operation) {
+                case 'up':
+                    newNumber = parseInt(cookieStepNumber) + 1;
+                    break;
+                case 'down':
+                    newNumber = parseInt(cookieStepNumber) + 1;
+                    break;
+                case 'maxup':
+                    newNumber = parseInt(cookieStepNumber) + 1;
+                    break;
+                case 'maxup':
+                    newNumber = parseInt(cookieStepNumber) + 1;
+                    break;
+                default:
+            }
+            ShowStepList();
+        }
+    });
+}
+
+function SelectRow(tableId) {
+    tableSteps = document.getElementById(tableId);
+    tr = tableSteps.getElementsByTagName("tr");
+    for (var i = 0; i < tr.length; i++) {
+        MakeRowHover(tr[i], i, tableId);
+    }
+}
+
+function MakeRowHover(row, numRow, tableId) {
+    row.addEventListener("click", function (numRow) {
+        //let td = this.querySelectorAll('td');
+        for (var i = 0; i < tr.length; i++) {
+            if (tr[i] == this) {
+                tr[i].classList.add('selected-tr');
+                if (tableId == "tableSteps") {
+                    selectedRow = tr[i].querySelectorAll('td')[1].innerText;
+                    document.cookie = "selectedStepNumber=" + selectedRow + "; path=/";
+                } else if (tableId == "tableTasks") {
+                    selectedRow = tr[i].querySelectorAll('td')[1].innerText;
+                    document.cookie = "selectedTask=" + selectedRow + "; path=/";
+                }
+            }
+        }
+        for (var i = 0; i < tr.length; i++) {
+            if (tr[i] != this) {
+                td = tr[i].querySelectorAll('td');
+                tr[i].classList.remove('selected-tr');
+            }
+        }
+    });
+}
+
+//function SelectStep() {
+//    tableSteps = document.getElementById("tableTasks");
+//    tr = tableSteps.getElementsByTagName("tr");
+//    for (var i = 0; i < tr.length; i++) {
+//        MakeRowHoverTasks(tr[i], i);
+//    }
+//}
+
+//function MakeRowHoverSteps(row, numRow) {
+//    row.addEventListener("click", function (numRow) {
+//        let td = this.querySelectorAll('td');
+//        for (var i = 0; i < tr.length; i++) {
+//            if (tr[i] == this) {
+//                tr[i].classList.add('selected-tr');
+//                selectedStepNumber = tr[i].querySelectorAll('td')[1].innerText;
+//                document.cookie = "selectedStepNumber=" + selectedStepNumber + "; path=/";
+//            }
+//        }
+//        for (var i = 0; i < tr.length; i++) {
+//            if (tr[i] != this) {
+//                td = tr[i].querySelectorAll('td');
+//                tr[i].classList.remove('selected-tr');
+//            }
+//        }
+//    });
+//}

@@ -48,7 +48,6 @@
         </div>
     </div>
     <div id="tasks">
-
     </div>
 </div>
 <footer>
@@ -75,7 +74,7 @@
     </div>
 </div>
 <div class="modal-wrapper" id="modal-add-task">
-    <div class="modal" >
+    <div class="modal">
         <div class="modal-header">
             <p>Создание задачи</p>
             <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg" onclick="CloseModal('modal-add-task')">
@@ -83,7 +82,6 @@
             </svg>
         </div>
         <div class="modal-body" id="create-task-content">
-            
         </div>
         <div class="modal-footer">
             <button type="submit" form="createTaskForm" class="btn-full">
@@ -101,7 +99,6 @@
             </svg>
         </div>
         <div class="modal-body" id="task-details-content">
-            
         </div>
         <div class="modal-footer">
             <div class="btn-full" onclick="ShowModal('modal-edit-task')">
@@ -119,7 +116,6 @@
             </svg>
         </div>
         <div class="modal-body" id="edit-task-content">
-            
         </div>
         <div class="modal-footer">
             <button type="submit" form="editTaskForm" class="btn-full">
@@ -436,8 +432,12 @@
 
 
 <script>
-    var selectGroup = "Все";
+
     window.addEventListener('load', () => {
+        var cookieGroup = getCookie("selectedTaskGroup");
+        if(cookieGroup != undefined){
+            selectGroup = cookieGroup;
+        }
         document.getElementById('breadcrumbs-taskgroup').innerText = selectGroup;
         ShowTaskList(selectGroup);
         func();
@@ -447,12 +447,12 @@
         window.progressID = setInterval(f1, 10000);
     }
     function f1() {
-         ShowTaskList(selectGroup);
+        ShowTaskList(selectGroup);
     }
     function ShowTaskList(group) {
         selectGroup = group;
         document.getElementById('breadcrumbs-taskgroup').innerText = selectGroup;
-        document.cookie = "selectedTaskGroup=" + group;
+        //document.cookie = "selectedTaskGroup=" + group;
         $.ajax({
             method: 'POST',
             url: '@Url.Action("TasksList", "Task")',
@@ -461,6 +461,18 @@
             success: function (result) {
                 $('#tasks').empty();
                 $('#tasks').append(result);
+                SelectRow("tableTasks");
+                cookieTask = getCookie("selectedTask");
+                tableTasks = document.getElementById("tableTasks");
+                tr = tableTasks.getElementsByTagName("tr");
+                for (var i = 0; i < tr.length; i++) {
+                    var td = tr[i].getElementsByTagName("td")[1];
+                    if (td.innerText == cookieTask) {
+                        tr[i].classList.add('selected-tr');
+                    } else{
+                        tr[i].classList.remove('selected-tr');
+                    }
+                }
             }
         });
     }
@@ -528,8 +540,8 @@
 
     }
 
-    
-    
+
+
 </script>
 
 

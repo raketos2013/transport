@@ -13,7 +13,7 @@ namespace FileManager.Domain.Entity
 
         //public int Id { get; set; }
         [Display(Name = "Дата время события")]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd HH:mm:ss}")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd HH:mm:ss.ffffff}")]
         public DateTime DateTimeLog { get; set; }
         [Display(Name = "Имя пользователя")]
         public string UserName { get; set; }

@@ -1,7 +1,9 @@
 ﻿using FileManager.DAL;
 using FileManager.Domain.Entity;
+using FileManager.Services.Implementations;
 using FileManager.Services.Interfaces;
 using FileManager_Web.Logging;
+using FileManager_Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
@@ -10,23 +12,33 @@ using System.Globalization;
 namespace FileManager_Web.Controllers
 {
 	[Authorize(Roles = "o.br.ДИТ")]
-	public class UserLogsController(ILogger<UserLogsController> logger, IUserLogService userLogService, AppDbContext context) : Controller
+	public class UserLogsController(IUserLogService userLogService) : Controller
     {
 
         // GET: UserLogsController
 
-        public ActionResult Index(string dateFrom, string dateTo)
+        public ActionResult Index(string dateFrom = "", string dateTo = "")
         {
-            DateTime date = dateFrom == null ? DateTime.Today : DateTime.Parse(dateFrom);
-            DateTime date2 = dateTo == null ? DateTime.Today : DateTime.Parse(dateTo);
+            DateTime date = dateFrom == "" ? DateTime.Today : DateTime.Parse(dateFrom);
+            DateTime date2 = dateTo == "" ? DateTime.Today : DateTime.Parse(dateTo);
+
+            ViewBag.FilterDateFrom = date.ToString("yyyy-MM-dd");
+            ViewBag.FilterDateTo = date2.ToString("yyyy-MM-dd");
+            return View();
+        }
+
+        public IActionResult LogsList(string dateFrom = "", string dateTo = "")
+        {
+            DateTime date = dateFrom == "" ? DateTime.Today : DateTime.Parse(dateFrom);
+            DateTime date2 = dateTo == "" ? DateTime.Today : DateTime.Parse(dateTo);
 
             List<UserLogEntity> userLogs = userLogService.GetAllLogs().Where(x => x.DateTimeLog.Date >= date &&
-                                                                                    x.DateTimeLog.Date <= date2 )
+                                                                                    x.DateTimeLog.Date <= date2)
                                                                 .OrderByDescending(x => x.DateTimeLog)
                                                                 .ToList();
             ViewBag.FilterDateFrom = date.ToString("yyyy-MM-dd");
             ViewBag.FilterDateTo = date2.ToString("yyyy-MM-dd");
-            return View(userLogs);
+            return PartialView("_LogsList", userLogs);
         }
 
         // GET: UserLogsController/Details/5
@@ -39,7 +51,7 @@ namespace FileManager_Web.Controllers
                                                     .First(x => x.DateTimeLog == myDate && 
                                                                 x.UserName == username);
 
-            return View(userLogs);
+            return PartialView("_LogDetails", userLogs);
         }
 
         

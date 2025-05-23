@@ -225,22 +225,22 @@
 		});
 	}
 
-	function replaceStep(operation, taskId) {
+	// function replaceStep(operation, taskId) {
 
-		$.ajax({
-			method: 'POST',
-			url: '@Url.Action("ReplaceStep", "Step")',
-			data: {
-				"taskId": taskId,
-				"numberStep": selectStep,
-				"operation": operation
-			},
-			dataType: 'html',
-			success: function (result) {
-				location.href = "@Url.Action("TaskDetails", "Task", new { taskId = "cid" })".replace("cid", taskId);
-			}
-		});
-	}
+	// 	$.ajax({
+	// 		method: 'POST',
+	// 		url: '@Url.Action("ReplaceStep", "Step")',
+	// 		data: {
+	// 			"taskId": taskId,
+	// 			"numberStep": selectStep,
+	// 			"operation": operation
+	// 		},
+	// 		dataType: 'html',
+	// 		success: function (result) {
+	// 			location.href = "@Url.Action("TaskDetails", "Task", new { taskId = "cid" })".replace("cid", taskId);
+	// 		}
+	// 	});
+	// }
 
 	var isEditTask = false;
 	var onOffStepId;

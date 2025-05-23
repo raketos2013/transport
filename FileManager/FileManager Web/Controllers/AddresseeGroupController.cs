@@ -1,5 +1,6 @@
 ﻿using FileManager.DAL;
 using FileManager.Domain.Entity;
+using FileManager.Services.Interfaces;
 using FileManager_Web.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,13 +12,13 @@ namespace FileManager_Web.Controllers
     [Authorize(Roles = "o.br.ДИТ")]
     public class AddresseeGroupController(ILogger<AddresseeGroupController> logger, 
                                             //UserLogging userLogging, 
+                                            IAddresseeService addresseeService,
                                             AppDbContext context) 
                 : Controller
     {
         public IActionResult Addressees()
         {
-            List<AddresseeGroupEntity> groups = context.AddresseeGroup.ToList();
-            return View(groups);
+            return View();
         }
 
         [HttpPost]
@@ -25,7 +26,7 @@ namespace FileManager_Web.Controllers
         {
             List<AddresseeEntity> addressees = context.Addressee.Where(x => x.AddresseeGroupId == groupId).ToList();
 
-            return PartialView(addressees);
+            return PartialView("_AddresseeList", addressees);
         }
 
         public IActionResult CreateGroup(string number, string name)
@@ -48,11 +49,12 @@ namespace FileManager_Web.Controllers
         {
             List<AddresseeGroupEntity> addresseeGroups = context.AddresseeGroup.ToList();
             ViewBag.AddresseeGroups = addresseeGroups;
-            return View();
+            AddresseeEntity newAddressee = new();
+            return PartialView("_CreateAddressee", newAddressee);
         }
 
         [HttpPost]
-        public IActionResult CreateAddressee(IFormCollection collection)
+        public IActionResult CreateAddressee(AddresseeEntity addressee, IFormCollection collection)
         {
             try
             {
@@ -63,11 +65,11 @@ namespace FileManager_Web.Controllers
                 {
                     AddresseeEntity entity = new()
                     {
-                        PersonalNumber = collection["PersonalNumber"],
-                        EMail = collection["EMail"],
-                        Fio = collection["Fio"],
-                        StructuralUnit = collection["StructuralUnit"],
-                        AddresseeGroupId = int.Parse(collection["AddresseeGroupId"])
+                        PersonalNumber = addressee.PersonalNumber,// collection["PersonalNumber"],
+                        EMail = addressee.EMail,// collection["EMail"],
+                        Fio = addressee.Fio,// collection["Fio"],
+                        StructuralUnit = addressee.PersonalNumber,// collection["StructuralUnit"],
+                        AddresseeGroupId = addressee.AddresseeGroupId //int.Parse(collection["AddresseeGroupId"])
                     };
                     context.Addressee.Add(entity);
 
@@ -75,11 +77,11 @@ namespace FileManager_Web.Controllers
 
                     return RedirectToAction(nameof(Addressees));
                 }
-                return View();
+                return PartialView("_CreateAddressee", addressee);
             }
             catch (Exception)
             {
-                return View();
+                return PartialView("_CreateAddressee", addressee);
             }
         }
 

@@ -8,43 +8,47 @@ namespace FileManager_Web.Controllers
 {
 	[Authorize(Roles = "o.br.ДИТ")]
 	public class StepController(ILogger<StepController> logger, 
-                                UserLogging userLogging, 
+                                //UserLogging userLogging, 
                                 IStepService stepService) 
                 : Controller
     {
+        public IActionResult Steps()
+        {
+            return View();
+        }
 
         public IActionResult StepList(string taskId)
         {
-            List<TaskStepEntity> steps = stepService.GetAllStepsByTaskId(taskId);
+            List<TaskStepEntity> steps = stepService.GetAllStepsByTaskId(taskId).OrderBy(x => x.StepNumber).ToList();
             return PartialView("_StepList", steps);
         }
 
         [HttpGet]
-        public IActionResult CreateStep(string idTask)
+        public IActionResult CreateStep(string taskId)
         {
-            ViewBag.MaxNumber = stepService.GetAllStepsByTaskId(idTask).Count + 1;
-            ViewBag.TaskId = idTask;
+            ViewBag.MaxNumber = stepService.GetAllStepsByTaskId(taskId).Count + 1;
+            //ViewBag.TaskId = idTask;
             TaskStepEntity step = new()
             {
-                TaskId = idTask
+                TaskId = taskId
             };
-            return View(step);
+            return PartialView("_CreateStep", step);
         }
         [HttpPost]
-        public IActionResult CreateStep(TaskStepEntity modelStep, string taskId)
+        public IActionResult CreateStep(TaskStepEntity modelStep)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
                     stepService.CreateStep(modelStep);
-                    return RedirectToAction("TaskDetails", "Task", new { taskId });
+                    return RedirectToAction("Steps" );
                 }
-                return View();
+                return PartialView("_CreateStep", modelStep);
             }
             catch (Exception)
             {
-                return View();
+                return PartialView("_CreateStep", modelStep);
             }
         }
 
@@ -65,17 +69,23 @@ namespace FileManager_Web.Controllers
         public IActionResult StepDetails(string taskId, string stepNumber)
         {
             TaskStepEntity? taskStep = stepService.GetStepByTaskId(taskId, int.Parse(stepNumber));
-            return View(taskStep);
+            return PartialView("_StepDetails", taskStep);
         }
 
+        [HttpGet]
+        public IActionResult EditStep(string taskId, string stepNumber)
+        {
+            ViewBag.MaxNumber = stepService.GetAllStepsByTaskId(taskId).Count + 1;
+            //ViewBag.TaskId = idTask;
+            TaskStepEntity step = stepService.GetStepByTaskId(taskId, int.Parse(stepNumber));
+            return PartialView("_EditStep", step);
+        }
         [HttpPost]
         public IActionResult EditStep(TaskStepEntity stepModel) 
         {
             stepService.EditStep(stepModel);
-            return RedirectToAction("StepDetails", "Step", new { taskId = stepModel.TaskId, stepNumber = stepModel.StepNumber });
+            return RedirectToAction("Steps");
         }
-
-        
 
     }
 }

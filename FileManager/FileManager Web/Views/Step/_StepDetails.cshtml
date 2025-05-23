@@ -1,0 +1,106 @@
+﻿@using FileManager.Domain.Entity
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model TaskStepEntity
+@{
+}
+
+<div class="modal-body-content">
+    <div class="modal-row">
+        <div class="modal-td">
+            <p class="td-title">Задача</p>
+            <p class="td-text">@Model.TaskId</p>
+        </div>
+        <div class="modal-td">
+            <p class="td-title">Номер шага</p>
+            <p class="td-text">@Model.StepNumber</p>
+        </div>
+        <div class="modal-td">
+            <p class="td-title">Краткое описание</p>
+            <p class="td-text">@Model.Description</p>
+        </div>
+        <div class="modal-td">
+            <p class="td-title">Включён</p>
+            <p class="td-text">@Model.IsActive</p>
+        </div>
+        <div class="modal-td">
+            <p class="td-title">Прерывание</p>
+            <p class="td-text">@Model.IsBreak</p>
+        </div>
+    </div>
+    <div class="modal-row">
+        <div class="modal-td">
+            <p class="td-title">Маска</p>
+            <p class="td-text">@Model.FileMask</p>
+        </div>
+        <div class="modal-td">
+            <p class="td-title">Источник</p>
+            <p class="td-text">@Model.Source</p>
+        </div>
+        <div class="modal-td">
+            <p class="td-title">Назначение</p>
+            <p class="td-text">@Model.Destination</p>
+        </div>
+        <div class="modal-td">
+            <p class="td-title">Операция</p>
+            <p class="td-text">@Model.OperationName</p>
+        </div>
+    </div>
+</div>
+
+<script>
+
+	// window.addEventListener('load', () => {
+	// 	var operation = document.getElementById("stepOperation").innerText;
+	// 	var stepId = document.getElementById("stepId").innerText;
+	// 	$.ajax({
+	// 		type: 'GET',
+	// 		url: "/Operation/Operations",
+	// 		data: { "stepId": stepId,
+	// 				"operationName": operation },
+	// 		dataType: 'html',
+	// 		beforeSend: function (xhr) {
+	// 			xhr.setRequestHeader("XSRF-TOKEN",
+	// 			$('input:hidden[name="__RequestVerificationToken"]').val());
+	// 		},
+	// 		success: function (result) {
+	// 			$('#operation').empty();
+	// 			$('#operation').append(result)
+	// 		},
+	// 		error: function (jqXHR, exception) {
+	// 			if (jqXHR.status === 0) {
+	// 				alert('Not connect. Verify Network.');
+	// 			} else if (jqXHR.status == 404) {
+	// 				alert('Requested page not found (404).');
+	// 			} else if (jqXHR.status == 500) {
+	// 				alert('Internal Server Error (500).');
+	// 			} else if (exception === 'parsererror') {
+	// 				alert('Requested JSON parse failed.');
+	// 			} else if (exception === 'timeout') {
+	// 				alert('Time out error.');
+	// 			} else if (exception === 'abort') {
+	// 				alert('Ajax request aborted.');
+	// 			} else {
+	// 				alert('Uncaught Error. ' + jqXHR.responseText);
+	// 			}
+	// 		}
+	// 	});
+	// })
+
+
+	// var isEditTask = false;
+	// function ReadEditStep() {
+	// 	if (isEditTask) {
+	// 		document.getElementById("stepDetailsRead").style.display = "block";
+	// 		document.getElementById("stepDetailsEdit").style.display = "none";
+	// 		document.getElementById("btnEditStep").innerText = "Редактирование";
+	// 	}
+	// 	else {
+	// 		document.getElementById("stepDetailsRead").style.display = "none";
+	// 		document.getElementById("stepDetailsEdit").style.display = "block";
+	// 		document.getElementById("btnEditStep").innerText = "Просмотр";
+	// 	}
+	// 	isEditTask = !isEditTask;
+	// }
+</script>

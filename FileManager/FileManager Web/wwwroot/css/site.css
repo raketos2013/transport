@@ -962,7 +962,8 @@ tr {
         transition: 0.3s;
     }
 
-    .table-body tr:hover td .group-btns-add .btn-add svg path {
+    .table-body tr:hover td .group-btns-add .btn-add svg path,
+    .table-body tr.selected-tr td .group-btns-add .btn-add svg path {
         fill: var(--white);
     }
 

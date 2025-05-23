@@ -22,14 +22,14 @@ namespace FileManager_Web.Controllers
     {
         public IActionResult Tasks()
         {
-            List<TaskGroupEntity> tasksGroups = taskService.GetAllGroups().OrderBy(x => x.Id).ToList();
+            /*List<TaskGroupEntity> tasksGroups = taskService.GetAllGroups().OrderBy(x => x.Id).ToList();
             List<AddresseeGroupEntity> addresseeGroups = addresseeService.GetAllAddresseeGroups().OrderBy(x => x.Id).ToList();
             GroupsViewModel viewModel = new()
             {
                 AddresseeGroups = addresseeGroups,
                 TaskGroups = tasksGroups
-            };
-            return View(viewModel);
+            };*/
+            return View();
         }
 
         [HttpPost]
@@ -61,11 +61,11 @@ namespace FileManager_Web.Controllers
                     taskService.CreateTask(task);
                     return RedirectToAction(nameof(Tasks));
                 }
-                return PartialView();
+                return PartialView("_CreateTask", task);
             }
             catch (Exception)
             {
-                return PartialView();
+                return PartialView("_CreateTask", task);
             }
         }
         

@@ -170,6 +170,7 @@ function HideEditForm() {
 var idSelectedTask;
 var selectedTask = 0;
 var isShowActive = false;
+var isShowActiveSteps = false;
 var tableTasks;
 var tr;
 var isShowActiveAddressee = false;
@@ -177,51 +178,20 @@ var selectGroup = "Все";
 var selectAddresseeGroup;
 var selectTask;
 function ShowActiveTask() {
-
     isShowActive = !isShowActive;
-    if (isShowActive) {
-        document.getElementById('titleButton').innerText = "Показать ";
-    } else {
-        document.getElementById('titleButton').innerText = "Скрыть ";
-    }
-
-    var table, tr, td, i, txtValue, valueCheck;
-
-    table = document.getElementById("tableTasks");
-    tr = table.getElementsByTagName("tr");
-
-    // Перебирайте все строки таблицы и скрывайте тех, кто не соответствует поисковому запросу
-
-    for (i = 1; i < tr.length; i++) {
-        var qwe = tr[i].getElementsByTagName("td")[8];
-        var chl1 = qwe.firstElementChild.firstElementChild.firstElementChild.checked;
-        if (isShowActive) {
-            if (!chl1) {
-                tr[i].style.display = "none";
-            }
-        } else {
-            tr[i].style.display = "";
-        }
-
-
-    }
-
+    ActiveTask();
 }
 
 function ActiveTask() {
-
     if (isShowActive) {
         document.getElementById('titleButton').innerText = "Показать";
     } else {
         document.getElementById('titleButton').innerText = "Скрыть";
     }
 
-    var table, tr, td, i, txtValue, valueCheck;
-
+    var table, tr, i;
     table = document.getElementById("tableTasks");
     tr = table.getElementsByTagName("tr");
-
-    // Перебирайте все строки таблицы и скрывайте тех, кто не соответствует поисковому запросу
 
     for (i = 1; i < tr.length; i++) {
         var qwe = tr[i].getElementsByTagName("td")[8];
@@ -235,6 +205,36 @@ function ActiveTask() {
         }
     }
 }
+
+function ShowActiveSteps() {
+    isShowActiveSteps = !isShowActiveSteps;
+    ActiveSteps();
+}
+function ActiveSteps() {
+    if (isShowActiveSteps) {
+        document.getElementById('active-step-btn').innerText = "Показать ";
+    } else {
+        document.getElementById('active-step-btn').innerText = "Скрыть ";
+    }
+
+    var table, tr, i;
+
+    table = document.getElementById("tableSteps");
+    tr = table.getElementsByTagName("tr");
+    for (i = 1; i < tr.length; i++) {
+        var qwe = tr[i].getElementsByTagName("td")[2];
+        var chl1 = qwe.firstElementChild.firstElementChild.firstElementChild.checked;
+        if (isShowActive) {
+            if (!chl1) {
+                tr[i].style.display = "none";
+            }
+        } else {
+            tr[i].style.display = "";
+        }
+    }
+}
+
+
 
 
 
@@ -431,7 +431,7 @@ function CreateAddressee() {
     
 }
 
-function CreateTask() {
+function CreateStep() {
     var cookieTask = getCookie("selectedTask");
     $.ajax({
         method: 'GET',
@@ -563,6 +563,10 @@ function SelectRow(tableId) {
     }
 }
 
+function SetCookieStepNumber(stepNumber) {
+    document.cookie = "selectedStepNumber=" + stepNumber + "; path=/";
+}
+
 function MakeRowHover(row, numRow, tableId) {
     row.addEventListener("click", function (numRow) {
         //let td = this.querySelectorAll('td');
@@ -586,6 +590,19 @@ function MakeRowHover(row, numRow, tableId) {
         }
     });
 }
+
+function StepOperationInfo() {
+
+}
+
+function StepOperationCreate() {
+
+}
+
+function StepOperationEdit() {
+
+}
+
 
 //function SelectStep() {
 //    tableSteps = document.getElementById("tableTasks");

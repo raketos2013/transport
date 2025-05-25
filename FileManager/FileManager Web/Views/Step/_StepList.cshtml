@@ -95,7 +95,7 @@
             <tbody>
                 @foreach (var item in @Model)
                 {
-                    <tr onclick="SelectRow('tableSteps')">
+                    <tr onclick="SelectRow('tableSteps'), SetCookieStepNumber('@item.StepNumber')">
                         <td>
                             <div class="group-btns-add">
                                 <div class="btn-add" onclick="StepDetails('@item.TaskId', '@item.StepNumber')">
@@ -120,7 +120,7 @@
                         <td>
                             <div>
                                 <label class="toggle-checkbox">
-                                    <input type="checkbox" checked="@item.IsActive" onclick="">
+                                    <input type="checkbox" checked="@item.IsActive" onclick="ShowModal('modal-active-step'), OnOffStep('@item.StepNumber')">
                                     <span class="toggle-checkbox-switch"></span>
                                 </label>
                             </div>
@@ -131,7 +131,7 @@
                         <td>
                             <div>
                                 <label class="toggle-checkbox">
-                                    <input type="checkbox" checked="@item.IsBreak">
+                                    <input type="checkbox" checked="@item.IsBreak" readonly>
                                     <span class="toggle-checkbox-switch"></span>
                                 </label>
                             </div>

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FileManager_Web.Controllers
 {
-	[Authorize(Roles = "o.br.ДИТ")]
+	//[Authorize(Roles = "o.br.ДИТ")]
 	public class StepController(ILogger<StepController> logger, 
                                 //UserLogging userLogging, 
                                 IStepService stepService) 
@@ -56,14 +56,15 @@ namespace FileManager_Web.Controllers
         public IActionResult ReplaceStep(string taskId, string numberStep, string operation)
         {
             stepService.ReplaceSteps(taskId, numberStep, operation);
-            return RedirectToAction("TaskDetails", "Task",  new { taskId });
+            return RedirectToAction("Steps");
         }
 
         [HttpPost]
-        public IActionResult ActivatedStep(string taskId, int stepId)
+        public IActionResult ActivatedStep(string taskId, int stepNumber)
         {
-            stepService.ActivatedStep(stepId);
-            return RedirectToAction("TaskDetails", "Task", new { taskId });
+            var step = stepService.GetStepByTaskId(taskId, stepNumber);      
+            stepService.ActivatedStep(step.StepId);
+            return RedirectToAction("Steps");
         }
 
         public IActionResult StepDetails(string taskId, string stepNumber)

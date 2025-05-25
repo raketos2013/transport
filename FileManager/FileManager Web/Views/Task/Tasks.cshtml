@@ -36,7 +36,7 @@
             </div>
         </div>
         <div class="toolbar-right">
-            <div class="input-group">
+            @* <div class="input-group">
                 <div class="select-wrapper">
                     <select>
                         <option>ID</option>
@@ -44,7 +44,7 @@
                     </select>
                 </div>
                 <input>
-            </div>
+            </div> *@
         </div>
     </div>
     <div id="tasks">
@@ -101,7 +101,7 @@
         <div class="modal-body" id="task-details-content">
         </div>
         <div class="modal-footer">
-            <div class="btn-full" onclick="ShowModal('modal-edit-task')">
+            <div class="btn-full" onclick="EditTask(getCookie('selectedTask'))">
                 Редактировать
             </div>
         </div>

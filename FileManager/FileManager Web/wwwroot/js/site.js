@@ -224,7 +224,7 @@ function ActiveSteps() {
     for (i = 1; i < tr.length; i++) {
         var qwe = tr[i].getElementsByTagName("td")[2];
         var chl1 = qwe.firstElementChild.firstElementChild.firstElementChild.checked;
-        if (isShowActive) {
+        if (isShowActiveSteps) {
             if (!chl1) {
                 tr[i].style.display = "none";
             }
@@ -591,8 +591,25 @@ function MakeRowHover(row, numRow, tableId) {
     });
 }
 
-function StepOperationInfo() {
-
+function StepOperationInfo(stepNumber, operationName) {
+    var cookieTaskId = getCookie("selectedTask");
+    document.cookie = "selectedStepNumber=" + stepNumber + "; path=/";
+    $.ajax({
+        type: 'GET',
+        url: "/Operation/Operations",
+        data: {
+            "taskId": cookieTaskId,
+            "stepNumber": stepNumber,
+            "operationName": operationName
+        },
+        dataType: 'html',
+        success: function (result) {
+            $('#operation-info-content').empty();
+            $('#operation-info-content').append(result);
+            ShowModal('modal-additional-settings');
+        }
+    });
+    
 }
 
 function StepOperationCreate() {

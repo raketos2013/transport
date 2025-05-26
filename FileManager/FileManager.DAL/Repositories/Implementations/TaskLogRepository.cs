@@ -10,6 +10,7 @@ namespace FileManager.DAL.Repositories.Implementations
 		{
 			try
 			{
+
 				appDbContext.TaskLog.Add(taskLog);
 				appDbContext.SaveChanges();
 				return true;

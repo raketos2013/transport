@@ -8,44 +8,76 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FileManager_Web.Controllers
 {
-    //[Authorize(Roles = "o.br.ДИТ")]
+    [Authorize(Roles = "o.br.ДИТ")]
     public class OperationController(ILogger<OperationController> logger,
                                         IOperationService operationService,
                                         IStepService stepService,
                                         IAddresseeService addresseeService,
-                                        AppDbContext appDbContext) 
+                                        AppDbContext appDbContext)
                 : Controller
     {
         [HttpGet]
-        public IActionResult Operations(string stepId, string operationName)
+        public IActionResult EditOperation(string taskId, string stepNumber)
+        {
+            var step = stepService.GetStepByTaskId(taskId, int.Parse(stepNumber));
+            switch (step.OperationName)
+            {
+                case OperationName.None:
+                    break;
+                case OperationName.Copy:
+                    var copy = operationService.GetCopyByStepId(step.StepId);
+                    if (copy == null)
+                    {
+                        copy = new OperationCopyEntity();
+                        copy.StepId = step.StepId;
+                    }
+                    return PartialView("_OperationCopyEdit", copy);
+                case OperationName.Move:
+                    break;
+                case OperationName.Read:
+                    break;
+                case OperationName.Exist:
+                    break;
+                case OperationName.Rename:
+                    break;
+                case OperationName.Delete:
+                    break;
+                case OperationName.Clrbuf:
+                    break;
+                default:
+                    break;
+            }
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult Operations(string taskId, string stepNumber, string operationName)
         {
             TaskOperation? taskOperation;
-            ViewBag.OperationName = operationName;
-            ViewBag.StepId = stepId;
-            ViewBag.AddresseeGroups = addresseeService.GetAllAddresseeGroups();
+            var step = stepService.GetStepByTaskId(taskId, int.Parse(stepNumber));
             switch (operationName)
             {
                 case "Copy":
-                    taskOperation = operationService.GetCopyByStepId(int.Parse(stepId));
-                    return PartialView("OperationCopy", taskOperation);
+                    taskOperation = operationService.GetCopyByStepId(step.StepId);
+                    return PartialView("_OperationCopyInfo", taskOperation);
                 case "Exist":
-                    taskOperation = operationService.GetExistByStepId(int.Parse(stepId));
-                    return PartialView("OperationExist", taskOperation);
+                    taskOperation = operationService.GetExistByStepId(step.StepId);
+                    return PartialView("_OperationExistInfo", taskOperation);
                 case "Move":
-                    taskOperation = operationService.GetMoveByStepId(int.Parse(stepId));
-                    return PartialView("OperationMove", taskOperation);
+                    taskOperation = operationService.GetMoveByStepId(step.StepId);
+                    return PartialView("_OperationMoveInfo", taskOperation);
                 case "Read":
-                    taskOperation = operationService.GetReadByStepId(int.Parse(stepId));
-                    return PartialView("OperationRead", taskOperation);
+                    taskOperation = operationService.GetReadByStepId(step.StepId);
+                    return PartialView("_OperationReadInfo", taskOperation);
                 case "Rename":
-                    taskOperation = operationService.GetRenameByStepId(int.Parse(stepId));
-                    return PartialView("OperationRename", taskOperation);
+                    taskOperation = operationService.GetRenameByStepId(step.StepId);
+                    return PartialView("_OperationRenameInfo", taskOperation);
                 case "Delete":
-                    taskOperation = operationService.GetDeleteByStepId(int.Parse(stepId));
-                    return PartialView("OperationDelete", taskOperation);
+                    taskOperation = operationService.GetDeleteByStepId(step.StepId);
+                    return PartialView("_OperationDeleteInfo", taskOperation);
                 case "Clrbuf":
-                    taskOperation = operationService.GetClrbufByStepId(int.Parse(stepId));
-                    return PartialView("OperationClrbuf", taskOperation);
+                    taskOperation = operationService.GetClrbufByStepId(step.StepId);
+                    return PartialView("_OperationClrbufInfo", taskOperation);
                 default:
                     break;
             }

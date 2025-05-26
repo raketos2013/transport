@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FileManager_Web.Controllers
 {
-	//[Authorize(Roles = "o.br.ДИТ")]
+	[Authorize(Roles = "o.br.ДИТ")]
 	public class StepController(ILogger<StepController> logger, 
                                 //UserLogging userLogging, 
                                 IStepService stepService) 
@@ -81,6 +81,7 @@ namespace FileManager_Web.Controllers
             TaskStepEntity step = stepService.GetStepByTaskId(taskId, int.Parse(stepNumber));
             return PartialView("_EditStep", step);
         }
+
         [HttpPost]
         public IActionResult EditStep(TaskStepEntity stepModel) 
         {

@@ -1,0 +1,62 @@
+﻿@using FileManager.Domain.Entity
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model OperationMoveEntity
+@{
+}
+@if (Model != null)
+{
+    <div class="modal-body-content">
+        <div class="modal-row">
+            <div class="modal-td">
+                <p class="td-title">stepId</p>
+                <p class="td-text">@Model.StepId</p>
+            </div>
+            <div class="modal-td">
+                <p class="td-title">operId</p>
+                <p class="td-text">@Model.OperationId</p>
+            </div>
+            <div class="modal-td">
+                <p class="td-title">Информировать об успехе</p>
+                <p class="td-text">@Model.InformSuccess</p>
+            </div>
+            <div class="modal-td">
+                <p class="td-title">Группа рассылки</p>
+                <p class="td-text">@Model.AddresseeGroupId</p>
+            </div>
+            <div class="modal-td">
+                <p class="td-title">Дополнительный текст</p>
+                <p class="td-text">@Model.AdditionalText</p>
+            </div>
+        </div>
+        <div class="modal-row">
+            <div class="modal-td">
+                <p class="td-title">Файл есть в назначении</p>
+                <p class="td-text">@Model.FileInDestination</p>
+            </div>
+            <div class="modal-td">
+                <p class="td-title">Дубль по журналу</p>
+                <p class="td-text">@Model.FileInLog</p>
+            </div>
+            <div class="modal-td">
+                <p class="td-title">Сортировка</p>
+                <p class="td-text">@Model.Sort</p>
+            </div>
+            <div class="modal-td">
+                <p class="td-title">Кол-во файлов</p>
+                <p class="td-text">@Model.FilesForProcessing</p>
+            </div>
+            <div class="modal-td">
+                <p class="td-title">Аттрибуты</p>
+                <p class="td-text">@Model.FileAttribute</p>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="modal-body-content">
+        <span>Свойства операции не настроены</span>
+    </div>
+}

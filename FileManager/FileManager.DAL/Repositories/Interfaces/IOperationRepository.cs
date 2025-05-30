@@ -1,9 +1,4 @@
 ﻿using FileManager.Domain.Entity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FileManager.DAL.Repositories.Interfaces
 {
@@ -32,5 +27,14 @@ namespace FileManager.DAL.Repositories.Interfaces
         bool CreateDelete(OperationDeleteEntity operation);
         bool CreateRename(OperationRenameEntity operation);
         bool CreateClrbuf(OperationClrbufEntity operation);
+
+        bool UpdateCopy(OperationCopyEntity operation);
+        bool UpdateMove(OperationMoveEntity operation);
+        bool UpdateRead(OperationReadEntity operation);
+        bool UpdateExist(OperationExistEntity operation);
+        bool UpdateDelete(OperationDeleteEntity operation);
+        bool UpdateRename(OperationRenameEntity operation);
+        bool UpdateClrbuf(OperationClrbufEntity operation);
+
     }
 }

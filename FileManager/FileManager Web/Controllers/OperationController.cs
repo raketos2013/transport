@@ -1,439 +1,222 @@
-﻿using FileManager.DAL;
-using FileManager.Domain.Entity;
+﻿using FileManager.Domain.Entity;
 using FileManager.Domain.Enum;
 using FileManager.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
-namespace FileManager_Web.Controllers
+namespace FileManager_Web.Controllers;
+
+[Authorize(Roles = "o.br.ДИТ")]
+public class OperationController(IOperationService operationService,
+                                    IStepService stepService,
+                                    IAddresseeService addresseeService)
+            : Controller
 {
-    [Authorize(Roles = "o.br.ДИТ")]
-    public class OperationController(ILogger<OperationController> logger,
-                                        IOperationService operationService,
-                                        IStepService stepService,
-                                        IAddresseeService addresseeService,
-                                        AppDbContext appDbContext)
-                : Controller
+    [HttpGet]
+    public IActionResult EditOperation(string taskId, string stepNumber)
     {
-        [HttpGet]
-        public IActionResult EditOperation(string taskId, string stepNumber)
+        ViewBag.AddresseeGroups = addresseeService.GetAllAddresseeGroups();
+        var step = stepService.GetStepByTaskId(taskId, int.Parse(stepNumber));
+        if (step == null) 
         {
-            var step = stepService.GetStepByTaskId(taskId, int.Parse(stepNumber));
-            switch (step.OperationName)
-            {
-                case OperationName.None:
-                    break;
-                case OperationName.Copy:
-                    var copy = operationService.GetCopyByStepId(step.StepId);
-                    if (copy == null)
-                    {
-                        copy = new OperationCopyEntity();
-                        copy.StepId = step.StepId;
-                    }
-                    return PartialView("_OperationCopyEdit", copy);
-                case OperationName.Move:
-                    break;
-                case OperationName.Read:
-                    break;
-                case OperationName.Exist:
-                    break;
-                case OperationName.Rename:
-                    break;
-                case OperationName.Delete:
-                    break;
-                case OperationName.Clrbuf:
-                    break;
-                default:
-                    break;
-            }
-            return View();
+            return RedirectToAction("Steps", "Step");
         }
-
-        [HttpGet]
-        public IActionResult Operations(string taskId, string stepNumber, string operationName)
+        switch (step.OperationName)
         {
-            TaskOperation? taskOperation;
-            var step = stepService.GetStepByTaskId(taskId, int.Parse(stepNumber));
-            switch (operationName)
-            {
-                case "Copy":
-                    taskOperation = operationService.GetCopyByStepId(step.StepId);
-                    return PartialView("_OperationCopyInfo", taskOperation);
-                case "Exist":
-                    taskOperation = operationService.GetExistByStepId(step.StepId);
-                    return PartialView("_OperationExistInfo", taskOperation);
-                case "Move":
-                    taskOperation = operationService.GetMoveByStepId(step.StepId);
-                    return PartialView("_OperationMoveInfo", taskOperation);
-                case "Read":
-                    taskOperation = operationService.GetReadByStepId(step.StepId);
-                    return PartialView("_OperationReadInfo", taskOperation);
-                case "Rename":
-                    taskOperation = operationService.GetRenameByStepId(step.StepId);
-                    return PartialView("_OperationRenameInfo", taskOperation);
-                case "Delete":
-                    taskOperation = operationService.GetDeleteByStepId(step.StepId);
-                    return PartialView("_OperationDeleteInfo", taskOperation);
-                case "Clrbuf":
-                    taskOperation = operationService.GetClrbufByStepId(step.StepId);
-                    return PartialView("_OperationClrbufInfo", taskOperation);
-                default:
-                    break;
-            }
-            return RedirectToAction("Tasks", "Task");
+            case OperationName.None:
+                break;
+            case OperationName.Copy:
+                var copy = operationService.GetCopyByStepId(step.StepId) ?? new OperationCopyEntity
+                {
+                    StepId = step.StepId,
+                    AddresseeGroupId = 0,
+                    AdditionalText = ""
+                };
+                return PartialView("_OperationCopyEdit", copy);
+            case OperationName.Move:
+                var move = operationService.GetMoveByStepId(step.StepId) ?? new OperationMoveEntity
+                {
+                    StepId = step.StepId,
+                    AddresseeGroupId = 0,
+                    AdditionalText = ""
+                };
+                return PartialView("_OperationMoveEdit", move);
+            case OperationName.Read:
+                var read = operationService.GetReadByStepId(step.StepId) ?? new OperationReadEntity
+                {
+                    StepId = step.StepId,
+                    AddresseeGroupId = 0,
+                    AdditionalText = "",
+                    FindString = ""
+                };
+                return PartialView("_OperationReadEdit", read);
+            case OperationName.Exist:
+                var exist = operationService.GetExistByStepId(step.StepId) ?? new OperationExistEntity
+                {
+                    StepId = step.StepId,
+                    AddresseeGroupId = 0,
+                    AdditionalText = ""
+                };
+                return PartialView("_OperationExistEdit", exist);
+            case OperationName.Rename:
+                var rename = operationService.GetRenameByStepId(step.StepId) ?? new OperationRenameEntity
+                {
+                    StepId = step.StepId,
+                    AddresseeGroupId = 0,
+                    AdditionalText = "",
+                    OldPattern = "",
+                    NewPattern = ""
+                };
+                return PartialView("_OperationRenameEdit", rename);
+            case OperationName.Delete:
+                var delete = operationService.GetDeleteByStepId(step.StepId) ?? new OperationDeleteEntity
+                {
+                    StepId = step.StepId,
+                    AddresseeGroupId = 0,
+                    AdditionalText = ""
+                };
+                return PartialView("_OperationDeleteEdit", delete);
+            case OperationName.Clrbuf:
+                var clrbuf = operationService.GetClrbufByStepId(step.StepId) ?? new OperationClrbufEntity
+                {
+                    StepId = step.StepId,
+                    AddresseeGroupId = 0,
+                    AdditionalText = ""
+                };
+                return PartialView("_OperationClrbufEdit", clrbuf);
+            default:
+                break;
         }
+        return RedirectToAction("Steps", "Step");
+    }
 
-        public IActionResult CreateOperationCopy(OperationCopyEntity operationModel, string stepId)
+    [HttpGet]
+    public IActionResult Operations(string taskId, string stepNumber, string operationName)
+    {
+        TaskOperation? taskOperation;
+        var step = stepService.GetStepByTaskId(taskId, int.Parse(stepNumber));
+        switch (operationName)
         {
-            TaskStepEntity? taskStep = stepService.GetStepByStepId(int.Parse(stepId));
-            if (taskStep == null)
-            {
-                return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
-            }
-            if (ModelState.IsValid)
-            {
-                operationModel.StepId = int.Parse(stepId);
-                operationService.CreateCopy(operationModel);
-                OperationCopyEntity? operation = operationService.GetCopyByStepId(operationModel.StepId);
-                if (operation != null)
-                {
-                    taskStep.OperationId = operation.OperationId;
-                    stepService.EditStep(taskStep);
-                }
-            }
-            return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+            case "Copy":
+                taskOperation = operationService.GetCopyByStepId(step.StepId);
+                return PartialView("_OperationCopyInfo", taskOperation);
+            case "Exist":
+                taskOperation = operationService.GetExistByStepId(step.StepId);
+                return PartialView("_OperationExistInfo", taskOperation);
+            case "Move":
+                taskOperation = operationService.GetMoveByStepId(step.StepId);
+                return PartialView("_OperationMoveInfo", taskOperation);
+            case "Read":
+                taskOperation = operationService.GetReadByStepId(step.StepId);
+                return PartialView("_OperationReadInfo", taskOperation);
+            case "Rename":
+                taskOperation = operationService.GetRenameByStepId(step.StepId);
+                return PartialView("_OperationRenameInfo", taskOperation);
+            case "Delete":
+                taskOperation = operationService.GetDeleteByStepId(step.StepId);
+                return PartialView("_OperationDeleteInfo", taskOperation);
+            case "Clrbuf":
+                taskOperation = operationService.GetClrbufByStepId(step.StepId);
+                return PartialView("_OperationClrbufInfo", taskOperation);
+            default:
+                break;
         }
+        return RedirectToAction("Tasks", "Task");
+    }
 
-        public IActionResult EditOperationCopy(IFormCollection collection, string operationId)
+    [HttpPost]
+    public IActionResult EditOperationCopy(OperationCopyEntity operation)
+    {
+        if (operation.OperationId == 0)
         {
-            OperationCopyEntity operation = appDbContext.OperationCopy.FirstOrDefault(x => x.OperationId == int.Parse(operationId));
-            TaskStepEntity taskStep = appDbContext.TaskStep.FirstOrDefault(x => x.StepId == operation.StepId);
-
-            if (ModelState.IsValid)
-            {
-                operation.InformSuccess = Convert.ToBoolean(collection["InformSuccess"].ToString().Split(',')[0]);
-                if (operation.InformSuccess)
-                {
-                    operation.AddresseeGroupId = int.Parse(collection["AddresseeGroupId"]);
-                }
-                operation.AdditionalText = collection["AdditionalText"];
-                operation.FileInSource = (FileInSource)Enum.Parse(typeof(FileInSource), collection["FileInSource"]);
-                operation.FileInDestination = (FileInDestination)Enum.Parse(typeof(FileInDestination), collection["FileInDestination"]);
-                operation.FileInLog = Convert.ToBoolean(collection["FileInLog"].ToString().Split(',')[0]);
-                operation.Sort = (SortFiles)Enum.Parse(typeof(SortFiles), collection["Sort"]);
-                if (collection["FilesForProcessing"] == "")
-                {
-                    operation.FilesForProcessing = 0;
-                }
-                else
-                {
-                    operation.FilesForProcessing = int.Parse(collection["FilesForProcessing"]);
-                }
-
-                operation.FileAttribute = (AttributeFile)Enum.Parse(typeof(AttributeFile), collection["FileAttribute"]);
-
-                appDbContext.OperationCopy.Update(operation);
-                appDbContext.SaveChanges();
-
-            }
-
-
-            return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+            operationService.CreateCopy(operation);
         }
-
-        public IActionResult CreateOperationMove(OperationMoveEntity operationModel, string stepId)
+        else
         {
-            TaskStepEntity? taskStep = stepService.GetStepByStepId(int.Parse(stepId));
-            if (taskStep == null)
-            {
-                return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
-            }
-            if (ModelState.IsValid)
-            {
-                operationModel.StepId = int.Parse(stepId);
-                operationService.CreateMove(operationModel);
-                OperationMoveEntity? operation = operationService.GetMoveByStepId(operationModel.StepId);
-                if (operation != null)
-                {
-                    taskStep.OperationId = operation.OperationId;
-                    stepService.EditStep(taskStep);
-                }
-            }
-            return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+            operationService.UpdateCopy(operation);
         }
+        return RedirectToAction("Steps", "Step");
+    }
 
-        public IActionResult EditOperationMove(IFormCollection collection, string operationId)
+    public IActionResult EditOperationMove(OperationMoveEntity operation)
+    {
+        if (operation.OperationId == 0)
         {
-            OperationMoveEntity operation = appDbContext.OperationMove.FirstOrDefault(x => x.OperationId == int.Parse(operationId));
-            TaskStepEntity taskStep = appDbContext.TaskStep.FirstOrDefault(x => x.StepId == operation.StepId);
-
-            if (ModelState.IsValid)
-            {
-                operation.InformSuccess = Convert.ToBoolean(collection["InformSuccess"].ToString().Split(',')[0]);
-                if (operation.InformSuccess)
-                {
-                    operation.AddresseeGroupId = int.Parse(collection["AddresseeGroupId"]);
-                }
-                operation.AdditionalText = collection["AdditionalText"];
-                operation.FileInDestination = (FileInDestination)Enum.Parse(typeof(FileInDestination), collection["FileInDestination"]);
-                operation.FileInLog = Convert.ToBoolean(collection["FileInLog"].ToString().Split(',')[0]);
-                operation.Sort = (SortFiles)Enum.Parse(typeof(SortFiles), collection["Sort"]);
-                if (collection["FilesForProcessing"] == "")
-                {
-                    operation.FilesForProcessing = 0;
-                }
-                else
-                {
-                    operation.FilesForProcessing = int.Parse(collection["FilesForProcessing"]);
-                }
-
-                operation.FileAttribute = (AttributeFile)Enum.Parse(typeof(AttributeFile), collection["FileAttribute"]);
-
-                appDbContext.OperationMove.Update(operation);
-                appDbContext.SaveChanges();
-
-            }
-
-
-            return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+            operationService.CreateMove(operation);
         }
-
-        public IActionResult CreateOperationDelete(OperationDeleteEntity operationModel, string stepId)
+        else
         {
-            TaskStepEntity? taskStep = stepService.GetStepByStepId(int.Parse(stepId));
-            if (taskStep == null)
-            {
-                return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
-            }
-            if (ModelState.IsValid)
-            {
-                operationModel.StepId = int.Parse(stepId);
-                operationService.CreateDelete(operationModel);
-                OperationDeleteEntity? operation = operationService.GetDeleteByStepId(operationModel.StepId);
-                if (operation != null)
-                {
-                    taskStep.OperationId = operation.OperationId;
-                    stepService.EditStep(taskStep);
-                }
-            }
-            return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+            operationService.UpdateMove(operation);
         }
+        return RedirectToAction("Steps", "Step");
+    }
 
-        public IActionResult EditOperationDelete(IFormCollection collection, string operationId)
+    public IActionResult EditOperationDelete(OperationDeleteEntity operation)
+    {
+        if (operation.OperationId == 0)
         {
-            OperationDeleteEntity operation = appDbContext.OperationDelete.FirstOrDefault(x => x.OperationId == int.Parse(operationId));
-            TaskStepEntity taskStep = appDbContext.TaskStep.FirstOrDefault(x => x.StepId == operation.StepId);
-
-            if (ModelState.IsValid)
-            {
-                operation.InformSuccess = Convert.ToBoolean(collection["InformSuccess"].ToString().Split(',')[0]);
-                if (operation.InformSuccess)
-                {
-                    operation.AddresseeGroupId = int.Parse(collection["AddresseeGroupId"]);
-                }
-                operation.AdditionalText = collection["AdditionalText"];
-
-
-                appDbContext.OperationDelete.Update(operation);
-                appDbContext.SaveChanges();
-
-            }
-
-
-            return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+            operationService.CreateDelete(operation);
         }
-
-
-        public IActionResult CreateOperationRead(OperationReadEntity operationModel, string stepId)
+        else
         {
-            TaskStepEntity? taskStep = stepService.GetStepByStepId(int.Parse(stepId));
-            if (taskStep == null)
-            {
-                return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
-            }
-            if (ModelState.IsValid)
-            {
-                operationModel.StepId = int.Parse(stepId);
-                operationService.CreateRead(operationModel);
-                OperationReadEntity? operation = operationService.GetReadByStepId(operationModel.StepId);
-                if (operation != null)
-                {
-                    taskStep.OperationId = operation.OperationId;
-                    stepService.EditStep(taskStep);
-                }
-            }
-            return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+            operationService.UpdateDelete(operation);
         }
+        return RedirectToAction("Steps", "Step");
+    }
 
-        public IActionResult EditOperationRead(IFormCollection collection, string operationId)
+    public IActionResult EditOperationRead(OperationReadEntity operation)
+    {
+        operation.FindString ??= string.Empty;
+        if (operation.OperationId == 0)
         {
-            OperationReadEntity operation = appDbContext.OperationRead.FirstOrDefault(x => x.OperationId == int.Parse(operationId));
-            TaskStepEntity taskStep = appDbContext.TaskStep.FirstOrDefault(x => x.StepId == operation.StepId);
-
-            if (ModelState.IsValid)
-            {
-                operation.InformSuccess = Convert.ToBoolean(collection["InformSuccess"].ToString().Split(',')[0]);
-                if (operation.InformSuccess)
-                {
-                    operation.AddresseeGroupId = int.Parse(collection["AddresseeGroupId"]);
-                }
-                operation.AdditionalText = collection["AdditionalText"];
-                operation.FileInSource = (FileInSource)Enum.Parse(typeof(FileInDestination), collection["FileInSource"]);
-                operation.Encode = (Encode)Enum.Parse(typeof(Encode), collection["Encode"]);
-                operation.SearchRegex = Convert.ToBoolean(collection["SearchRegex"].ToString().Split(',')[0]);
-                operation.FindString = collection["FindString"];
-                operation.ExpectedResult = (ExpectedResult)Enum.Parse(typeof(ExpectedResult), collection["ExpectedResult"]);
-                operation.BreakTaskAfterError = Convert.ToBoolean(collection["BreakTaskAfterError"].ToString().Split(',')[0]);
-
-                appDbContext.OperationRead.Update(operation);
-                appDbContext.SaveChanges();
-
-            }
-
-
-            return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+            operationService.CreateRead(operation);
         }
-
-
-        public IActionResult CreateOperationExist(OperationExistEntity operationModel, string stepId)
+        else
         {
-            TaskStepEntity? taskStep = stepService.GetStepByStepId(int.Parse(stepId));
-            if (taskStep == null)
-            {
-                return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
-            }
-            if (ModelState.IsValid)
-            {
-                operationModel.StepId = int.Parse(stepId);
-                operationService.CreateExist(operationModel);
-                OperationExistEntity? operation = operationService.GetExistByStepId(operationModel.StepId);
-                if (operation != null)
-                {
-                    taskStep.OperationId = operation.OperationId;
-                    stepService.EditStep(taskStep);
-                }
-            }
-            return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+            operationService.UpdateRead(operation);
         }
+        return RedirectToAction("Steps", "Step");
+    }
 
-        public IActionResult EditOperationExist(IFormCollection collection, string operationId)
+    public IActionResult EditOperationExist(OperationExistEntity operation)
+    {
+        if (operation.OperationId == 0)
         {
-            OperationExistEntity operation = appDbContext.OperationExist.FirstOrDefault(x => x.OperationId == int.Parse(operationId));
-            TaskStepEntity taskStep = appDbContext.TaskStep.FirstOrDefault(x => x.StepId == operation.StepId);
-
-            if (ModelState.IsValid)
-            {
-                operation.InformSuccess = Convert.ToBoolean(collection["InformSuccess"].ToString().Split(',')[0]);
-                if (operation.InformSuccess)
-                {
-                    operation.AddresseeGroupId = int.Parse(collection["AddresseeGroupId"]);
-                }
-                operation.AdditionalText = collection["AdditionalText"];
-                operation.ExpectedResult = (ExpectedResult)Enum.Parse(typeof(ExpectedResult), collection["ExpectedResult"]);
-                operation.BreakTaskAfterError = Convert.ToBoolean(collection["BreakTaskAfterError"].ToString().Split(',')[0]);
-
-                appDbContext.OperationExist.Update(operation);
-                appDbContext.SaveChanges();
-
-            }
-
-
-            return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+            operationService.CreateExist(operation);
         }
-
-
-        public IActionResult CreateOperationRename(OperationRenameEntity operationModel, string stepId)
+        else
         {
-            TaskStepEntity? taskStep = stepService.GetStepByStepId(int.Parse(stepId));
-            if (taskStep == null)
-            {
-                return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
-            }
-            if (ModelState.IsValid)
-            {
-                operationModel.StepId = int.Parse(stepId);
-                operationService.CreateRename(operationModel);
-                OperationRenameEntity? operation = operationService.GetRenameByStepId(operationModel.StepId);
-                if (operation != null)
-                {
-                    taskStep.OperationId = operation.OperationId;
-                    stepService.EditStep(taskStep);
-                }
-            }
-            return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+            operationService.UpdateExist(operation);
         }
+        return RedirectToAction("Steps", "Step");
+    }
 
-        public IActionResult EditOperationRename(IFormCollection collection, string operationId)
+    public IActionResult EditOperationRename(OperationRenameEntity operation)
+    {
+        operation.OldPattern ??= string.Empty;
+        operation.NewPattern ??= string.Empty;
+        if (operation.OperationId == 0)
         {
-            OperationRenameEntity operation = appDbContext.OperationRename.FirstOrDefault(x => x.OperationId == int.Parse(operationId));
-            TaskStepEntity taskStep = appDbContext.TaskStep.FirstOrDefault(x => x.StepId == operation.StepId);
-
-            if (ModelState.IsValid)
-            {
-                operation.InformSuccess = Convert.ToBoolean(collection["InformSuccess"].ToString().Split(',')[0]);
-                if (operation.InformSuccess)
-                {
-                    operation.AddresseeGroupId = int.Parse(collection["AddresseeGroupId"]);
-                }
-                operation.AdditionalText = collection["AdditionalText"];
-                operation.OldPattern = collection["OldPattern"];
-                operation.NewPattern = collection["NewPattern"];
-
-                appDbContext.OperationRename.Update(operation);
-                appDbContext.SaveChanges();
-
-            }
-
-
-            return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+            operationService.CreateRename(operation);
         }
-
-        public IActionResult CreateOperationClrbuf(OperationClrbufEntity operationModel, string stepId)
+        else
         {
-            TaskStepEntity? taskStep = stepService.GetStepByStepId(int.Parse(stepId));
-            if (taskStep == null)
-            {
-                return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
-            }
-            if (ModelState.IsValid)
-            {
-                operationModel.StepId = int.Parse(stepId);
-                operationService.CreateClrbuf(operationModel);
-                OperationClrbufEntity? operation = operationService.GetClrbufByStepId(operationModel.StepId);
-                if (operation != null)
-                {
-                    taskStep.OperationId = operation.OperationId;
-                    stepService.EditStep(taskStep);
-                }
-            }
-            return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+            operationService.UpdateRename(operation);
         }
+        return RedirectToAction("Steps", "Step");
+    }
 
-        public IActionResult EditOperationClrbuf(IFormCollection collection, string operationId)
+    public IActionResult EditOperationClrbuf(OperationClrbufEntity operation)
+    {
+        if (operation.OperationId == 0)
         {
-            OperationClrbufEntity operation = appDbContext.OperationClrbuf.FirstOrDefault(x => x.OperationId == int.Parse(operationId));
-            TaskStepEntity taskStep = appDbContext.TaskStep.FirstOrDefault(x => x.StepId == operation.StepId);
-
-            if (ModelState.IsValid)
-            {
-                operation.InformSuccess = Convert.ToBoolean(collection["InformSuccess"].ToString().Split(',')[0]);
-                if (operation.InformSuccess)
-                {
-                    operation.AddresseeGroupId = int.Parse(collection["AddresseeGroupId"]);
-                }
-                operation.AdditionalText = collection["AdditionalText"];
-
-
-                appDbContext.OperationClrbuf.Update(operation);
-                appDbContext.SaveChanges();
-
-            }
-
-
-            return RedirectToAction("StepDetails", "Step", new { taskId = taskStep.TaskId, stepNumber = taskStep.StepNumber });
+            operationService.CreateClrbuf(operation);
         }
-
-
+        else
+        {
+            operationService.UpdateClrbuf(operation);
+        }
+        return RedirectToAction("Steps", "Step");
     }
 }

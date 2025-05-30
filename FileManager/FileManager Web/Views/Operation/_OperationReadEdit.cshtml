@@ -1,0 +1,74 @@
+﻿@using FileManager.Domain.Entity
+@using FileManager.Domain.Enum
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model OperationReadEntity
+@{
+    SelectList addresseeGroups = new SelectList(ViewBag.AddresseeGroups, "Id", "Name");
+
+}
+<div class="modal-body">
+    <form method="post" asp-action="EditOperationRead" asp-controller="Operation"
+          class="modal-body-content" id="operation-edit-form-read">
+          <input asp-for="OperationId" hidden>
+          <input asp-for="StepId" hidden>
+        <div class="input-checkbox">
+            <label class="toggle-checkbox">
+                <input type="checkbox" asp-for="InformSuccess" checked="@Model.InformSuccess">
+                <span class="toggle-checkbox-switch"></span>
+            </label>
+            <p>Информировать об успехе</p>
+        </div>
+        <div class="input-with-label">
+            <label asp-for="AddresseeGroupId"></label>
+            <div class="select-wrapper">
+                <select asp-for="AddresseeGroupId" asp-items=@addresseeGroups></select>
+            </div>
+        </div>
+        <div class="input-with-label">
+            <label asp-for="AdditionalText"></label>
+            <input asp-for="AdditionalText">
+        </div>
+        <div class="input-with-label">
+            <label asp-for="FileInSource"></label>
+            <div class="select-wrapper">
+                <select asp-for="FileInSource" asp-items="@Html.GetEnumSelectList<FileInSource>()"></select>
+            </div>
+        </div>
+        
+        <div class="input-with-label">
+            <label asp-for="Encode"></label>
+            <input asp-for="Encode">
+        </div>
+        <div class="input-checkbox">
+            <label class="toggle-checkbox">
+                <input type="checkbox" asp-for="SearchRegex" checked="@Model.SearchRegex">
+                <span class="toggle-checkbox-switch"></span>
+            </label>
+            <p>Поиск по шаблону</p>
+        </div>
+        <div class="input-with-label">
+            <label asp-for="FindString"></label>
+            <input asp-for="FindString">
+        </div>
+        <div class="input-with-label">
+            <label asp-for="ExpectedResult"></label>
+            <div class="select-wrapper">
+                <select asp-for="ExpectedResult" asp-items="@Html.GetEnumSelectList<ExpectedResult>()"></select>
+            </div>
+        </div>
+        <div class="input-checkbox">
+            <label class="toggle-checkbox">
+                <input type="checkbox" asp-for="BreakTaskAfterError" checked="@Model.BreakTaskAfterError">
+                <span class="toggle-checkbox-switch"></span>
+            </label>
+            <p>Прервать задачу</p>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="submit" form="operation-edit-form-read" class="btn-full">
+        Сохранить
+    </button>
+</div>

@@ -1,0 +1,112 @@
+﻿@using FileManager_Web.ViewModels
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model CopyTaskViewModel
+@{
+}
+
+
+<form method="post" asp-action="CopyTask" asp-controller="Task" id="copy-task-form" class="modal-body">
+    <div class="modal-body-content">
+        <div class="input-with-label">
+            <input asp-for="TaskId" hidden>
+            <input asp-for="NewTaskId" placeholder="Новая задача">
+        </div>
+        <div class="input-checkbox">
+            <label class="toggle-checkbox">
+                <input type="checkbox" checked="@Model.IsCopySteps" asp-for="IsCopySteps" onclick="CopyTaskSteps()" id="isCopySteps">
+                <span class="toggle-checkbox-switch"></span>
+            </label>
+            <p>Копировать шаги</p>
+        </div>
+    </div>
+    <div id="copy-steps-content2" style="display: none;">
+        <div class="main-table grid" scrollable="">
+            <div class="table-header-div">
+                <table class="table-header">
+                    <colgroup>
+                        <col style="min-width:110px;width:110px;">
+                        <col style="min-width:125px;width:125px;">
+                        <col style="min-width:215px;width:215px;">
+                        <col style="min-width:210px;width:210px;">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>
+                                <p>Копировать</p>
+                                <div class="separate"></div>
+                                <div class="sorter"></div>
+                            </th>
+                            <th>
+                                <p>Номер шага</p>
+                                <div class="separate"></div>
+                                <div class="sorter"></div>
+                            </th>
+                            <th>
+                                <p>Описание шага</p>
+                                <div class="separate"></div>
+                                <div class="sorter"></div>
+                            </th>
+                            <th>
+                                <p>Копировать св-ва операции</p>
+                                <div class="separate"></div>
+                                <div class="sorter"></div>
+                            </th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="table-body-div">
+                <table class="table-body">
+                    <colgroup>
+                        <col style="min-width:110px;width:110px;">
+                        <col style="min-width:125px;width:125px;">
+                        <col style="min-width:215px;width:215px;">
+                        <col style="min-width:210px;width:210px;">
+                    </colgroup>
+                    <tbody>
+                        @{
+                            int i = 0;
+                            foreach (var item in Model.CopySteps)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="input-checkbox">
+                                            <label class="toggle-checkbox">
+                                                <input type="checkbox" asp-for="CopySteps[i].IsCopy" checked="@item.IsCopy">
+
+                                                <span class="toggle-checkbox-switch"></span>
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="input-with-label">
+                                            <input asp-for="CopySteps[i].StepNumber">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="input-with-label">
+                                            <input asp-for="CopySteps[i].Description">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="input-checkbox">
+                                            <label class="toggle-checkbox">
+                                                <input type="checkbox" asp-for="CopySteps[i].IsCopyOperation" checked="@item.IsCopyOperation">
+                                                <span class="toggle-checkbox-switch"></span>
+                                            </label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                i++;
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</form>
+
+

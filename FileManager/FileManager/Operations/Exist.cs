@@ -5,91 +5,45 @@ using FileManager_Server.Loggers;
 using FileManager_Server.MailSender;
 
 
-namespace FileManager_Server.Operations
+namespace FileManager_Server.Operations;
+
+public class Exist(TaskStepEntity step,
+                    TaskOperation? operation,
+                    ITaskLogger taskLogger,
+                    AppDbContext appDbContext,
+                    IMailSender mailSender)
+            : StepOperation(step, operation, taskLogger, appDbContext, mailSender)
 {
-    public class Exist(TaskStepEntity step, 
-                        TaskOperation? operation, 
-                        ITaskLogger taskLogger, 
-                        AppDbContext appDbContext, 
-                        IMailSender mailSender) 
-                : StepOperation(step, operation, taskLogger, appDbContext, mailSender)
+    public override void Execute(List<string>? bufferFiles)
     {
-        public override void Execute(List<string>? bufferFiles)
+        _taskLogger.StepLog(TaskStep, $"ПРОВЕРКА НАЛИЧИЯ: {TaskStep.Source} => {TaskStep.Destination}");
+        _taskLogger.OperationLog(TaskStep);
+
+        string[] files = [];
+        string fileName;
+        OperationExistEntity? operation = null;
+        List<AddresseeEntity> addresses = [];
+        List<string> successFiles = [];
+
+        files = Directory.GetFiles(TaskStep.Source, TaskStep.FileMask);
+        _taskLogger.StepLog(TaskStep, $"Количество найденный файлов по маске '{TaskStep.FileMask}': {files.Length}");
+
+        operation = _appDbContext.OperationExist.FirstOrDefault(x => x.StepId == TaskStep.StepId);
+        if (operation != null)
         {
-            _taskLogger.StepLog(TaskStep, $"ПРОВЕРКА НАЛИЧИЯ: {TaskStep.Source} => {TaskStep.Destination}");
-            _taskLogger.OperationLog(TaskStep);
 
-            string[] files = [];
-            string fileName;
-            OperationExistEntity? operation = null;
-            List<AddresseeEntity> addresses = [];
-            List<string> successFiles = [];
-
-            files = Directory.GetFiles(TaskStep.Source, TaskStep.FileMask);
-            _taskLogger.StepLog(TaskStep, $"Количество найденный файлов по маске '{TaskStep.FileMask}': {files.Length}");
-
-            operation = _appDbContext.OperationExist.FirstOrDefault(x => x.StepId == TaskStep.StepId);
-            if (operation != null)
+            if (operation.InformSuccess)
             {
-
-                if (operation.InformSuccess)
-                {
-                    addresses = _appDbContext.Addressee.Where(x => x.AddresseeGroupId == operation.AddresseeGroupId &&
-                                                                    x.IsActive == true).ToList();
-                }
-                bool isBreakTask = false;
-                //_taskLogger.StepLog(TaskStep, $"Ожидаемый результат - {operation.ExpectedResult.GetDescription()}");
-                switch (operation.ExpectedResult)
-                {
-                    case ExpectedResult.Success:
-                        if (files.Length > 0)
-                        {
-                            if (operation.BreakTaskAfterError)
-                            {
-                                isBreakTask = true;
-                            }
-                            else
-                            {
-                                isBreakTask = false;
-                            }
-                        }
-                        else
-                        {
-                            if (operation.BreakTaskAfterError)
-                            {
-                                isBreakTask = false;
-                            }
-                            else
-                            {
-                                isBreakTask = true;
-                            }
-                        }
-                        break;
-                    case ExpectedResult.Error:
-                        if (files.Length == 0)
-                        {
-                            if (operation.BreakTaskAfterError)
-                            {
-                                isBreakTask = false;
-                            }
-                            else
-                            {
-                                isBreakTask = true;
-                            }
-                        }
-                        else
-                        {
-                            if (operation.BreakTaskAfterError)
-                            {
-                                isBreakTask = true;
-                            }
-                            else
-                            {
-                                isBreakTask = false;
-                            }
-                        }
-                        break;
-                    case ExpectedResult.Any:
+                addresses = _appDbContext.Addressee.Where(x => x.AddresseeGroupId == operation.AddresseeGroupId &&
+                                                                x.IsActive == true).ToList();
+            }
+            bool isBreakTask = false;
+            //_taskLogger.StepLog(TaskStep, $"Ожидаемый результат - {operation.ExpectedResult.GetDescription()}");
+            switch (operation.ExpectedResult)
+            {
+                case ExpectedResult.Success:
+                    if (files.Length > 0)
+                    {
                         if (operation.BreakTaskAfterError)
                         {
                             isBreakTask = true;
@@ -98,26 +52,71 @@ namespace FileManager_Server.Operations
                         {
                             isBreakTask = false;
                         }
-                        break;
-                    default:
-                        break;
-                }
-                if (isBreakTask)
-                {
-                    throw new Exception("Ошибка при операции Exist");
-                }
+                    }
+                    else
+                    {
+                        if (operation.BreakTaskAfterError)
+                        {
+                            isBreakTask = false;
+                        }
+                        else
+                        {
+                            isBreakTask = true;
+                        }
+                    }
+                    break;
+                case ExpectedResult.Error:
+                    if (files.Length == 0)
+                    {
+                        if (operation.BreakTaskAfterError)
+                        {
+                            isBreakTask = false;
+                        }
+                        else
+                        {
+                            isBreakTask = true;
+                        }
+                    }
+                    else
+                    {
+                        if (operation.BreakTaskAfterError)
+                        {
+                            isBreakTask = true;
+                        }
+                        else
+                        {
+                            isBreakTask = false;
+                        }
+                    }
+                    break;
+                case ExpectedResult.Any:
+                    if (operation.BreakTaskAfterError)
+                    {
+                        isBreakTask = true;
+                    }
+                    else
+                    {
+                        isBreakTask = false;
+                    }
+                    break;
+                default:
+                    break;
             }
-
-            if (addresses.Count > 0)
+            if (isBreakTask)
             {
-                foreach (var file in files)
-                {
-                    successFiles.Add(file);
-                }
-                _mailSender.Send(TaskStep, addresses, successFiles);
+                throw new Exception("Ошибка при операции Exist");
             }
-
-            _nextStep?.Execute(bufferFiles);
         }
+
+        if (addresses.Count > 0)
+        {
+            foreach (var file in files)
+            {
+                successFiles.Add(file);
+            }
+            _mailSender.Send(TaskStep, addresses, successFiles);
+        }
+
+        _nextStep?.Execute(bufferFiles);
     }
 }

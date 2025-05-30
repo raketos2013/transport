@@ -1,10 +1,9 @@
 ﻿using FileManager.Domain.Entity;
 
-namespace FileManager.Services.Interfaces
+namespace FileManager.Services.Interfaces;
+
+public interface IUserLogService
 {
-    public interface IUserLogService
-    {
-        void AddLog(string username, string action, string data);
-        List<UserLogEntity> GetAllLogs();
-    }
+    void AddLog(string username, string action, string data);
+    List<UserLogEntity> GetAllLogs();
 }

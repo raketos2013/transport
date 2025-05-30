@@ -54,7 +54,7 @@
         </table>
     </div>
     <div class="table-body-div">
-        <table class="table-body">
+        <table class="table-body" id="tableAddresses">
             <colgroup>
                 <col style="min-width:55px;width:55px;">
                 <col style="min-width:150px;width:150px;">
@@ -83,7 +83,7 @@
                         <td>
                             <div>
                                 <label class="toggle-checkbox">
-                                    <input type="checkbox" checked="@item.IsActive" onclick="OnOffAddressee('@item.PersonalNumber')">
+                                    <input type="checkbox" checked="@item.IsActive" onclick="ShowModal('modal-active-addressee'), OnOffAddressee('@item.PersonalNumber')">
                                     <span class="toggle-checkbox-switch"></span>
                                 </label>
                             </div>
@@ -94,3 +94,6 @@
         </table>
     </div>
 </div>
+<script>
+    ActiveAddressee();
+</script>

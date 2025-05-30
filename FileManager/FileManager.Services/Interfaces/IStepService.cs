@@ -1,21 +1,15 @@
 ﻿using FileManager.Domain.Entity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace FileManager.Services.Interfaces
+namespace FileManager.Services.Interfaces;
+
+public interface IStepService
 {
-    public interface IStepService
-    {
-        List<TaskStepEntity> GetAllSteps();
-        TaskStepEntity? GetStepByTaskId(string taskId, int stepNumber);
-        TaskStepEntity? GetStepByStepId(int stepId);
-        List<TaskStepEntity> GetAllStepsByTaskId(string taskId);
-        bool CreateStep(TaskStepEntity taskStep);
-        bool EditStep(TaskStepEntity taskStep);
-        bool ReplaceSteps(string taskId, string numberStep, string operation);
-        bool ActivatedStep(int stepId);
-    }
+    List<TaskStepEntity> GetAllSteps();
+    TaskStepEntity? GetStepByTaskId(string taskId, int stepNumber);
+    TaskStepEntity? GetStepByStepId(int stepId);
+    List<TaskStepEntity> GetAllStepsByTaskId(string taskId);
+    bool CreateStep(TaskStepEntity taskStep);
+    bool EditStep(TaskStepEntity taskStep);
+    bool ReplaceSteps(string taskId, string numberStep, string operation);
+    bool ActivatedStep(int stepId);
 }

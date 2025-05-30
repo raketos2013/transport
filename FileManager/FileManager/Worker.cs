@@ -10,7 +10,7 @@ namespace FileManager
         private readonly ILogger<Worker> _logger;
         private readonly IServiceProvider _serviceProvider;
         private readonly ISchedulerFactory _jobFactory;
-        private IScheduler scheduler;
+        private readonly IScheduler scheduler;
 
         public Worker(ILogger<Worker> logger, IServiceProvider serviceProvider, ISchedulerFactory jobFactory)
         {
@@ -25,65 +25,62 @@ namespace FileManager
             JobKey jobKey;
             IJobDetail? jobDetail;
             ITrigger jobTrigger;
-            string? lastModifiedJob;
 
             while (!stoppingToken.IsCancellationRequested)
             {
                 if (scheduler != null && !scheduler.IsStarted)
                 {
-                    await scheduler.Start();
+                    await scheduler.Start(stoppingToken);
                 }
-                using (var scope = _serviceProvider.CreateScope())
+                using var scope = _serviceProvider.CreateScope();
+                var _appDbContext = scope.ServiceProvider.GetService<AppDbContext>();
+                if (_appDbContext != null && scheduler != null)
                 {
-                    var _appDbContext = scope.ServiceProvider.GetService<AppDbContext>();
-                    if (_appDbContext != null && scheduler != null)
+
+                    foreach (var task in _appDbContext.Task.ToList())
                     {
-
-                        foreach (var task in _appDbContext.Task.ToList())
+                        jobKey = new JobKey(task.TaskId, "FManager");
+                        //Перепланирование(обновление) задач
+                        if (await scheduler.CheckExists(jobKey, stoppingToken))
                         {
-                            jobKey = new JobKey(task.TaskId, "FManager");
-                            //Перепланирование(обновление) задач
-                            if (await scheduler.CheckExists(jobKey))
+                            jobDetail = await scheduler.GetJobDetail(jobKey, stoppingToken);
+                            if (jobDetail != null &&
+                                jobDetail.JobDataMap.TryGetString("LastModified", out string? lastModifiedJob) &&
+                                lastModifiedJob?.ToString() != task.LastModified.ToString())
                             {
-                                jobDetail = await scheduler.GetJobDetail(jobKey, stoppingToken);
-                                if (jobDetail != null &&
-                                    jobDetail.JobDataMap.TryGetString("LastModified", out lastModifiedJob) &&
-                                    lastModifiedJob?.ToString() != task.LastModified.ToString())
+                                if (await scheduler.DeleteJob(jobKey, stoppingToken))
                                 {
-                                    if (await scheduler.DeleteJob(jobKey))
+                                    if (task.IsActive)
                                     {
-                                        if (task.IsActive)
-                                        {
-                                            jobDetail = JobBuilder.Create<JobForTask>().WithIdentity(jobKey)
-                                                .UsingJobData("JobName", task.Name)
-                                                .UsingJobData("TimeBegin", task.TimeBegin.ToString())
-                                                .UsingJobData("TimeEnd", task.TimeEnd.ToString())
-                                                .UsingJobData("IsActive", task.IsActive.ToString())
-                                                .UsingJobData("LastModified", task.LastModified.ToString())
-                                                .Build();
+                                        jobDetail = JobBuilder.Create<JobForTask>().WithIdentity(jobKey)
+                                            .UsingJobData("JobName", task.Name)
+                                            .UsingJobData("TimeBegin", task.TimeBegin.ToString())
+                                            .UsingJobData("TimeEnd", task.TimeEnd.ToString())
+                                            .UsingJobData("IsActive", task.IsActive.ToString())
+                                            .UsingJobData("LastModified", task.LastModified.ToString())
+                                            .Build();
 
-                                            jobTrigger = GetTrigger(task, ref jobDetail);
-                                            await scheduler.ScheduleJob(jobDetail, jobTrigger, stoppingToken);
-                                        }
+                                        jobTrigger = GetTrigger(task, ref jobDetail);
+                                        await scheduler.ScheduleJob(jobDetail, jobTrigger, stoppingToken);
                                     }
                                 }
                             }
-                            else
+                        }
+                        else
+                        {
+                            //Первоначальная загрузка задач
+                            if (task.IsActive)
                             {
-                                //Первоначальная загрузка задач
-                                if (task.IsActive)
-                                {
-                                    jobDetail = JobBuilder.Create<JobForTask>().WithIdentity(jobKey)
-                                        .UsingJobData("JobName", task.Name)
-                                        .UsingJobData("TimeBegin", task.TimeBegin.ToString())
-                                        .UsingJobData("TimeEnd", task.TimeEnd.ToString())
-                                        .UsingJobData("IsActive", task.IsActive.ToString())
-                                        .UsingJobData("LastModified", task.LastModified.ToString())
-                                        .Build();
-                                    jobTrigger = GetTrigger(task, ref jobDetail);
+                                jobDetail = JobBuilder.Create<JobForTask>().WithIdentity(jobKey)
+                                    .UsingJobData("JobName", task.Name)
+                                    .UsingJobData("TimeBegin", task.TimeBegin.ToString())
+                                    .UsingJobData("TimeEnd", task.TimeEnd.ToString())
+                                    .UsingJobData("IsActive", task.IsActive.ToString())
+                                    .UsingJobData("LastModified", task.LastModified.ToString())
+                                    .Build();
+                                jobTrigger = GetTrigger(task, ref jobDetail);
 
-                                    await scheduler.ScheduleJob(jobDetail, jobTrigger, stoppingToken);
-                                }
+                                await scheduler.ScheduleJob(jobDetail, jobTrigger, stoppingToken);
                             }
                         }
                     }

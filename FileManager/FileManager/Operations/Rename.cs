@@ -7,85 +7,84 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 
-namespace FileManager_Server.Operations
+namespace FileManager_Server.Operations;
+
+public class Rename(TaskStepEntity step,
+                    TaskOperation? operation,
+                    ITaskLogger taskLogger,
+                    AppDbContext appDbContext,
+                    IMailSender mailSender)
+            : StepOperation(step, operation, taskLogger, appDbContext, mailSender)
 {
-    public class Rename(TaskStepEntity step, 
-                        TaskOperation? operation, 
-                        ITaskLogger taskLogger, 
-                        AppDbContext appDbContext, 
-                        IMailSender mailSender) 
-                : StepOperation(step, operation, taskLogger, appDbContext, mailSender)
+    public override void Execute(List<string>? bufferFiles)
     {
-        public override void Execute(List<string>? bufferFiles)
+        _taskLogger.StepLog(TaskStep, $"ПЕРЕИМЕНОВАНИЕ: {TaskStep.Source}");
+        _taskLogger.OperationLog(TaskStep);
+
+        string[] files = [];
+        string fileName, newFileName;
+        List<FileInfo> infoFiles = [];
+        List<string> successFiles = [];
+        OperationRenameEntity? operation = null;
+
+        if (TaskStep.FileMask == "{BUFFER}")
         {
-            _taskLogger.StepLog(TaskStep, $"ПЕРЕИМЕНОВАНИЕ: {TaskStep.Source}");
-            _taskLogger.OperationLog(TaskStep);
-
-            string[] files = [];
-            string fileName, newFileName;
-            List<FileInfo> infoFiles = [];
-            List<string> successFiles = [];
-            OperationRenameEntity? operation = null;
-
-            if (TaskStep.FileMask == "{BUFFER}")
+            if (bufferFiles != null)
             {
-                if (bufferFiles != null)
-                {
-                    foreach (var file in bufferFiles)
-                    {
-                        infoFiles.Add(new FileInfo(file));
-                    }
-                }
-            }
-            else
-            {
-                files = Directory.GetFiles(TaskStep.Source, TaskStep.FileMask);
-                foreach (var file in files)
+                foreach (var file in bufferFiles)
                 {
                     infoFiles.Add(new FileInfo(file));
                 }
             }
-            List<AddresseeEntity> addresses = [];
-            _taskLogger.StepLog(TaskStep, $"Количество найденный файлов по маске '{TaskStep.FileMask}': {infoFiles.Count}");
-
-            if (infoFiles.Count > 0)
-            {
-                operation = _appDbContext.OperationRename.FirstOrDefault(x => x.StepId == TaskStep.StepId);
-                if (operation != null)
-                {
-                    foreach(var file in infoFiles)
-                    {
-                        fileName = Path.GetFileName(file.FullName);
-                        newFileName = RenameFileNew(fileName, operation.OldPattern, operation.NewPattern);
-                        FileSystem.Rename(file.FullName, file.DirectoryName + "\\\\" + newFileName);
-                    }
-                    
-                }
-            }
-
-            _nextStep?.Execute(bufferFiles);
         }
-
-        private string RenameFileNew(string filename, string old_pattern, string new_pattern)
+        else
         {
-            StringBuilder stringBuilder = new(new_pattern);
-
-            if (Regex.IsMatch(filename, old_pattern, RegexOptions.IgnoreCase))
+            files = Directory.GetFiles(TaskStep.Source, TaskStep.FileMask);
+            foreach (var file in files)
             {
-                Regex regex = new(old_pattern, RegexOptions.IgnoreCase);
+                infoFiles.Add(new FileInfo(file));
+            }
+        }
+        List<AddresseeEntity> addresses = [];
+        _taskLogger.StepLog(TaskStep, $"Количество найденный файлов по маске '{TaskStep.FileMask}': {infoFiles.Count}");
 
-                MatchCollection matches = regex.Matches(filename);
-                foreach (Match match in matches)
+        if (infoFiles.Count > 0)
+        {
+            operation = _appDbContext.OperationRename.FirstOrDefault(x => x.StepId == TaskStep.StepId);
+            if (operation != null)
+            {
+                foreach (var file in infoFiles)
                 {
-                    foreach (var item in from Group item in match.Groups
-                                         where item.Name != "0"
-                                         select item)
-                    {
-                        stringBuilder.Replace($"({item.Name})", $"{item.Value}");
-                    }
+                    fileName = Path.GetFileName(file.FullName);
+                    newFileName = RenameFileNew(fileName, operation.OldPattern, operation.NewPattern);
+                    FileSystem.Rename(file.FullName, file.DirectoryName + "\\\\" + newFileName);
+                }
+
+            }
+        }
+
+        _nextStep?.Execute(bufferFiles);
+    }
+
+    private static string RenameFileNew(string filename, string old_pattern, string new_pattern)
+    {
+        StringBuilder stringBuilder = new(new_pattern);
+
+        if (Regex.IsMatch(filename, old_pattern, RegexOptions.IgnoreCase))
+        {
+            Regex regex = new(old_pattern, RegexOptions.IgnoreCase);
+
+            MatchCollection matches = regex.Matches(filename);
+            foreach (Match match in matches)
+            {
+                foreach (var item in from Group item in match.Groups
+                                     where item.Name != "0"
+                                     select item)
+                {
+                    stringBuilder.Replace($"({item.Name})", $"{item.Value}");
                 }
             }
-            return stringBuilder.ToString();
         }
+        return stringBuilder.ToString();
     }
 }

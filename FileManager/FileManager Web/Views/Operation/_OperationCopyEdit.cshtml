@@ -1,77 +1,68 @@
 ﻿@using FileManager.Domain.Entity
+@using FileManager.Domain.Enum
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @model OperationCopyEntity
 @{
+    SelectList addresseeGroups = new SelectList(ViewBag.AddresseeGroups, "Id", "Name");
+
 }
-<form method="post" class="modal-body-content" id="operation-edit-form">
-    <div class="input-checkbox">
-        <label class="toggle-checkbox">
-            <input type="checkbox" asp-for="InformSuccess" checked="@Model.InformSuccess" >
-            <span class="toggle-checkbox-switch"></span>
-        </label>
-        <p>Информировать об успехе</p>
-    </div>
-    <div class="input-with-label">
-        <label>Группа рассылки</label>
-        <div class="select-wrapper">
-            <select>
-                <option>Первая группа</option>
-                <option>Рассылка ошибок</option>
-                <option>Новая группа рассылки</option>
-            </select>
+<div class="modal-body">
+    <form method="post" asp-action="EditOperationCopy" asp-controller="Operation"
+          class="modal-body-content" id="operation-edit-form-copy">
+          <input asp-for="OperationId" hidden>
+          <input asp-for="StepId" hidden>
+        <div class="input-checkbox">
+            <label class="toggle-checkbox">
+                <input type="checkbox" asp-for="InformSuccess" checked="@Model.InformSuccess">
+                <span class="toggle-checkbox-switch"></span>
+            </label>
+            <p>Информировать об успехе</p>
         </div>
-    </div>
-    <div class="input-with-label">
-        <label>Дополнительный текст</label>
-        <input>
-    </div>
-    <div class="input-with-label">
-        <label>Файл есть в назначении</label>
-        <div class="select-wrapper">
-            <select>
-                <option>Без перезаписи</option>
-                <option>Перезапись</option>
-                <option>Переименовать</option>
-            </select>
+        <div class="input-with-label">
+            <label asp-for="AddresseeGroupId"></label>
+            <div class="select-wrapper">
+                <select asp-for="AddresseeGroupId" asp-items=@addresseeGroups></select>
+            </div>
         </div>
-    </div>
-    <div class="input-checkbox">
-        <label class="toggle-checkbox">
-            <input type="checkbox" checked>
-            <span class="toggle-checkbox-switch"></span>
-        </label>
-        <p>Дубль по журналу</p>
-    </div>
-    <div class="input-with-label">
-        <label>Сортировка</label>
-        <div class="select-wrapper">
-            <select>
-                <option>Не сортировать</option>
-                <option>По имени</option>
-                <option>По имени по убыванию</option>
-                <option>По времени</option>
-                <option>По времени по убыванию</option>
-                <option>По размеру</option>
-                <option>По размеру по убыванию</option>
-            </select>
+        <div class="input-with-label">
+            <label asp-for="AdditionalText"></label>
+            <input asp-for="AdditionalText">
         </div>
-    </div>
-    <div class="input-with-label">
-        <label>Кол-во файлов</label>
-        <input value="0">
-    </div>
-    <div class="input-with-label">
-        <label>Аттрибуты</label>
-        <div class="select-wrapper">
-            <select>
-                <option>Видимый, кроме 'Н'</option>
-                <option>Скрытый</option>
-                <option>Архивный</option>
-                <option>Для чтения</option>
-                <option>Все</option>
-            </select>
+        <div class="input-with-label">
+            <label asp-for="FileInSource"></label>
+            <div class="select-wrapper">
+                <select asp-for="FileInSource" asp-items="@Html.GetEnumSelectList<FileInSource>()"></select>
+            </div>
         </div>
-    </div>
-</form>
+        <div class="input-checkbox">
+            <label class="toggle-checkbox">
+                <input type="checkbox" checked="@Model.FileInLog" asp-for="FileInLog">
+                <span class="toggle-checkbox-switch"></span>
+            </label>
+            <p>Дубль по журналу</p>
+        </div>
+        <div class="input-with-label">
+            <label asp-for="Sort"></label>
+            <div class="select-wrapper">
+                <select asp-for="Sort" asp-items="@Html.GetEnumSelectList<SortFiles>()"></select>
+            </div>
+        </div>
+        <div class="input-with-label">
+            <label asp-for="FilesForProcessing"></label>
+            <input asp-for="FilesForProcessing">
+        </div>
+        <div class="input-with-label">
+            <label asp-for="FileAttribute"></label>
+            <div class="select-wrapper">
+                <select asp-for="FileAttribute" asp-items="@Html.GetEnumSelectList<AttributeFile>()"></select>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="submit" form="operation-edit-form-copy" class="btn-full">
+        Сохранить
+    </button>
+</div>

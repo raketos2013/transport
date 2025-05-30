@@ -1,17 +1,17 @@
 using FileManager.DAL;
-using FileManager.DAL.Repositories.Interfaces;
 using FileManager.DAL.Repositories.Implementations;
+using FileManager.DAL.Repositories.Interfaces;
 using FileManager.Services.Implementations;
 using FileManager.Services.Interfaces;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using FileManager_Web.Logging;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 
 
 
 namespace FileManager_Web
 {
-	public class Program
+    public class Program
     {
         public static void Main(string[] args)
         {
@@ -26,7 +26,7 @@ namespace FileManager_Web
                 option.ExpireTimeSpan = TimeSpan.FromMinutes(60);
             });
 
-			builder.Services.AddDbContext<AppDbContext>();
+            builder.Services.AddDbContext<AppDbContext>();
 
             builder.Services.AddHttpContextAccessor();
 
@@ -37,7 +37,7 @@ namespace FileManager_Web
             builder.Services.AddScoped<ITaskLogRepository, TaskLogRepository>();
             builder.Services.AddScoped<IUserLogRepository, UserLogRepository>();
             builder.Services.AddScoped<ITaskService, TaskService>();
-			builder.Services.AddScoped<IStepService, StepService>();
+            builder.Services.AddScoped<IStepService, StepService>();
             builder.Services.AddScoped<IAddresseeService, AddresseeService>();
             builder.Services.AddScoped<IOperationService, OperationService>();
             builder.Services.AddScoped<ITaskLogService, TaskLogService>();
@@ -45,24 +45,24 @@ namespace FileManager_Web
 
             builder.Services.AddScoped<IUserLogging, UserLogging>();
 
-            
+
             builder.Services.AddAntiforgery(options => options.HeaderName = "XSRF-TOKEN");
 
             builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession();
 
             builder.Logging.ClearProviders();
-           /* builder.Logging.AddDbLogger(options =>
-            {
-                {
-                    builder.Configuration.GetSection("Database").GetSection("Options").Bind(options);
-                }
-            });*/
-            
-            
+            /* builder.Logging.AddDbLogger(options =>
+             {
+                 {
+                     builder.Configuration.GetSection("Database").GetSection("Options").Bind(options);
+                 }
+             });*/
+
+
 
             var app = builder.Build();
-            
+
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
@@ -79,7 +79,7 @@ namespace FileManager_Web
 
             app.UseAuthentication();
             app.UseAuthorization();
-       
+
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Task}/{action=Tasks}");

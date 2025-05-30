@@ -8,10 +8,10 @@
 
 <div class="main-content">
     <div class="breadcrumbs">
-        <svg class="arrow-back" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+		<svg class="arrow-back" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" onclick="Tasks(getCookie('selectedTaskGroup'))">
             <path d="M7.32018 12.7335C7.15944 12.9041 6.94146 13 6.71417 13C6.48689 13 6.26891 12.9041 6.10817 12.7335L2.25096 8.63796C2.09027 8.46729 2 8.23584 2 7.99451C2 7.75317 2.09027 7.52172 2.25096 7.35105L6.10817 3.25548C6.26983 3.0897 6.48635 2.99796 6.71109 3.00004C6.93583 3.00211 7.15082 3.09783 7.30974 3.26657C7.46867 3.43531 7.55881 3.66359 7.56077 3.90222C7.56272 4.14085 7.47632 4.37075 7.32018 4.5424L4.99986 7.08438L13.1428 7.08438C13.3702 7.08438 13.5882 7.18027 13.7489 7.35095C13.9097 7.52163 14 7.75313 14 7.99451C14 8.23589 13.9097 8.46738 13.7489 8.63806C13.5882 8.80874 13.3702 8.90463 13.1428 8.90463H4.99986L7.32018 11.4466C7.48088 11.6173 7.57115 11.8487 7.57115 12.0901C7.57115 12.3314 7.48088 12.5629 7.32018 12.7335Z" fill="var(--gray)" />
         </svg>
-        <a href="#l">Главная страница</a>
+		<a href="#" onclick="Tasks(getCookie('selectedTaskGroup'))">Главная страница</a>
         <svg width="6" height="16" viewBox="0 0 6 16" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M1.13941 5.15408C1.04075 5.25277 0.985327 5.3866 0.985327 5.52614C0.985327 5.66569 1.04075 5.79952 1.13941 5.89821L3.74438 8.50318L1.13941 11.1081C1.04355 11.2074 0.990502 11.3403 0.991701 11.4783C0.9929 11.6163 1.04825 11.7483 1.14582 11.8459C1.24339 11.9434 1.37538 11.9988 1.51337 12C1.65135 12.0012 1.78428 11.9481 1.88353 11.8523L4.86057 8.87524C4.95923 8.77655 5.01465 8.64272 5.01465 8.50318C5.01465 8.36363 4.95923 8.2298 4.86057 8.13111L1.88353 5.15408C1.78485 5.05542 1.65102 5 1.51147 5C1.37193 5 1.2381 5.05542 1.13941 5.15408Z" fill="var(--gray)" />
         </svg>
@@ -26,8 +26,8 @@
             <div class="btn-full" onclick="CreateAddressee()">
                 Добавить адресата
             </div>
-            <div class="btn-full">
-                Скрыть неактивные
+			<div class="btn-full" onclick="ShowActiveAddressee()">
+				<span><span id="active-addressee-btn">Скрыть </span> неактивные</span>
             </div>
         </div>
         <div class="toolbar-right">
@@ -48,7 +48,7 @@
 	</div>
 </div>
 <footer>
-    <div class="pagination">
+    @* <div class="pagination">
         <div class="pagination-buttons">
             <div class="btn-short page-number active">
                 1
@@ -57,8 +57,27 @@
         <div class="pagination-text">
             Страница 1 из 1
         </div>
-    </div>
+    </div> *@
 </footer>
+<div class="modal-wrapper" id="modal-active-addressee">
+	<div class="modal">
+		<div class="modal-header">
+			<p><span id="titleInfoAddressee"></span> табельный номер <span id="tabNumInfo"></span>?</p>
+			<svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg" onclick="CloseModal('modal-active-addressee'), CancelOnOffStep()">
+				<path d="M5.19281 4.69635L8 7.50342L10.7926 4.71089C10.8543 4.64524 10.9286 4.59272 11.0111 4.55648C11.0936 4.52024 11.1825 4.50103 11.2726 4.5C11.4655 4.5 11.6505 4.57662 11.7869 4.713C11.9233 4.84938 11.9999 5.03435 11.9999 5.22722C12.0016 5.31638 11.985 5.40494 11.9513 5.48748C11.9175 5.57001 11.8672 5.64478 11.8035 5.70719L8.97452 8.49971L11.8035 11.3286C11.9234 11.4459 11.9937 11.6046 11.9999 11.7722C11.9999 11.9651 11.9233 12.15 11.7869 12.2864C11.6505 12.4228 11.4655 12.4994 11.2726 12.4994C11.1799 12.5033 11.0875 12.4878 11.0011 12.454C10.9147 12.4202 10.8363 12.3688 10.7708 12.3031L8 9.496L5.20008 12.2958C5.13863 12.3593 5.06522 12.4099 4.98409 12.4449C4.90296 12.4798 4.8157 12.4984 4.72737 12.4994C4.53449 12.4994 4.34951 12.4228 4.21313 12.2864C4.07674 12.15 4.00012 11.9651 4.00012 11.7722C3.99842 11.683 4.01497 11.5945 4.04873 11.5119C4.0825 11.4294 4.13277 11.3546 4.19648 11.2922L7.02548 8.49971L4.19648 5.67082C4.07661 5.55357 4.00633 5.39478 4.00012 5.22722C4.00012 5.03435 4.07674 4.84938 4.21313 4.713C4.34951 4.57662 4.53449 4.5 4.72737 4.5C4.90191 4.50218 5.06918 4.57272 5.19281 4.69635Z" fill="white" />
+			</svg>
+		</div>
+		<div class="modal-body">
+			<div class="modal-body-content">
+			</div>
+		</div>
+		<div class="modal-footer">
+			<div class="btn-full" onclick="OkOnOffAddressee(), CloseModal('modal-active-addressee')">
+				Ок
+			</div>
+		</div>
+	</div>
+</div>
 <div class="modal-wrapper" id="modal-add-group">
     <div class="modal">
         <div class="modal-header">
@@ -125,113 +144,74 @@
 			success: function (result) {
 				$('#addresses').empty();
 				$('#addresses').append(result);
+				ActiveAddressee();
 			}
 		});
 	}
 
+	function OnOffAddressee(tabNum) {
+			//document.cookie = "selectedStepNumber=" + stepNumber + "; path=/";
+			// Объявить переменные
+			var table, tr, td, i, txtValue;
+
+			table = document.getElementById("tableAddresses");
+			tr = table.getElementsByTagName("tr");
+
+			for (i = 0; i < tr.length; i++) {
+				td = tr[i].getElementsByTagName("td")[1];
+				if (td) {
+					txtValue = td.innerText;
+					if (txtValue == tabNum) {
+						var qwe = tr[i].getElementsByTagName("td")[5];
+						var chl1 = qwe.firstElementChild.firstElementChild.firstElementChild.checked;
+						isActivatedTask = chl1;
+					}
+				}
+			}
+			if (chl1 == true) {
+				document.getElementById('titleInfoAddressee').innerText = "Включить";
+			} else {
+				document.getElementById('titleInfoAddressee').innerText = "Выключить";
+			}
+			document.getElementById('tabNumInfo').innerText = tabNum;
+
+		}
 
 
+		function OkOnOffAddressee() {
+			var tabNum = document.getElementById('tabNumInfo').innerText
+			//var cookieTaskId = getCookie("selectedTask");
+			$.ajax({
+				type: 'POST',
+				url: '@Url.Action("ActivatedAddressee", "AddresseeGroup")',
+				data: { "id": tabNum },
+				dataType: 'html',
+				success: function (result) {
+					
+					ShowAddresseeList(getCookie("selectedAddresseeGroup"));
+				}
+			});
 
-	// var selectGroup;
-	// var trs = document.querySelectorAll("tbody tr");
-	// for (var i = 0; i < trs.length; i++) {
-	// 	MakeRowHover(trs[i], i);
-	// }
+		}
+		function CancelOnOffAddressee() {
+			var table, tr, td, i, txtValue;
 
-	// function MakeRowHover(row, numRow) {
-	// 	row.addEventListener("click", function (numRow) {
-			
-	// 		let td = this.querySelectorAll('td');
-	// 		for (var i = 0; i < trs.length; i++) {
-	// 			td[2].style.display = 'block';
-	// 			trs[i].classList.add('selected-row');
-	// 		}
-	// 		for (var i = 0; i < trs.length; i++) {
-	// 			if (trs[i] != this) {
-	// 				td = trs[i].querySelectorAll('td');
-	// 				td[2].style.display = 'none';
-	// 				trs[i].classList.remove('selected-row');
-	// 			}
-	// 		}
-	// 	});
+			table = document.getElementById("tableAddresses");
+			tr = table.getElementsByTagName("tr");
 
-	// }
+			for (i = 0; i < tr.length; i++) {
+				td = tr[i].getElementsByTagName("td")[1];
+				if (td) {
+					txtValue = td.innerText;
+					if (txtValue == document.getElementById('numberStepInfo').innerText) {
+						var qwe = tr[i].getElementsByTagName("td")[5];
+						qwe.firstElementChild.firstElementChild.firstElementChild.checked = !isActivatedTask;
 
+					}
+				}
+			}
 
-	// window.addEventListener('load', () => {
-	// 	var firstGroup = document.querySelectorAll("tbody tr");
-	// 	if(firstGroup.length > 0)
-	// 	{
-	// 		firstGroup[0].classList.add('selected-row');
-	// 		var id = firstGroup[0].querySelectorAll("td");
-	// 		id[2].style.display = 'block';
-	// 		selectGroup = id[0].innerText
-	// 		getMailList(id[0].innerText)
-	// 	}
-	// 	else
-	// 	{
-
-	// 	}
-
-
-
-	// });
-
-	// function getMailList(id) {
-	// 	$.ajax({
-	// 		method: 'POST',
-	// 		url: 'Url.Action("AddresseeList", "AddresseeGroup")',
-	// 		data: { "groupId": id },
-	// 		dataType: 'html',
-	// 		success: function (result) {
-	// 			selectGroup = id;
-	// 			$('#mailList').empty();
-	// 			$('#mailList').append(result);
-	// 		}
-	// 	});
-	// }
-
-
-	// function clearNewGroup() {
-	// 	document.getElementById("nameNewGroup").value = '';
-	// 	document.getElementById("numberNewGroup").value = '';
-	// }
-
-	// function createGroup() {
-	// 	var numberGroup = document.getElementById("numberNewGroup").value;
-	// 	var nameGroup = document.getElementById("nameNewGroup").value;
-	// 	$.ajax({
-	// 		method: 'POST',
-	// 		url: 'Url.Action("CreateGroup", "AddresseeGroup")',
-	// 		data: {
-	// 			"number": numberGroup,
-	// 			"name": nameGroup
-	// 		},
-	// 		dataType: 'html',
-	// 		success: function (result) {
-	// 			window.location.href = 'Url.Action("Addressees", "AddresseeGroup")'
-	// 		}
-	// 	});
-	// 	clearNewGroup();
-	// }
-
-	// function delGroup(group) {
-	// 	document.getElementById("deletedGroup").innerText = group;
-	// }
-
-	// function deleteGroup() {
-	// 	$.ajax({
-	// 		method: 'POST',
-	// 		url: 'Url.Action("DeleteAddresseeGroup", "AddresseeGroup")',
-	// 		data: {
-	// 			"id": selectGroup,
-	// 		},
-	// 		dataType: 'html',
-	// 		success: function (result) {
-	// 			window.location.href = 'Url.Action("Addressees", "AddresseeGroup")'
-	// 		}
-	// 	});
-	// }
+		}
 
 </script>
 

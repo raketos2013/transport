@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FileManager.Domain.Entity
 {
@@ -32,7 +27,7 @@ namespace FileManager.Domain.Entity
         [Display(Name = "Количество обработанных файлов за день")]
         public int CountProcessedFiles { get; set; }
 
-       
+
 
         [Display(Name = "Дата последнего выполнения задачи")]
         public DateTime DateLastExecute { get; set; }

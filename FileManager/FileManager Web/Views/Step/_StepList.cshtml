@@ -130,7 +130,7 @@
                         <td><p>@item.OperationName</p></td>
                         <td>
                             <div>
-                                <label class="toggle-checkbox">
+                                <label class="toggle-checkbox" style="pointer-events: none;">
                                     <input type="checkbox" checked="@item.IsBreak" readonly>
                                     <span class="toggle-checkbox-switch"></span>
                                 </label>
@@ -146,3 +146,7 @@
         </table>
     </div>
 </div>
+<script>
+
+    ActiveSteps();
+</script>

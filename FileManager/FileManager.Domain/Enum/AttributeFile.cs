@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FileManager.Domain.Enum
 {
@@ -15,7 +10,7 @@ namespace FileManager.Domain.Enum
         V = 1,
         [Display(Name = "Скрытый")]
         [Description("Скрытый")]
-        H = 2, 
+        H = 2,
         [Display(Name = "Архивный")]
         [Description("Архивный")]
         A = 3,

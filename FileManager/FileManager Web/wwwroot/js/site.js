@@ -171,6 +171,7 @@ var idSelectedTask;
 var selectedTask = 0;
 var isShowActive = false;
 var isShowActiveSteps = false;
+var isShowActiveAddressee = false;
 var tableTasks;
 var tr;
 var isShowActiveAddressee = false;
@@ -193,7 +194,7 @@ function ActiveTask() {
     table = document.getElementById("tableTasks");
     tr = table.getElementsByTagName("tr");
 
-    for (i = 1; i < tr.length; i++) {
+    for (i = 0; i < tr.length; i++) {
         var qwe = tr[i].getElementsByTagName("td")[8];
         var chl1 = qwe.firstElementChild.firstElementChild.firstElementChild.checked;
         if (isShowActive) {
@@ -221,7 +222,7 @@ function ActiveSteps() {
 
     table = document.getElementById("tableSteps");
     tr = table.getElementsByTagName("tr");
-    for (i = 1; i < tr.length; i++) {
+    for (i = 0; i < tr.length; i++) {
         var qwe = tr[i].getElementsByTagName("td")[2];
         var chl1 = qwe.firstElementChild.firstElementChild.firstElementChild.checked;
         if (isShowActiveSteps) {
@@ -234,6 +235,35 @@ function ActiveSteps() {
     }
 }
 
+
+function ShowActiveAddressee() {
+    isShowActiveAddressee = !isShowActiveAddressee;
+    ActiveAddressee();
+}
+
+function ActiveAddressee() {
+    if (isShowActiveAddressee) {
+        document.getElementById('active-addressee-btn').innerText = "Показать ";
+    } else {
+        document.getElementById('active-addressee-btn').innerText = "Скрыть ";
+    }
+
+    var table, tr, i;
+
+    table = document.getElementById("tableAddresses");
+    tr = table.getElementsByTagName("tr");
+    for (i = 0; i < tr.length; i++) {
+        var qwe = tr[i].getElementsByTagName("td")[5];
+        var chl1 = qwe.firstElementChild.firstElementChild.firstElementChild.checked;
+        if (isShowActiveAddressee) {
+            if (!chl1) {
+                tr[i].style.display = "none";
+            }
+        } else {
+            tr[i].style.display = "";
+        }
+    }
+}
 
 
 
@@ -455,7 +485,7 @@ function ShowStepList() {
     document.getElementById('breadcrumbs-task').innerText = selectTask;
     var cookieGroup = getCookie("selectedTaskGroup");
     if (cookieGroup != undefined) {
-        document.getElementById('breadcrumbs-task-group').innerText = selectTask;
+        document.getElementById('breadcrumbs-task-group').innerText = cookieGroup;
     }
     $.ajax({
         method: 'POST',
@@ -477,6 +507,7 @@ function ShowStepList() {
                     tr[i].classList.remove('selected-tr');
                 }
             }
+            ActiveSteps();
         }
     });
 }
@@ -612,12 +643,54 @@ function StepOperationInfo(stepNumber, operationName) {
     
 }
 
-function StepOperationCreate() {
-
-}
 
 function StepOperationEdit() {
+    var cookieTaskId = getCookie("selectedTask");
+    var cookieStepNumber = getCookie("selectedStepNumber");
+    $.ajax({
+        type: 'GET',
+        url: "/Operation/EditOperation",
+        data: {
+            "taskId": cookieTaskId,
+            "stepNumber": cookieStepNumber
+        },
+        dataType: 'html',
+        success: function (result) {
+            $('#operation-edit-content').empty();
+            $('#operation-edit-content').append(result);
+            ShowModal('modal-edit-additional-settings');
+        }
+    });
+    
+}
 
+function CopyTask() {
+    var cookieTaskId = getCookie("selectedTask");
+    document.getElementById('copied-taskId').innerText = cookieTaskId;
+    $.ajax({
+        method: 'POST',
+        url: '/Task/StepsForCopy',
+        data: { "taskId": cookieTaskId },
+        dataType: 'html',
+        success: function (result) {
+            $('#copy-steps-content').empty();
+            $('#copy-steps-content').append(result);
+            
+        }
+    });
+    ShowModal('modal-copy-task')
+    
+}
+
+function CopyTaskSteps() {
+    var st = document.getElementById('isCopySteps');
+    if (st.checked) {
+        document.getElementById('copy-steps-content2').style.display = 'block';
+    } else {
+        document.getElementById('copy-steps-content2').style.display = 'none';
+    }
+
+    
 }
 
 

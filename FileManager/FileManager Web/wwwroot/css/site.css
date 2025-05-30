@@ -1027,11 +1027,18 @@ tr {
         .toggle-checkbox input[type=checkbox]:checked + .toggle-checkbox-switch {
             background: var(--main-green);
         }
+        /*.toggle-checkbox input[type=checkbox][data-val=true] + .toggle-checkbox-switch {
+            background: var(--main-green);
+        }*/
 
             .toggle-checkbox input[type=checkbox]:checked + .toggle-checkbox-switch:before {
                 transform: translateX(16px);
                 background: var(--white);
             }
+            /*.toggle-checkbox input[type=checkbox][data-val=true] + .toggle-checkbox-switch:before {
+                transform: translateX(16px);
+                background: var(--white);
+            }*/
 
         /* Disabled */
         .toggle-checkbox input[type=checkbox]:disabled + .toggle-checkbox-switch {

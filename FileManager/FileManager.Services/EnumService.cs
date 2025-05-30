@@ -1,34 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
+﻿using System.ComponentModel;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace FileManager.Services
+namespace FileManager.Services;
+
+public static class EnumService
 {
-    public static class EnumService
+    /// <summary>
+    /// Получить атрибут "Описание"
+    /// </summary>
+    /// <param name="value">Значение перечисления</param>
+    /// <returns>Значение атрибута "Описание"</returns>
+    public static string GetDescription(this Enum value)
     {
-        /// <summary>
-        /// Получить атрибут "Описание"
-        /// </summary>
-        /// <param name="value">Значение перечисления</param>
-        /// <returns>Значение атрибута "Описание"</returns>
-        public static string GetDescription(this Enum value)
-        {
-            FieldInfo fi = value.GetType().GetField(value.ToString());
+        FieldInfo fi = value.GetType().GetField(value.ToString());
 
-            DescriptionAttribute[] attributes =
-                (DescriptionAttribute[])fi.GetCustomAttributes(
-                typeof(DescriptionAttribute),
-                false);
+        DescriptionAttribute[] attributes =
+            (DescriptionAttribute[])fi.GetCustomAttributes(
+            typeof(DescriptionAttribute),
+            false);
 
-            if (attributes != null &&
-                attributes.Length > 0)
-                return attributes[0].Description;
-            else
-                return value.ToString();
-        }
+        if (attributes != null &&
+            attributes.Length > 0)
+            return attributes[0].Description;
+        else
+            return value.ToString();
     }
 }

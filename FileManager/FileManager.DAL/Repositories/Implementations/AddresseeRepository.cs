@@ -38,7 +38,7 @@ namespace FileManager.DAL.Repositories.Implementations
 
         public AddresseeEntity? GetAddresseeById(string id)
         {
-            return appDbContext.Addressee.FirstOrDefault(x => x.PersonalNumber == id); 
+            return appDbContext.Addressee.FirstOrDefault(x => x.PersonalNumber == id);
         }
 
         public AddresseeGroupEntity? GetAddresseeGroupById(int id)

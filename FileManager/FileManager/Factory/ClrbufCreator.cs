@@ -5,17 +5,16 @@ using FileManager_Server.MailSender;
 using FileManager_Server.Operations;
 
 
-namespace FileManager_Server.Factory
+namespace FileManager_Server.Factory;
+
+public class ClrbufCreator : CreatorFactoryMethod
 {
-    public class ClrbufCreator : CreatorFactoryMethod
+    internal override IStepOperation FactoryMethod(TaskStepEntity step,
+                                                    TaskOperation? operation,
+                                                    ITaskLogger taskLogger,
+                                                    AppDbContext appDbContext,
+                                                    IMailSender mailsender)
     {
-        internal override IStepOperation FactoryMethod(TaskStepEntity step,
-                                                        TaskOperation? operation,
-                                                        ITaskLogger taskLogger,
-                                                        AppDbContext appDbContext,
-                                                        IMailSender mailsender)
-        {
-            return new Clrbuf(step, operation, taskLogger, appDbContext, mailsender);
-        }
+        return new Clrbuf(step, operation, taskLogger, appDbContext, mailsender);
     }
 }

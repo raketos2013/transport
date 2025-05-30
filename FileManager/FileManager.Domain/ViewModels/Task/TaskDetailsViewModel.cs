@@ -1,9 +1,4 @@
 ﻿using FileManager.Domain.Entity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FileManager.Domain.ViewModels.Task
 {
@@ -14,7 +9,7 @@ namespace FileManager.Domain.ViewModels.Task
 
         public TaskDetailsViewModel()
         {
-                
+
         }
 
         public TaskDetailsViewModel(TaskEntity task, IEnumerable<TaskStepEntity> taskSteps)

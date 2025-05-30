@@ -236,5 +236,103 @@ namespace FileManager.DAL.Repositories.Implementations
         {
             return appDbContext.OperationRename.FirstOrDefault(x => x.StepId == stepId);
         }
+
+        public bool UpdateClrbuf(OperationClrbufEntity operation)
+        {
+            try
+            {
+                appDbContext.OperationClrbuf.Update(operation);
+                appDbContext.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public bool UpdateCopy(OperationCopyEntity operation)
+        {
+            try
+            {
+                appDbContext.OperationCopy.Update(operation);
+                appDbContext.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public bool UpdateDelete(OperationDeleteEntity operation)
+        {
+            try
+            {
+                appDbContext.OperationDelete.Update(operation);
+                appDbContext.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public bool UpdateExist(OperationExistEntity operation)
+        {
+            try
+            {
+                appDbContext.OperationExist.Update(operation);
+                appDbContext.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public bool UpdateMove(OperationMoveEntity operation)
+        {
+            try
+            {
+                appDbContext.OperationMove.Update(operation);
+                appDbContext.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public bool UpdateRead(OperationReadEntity operation)
+        {
+            try
+            {
+                appDbContext.OperationRead.Update(operation);
+                appDbContext.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public bool UpdateRename(OperationRenameEntity operation)
+        {
+            try
+            {
+                appDbContext.OperationRename.Update(operation);
+                appDbContext.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }

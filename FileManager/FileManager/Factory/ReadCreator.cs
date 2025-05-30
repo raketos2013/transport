@@ -5,17 +5,16 @@ using FileManager_Server.MailSender;
 using FileManager_Server.Operations;
 
 
-namespace FileManager_Server.Factory
+namespace FileManager_Server.Factory;
+
+public class ReadCreator : CreatorFactoryMethod
 {
-    public class ReadCreator : CreatorFactoryMethod
+    internal override IStepOperation FactoryMethod(TaskStepEntity step,
+                                                    TaskOperation? operation,
+                                                    ITaskLogger taskLogger,
+                                                    AppDbContext appDbContext,
+                                                    IMailSender mailSender)
     {
-        internal override IStepOperation FactoryMethod(TaskStepEntity step,
-                                                        TaskOperation? operation,
-                                                        ITaskLogger taskLogger,
-                                                        AppDbContext appDbContext,
-                                                        IMailSender mailSender)
-        {
-            return new Read(step, operation, taskLogger, appDbContext, mailSender);
-        }
+        return new Read(step, operation, taskLogger, appDbContext, mailSender);
     }
 }

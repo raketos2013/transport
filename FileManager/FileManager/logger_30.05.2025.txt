@@ -1,0 +1,245 @@
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+An error occurred using the connection to database 'FileManagerDb' on server 'tcp://10.200.127.115:5432'.
+An exception occurred while iterating over the results of a query for context type 'FileManager.DAL.AppDbContext'.
+System.InvalidOperationException: An exception has been raised that is likely due to a transient failure.
+ ---> Npgsql.NpgsqlException (0x80004005): Failed to connect to 10.200.127.115:5432
+ ---> System.TimeoutException: Timeout during connection attempt
+   at Npgsql.Internal.NpgsqlConnector.Connect(NpgsqlTimeout timeout)
+   at Npgsql.Internal.NpgsqlConnector.Connect(NpgsqlTimeout timeout)
+   at Npgsql.Internal.NpgsqlConnector.RawOpen(SslMode sslMode, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken, Boolean isFirstAttempt)
+   at Npgsql.Internal.NpgsqlConnector.<Open>g__OpenCore|213_1(NpgsqlConnector conn, SslMode sslMode, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken, Boolean isFirstAttempt)
+   at Npgsql.Internal.NpgsqlConnector.Open(NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.OpenNewConnector(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.<Get>g__RentAsync|34_0(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlConnection.<Open>g__OpenAsync|42_0(Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlConnection.Open()
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenDbConnection(Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternal(Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.Open(Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReader(RelationalCommandParameterObject parameterObject)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.Enumerator.InitializeReader(Enumerator enumerator)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.Enumerator.<>c.<MoveNext>b__21_0(DbContext _, Enumerator enumerator)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   --- End of inner exception stack trace ---
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.Enumerator.MoveNext()
+Hosting failed to start
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+An error occurred using the connection to database 'FileManagerDb' on server 'tcp://10.200.127.115:5432'.
+An exception occurred while iterating over the results of a query for context type 'FileManager.DAL.AppDbContext'.
+System.InvalidOperationException: An exception has been raised that is likely due to a transient failure.
+ ---> Npgsql.NpgsqlException (0x80004005): Failed to connect to 10.200.127.115:5432
+ ---> System.TimeoutException: Timeout during connection attempt
+   at Npgsql.Internal.NpgsqlConnector.Connect(NpgsqlTimeout timeout)
+   at Npgsql.Internal.NpgsqlConnector.Connect(NpgsqlTimeout timeout)
+   at Npgsql.Internal.NpgsqlConnector.RawOpen(SslMode sslMode, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken, Boolean isFirstAttempt)
+   at Npgsql.Internal.NpgsqlConnector.<Open>g__OpenCore|213_1(NpgsqlConnector conn, SslMode sslMode, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken, Boolean isFirstAttempt)
+   at Npgsql.Internal.NpgsqlConnector.Open(NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.OpenNewConnector(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.<Get>g__RentAsync|34_0(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlConnection.<Open>g__OpenAsync|42_0(Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlConnection.Open()
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenDbConnection(Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternal(Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.Open(Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReader(RelationalCommandParameterObject parameterObject)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.Enumerator.InitializeReader(Enumerator enumerator)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.Enumerator.<>c.<MoveNext>b__21_0(DbContext _, Enumerator enumerator)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   --- End of inner exception stack trace ---
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.Enumerator.MoveNext()
+Hosting failed to start
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+An error occurred using the connection to database 'FileManagerDb' on server 'tcp://10.200.127.115:5432'.
+An exception occurred while iterating over the results of a query for context type 'FileManager.DAL.AppDbContext'.
+System.InvalidOperationException: An exception has been raised that is likely due to a transient failure.
+ ---> Npgsql.NpgsqlException (0x80004005): Failed to connect to 10.200.127.115:5432
+ ---> System.TimeoutException: Timeout during connection attempt
+   at Npgsql.Internal.NpgsqlConnector.Connect(NpgsqlTimeout timeout)
+   at Npgsql.Internal.NpgsqlConnector.Connect(NpgsqlTimeout timeout)
+   at Npgsql.Internal.NpgsqlConnector.RawOpen(SslMode sslMode, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken, Boolean isFirstAttempt)
+   at Npgsql.Internal.NpgsqlConnector.<Open>g__OpenCore|213_1(NpgsqlConnector conn, SslMode sslMode, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken, Boolean isFirstAttempt)
+   at Npgsql.Internal.NpgsqlConnector.Open(NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.OpenNewConnector(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.<Get>g__RentAsync|34_0(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlConnection.<Open>g__OpenAsync|42_0(Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlConnection.Open()
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenDbConnection(Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternal(Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.Open(Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReader(RelationalCommandParameterObject parameterObject)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.Enumerator.InitializeReader(Enumerator enumerator)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.Enumerator.<>c.<MoveNext>b__21_0(DbContext _, Enumerator enumerator)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   --- End of inner exception stack trace ---
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.Enumerator.MoveNext()
+Hosting failed to start
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+An error occurred using the connection to database 'FileManagerDb' on server 'tcp://10.200.127.115:5432'.
+An exception occurred while iterating over the results of a query for context type 'FileManager.DAL.AppDbContext'.
+System.InvalidOperationException: An exception has been raised that is likely due to a transient failure.
+ ---> Npgsql.NpgsqlException (0x80004005): Failed to connect to 10.200.127.115:5432
+ ---> System.TimeoutException: Timeout during connection attempt
+   at Npgsql.Internal.NpgsqlConnector.Connect(NpgsqlTimeout timeout)
+   at Npgsql.Internal.NpgsqlConnector.Connect(NpgsqlTimeout timeout)
+   at Npgsql.Internal.NpgsqlConnector.RawOpen(SslMode sslMode, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken, Boolean isFirstAttempt)
+   at Npgsql.Internal.NpgsqlConnector.<Open>g__OpenCore|213_1(NpgsqlConnector conn, SslMode sslMode, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken, Boolean isFirstAttempt)
+   at Npgsql.Internal.NpgsqlConnector.Open(NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.OpenNewConnector(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.<Get>g__RentAsync|34_0(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlConnection.<Open>g__OpenAsync|42_0(Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlConnection.Open()
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenDbConnection(Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternal(Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.Open(Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReader(RelationalCommandParameterObject parameterObject)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.Enumerator.InitializeReader(Enumerator enumerator)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.Enumerator.<>c.<MoveNext>b__21_0(DbContext _, Enumerator enumerator)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   --- End of inner exception stack trace ---
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.Enumerator.MoveNext()
+Hosting failed to start
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+An error occurred using the connection to database 'FileManagerDb' on server 'tcp://10.200.127.115:5432'.
+An exception occurred while iterating over the results of a query for context type 'FileManager.DAL.AppDbContext'.
+System.InvalidOperationException: An exception has been raised that is likely due to a transient failure.
+ ---> Npgsql.NpgsqlException (0x80004005): Failed to connect to 10.200.127.115:5432
+ ---> System.TimeoutException: Timeout during connection attempt
+   at Npgsql.Internal.NpgsqlConnector.Connect(NpgsqlTimeout timeout)
+   at Npgsql.Internal.NpgsqlConnector.Connect(NpgsqlTimeout timeout)
+   at Npgsql.Internal.NpgsqlConnector.RawOpen(SslMode sslMode, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken, Boolean isFirstAttempt)
+   at Npgsql.Internal.NpgsqlConnector.<Open>g__OpenCore|213_1(NpgsqlConnector conn, SslMode sslMode, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken, Boolean isFirstAttempt)
+   at Npgsql.Internal.NpgsqlConnector.Open(NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.OpenNewConnector(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.<Get>g__RentAsync|34_0(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlConnection.<Open>g__OpenAsync|42_0(Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlConnection.Open()
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenDbConnection(Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternal(Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.Open(Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReader(RelationalCommandParameterObject parameterObject)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.Enumerator.InitializeReader(Enumerator enumerator)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.Enumerator.<>c.<MoveNext>b__21_0(DbContext _, Enumerator enumerator)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   --- End of inner exception stack trace ---
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.Enumerator.MoveNext()
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+30.05.2025 10:11:39 задача: test - Object reference not set to an instance of an object.
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.

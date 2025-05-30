@@ -1,6 +1,5 @@
-﻿namespace FileManager_Web.Logging
+﻿namespace FileManager_Web.Logging;
+
+public interface IUserLogging
 {
-    public interface IUserLogging
-    {
-    }
 }

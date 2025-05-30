@@ -1,22 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace FileManager.Domain.Enum
+namespace FileManager.Domain.Enum;
+
+public enum ResultOperation
 {
-    public enum ResultOperation
-    {
-        [Display(Name = "")]
-        N,
-        [Display(Name = "Инфо")]
-        I,
-        [Display(Name = "Ошибка")]
-        E,
-        [Display(Name = "Предупреждение")]
-        W
-	}
+    [Display(Name = "")]
+    N,
+    [Display(Name = "Инфо")]
+    I,
+    [Display(Name = "Ошибка")]
+    E,
+    [Display(Name = "Предупреждение")]
+    W
 }

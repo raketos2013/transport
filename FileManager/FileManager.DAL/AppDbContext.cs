@@ -21,23 +21,23 @@ namespace FileManager.DAL
         }
 
         public DbSet<TaskEntity> Task { get; set; }
-		public DbSet<TaskStepEntity> TaskStep { get; set; }
-		public DbSet<TaskLogEntity> TaskLog { get; set; }
+        public DbSet<TaskStepEntity> TaskStep { get; set; }
+        public DbSet<TaskLogEntity> TaskLog { get; set; }
         public DbSet<UserLogEntity> UserLog { get; set; }
         public DbSet<ClientLogEntity> ClientLog { get; set; }
         public DbSet<AddresseeEntity> Addressee { get; set; }
         public DbSet<AddresseeGroupEntity> AddresseeGroup { get; set; }
         public DbSet<TaskStatusEntity> TaskStatuse { get; set; }
         public DbSet<TaskGroupEntity> TaskGroup { get; set; }
-		public DbSet<OperationCopyEntity> OperationCopy { get; set; }
-		public DbSet<OperationMoveEntity> OperationMove { get; set; }
-		public DbSet<OperationReadEntity> OperationRead { get; set; }
-		public DbSet<OperationDeleteEntity> OperationDelete { get; set; }
-		public DbSet<OperationExistEntity> OperationExist { get; set; }
-		public DbSet<OperationRenameEntity> OperationRename { get; set; }
-		public DbSet<OperationClrbufEntity> OperationClrbuf { get; set; }
+        public DbSet<OperationCopyEntity> OperationCopy { get; set; }
+        public DbSet<OperationMoveEntity> OperationMove { get; set; }
+        public DbSet<OperationReadEntity> OperationRead { get; set; }
+        public DbSet<OperationDeleteEntity> OperationDelete { get; set; }
+        public DbSet<OperationExistEntity> OperationExist { get; set; }
+        public DbSet<OperationRenameEntity> OperationRename { get; set; }
+        public DbSet<OperationClrbufEntity> OperationClrbuf { get; set; }
 
-		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseNpgsql(_configuration.GetConnectionString("DefaultConnection"));
         }
@@ -46,10 +46,10 @@ namespace FileManager.DAL
         {
             modelBuilder.Entity<TaskOperation>().UseTpcMappingStrategy();
             //modelBuilder.Entity<UserLogEntity>().Property(p=>p.Id).ValueGeneratedOnAdd();
-            modelBuilder.Entity<UserLogEntity>().HasKey(u => new {u.DateTimeLog, u.UserName});
-            
-            modelBuilder.Entity<AddresseeEntity>().HasKey(u => new {u.PersonalNumber, u.AddresseeGroupId});
-            modelBuilder.Entity<TaskLogEntity>().HasKey(u => new { u.DateTimeLog, u.TaskId});
+            modelBuilder.Entity<UserLogEntity>().HasKey(u => new { u.DateTimeLog, u.UserName });
+
+            modelBuilder.Entity<AddresseeEntity>().HasKey(u => new { u.PersonalNumber, u.AddresseeGroupId });
+            modelBuilder.Entity<TaskLogEntity>().HasKey(u => new { u.DateTimeLog, u.TaskId });
         }
 
     }

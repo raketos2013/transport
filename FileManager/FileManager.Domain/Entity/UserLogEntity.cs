@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FileManager.Domain.Entity
 {
@@ -18,7 +13,7 @@ namespace FileManager.Domain.Entity
         [Display(Name = "Имя пользователя")]
         public string UserName { get; set; }
         [Display(Name = "Действие")]
-        public string Action {  get; set; }
+        public string Action { get; set; }
         [Display(Name = "Объект")]
         [Column(TypeName = "jsonb")]
         public string Data { get; set; }

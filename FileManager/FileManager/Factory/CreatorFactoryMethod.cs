@@ -5,14 +5,13 @@ using FileManager_Server.MailSender;
 using FileManager_Server.Operations;
 
 
-namespace FileManager_Server.Factory
+namespace FileManager_Server.Factory;
+
+public abstract class CreatorFactoryMethod
 {
-    public abstract class CreatorFactoryMethod
-    {
-        internal abstract IStepOperation FactoryMethod(TaskStepEntity step,
-                                                        TaskOperation? operation,
-                                                        ITaskLogger taskLogger,
-                                                        AppDbContext appDbContext,
-                                                        IMailSender mailSender);
-    }
+    internal abstract IStepOperation FactoryMethod(TaskStepEntity step,
+                                                    TaskOperation? operation,
+                                                    ITaskLogger taskLogger,
+                                                    AppDbContext appDbContext,
+                                                    IMailSender mailSender);
 }

@@ -7,23 +7,23 @@ namespace FileManager.DAL.Repositories.Implementations
     public class TaskLogRepository(AppDbContext appDbContext) : ITaskLogRepository
     {
         public bool AddTaskLog(TaskLogEntity taskLog)
-		{
-			try
-			{
+        {
+            try
+            {
 
-				appDbContext.TaskLog.Add(taskLog);
-				appDbContext.SaveChanges();
-				return true;
-			}
-			catch (Exception)
-			{
-				return false;
-			}
-		}
+                appDbContext.TaskLog.Add(taskLog);
+                appDbContext.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
 
-		public List<TaskLogEntity> GetLogsByTaskId(string taskId)
-		{
-			return appDbContext.TaskLog.Where(x => x.TaskId == taskId).ToList();	
-		}
-	}
+        public List<TaskLogEntity> GetLogsByTaskId(string taskId)
+        {
+            return appDbContext.TaskLog.Where(x => x.TaskId == taskId).ToList();
+        }
+    }
 }

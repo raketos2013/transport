@@ -198,16 +198,14 @@ public class TaskController(ITaskService taskService,
 
         }
 
-
         model.Logs = null;
         HttpContext?.Session.Set<TaskLogViewModel>("LogFilters", model);
 
         if (model.PageSize == 0)
         {
-            model.PageSize = 40;
+            model.PageSize = 400000;
         }
         int pageNumber = 1;
-
 
         TaskLogViewModel viewModel = new()
         {

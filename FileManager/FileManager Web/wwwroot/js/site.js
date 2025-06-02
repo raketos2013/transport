@@ -694,6 +694,8 @@ function CopyTaskSteps() {
 }
 
 
+
+
 //function SelectStep() {
 //    tableSteps = document.getElementById("tableTasks");
 //    tr = tableSteps.getElementsByTagName("tr");

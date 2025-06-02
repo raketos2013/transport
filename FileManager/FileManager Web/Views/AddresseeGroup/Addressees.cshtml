@@ -2,7 +2,7 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
-	ViewData["Title"] = "Группы рассылки";
+	ViewData["Title"] = "Транспорт: Группы рассылки";
 }
 
 
@@ -214,104 +214,3 @@
 		}
 
 </script>
-
-
-
-@* <div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
-
-	<div class="modal fade" id="staticBackdropMailList" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelMailList" aria-hidden="true">
-		<div class="modal-dialog modal-dialog-centered">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="staticBackdropLabelMailList">Новая группа рассылки</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="clearNewGroup()"></button>
-				</div>
-				<div class="modal-body">
-					<div class="form-group">
-						<label class="control-label">Номер группы</label>
-						<input class="form-control" id="numberNewGroup" />
-					</div>
-					<div class="form-group">
-						<label class="control-label">Название группы</label>
-						<input class="form-control" id="nameNewGroup" />
-					</div>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="clearNewGroup()">Отмена</button>
-					<button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="createGroup()">Ок</button>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	
-
-	<div class="modal fade" id="staticBackdropDeleteGroup" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelDeleteGroup" aria-hidden="true">
-		<div class="modal-dialog modal-dialog-centered">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="staticBackdropLabelDeleteGroup">Удалить группу <span id="deletedGroup"></span> ?</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick=""></button>
-				</div>
-				<div class="modal-body">
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="">Отмена</button>
-					<button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="deleteGroup()">Ок</button>
-				</div>
-			</div>
-		</div>
-	</div>
-
-
-
-	<div class="mainDiv">
-		<div class="listGroups d-flex flex-column align-items-stretch flex-shrink-0 padding-top-container" style="width: 20%;">
-			<div class="list-group list-group-flush scrollarea" style="max-height: 90vh;">
-				<div class="row" style="margin-right: 0px;">
-					<div class="col-11" style="padding-left: 20px; border-bottom: solid 1px black;">
-						<h5><b>Группы</b></h5>
-					</div>
-					<div class="col-1 p-0">
-						<a class="btn p-0" data-bs-toggle="modal" data-bs-target="#staticBackdropMailList">
-							<img id="btn-add-group-task" src="~/images/add_icon.png" />
-						</a>
-
-					</div>
-				</div>
-
-				<table>
-					<tbode>
-						@foreach (var item in Model)
-						{
-							<tr class="list-group-item" onclick="getMailList('@item.Id')">
-								<td>
-									@item.Id
-								</td>
-								<td>
-									@item.Name
-								</td>
-								<td style="display: none;">
-									<button class="btn p-0" data-bs-toggle="modal" data-bs-target="#staticBackdropDeleteGroup" onclick="delGroup('@item.Name')">
-										<img src="~/images/delete_icon.png" />
-									</button>
-								</td>
-							</tr>
-
-						}
-					</tbode>
-				</table>
-			</div>
-
-		</div>
-
-		<div class="mailList scrollarea padding-top-container">
-			<h2>Список адресатов</h2>
-			<div id="mailList">
-			</div>
-		</div>
-	</div>
-</div>
-
- *@
-

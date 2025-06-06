@@ -1061,7 +1061,7 @@ footer {
     padding: 8px 16px;
 }
 
-    footer .pagination {
+    footer .pagination .pagination-container {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
@@ -1069,7 +1069,7 @@ footer {
         width: 100%;
     }
 
-        footer .pagination .pagination-text {
+        footer .pagination .pagination-container .pagination-text {
             font-family: "Roboto-Regular";
             font-style: normal;
             font-weight: 400;
@@ -1078,40 +1078,40 @@ footer {
             color: var(--black);
         }
 
-        footer .pagination .pagination-buttons {
-            display: flex;
-            flex-direction: row;
-            justify-content: start;
+    footer .pagination .pagination-container .pagination-buttons {
+        display: flex;
+        flex-direction: row;
+        justify-content: start;
+    }
+
+        footer .pagination .pagination-container .pagination-buttons li {
+            margin-right: 8px;
         }
 
-            footer .pagination .pagination-buttons div {
-                margin-right: 8px;
-            }
+        footer .pagination .pagination-container .pagination-buttons li.btn-short.page-number {
+            background-color: var(--white);
+            color: var(--black);
+            border-radius: 2px;
+            border: 1px solid var(--gray);
+            font-family: "Roboto-Regular";
+            font-style: normal;
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 16px;
+            display: flex;
+            align-items: center;
+        }
 
-                footer .pagination .pagination-buttons div.btn-short.page-number {
-                    background-color: var(--white);
-                    color: var(--black);
-                    border-radius: 2px;
-                    border: 1px solid var(--gray);
-                    font-family: "Roboto-Regular";
-                    font-style: normal;
-                    font-weight: 400;
-                    font-size: 14px;
-                    line-height: 16px;
-                    display: flex;
-                    align-items: center;
-                }
+        footer .pagination .pagination-container .pagination-buttons li.btn-short.page-number:hover {
+            background-color: var(--select-gray);
+        }
 
-                    footer .pagination .pagination-buttons div.btn-short.page-number:hover {
-                        background-color: var(--select-gray);
-                    }
-
-                    footer .pagination .pagination-buttons div.btn-short.page-number.active {
-                        background-color: var(--main-green);
-                        color: var(--white);
-                        border-radius: 2px;
-                        border: 1px solid var(--main-green);
-                    }
+        footer .pagination .pagination-container .pagination-buttons li.btn-short.page-number.active {
+            background-color: var(--main-green);
+            color: var(--white);
+            border-radius: 2px;
+            border: 1px solid var(--main-green);
+        }
 
 /*404*/
 .main-content.error404 {

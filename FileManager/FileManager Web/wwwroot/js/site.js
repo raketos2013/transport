@@ -675,10 +675,9 @@ function CopyTask() {
         success: function (result) {
             $('#copy-steps-content').empty();
             $('#copy-steps-content').append(result);
-            
+            ShowModal('modal-copy-task'); 
         }
     });
-    ShowModal('modal-copy-task')
     
 }
 

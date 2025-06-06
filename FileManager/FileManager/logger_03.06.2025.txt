@@ -1,0 +1,49 @@
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+03.06.2025 15:06:10 задача: test - Операция Copy: найдено 0 файлов
+03.06.2025 15:06:20 задача: test - Операция Copy: найдено 0 файлов
+03.06.2025 15:06:30 задача: test - Операция Copy: найдено 0 файлов
+03.06.2025 15:06:40 задача: test - Операция Copy: найдено 0 файлов
+03.06.2025 15:06:50 задача: test - Операция Copy: найдено 0 файлов
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+03.06.2025 16:20:50 задача: test - Операция Copy: найдено 0 файлов
+03.06.2025 16:21:00 задача: test - Операция Copy: найдено 0 файлов
+03.06.2025 16:21:10 задача: test - Операция Copy: найдено 0 файлов
+Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl
+Quartz Scheduler created
+JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory
+RAMJobStore initialized.
+Quartz Scheduler 3.8.0.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized
+Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10
+Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False
+Scheduler QuartzScheduler_$_NON_CLUSTERED started.
+03.06.2025 17:15:20 задача: test - Операция Copy: найдено 0 файлов

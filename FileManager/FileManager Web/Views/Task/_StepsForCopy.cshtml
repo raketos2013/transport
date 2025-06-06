@@ -82,12 +82,14 @@
                                     </td>
                                     <td>
                                         <div class="input-with-label">
-                                            <input asp-for="CopySteps[i].StepNumber">
+                                            <input asp-for="CopySteps[i].StepNumber" hidden/>
+                                            <p>@item.StepNumber</p>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="input-with-label">
-                                            <input asp-for="CopySteps[i].Description">
+                                            <input asp-for="CopySteps[i].Description" hidden />
+                                            <p>@item.Description</p>
                                         </div>
                                     </td>
                                     <td>

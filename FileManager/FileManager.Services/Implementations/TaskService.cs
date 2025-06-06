@@ -275,4 +275,9 @@ public class TaskService(ITaskRepository taskRepository,
     {
         return taskRepository.CreateTaskStatuse(idTask);
     }
+
+    public List<TaskStatusEntity> GetTaskStatuses()
+    {
+        return taskRepository.GetTaskStatuses();
+    }
 }

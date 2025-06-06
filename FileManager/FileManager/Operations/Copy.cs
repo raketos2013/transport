@@ -92,8 +92,16 @@ public class Copy(TaskStepEntity step,
                 }
             }
         }
+        else
+        {
+            if (TaskStep.IsBreak)
+            {
+                _taskLogger.StepLog(TaskStep, $"Прерывание задачи: найдено 0 файлов", "", ResultOperation.W);
+                throw new Exception("Операция Copy: найдено 0 файлов");
+            }
+        }
 
-        bool isOverwriteFile = false;
+            bool isOverwriteFile = false;
         foreach (var file in infoFiles)
         {
             FileAttributes attributs = File.GetAttributes(file.FullName);
@@ -206,7 +214,7 @@ public class Copy(TaskStepEntity step,
 
         }
 
-        if (addresses.Count > 0)
+        if (addresses.Count > 0 && successFiles.Count > 0)
         {
             _mailSender.Send(TaskStep, addresses, successFiles);
         }

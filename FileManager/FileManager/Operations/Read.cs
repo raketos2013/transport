@@ -97,8 +97,16 @@ public class Read(TaskStepEntity step,
 
             }
         }
+        else
+        {
+            if (TaskStep.IsBreak)
+            {
+                _taskLogger.StepLog(TaskStep, $"Прерывание задачи: найдено 0 файлов", "", ResultOperation.W);
+                throw new Exception("Операция Read: найдено 0 файлов");
+            }
+        }
 
-        if (addresses.Count > 0)
+        if (addresses.Count > 0 && successFiles.Count > 0)
         {
             _mailSender.Send(TaskStep, addresses, successFiles);
         }

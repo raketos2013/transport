@@ -59,7 +59,7 @@
                                 </div>
                                 <div class="input-with-label">
                                     <label asp-for="StepNumber"></label>
-                                    <input asp-for="StepNumber">
+                                    <input asp-for="StepNumber" min="0">
                                 </div>
                                 <div class="input-with-label">
                                     <label asp-for="ResultOperation">Результат</label>
@@ -184,17 +184,44 @@
                             <td><p>@item.ResultText</p></td>
                         </tr>
                     }
-                    
-                    
+
+
                 </tbody>
             </table>
         </div>
     </div>
 </div>
+<footer>
+    <div class="pagination">
+        @* Страница @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) из @Model.PageCount *@
+
+        @Html.PagedListPager(Model.Logs,
+                 page => Url.Action("TaskLog",
+                 new
+                 {
+                     model = Model,
+                     page = page,
+                     taskid = Model.TaskId
+                 })
+                 ,
+                 new PagedListRenderOptions
+        {
+            DisplayEllipsesWhenNotShowingAllPageNumbers = true,
+            LiElementClasses = new string[] { "btn-short", "page-number" },
+            UlElementClasses = new string[] { "pagination-buttons" },
+            PageClasses = new string[] { "pagination" }
+        }
+                 )
+
+    </div>
+</footer>
+
+
+
 <script>
     window.addEventListener('load', () => {
         document.getElementById('breadcrumbs-taskgroup').innerText = getCookie('selectedTaskGroup');
         document.getElementById('breadcrumbs-task').innerText = getCookie('selectedTask');
-        
+
     });
 </script>

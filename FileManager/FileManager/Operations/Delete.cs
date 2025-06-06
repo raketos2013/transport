@@ -1,5 +1,6 @@
 ﻿using FileManager.DAL;
 using FileManager.Domain.Entity;
+using FileManager.Domain.Enum;
 using FileManager_Server.Loggers;
 using FileManager_Server.MailSender;
 
@@ -24,6 +25,11 @@ public class Delete(TaskStepEntity step,
         List<string> successFiles = [];
 
         files = Directory.GetFiles(TaskStep.Source, TaskStep.FileMask);
+        if (files.Length == 0 && TaskStep.IsBreak)
+        {
+            _taskLogger.StepLog(TaskStep, $"Прерывание задачи: найдено 0 файлов", "", ResultOperation.W);
+            throw new Exception("Операция Delete: найдено 0 файлов");
+        }
         _taskLogger.StepLog(TaskStep, $"Количество найденный файлов по маске '{TaskStep.FileMask}': {files.Length}");
 
         OperationDeleteEntity? operation = _appDbContext.OperationDelete.FirstOrDefault(x => x.StepId == TaskStep.StepId);
@@ -45,7 +51,7 @@ public class Delete(TaskStepEntity step,
             successFiles.Add(fileName);
         }
 
-        if (addresses.Count > 0)
+        if (addresses.Count > 0 && successFiles.Count > 0)
         {
             _mailSender.Send(TaskStep, addresses, successFiles);
         }

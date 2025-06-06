@@ -1,5 +1,6 @@
 ﻿using FileManager.DAL;
 using FileManager.Domain.Entity;
+using FileManager.Domain.Enum;
 using FileManager_Server.Loggers;
 using FileManager_Server.MailSender;
 using Microsoft.VisualBasic;
@@ -62,7 +63,14 @@ public class Rename(TaskStepEntity step,
 
             }
         }
-
+        else
+        {
+            if (TaskStep.IsBreak)
+            {
+                _taskLogger.StepLog(TaskStep, $"Прерывание задачи: найдено 0 файлов", "", ResultOperation.W);
+                throw new Exception("Операция Rename: найдено 0 файлов");
+            }
+        }
         _nextStep?.Execute(bufferFiles);
     }
 

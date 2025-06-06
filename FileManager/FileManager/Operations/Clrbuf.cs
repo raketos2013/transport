@@ -1,5 +1,6 @@
 ﻿using FileManager.DAL;
 using FileManager.Domain.Entity;
+using FileManager.Domain.Enum;
 using FileManager_Server.Loggers;
 using FileManager_Server.MailSender;
 
@@ -21,6 +22,14 @@ public class Clrbuf(TaskStepEntity step,
         {
             countFiles = bufferFiles.Count;
             bufferFiles = null;
+        }
+        else
+        {
+            if (TaskStep.IsBreak)
+            {
+                _taskLogger.StepLog(TaskStep, $"Прерывание задачи: найдено 0 файлов", "", ResultOperation.W);
+                throw new Exception("Операция Clrbuf: найдено 0 файлов");
+            }
         }
         _taskLogger.StepLog(TaskStep, $"Удалено файлов из буфера: {countFiles}");
 

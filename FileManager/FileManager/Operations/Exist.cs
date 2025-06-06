@@ -26,6 +26,11 @@ public class Exist(TaskStepEntity step,
         List<string> successFiles = [];
 
         files = Directory.GetFiles(TaskStep.Source, TaskStep.FileMask);
+        if (files.Length == 0 && TaskStep.IsBreak)
+        {
+            _taskLogger.StepLog(TaskStep, $"Прерывание задачи: найдено 0 файлов", "", ResultOperation.W);
+            throw new Exception("Операция Exist: найдено 0 файлов");
+        }
         _taskLogger.StepLog(TaskStep, $"Количество найденный файлов по маске '{TaskStep.FileMask}': {files.Length}");
 
         operation = _appDbContext.OperationExist.FirstOrDefault(x => x.StepId == TaskStep.StepId);
@@ -104,11 +109,12 @@ public class Exist(TaskStepEntity step,
             }
             if (isBreakTask)
             {
-                throw new Exception("Ошибка при операции Exist");
+                _taskLogger.StepLog(TaskStep, $"Прерывание задачи: несоответствие ожидаемому результату", "", ResultOperation.W);
+                throw new Exception("Ошибка при операции Exist: несоответствие ожидаемому результату");
             }
         }
 
-        if (addresses.Count > 0)
+        if (addresses.Count > 0 && successFiles.Count > 0)
         {
             foreach (var file in files)
             {

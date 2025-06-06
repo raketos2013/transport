@@ -140,7 +140,7 @@ class TaskLogger(AppDbContext appDbContext) : ITaskLogger
 
     }
 
-    public void StepLog(TaskStepEntity step, string text, string filename = "")
+    public void StepLog(TaskStepEntity step, string text, string filename = "", ResultOperation resultOperation = ResultOperation.I)
     {
         TaskLogEntity taskLog = new()
         {
@@ -156,19 +156,20 @@ class TaskLogger(AppDbContext appDbContext) : ITaskLogger
         {
             taskLog.FileName = filename;
         }
-        taskLog.ResultOperation = ResultOperation.I;
+        taskLog.ResultOperation = resultOperation;
 
         appDbContext.TaskLog.Add(taskLog);
         appDbContext.SaveChanges();
     }
 
-    public void TaskLog(string TaskId, string text)
+    public void TaskLog(string TaskId, string text, ResultOperation? resultOperation = null)
     {
         TaskLogEntity taskLog = new()
         {
             DateTimeLog = DateTime.Now,
             TaskId = TaskId,
-            ResultText = text
+            ResultText = text,
+            ResultOperation = resultOperation
         };
 
         appDbContext.TaskLog.Add(taskLog);

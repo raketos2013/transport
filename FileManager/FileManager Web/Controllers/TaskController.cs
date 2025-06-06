@@ -28,6 +28,11 @@ public class TaskController(ITaskService taskService,
     public IActionResult TasksList(string taskGroup)
     {
         List<TaskEntity> tasks = taskService.GetTasksByGroup(taskGroup);
+        List<TaskStatusEntity> statuses = taskService.GetTaskStatuses();
+        foreach(var item in tasks)
+        {
+            item.TaskStatus = statuses.FirstOrDefault(x => x.TaskId ==item.TaskId);
+        }
         return PartialView("_TasksList", tasks);
     }
 
@@ -89,11 +94,12 @@ public class TaskController(ITaskService taskService,
 
         if (model.PageSize == 0)
         {
-            model.PageSize = 40;
+            model.PageSize = 10;
         }
 
 
-        /*TaskLogViewModel sessionModel = HttpContext?.Session.Get<TaskLogViewModel>("LogFilters");
+
+        TaskLogViewModel sessionModel = HttpContext?.Session.Get<TaskLogViewModel>("LogFilters");
         if (sessionModel != null)
         {
             if (sessionModel.TaskId != null)
@@ -104,6 +110,10 @@ public class TaskController(ITaskService taskService,
                                                         .OrderBy(x => x.DateTimeLog)
                                                         .Where(x => x.DateTimeLog.Date >= date &&
                                                                     x.DateTimeLog.Date <= date2);
+                if (sessionModel.PageSize == 0)
+                {
+                    sessionModel.PageSize = 10;
+                }
                 if (taskLogs != null)
                 {
                     if (sessionModel.OperationName != OperationName.None)
@@ -133,7 +143,7 @@ public class TaskController(ITaskService taskService,
                         TaskId = sessionModel.TaskId,
                         DateFrom = date,
                         DateTo = date2,
-                        Logs = taskLogs.ToPagedList(pageNumber, model.PageSize),
+                        Logs = taskLogs.ToPagedList(pageNumber, sessionModel.PageSize),
                         StepNumber = sessionModel.StepNumber,
                         OperationName = sessionModel.OperationName,
                         ResultOperation = sessionModel.ResultOperation,
@@ -144,7 +154,7 @@ public class TaskController(ITaskService taskService,
                     return View(viewModel);
                 }
             }
-        }*/
+        }
 
         var taskLogs2 = taskLogService.GetLogsByTaskId(taskId)
                                                         .OrderBy(x => x.DateTimeLog)
@@ -203,7 +213,7 @@ public class TaskController(ITaskService taskService,
 
         if (model.PageSize == 0)
         {
-            model.PageSize = 400000;
+            model.PageSize = 10;
         }
         int pageNumber = 1;
 

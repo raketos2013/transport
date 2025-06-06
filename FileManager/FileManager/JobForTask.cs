@@ -17,6 +17,15 @@ public class JobForTask(AppDbContext appDbContext, ILogger<JobForTask> logger, I
     public async Task Execute(IJobExecutionContext context)
     {
         taskLogger.TaskLog(context.JobDetail.Key.Name, $"<<< Начало работы задачи {context.JobDetail.Key.Name} >>>");
+        TaskStatusEntity status = appDbContext.TaskStatuse.First(x => x.TaskId == context.JobDetail.Key.Name);
+        if (status != null)
+        {
+            status.IsProgress = true;
+            status.IsError = false;
+            status.DateLastExecute = DateTime.Now;
+            appDbContext.TaskStatuse.Update(status);
+            appDbContext.SaveChanges();
+        }
         if (context.RefireCount > 5)
         {
             logger.LogError($"{DateTime.Now} задача: {context.JobDetail.Key.Name} - RefireCount > 5");
@@ -97,13 +106,13 @@ public class JobForTask(AppDbContext appDbContext, ILogger<JobForTask> logger, I
         {
             try
             {
-                TaskStatusEntity status = appDbContext.TaskStatuse.First(x => x.TaskId == context.JobDetail.Key.Name);
+                TaskStatusEntity status2 = appDbContext.TaskStatuse.First(x => x.TaskId == context.JobDetail.Key.Name);
                 if (status != null)
                 {
                     status.IsProgress = false;
                     status.IsError = true;
                     status.DateLastExecute = DateTime.Now;
-                    appDbContext.TaskStatuse.Update(status);
+                    appDbContext.TaskStatuse.Update(status2);
                     appDbContext.SaveChanges();
                 }
                 TaskEntity task = appDbContext.Task.FirstOrDefault(x => x.TaskId == context.JobDetail.Key.Name);

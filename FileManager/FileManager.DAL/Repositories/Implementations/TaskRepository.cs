@@ -181,5 +181,9 @@ namespace FileManager.DAL.Repositories.Implementations
             }
         }
 
+        public List<TaskStatusEntity> GetTaskStatuses()
+        {
+            return dbContext.TaskStatuse.ToList();
+        }
     }
 }

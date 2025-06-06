@@ -21,4 +21,5 @@ public interface ITaskService
                                     List<CopyStepViewModel> copyStep);
 
     bool CreateTaskStatuse(string idTask);
+    List<TaskStatusEntity> GetTaskStatuses();
 }

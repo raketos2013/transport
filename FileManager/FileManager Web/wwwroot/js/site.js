@@ -692,6 +692,13 @@ function CopyTaskSteps() {
     
 }
 
+function ShowDeleteAddressee(tabNum) {
+    document.getElementById('tabnum-info-del').innerText = tabNum;
+    document.getElementById('adrgroup-info-del').innerText = getCookie('selectedAddresseeGroup');
+    ShowModal('modal-delete-addressee');
+}
+
+
 
 
 

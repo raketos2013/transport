@@ -36,6 +36,12 @@
                 <select asp-for="FileInSource" asp-items="@Html.GetEnumSelectList<FileInSource>()"></select>
             </div>
         </div>
+        <div class="input-with-label">
+            <label asp-for="FileInDestination"></label>
+            <div class="select-wrapper">
+                <select asp-for="FileInDestination" asp-items="@Html.GetEnumSelectList<FileInDestination>()"></select>
+            </div>
+        </div>
         <div class="input-checkbox">
             <label class="toggle-checkbox">
                 <input type="checkbox" checked="@Model.FileInLog" asp-for="FileInLog">

@@ -6,6 +6,8 @@ using FileManager.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using static System.Net.Mime.MediaTypeNames;
+using System.Threading.Tasks;
 
 namespace FileManager.Services.Implementations;
 
@@ -72,8 +74,10 @@ public class TaskService(ITaskRepository taskRepository,
 
     public bool EditTask(TaskEntity task)
     {
+        //var oldTask = taskRepository.GetTaskById(task.TaskId);
+        //userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, $"Изменение задачи {task.TaskId}, было", JsonSerializer.Serialize(oldTask, _options));
         bool edited = taskRepository.EditTask(task);
-        userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, "Создание задачи", JsonSerializer.Serialize(task, _options));
+        userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, $"Изменение задачи {task.TaskId}", JsonSerializer.Serialize(task, _options));
         return edited;
     }
 
@@ -81,12 +85,12 @@ public class TaskService(ITaskRepository taskRepository,
     {
         return taskRepository.UpdateLastModifiedTask(idTask);
     }
-
     public TaskGroupEntity? CreateTaskGroup(string name)
     {
-        return taskRepository.CreateTaskGroup(name);
+        var taskGroup = taskRepository.CreateTaskGroup(name);
+        userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, $"Создание группы задач {name}", JsonSerializer.Serialize(taskGroup, _options));
+        return taskGroup;
     }
-
     public bool DeleteTaskGroup(int idGroup)
     {
         return taskRepository.DeleteTaskGroup(idGroup);
@@ -97,7 +101,7 @@ public class TaskService(ITaskRepository taskRepository,
         var result = taskRepository.ActivatedTask(idTask);
         var task = taskRepository.GetTaskById(idTask);
         var text = task.IsActive ? "Включение" : "Выключение";
-        userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, $"{text} задачи", JsonSerializer.Serialize(task, _options));
+        userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, $"{text} задачи {idTask}", JsonSerializer.Serialize(task, _options));
         return result;
     }
 

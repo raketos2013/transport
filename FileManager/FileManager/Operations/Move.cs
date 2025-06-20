@@ -109,9 +109,13 @@ public class Move(TaskStepEntity step,
 
 
 
-            bool isOverwriteFile = false;
+        bool isOverwriteFile = false;
         foreach (var file in infoFiles)
         {
+
+            FileInUse(file);
+
+
             FileAttributes attributs = File.GetAttributes(file.FullName);
             fileName = Path.GetFileName(file.FullName);
             isMoveFile = true;
@@ -204,7 +208,7 @@ public class Move(TaskStepEntity step,
                 }
                 else if ((destinationFileInfo.Exists && isOverwriteFile) || !destinationFileInfo.Exists)
                 {
-                    File.Move(file.FullName, fileNameDestination, isOverwriteFile);
+                   File.Move(file.FullName, fileNameDestination, isOverwriteFile);
                     _taskLogger.StepLog(TaskStep, "Файл успешно перемещён", fileName);
                     successFiles.Add(fileName);
                 }
@@ -217,5 +221,21 @@ public class Move(TaskStepEntity step,
         }
 
         _nextStep?.Execute(bufferFiles);
+    }
+
+    public void FileInUse(FileInfo file)
+    {
+        try
+        {
+            //using FileStream stream = new FileStream(file.FullName, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+            var stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None);
+            //Console.WriteLine("not use!!!!!!!!!!!!!!!!!!!!!");
+            stream.Close();
+        }
+        catch (Exception ex)
+        {
+            _taskLogger.StepLog(TaskStep, $"Прерывание задачи: файл {file.Name} занят", "", ResultOperation.E);
+            throw new Exception("Операция Move: файл недоступен");
+        }
     }
 }

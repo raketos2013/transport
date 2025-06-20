@@ -93,6 +93,14 @@ public class Rename(TaskStepEntity step,
                 }
             }
         }
+        Regex regexDate = new("(.*)({.*})(.*)", RegexOptions.IgnoreCase);
+        MatchCollection matchesDate = regexDate.Matches(new_pattern);
+        if (matchesDate.Count == 1)
+        {
+            var findedTypeDate = matchesDate[0].Groups[2].Value;
+            var typeDate = findedTypeDate[1..^1];
+            stringBuilder.Replace(findedTypeDate, DateTime.Now.ToString(typeDate));
+        }
         return stringBuilder.ToString();
     }
 }

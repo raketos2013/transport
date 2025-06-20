@@ -4,6 +4,7 @@ using FileManager.Domain.Enum;
 using FileManager_Server.Loggers;
 using FileManager_Server.MailSender;
 using System.Text;
+using System.Text.RegularExpressions;
 
 
 namespace FileManager_Server.Operations;
@@ -62,9 +63,9 @@ public class Read(TaskStepEntity step,
                 }
 
                 Encoding encoding = Encoding.Default;
-                /*string fileText = File.ReadAllText("d:\\transportFiles\\time.txt", encoding);
-                _taskLogger.StepLog(TaskStep, "Файл успешно прочитан", "time.txt");*/
                 isReadFile = true;
+
+
 
                 foreach (var file in files)
                 {
@@ -75,6 +76,38 @@ public class Read(TaskStepEntity step,
                     // файл в источнике
                     TaskLogEntity? taskLogs = _appDbContext.TaskLog.FirstOrDefault(x => x.StepId == TaskStep.StepId &&
                                                                                     x.FileName == fileName);
+
+                    if (!string.IsNullOrEmpty(operation.FindString))
+                    {
+                        isReadFile = false;
+                        using (StreamReader reader = new StreamReader(file))
+                        {
+                            string line;
+                            while ((line = reader.ReadLine()) != null)
+                            {
+                                if (operation.SearchRegex)
+                                {
+                                    Regex regex = new(operation.FindString);
+                                    MatchCollection matches = regex.Matches(line);
+                                    if (matches.Count > 0)
+                                    {
+                                        isReadFile = true;
+                                    }
+                                }
+                                else
+                                {
+                                    if (line.Contains("qweqwe"))
+                                    {
+                                        //Console.WriteLine($"Файл содержит строку: {line}");
+                                        isReadFile = true;
+                                    }
+                                }
+                                
+                            }
+                        }
+                        //Console.WriteLine($"Текст 'qwqwe' не найден в файле.");
+                    }
+
                     if (taskLogs != null)
                     {
                         if (operation.FileInSource == FileInSource.OneDay)
@@ -82,17 +115,85 @@ public class Read(TaskStepEntity step,
                             isReadFile = false;
                         }
                     }
-
                     if (isReadFile)
                     {
-
-                        if (operation.ExpectedResult == ExpectedResult.Success)
-                        {
+                       
                             bufferFiles.Add(file);
                             successFiles.Add(fileName);
-                        }
-                    }
+
+                    } 
                 }
+
+                bool isBreakTask = false;
+                switch (operation.ExpectedResult)
+                {
+                    case ExpectedResult.Success:
+                        if (bufferFiles.Count > 0)
+                        {
+                            if (operation.BreakTaskAfterError)
+                            {
+                                isBreakTask = true;
+                            }
+                            else
+                            {
+                                isBreakTask = false;
+                            }
+                        }
+                        else
+                        {
+                            if (operation.BreakTaskAfterError)
+                            {
+                                isBreakTask = false;
+                            }
+                            else
+                            {
+                                isBreakTask = true;
+                            }
+                        }
+                        break;
+                    case ExpectedResult.Error:
+                        if (bufferFiles.Count == 0)
+                        {
+                            if (operation.BreakTaskAfterError)
+                            {
+                                isBreakTask = false;
+                            }
+                            else
+                            {
+                                isBreakTask = true;
+                            }
+                        }
+                        else
+                        {
+                            if (operation.BreakTaskAfterError)
+                            {
+                                isBreakTask = true;
+                            }
+                            else
+                            {
+                                isBreakTask = false;
+                            }
+                        }
+                        break;
+                    case ExpectedResult.Any:
+                        if (operation.BreakTaskAfterError)
+                        {
+                            isBreakTask = true;
+                        }
+                        else
+                        {
+                            isBreakTask = false;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                if (isBreakTask)
+                {
+                    _taskLogger.StepLog(TaskStep, $"Прерывание задачи: несоответствие ожидаемому результату", "", ResultOperation.W);
+                    throw new Exception("Ошибка при операции Read: несоответствие ожидаемому результату");
+                }
+
                 _taskLogger.StepLog(TaskStep, $"{bufferFiles.Count} файлов добавлено в BUFFER");
 
             }

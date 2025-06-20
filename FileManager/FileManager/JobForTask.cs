@@ -16,6 +16,11 @@ public class JobForTask(AppDbContext appDbContext, ILogger<JobForTask> logger, I
 {
     public async Task Execute(IJobExecutionContext context)
     {
+        var taskChecked = appDbContext.Task.FirstOrDefault(x => x.TaskId == context.JobDetail.Key.Name);
+        if (taskChecked == null || !taskChecked.IsActive)
+        {
+            return;
+        }
         taskLogger.TaskLog(context.JobDetail.Key.Name, $"<<< Начало работы задачи {context.JobDetail.Key.Name} >>>");
         TaskStatusEntity status = appDbContext.TaskStatuse.First(x => x.TaskId == context.JobDetail.Key.Name);
         if (status != null)

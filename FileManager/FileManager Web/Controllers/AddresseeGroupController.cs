@@ -3,15 +3,25 @@ using FileManager.Domain.Entity;
 using FileManager.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json.Serialization;
+using System.Text.Json;
+using Microsoft.AspNetCore.Http;
 
 
 namespace FileManager_Web.Controllers;
 
 [Authorize(Roles = "o.br.ДИТ")]
 public class AddresseeGroupController(IAddresseeService addresseeService,
+                                        IUserLogService userLogService,
+                                        IHttpContextAccessor httpContextAccessor,
                                         AppDbContext context)
             : Controller
 {
+    private static readonly JsonSerializerOptions _options = new()
+    {
+        ReferenceHandler = ReferenceHandler.Preserve,
+        WriteIndented = true
+    };
     public IActionResult Addressees()
     {
         return View();
@@ -116,6 +126,9 @@ public class AddresseeGroupController(IAddresseeService addresseeService,
         {
             context.Addressee.Remove(addressee);
             context.SaveChanges();
+            userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, 
+                                    $"Удаление адресата {number} из группы номер {idGroup}", 
+                                    JsonSerializer.Serialize(addressee, _options));
         }
         return RedirectToAction("Addressees");
     }

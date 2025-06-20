@@ -107,7 +107,7 @@ public class TaskController(ITaskService taskService,
                 date = sessionModel.DateFrom;
                 date2 = sessionModel.DateTo;
                 var taskLogs = taskLogService.GetLogsByTaskId(sessionModel.TaskId)
-                                                        .OrderBy(x => x.DateTimeLog)
+                                                        .OrderByDescending(x => x.DateTimeLog)
                                                         .Where(x => x.DateTimeLog.Date >= date &&
                                                                     x.DateTimeLog.Date <= date2);
                 if (sessionModel.PageSize == 0)
@@ -179,7 +179,7 @@ public class TaskController(ITaskService taskService,
         DateTime date2 = model.DateTo == DateTime.MinValue ? DateTime.Today : model.DateTo;
 
         var taskLogs = taskLogService.GetLogsByTaskId(model.TaskId)
-                                                        .OrderBy(x => x.DateTimeLog)
+                                                        .OrderByDescending(x => x.DateTimeLog)
                                                         .Where(x => x.DateTimeLog.Date >= date &&
                                                                     x.DateTimeLog.Date <= date2);
 

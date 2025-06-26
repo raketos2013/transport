@@ -12,6 +12,8 @@
     <PackageReference Include="jQuery.Ajax.Unobtrusive" Version="2.0.20710" />
     <PackageReference Include="jQuery.Form" Version="4.3.0" />
     <PackageReference Include="Microsoft.AspNet.Mvc" Version="5.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting.Server.Abstractions" Version="2.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting.WindowsServices" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0">
       <PrivateAssets>all</PrivateAssets>
@@ -24,10 +26,16 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
     <PackageReference Include="Microsoft.jQuery.Unobtrusive.Ajax" Version="3.2.6" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="PagedList" Version="1.17.0" />
     <PackageReference Include="PagedList.Mvc" Version="4.5.0" />
+    <PackageReference Include="Quartz" Version="3.14.0" />
+    <PackageReference Include="Quartz.AspNetCore" Version="3.14.0" />
+    <PackageReference Include="Quartz.Extensions.DependencyInjection" Version="3.14.0" />
+    <PackageReference Include="Quartz.Extensions.Hosting" Version="3.14.0" />
     <PackageReference Include="System.DirectoryServices" Version="8.0.0" />
     <PackageReference Include="System.DirectoryServices.AccountManagement" Version="8.0.0" />
     <PackageReference Include="X.PagedList" Version="10.5.7" />
@@ -38,6 +46,7 @@
 	<ProjectReference Include="..\FileManager.Services\FileManager.Services.csproj" />
     <ProjectReference Include="..\FileManager.DAL\FileManager.DAL.csproj" />
     <ProjectReference Include="..\FileManager.Domain\FileManager.Domain.csproj" />
+    <ProjectReference Include="..\FileManager\FileManager Server.csproj" />
 
   </ItemGroup>
 

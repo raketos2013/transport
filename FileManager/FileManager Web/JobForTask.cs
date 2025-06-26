@@ -1,21 +1,24 @@
 ﻿using FileManager.DAL;
 using FileManager.Domain.Entity;
 using FileManager.Domain.Enum;
-using FileManagerServer.Factory;
-using FileManagerServer.Loggers;
-using FileManagerServer.MailSender;
-using FileManagerServer.Operations;
+using FileManager_Web.Factory;
+using FileManager_Web.Loggers;
+using FileManager_Web.MailSender;
+using FileManager_Web.Operations;
 using Quartz;
 
-
-namespace FileManagerServer;
-
+namespace FileManager_Web;
 
 [DisallowConcurrentExecution]
-public class JobForTask(AppDbContext appDbContext, ILogger<JobForTask> logger, ITaskLogger taskLogger, IMailSender mailSender) : IJob
+public class JobForTask(AppDbContext appDbContext, 
+                        ILogger<JobForTask> logger, 
+                        ITaskLogger taskLogger, 
+                        IMailSender mailSender,
+                        ISchedulerFactory jobFactory) : IJob
 {
     public async Task Execute(IJobExecutionContext context)
     {
+        var hz = jobFactory.GetScheduler().Result;
         var taskChecked = appDbContext.Task.FirstOrDefault(x => x.TaskId == context.JobDetail.Key.Name);
         if (taskChecked == null || !taskChecked.IsActive)
         {
@@ -42,7 +45,10 @@ public class JobForTask(AppDbContext appDbContext, ILogger<JobForTask> logger, I
             {
                 throw new ArgumentNullException(nameof(taskEntity));
             }
-            List<TaskStepEntity> taskSteps = appDbContext.TaskStep.Where(x => x.TaskId == taskEntity.TaskId).OrderBy(x => x.StepNumber).ToList();
+            List<TaskStepEntity> taskSteps = appDbContext.TaskStep
+                                                            .Where(x => x.TaskId == taskEntity.TaskId)
+                                                            .OrderBy(x => x.StepNumber)
+                                                            .ToList();
 
             List<IStepOperation> steps = [];
             List<string> bufferFiles = [];
@@ -138,6 +144,7 @@ public class JobForTask(AppDbContext appDbContext, ILogger<JobForTask> logger, I
 
             //throw new JobExecutionException(msg: "", refireImmediately: true, cause: ex);
         }
+        //throw new NotImplementedException();
     }
 }
 

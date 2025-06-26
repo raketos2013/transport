@@ -1,6 +1,6 @@
 ﻿using FileManager.Domain.Entity;
 
-namespace FileManagerServer.MailSender;
+namespace FileManager_Web.MailSender;
 
 public interface IMailSender
 {

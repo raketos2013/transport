@@ -4,7 +4,7 @@ using FileManager.Domain.Enum;
 using FileManager.Services;
 
 
-namespace FileManagerServer.Loggers;
+namespace FileManager_Web.Loggers;
 
 class TaskLogger(AppDbContext appDbContext) : ITaskLogger
 {

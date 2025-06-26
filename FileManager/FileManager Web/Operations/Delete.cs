@@ -1,11 +1,11 @@
 ﻿using FileManager.DAL;
 using FileManager.Domain.Entity;
 using FileManager.Domain.Enum;
-using FileManagerServer.Loggers;
-using FileManagerServer.MailSender;
+using FileManager_Web.Loggers;
+using FileManager_Web.MailSender;
 
 
-namespace FileManagerServer.Operations;
+namespace FileManager_Web.Operations;
 
 public class Delete(TaskStepEntity step,
                     TaskOperation? operation,

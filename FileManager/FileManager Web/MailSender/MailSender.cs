@@ -4,7 +4,7 @@ using System.Net.Mail;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace FileManagerServer.MailSender;
+namespace FileManager_Web.MailSender;
 
 public class MailSender : IMailSender
 {

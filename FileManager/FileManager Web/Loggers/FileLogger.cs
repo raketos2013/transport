@@ -1,4 +1,4 @@
-﻿namespace FileManagerServer.Loggers;
+﻿namespace FileManager_Web.Loggers;
 
 internal class FileLogger : ILogger, IDisposable
 {

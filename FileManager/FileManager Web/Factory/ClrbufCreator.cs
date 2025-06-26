@@ -1,20 +1,20 @@
 ﻿using FileManager.DAL;
 using FileManager.Domain.Entity;
-using FileManagerServer.Loggers;
-using FileManagerServer.MailSender;
-using FileManagerServer.Operations;
+using FileManager_Web.Loggers;
+using FileManager_Web.MailSender;
+using FileManager_Web.Operations;
 
 
-namespace FileManagerServer.Factory;
+namespace FileManager_Web.Factory;
 
-public class ReadCreator : CreatorFactoryMethod
+public class ClrbufCreator : CreatorFactoryMethod
 {
     internal override IStepOperation FactoryMethod(TaskStepEntity step,
                                                     TaskOperation? operation,
                                                     ITaskLogger taskLogger,
                                                     AppDbContext appDbContext,
-                                                    IMailSender mailSender)
+                                                    IMailSender mailsender)
     {
-        return new Read(step, operation, taskLogger, appDbContext, mailSender);
+        return new Clrbuf(step, operation, taskLogger, appDbContext, mailsender);
     }
 }

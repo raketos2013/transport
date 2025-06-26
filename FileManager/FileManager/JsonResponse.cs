@@ -1,4 +1,4 @@
-﻿namespace FileManager_Server;
+﻿namespace FileManagerServer;
 
 public class JsonResponse
 {

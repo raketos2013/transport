@@ -1,4 +1,4 @@
-﻿namespace FileManagerServer.Operations;
+﻿namespace FileManager_Web.Operations;
 
 public interface IStepOperation
 {

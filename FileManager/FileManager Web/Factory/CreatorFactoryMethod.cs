@@ -1,11 +1,11 @@
 ﻿using FileManager.DAL;
 using FileManager.Domain.Entity;
-using FileManagerServer.Loggers;
-using FileManagerServer.MailSender;
-using FileManagerServer.Operations;
+using FileManager_Web.Loggers;
+using FileManager_Web.MailSender;
+using FileManager_Web.Operations;
 
 
-namespace FileManagerServer.Factory;
+namespace FileManager_Web.Factory;
 
 public abstract class CreatorFactoryMethod
 {

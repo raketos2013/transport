@@ -1,7 +1,7 @@
 ﻿using FileManager.DAL;
 using Quartz;
 
-namespace FileManager_Server
+namespace FileManagerServer
 {
     [DisallowConcurrentExecution]
     public class ProcessOutboxMessagesJob : IJob

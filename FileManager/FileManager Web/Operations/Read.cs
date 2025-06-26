@@ -1,13 +1,13 @@
 ﻿using FileManager.DAL;
 using FileManager.Domain.Entity;
 using FileManager.Domain.Enum;
-using FileManagerServer.Loggers;
-using FileManagerServer.MailSender;
+using FileManager_Web.Loggers;
+using FileManager_Web.MailSender;
 using System.Text;
 using System.Text.RegularExpressions;
 
 
-namespace FileManagerServer.Operations;
+namespace FileManager_Web.Operations;
 
 public class Read(TaskStepEntity step,
                     TaskOperation? operation,

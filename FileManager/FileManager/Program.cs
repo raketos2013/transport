@@ -1,8 +1,8 @@
 using FileManager;
 using FileManager.DAL;
-using FileManager_Server;
-using FileManager_Server.Loggers;
-using FileManager_Server.MailSender;
+using FileManagerServer;
+using FileManagerServer.Loggers;
+using FileManagerServer.MailSender;
 using Quartz;
 
 var builder = Host.CreateApplicationBuilder(args);
@@ -14,14 +14,14 @@ builder.Services.AddScoped<IMailSender, MailSender>();
 builder.Services.AddQuartz(q =>
 {
 
-    var jobKey = new JobKey(nameof(ProcessOutboxMessagesJob));
+   /* var jobKey = new JobKey(nameof(ProcessOutboxMessagesJob));
 
     q.AddJob<ProcessOutboxMessagesJob>(jobKey)
      .AddTrigger(
             trigger => trigger.ForJob(jobKey).WithSimpleSchedule(
-                schedule => schedule.WithIntervalInSeconds(5).RepeatForever()));
+                schedule => schedule.WithIntervalInSeconds(5).RepeatForever()));*/
 
-    q.UseMicrosoftDependencyInjectionJobFactory();
+    //q.UseMicrosoftDependencyInjectionJobFactory();
 
 });
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);

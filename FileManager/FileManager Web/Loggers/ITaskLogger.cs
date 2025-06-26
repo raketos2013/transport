@@ -1,7 +1,7 @@
 ﻿using FileManager.Domain.Entity;
 using FileManager.Domain.Enum;
 
-namespace FileManagerServer.Loggers;
+namespace FileManager_Web.Loggers;
 
 public interface ITaskLogger
 {

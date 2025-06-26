@@ -1,11 +1,11 @@
 ﻿using FileManager.DAL;
 using FileManager.Domain.Entity;
 using FileManager.Domain.Enum;
-using FileManagerServer.Loggers;
-using FileManagerServer.MailSender;
+using FileManager_Web.Loggers;
+using FileManager_Web.MailSender;
 
 
-namespace FileManagerServer.Operations;
+namespace FileManager_Web.Operations;
 
 public class Copy(TaskStepEntity step,
                     TaskOperation? operation,
@@ -204,7 +204,7 @@ public class Copy(TaskStepEntity step,
                     destinationFileInfo.IsReadOnly = true;
                     successFiles.Add(fileName);
                 }
-                else if ((destinationFileInfo.Exists && isOverwriteFile) || !destinationFileInfo.Exists)
+                else if (destinationFileInfo.Exists && isOverwriteFile || !destinationFileInfo.Exists)
                 {
                     File.Copy(file.FullName, fileNameDestination, isOverwriteFile);
                     _taskLogger.StepLog(TaskStep, "Файл успешно скопирован", fileName);

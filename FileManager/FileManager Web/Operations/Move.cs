@@ -1,13 +1,13 @@
 ﻿using FileManager.DAL;
 using FileManager.Domain.Entity;
 using FileManager.Domain.Enum;
-using FileManagerServer.Loggers;
-using FileManagerServer.MailSender;
+using FileManager_Web.Loggers;
+using FileManager_Web.MailSender;
 
 
-namespace FileManagerServer.Operations;
+namespace FileManager_Web.Operations;
 
-public class Copy(TaskStepEntity step,
+public class Move(TaskStepEntity step,
                     TaskOperation? operation,
                     ITaskLogger taskLogger,
                     AppDbContext appDbContext,
@@ -16,15 +16,16 @@ public class Copy(TaskStepEntity step,
 {
     public override void Execute(List<string>? bufferFiles)
     {
-        _taskLogger.StepLog(TaskStep, $"КОПИРОВАНИЕ: {TaskStep.Source} => {TaskStep.Destination}");
+        _taskLogger.StepLog(TaskStep, $"ПЕРЕМЕЩЕНИЕ: {TaskStep.Source} => {TaskStep.Destination}");
         _taskLogger.OperationLog(TaskStep);
 
         string[] files = [];
         string fileNameDestination, fileName;
-        bool isCopyFile = true;
+        bool isMoveFile = true;
         List<FileInfo> infoFiles = [];
+        OperationMoveEntity? operation = null;
+        List<AddresseeEntity> addresses = [];
         List<string> successFiles = [];
-        OperationCopyEntity? operation = null;
 
         if (TaskStep.FileMask == "{BUFFER}")
         {
@@ -44,12 +45,17 @@ public class Copy(TaskStepEntity step,
                 infoFiles.Add(new FileInfo(file));
             }
         }
-        List<AddresseeEntity> addresses = [];
         _taskLogger.StepLog(TaskStep, $"Количество найденный файлов по маске '{TaskStep.FileMask}': {infoFiles.Count}");
+
         if (infoFiles.Count > 0)
         {
-            operation = _appDbContext.OperationCopy.FirstOrDefault(x => x.StepId == TaskStep.StepId);
+            operation = _appDbContext.OperationMove.FirstOrDefault(x => x.StepId == TaskStep.StepId);
+            // список файлов с атрибутами
 
+            /*foreach (var file in files)
+				{
+					infoFiles.Add(new FileInfo(file));
+				}*/
             if (operation != null)
             {
 
@@ -74,7 +80,7 @@ public class Copy(TaskStepEntity step,
                         infoFiles = infoFiles.OrderBy(o => o.CreationTime).ToList();
                         break;
                     case SortFiles.TimeDescending:
-                        infoFiles = infoFiles.OrderByDescending(o => o.CreationTime).ToList();
+                        infoFiles = [.. infoFiles.OrderByDescending(o => o.CreationTime)];
                         break;
                     case SortFiles.SizeAscending:
                         infoFiles = infoFiles.OrderBy(o => o.Length).ToList();
@@ -97,38 +103,37 @@ public class Copy(TaskStepEntity step,
             if (TaskStep.IsBreak)
             {
                 _taskLogger.StepLog(TaskStep, $"Прерывание задачи: найдено 0 файлов", "", ResultOperation.W);
-                throw new Exception("Операция Copy: найдено 0 файлов");
+                throw new Exception("Операция Move: найдено 0 файлов");
             }
         }
 
-            bool isOverwriteFile = false;
+
+
+        bool isOverwriteFile = false;
         foreach (var file in infoFiles)
         {
+
+            FileInUse(file);
+
+
             FileAttributes attributs = File.GetAttributes(file.FullName);
             fileName = Path.GetFileName(file.FullName);
-            isCopyFile = true;
+            isMoveFile = true;
 
             if (operation != null)
             {
-                // дубль по журналу и файл в источнике
+                // дубль по журналу
                 TaskLogEntity? taskLogs = _appDbContext.TaskLog.FirstOrDefault(x => x.StepId == TaskStep.StepId &&
                                                                                 x.FileName == fileName);
                 if (taskLogs != null)
                 {
-                    if (operation.FileInSource == FileInSource.OneDay && operation.FileInLog == true)
+                    if (operation.FileInLog)
                     {
-                        isCopyFile = false;
+                        isMoveFile = false;
                     }
-                    else if (operation.FileInSource == FileInSource.Always && operation.FileInLog == true)
+                    else
                     {
-                        // stop task
-                        _taskLogger.StepLog(TaskStep, "Сработал контроль: \"Дублирование по журналу\"", fileName);
-                        throw new Exception("Дублирование файла по журналу!");
-
-                    }
-                    else if (operation.FileInSource == FileInSource.OneDay && operation.FileInLog == false)
-                    {
-                        isCopyFile = false;
+                        isMoveFile = true;
                     }
                 }
 
@@ -147,71 +152,67 @@ public class Copy(TaskStepEntity step,
                 }
 
                 // атрибуты
-                if (isCopyFile)
+                switch (operation.FileAttribute)
                 {
-                    switch (operation.FileAttribute)
-                    {
-                        case AttributeFile.H:
-                            isCopyFile = false;
-                            if ((attributs & FileAttributes.Hidden) == FileAttributes.Hidden)
-                            {
-                                isCopyFile = true;
-                            }
-                            break;
-                        case AttributeFile.A:
-                            isCopyFile = false;
-                            if ((attributs & FileAttributes.Compressed) == FileAttributes.Compressed)
-                            {
-                                isCopyFile = true;
-                            }
-                            break;
-                        case AttributeFile.R:
-                            isCopyFile = false;
-                            if ((attributs & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
-                            {
-                                isCopyFile = true;
-                            }
-                            break;
-                        case AttributeFile.X:
-                            isCopyFile = true;
-                            break;
-                        case AttributeFile.V:
-                            isCopyFile = false;
-                            if ((attributs & FileAttributes.Archive) == FileAttributes.Archive)
-                            {
-                                isCopyFile = true;
-                            }
-                            if ((attributs & FileAttributes.Hidden) == FileAttributes.Hidden)
-                            {
-                                isCopyFile = false;
-                            }
-                            break;
-                        default:
-                            break;
-                    }
+                    case AttributeFile.H:
+                        isMoveFile = false;
+                        if ((attributs & FileAttributes.Hidden) == FileAttributes.Hidden)
+                        {
+                            isMoveFile = true;
+                        }
+                        break;
+                    case AttributeFile.A:
+                        isMoveFile = false;
+                        if ((attributs & FileAttributes.Compressed) == FileAttributes.Compressed)
+                        {
+                            isMoveFile = true;
+                        }
+                        break;
+                    case AttributeFile.R:
+                        isMoveFile = false;
+                        if ((attributs & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                        {
+                            isMoveFile = true;
+                        }
+                        break;
+                    case AttributeFile.X:
+                        isMoveFile = true;
+                        break;
+                    case AttributeFile.V:
+                        isMoveFile = false;
+                        if ((attributs & FileAttributes.Archive) == FileAttributes.Archive)
+                        {
+                            isMoveFile = true;
+                        }
+                        if ((attributs & FileAttributes.Hidden) == FileAttributes.Hidden)
+                        {
+                            isMoveFile = false;
+                        }
+                        break;
+                    default:
+                        break;
                 }
             }
 
-            if (isCopyFile)
+            if (isMoveFile)
             {
                 fileNameDestination = Path.Combine(TaskStep.Destination, fileName);
                 FileInfo destinationFileInfo = new(fileNameDestination);
                 if (destinationFileInfo.Exists && destinationFileInfo.IsReadOnly && isOverwriteFile)
                 {
                     destinationFileInfo.IsReadOnly = false;
-                    File.Copy(file.FullName, fileNameDestination, isOverwriteFile);
-                    _taskLogger.StepLog(TaskStep, "Файл успешно скопирован", fileName);
+                    File.Move(file.FullName, fileNameDestination, isOverwriteFile);
+                    _taskLogger.StepLog(TaskStep, "Файл успешно перемещён", fileName);
                     destinationFileInfo.IsReadOnly = true;
                     successFiles.Add(fileName);
                 }
-                else if ((destinationFileInfo.Exists && isOverwriteFile) || !destinationFileInfo.Exists)
+                else if (destinationFileInfo.Exists && isOverwriteFile || !destinationFileInfo.Exists)
                 {
-                    File.Copy(file.FullName, fileNameDestination, isOverwriteFile);
-                    _taskLogger.StepLog(TaskStep, "Файл успешно скопирован", fileName);
+                   File.Move(file.FullName, fileNameDestination, isOverwriteFile);
+                    _taskLogger.StepLog(TaskStep, "Файл успешно перемещён", fileName);
                     successFiles.Add(fileName);
                 }
             }
-
         }
 
         if (addresses.Count > 0 && successFiles.Count > 0)
@@ -219,7 +220,22 @@ public class Copy(TaskStepEntity step,
             _mailSender.Send(TaskStep, addresses, successFiles);
         }
 
-
         _nextStep?.Execute(bufferFiles);
+    }
+
+    public void FileInUse(FileInfo file)
+    {
+        try
+        {
+            //using FileStream stream = new FileStream(file.FullName, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+            var stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None);
+            //Console.WriteLine("not use!!!!!!!!!!!!!!!!!!!!!");
+            stream.Close();
+        }
+        catch (Exception)
+        {
+            _taskLogger.StepLog(TaskStep, $"Прерывание задачи: файл {file.Name} занят", "", ResultOperation.E);
+            throw new Exception("Операция Move: файл недоступен");
+        }
     }
 }

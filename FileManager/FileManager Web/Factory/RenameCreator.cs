@@ -1,20 +1,19 @@
 ﻿using FileManager.DAL;
 using FileManager.Domain.Entity;
-using FileManagerServer.Loggers;
-using FileManagerServer.MailSender;
-using FileManagerServer.Operations;
+using FileManager_Web.Loggers;
+using FileManager_Web.MailSender;
+using FileManager_Web.Operations;
 
+namespace FileManager_Web.Factory;
 
-namespace FileManagerServer.Factory;
-
-public class CopyCreator : CreatorFactoryMethod
+public class RenameCreator : CreatorFactoryMethod
 {
     internal override IStepOperation FactoryMethod(TaskStepEntity step,
                                                     TaskOperation? operation,
                                                     ITaskLogger taskLogger,
-                                                    AppDbContext dbContext,
+                                                    AppDbContext appDbContext,
                                                     IMailSender mailSender)
     {
-        return new Copy(step, operation, taskLogger, dbContext, mailSender);
+        return new Rename(step, operation, taskLogger, appDbContext, mailSender);
     }
 }

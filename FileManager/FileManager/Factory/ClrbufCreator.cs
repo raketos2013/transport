@@ -1,11 +1,11 @@
 ﻿using FileManager.DAL;
 using FileManager.Domain.Entity;
-using FileManager_Server.Loggers;
-using FileManager_Server.MailSender;
-using FileManager_Server.Operations;
+using FileManagerServer.Loggers;
+using FileManagerServer.MailSender;
+using FileManagerServer.Operations;
 
 
-namespace FileManager_Server.Factory;
+namespace FileManagerServer.Factory;
 
 public class ClrbufCreator : CreatorFactoryMethod
 {

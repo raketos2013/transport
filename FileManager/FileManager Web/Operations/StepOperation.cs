@@ -1,10 +1,9 @@
 ﻿using FileManager.DAL;
 using FileManager.Domain.Entity;
-using FileManagerServer.Loggers;
-using FileManagerServer.MailSender;
+using FileManager_Web.Loggers;
+using FileManager_Web.MailSender;
 
-
-namespace FileManagerServer.Operations;
+namespace FileManager_Web.Operations;
 
 public abstract class StepOperation(TaskStepEntity step,
                                     TaskOperation? operation,

@@ -1,11 +1,11 @@
 ﻿using FileManager.DAL;
 using FileManager.Domain.Entity;
 using FileManager.Domain.Enum;
-using FileManager_Server.Loggers;
-using FileManager_Server.MailSender;
+using FileManagerServer.Loggers;
+using FileManagerServer.MailSender;
 
 
-namespace FileManager_Server.Operations;
+namespace FileManagerServer.Operations;
 
 public class Move(TaskStepEntity step,
                     TaskOperation? operation,

@@ -1,4 +1,6 @@
-﻿namespace FileManagerServer.Loggers;
+﻿using FileManagerServer.Loggers;
+
+namespace FileManager_Web.Loggers;
 
 internal static class FileLoggerExtensions
 {

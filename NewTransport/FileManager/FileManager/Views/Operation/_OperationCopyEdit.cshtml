@@ -1,0 +1,70 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model OperationCopyEntity
+@{
+    SelectList addresseeGroups = new SelectList(ViewBag.AddresseeGroups, "Id", "Name");
+}
+<div class="modal-body">
+    <form method="post" asp-action="EditOperationCopy" asp-controller="Operation"
+          class="modal-body-content" id="operation-edit-form-copy">
+          <input asp-for="OperationId" hidden>
+          <input asp-for="StepId" hidden>
+        <div class="input-with-label">
+            <label asp-for="FileInSource"></label>
+            <div class="select-wrapper">
+                <select asp-for="FileInSource" asp-items="@Html.GetEnumSelectList<FileInSource>()"></select>
+            </div>
+        </div>
+        <div class="input-with-label">
+            <label asp-for="FileInDestination"></label>
+            <div class="select-wrapper">
+                <select asp-for="FileInDestination" asp-items="@Html.GetEnumSelectList<FileInDestination>()"></select>
+            </div>
+        </div>
+        <div class="input-with-label">
+            <label asp-for="FileInLog"></label>
+            <div class="select-wrapper">
+                <select asp-for="FileInLog" asp-items="@Html.GetEnumSelectList<DoubleInLog>()"></select>
+            </div>
+        </div>
+        <div class="input-with-label">
+            <label asp-for="Sort"></label>
+            <div class="select-wrapper">
+                <select asp-for="Sort" asp-items="@Html.GetEnumSelectList<SortFiles>()"></select>
+            </div>
+        </div>
+        <div class="input-with-label">
+            <label asp-for="FilesForProcessing"></label>
+            <input asp-for="FilesForProcessing">
+        </div>
+        <div class="input-with-label">
+            <label asp-for="FileAttribute"></label>
+            <div class="select-wrapper">
+                <select asp-for="FileAttribute" asp-items="@Html.GetEnumSelectList<AttributeFile>()"></select>
+            </div>
+        </div>
+        <div class="input-checkbox">
+            <label class="toggle-checkbox">
+                <input type="checkbox" asp-for="InformSuccess" checked="@Model.InformSuccess">
+                <span class="toggle-checkbox-switch"></span>
+            </label>
+            <p>Информировать об успехе</p>
+        </div>
+        <div class="input-with-label">
+            <label asp-for="AddresseeGroupId"></label>
+            <div class="select-wrapper">
+                <select asp-for="AddresseeGroupId" asp-items=@addresseeGroups></select>
+            </div>
+        </div>
+        <div class="input-with-label">
+            <label asp-for="AdditionalText"></label>
+            <input asp-for="AdditionalText">
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="submit" form="operation-edit-form-copy" class="btn-full">
+        Сохранить
+    </button>
+</div>

@@ -1,0 +1,54 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model TaskEntity;
+@{
+    SelectList addresseeGroupsSelect = new SelectList(ViewBag.AddresseeGroups, "Id", "Name");
+    //SelectList taskGroupsSelect = new SelectList(ViewBag.TaskGroups, "Id", "Name");
+    List<AddresseeGroupEntity> addresseeGroups = ViewBag.AddresseeGroups;
+   // List<TaskGroupEntity> taskGroups = ViewBag.TaskGroups;
+}
+<form id="editTaskForm" method="post" asp-action="EditTask" asp-controller="Task" 
+        class="modal-body-content" asp-route-taskId="@Model.TaskId">
+    <div class="input-with-label">
+        <label asp-for="TaskId"></label>
+        <input asp-for="TaskId" readonly />
+    </div>
+    <div class="input-with-label">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" />
+    </div>
+    <div class="input-with-label">
+        <label asp-for="TimeBegin"></label>
+        <input asp-for="TimeBegin" type="time" />
+    </div>
+    <div class="input-with-label">
+        <label asp-for="TimeEnd"></label>
+        <input asp-for="TimeEnd" type="time" />
+    </div>
+    <div class="input-with-label">
+        <label asp-for="DayActive"></label>
+        <div class="select-wrapper">
+            <select asp-for="DayActive" asp-items="Html.GetEnumSelectList<DayActive>()"></select>
+        </div>
+    </div>
+    <div class="input-with-label">
+        <label asp-for="AddresseeGroupId" class="control-label"></label>
+        <div class="select-wrapper">
+            <select asp-for="AddresseeGroupId" class="form-select mb-3" asp-items=@addresseeGroupsSelect></select>
+        </div>
+    </div>
+    @* <div class="input-with-label">
+        <label asp-for="TaskGroupId" class="control-label"></label>
+        <div class="select-wrapper">
+            <select asp-for="TaskGroupId" class="form-select mb-3" asp-items=@taskGroupsSelect></select>
+        </div>
+    </div> *@
+    <div class="input-checkbox">
+        <label asp-for="IsActive" class="toggle-checkbox">
+            <input type="checkbox" asp-for="@Model.IsActive" checked="@Model.IsActive">
+            <span class="toggle-checkbox-switch"></span>
+        </label>
+        <p>Активно</p>
+    </div>
+</form>

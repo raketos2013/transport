@@ -803,7 +803,3 @@ function OkCopyStep() {
 //    });
 //}
 
-
-function ExistFiles() {
-
-}

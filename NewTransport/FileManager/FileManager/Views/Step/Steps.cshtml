@@ -85,9 +85,9 @@
             <div class="btn-full" onclick="CopyStep()">
                 Копировать шаг
             </div>
-            <div class="btn-full" onclick="ExistFiles()">
+            <button class="btn-full" onclick="ExistFiles()">
                 Наличие файлов
-            </div>
+            </button>
         </div>
         <div class="toolbar-right">
             <div class="btn-full" onclick="TaskLog()">
@@ -371,6 +371,38 @@
 
     }
 
+
+     function ExistFiles() {
+        var cookieTaskId = getCookie("selectedTask");
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("ExistFiles", "Step")',
+            data: { "taskId": cookieTaskId },
+            dataType: 'html',
+            success: function (result) {
+                let newStr = result.slice(1, -1);
+                let arr = newStr.split(",");
+                const table = document.getElementById('tableSteps');
+                const tableHeaders = document.getElementById('tableSteps-header');
+
+                const headerRow = tableHeaders.querySelector('thead tr');
+                if (headerRow) {
+                    const th = document.createElement('th');
+                    th.textContent = 'Файлов';
+                    headerRow.appendChild(th);
+                }
+
+                const rows = table.querySelectorAll('tbody tr');
+                for (let i = 0; i < rows.length; i++) {
+                    const td = document.createElement('td');
+                    td.textContent = arr[i];
+                    rows[i].appendChild(td);
+                }
+            }
+        });
+
+
+    }
 
 
 </script>

@@ -110,9 +110,14 @@ public class StepController(IStepService stepService)
         return RedirectToAction("Steps");
     }
 
-    public IActionResult ExistFiles()
+    public IActionResult ExistFiles(string taskId)
     {
-
-        return RedirectToAction("Steps");
+        List<int> countFiles = [];
+        var steps = stepService.GetAllStepsByTaskId(taskId);
+        foreach (var step in steps)
+        {
+            countFiles.Add(stepService.CountFiles(step.StepId));
+        }
+        return Ok(countFiles);
     }
 }

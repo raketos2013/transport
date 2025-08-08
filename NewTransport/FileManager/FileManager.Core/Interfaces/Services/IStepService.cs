@@ -14,4 +14,5 @@ public interface IStepService
     bool ActivatedStep(int stepId);
     bool DeleteStep(int stepId);
     bool CopyStep(int stepId, int newNumber);
+    int CountFiles(int stepId);
 }

@@ -226,13 +226,13 @@ public class StepService(IStepRepository stepRepository,
             IsActive = step.IsActive,
             IsBreak = step.IsBreak
         };
-/*        
-        var steps = GetAllStepsByTaskId(step.TaskId);
-        foreach (var item in steps.Where(x => x.StepNumber >= newNumber))
-        {
-            item.StepNumber++;
-            EditStep(item);
-        }*/
+        /*        
+                var steps = GetAllStepsByTaskId(step.TaskId);
+                foreach (var item in steps.Where(x => x.StepNumber >= newNumber))
+                {
+                    item.StepNumber++;
+                    EditStep(item);
+                }*/
         CreateStep(newStep);
         if (step.OperationId != 0)
         {
@@ -372,5 +372,12 @@ public class StepService(IStepRepository stepRepository,
         return true;
     }
 
-    
+
+    public int CountFiles(int stepId)
+    {
+        var step = GetStepByStepId(stepId);
+        string[] files = Directory.GetFiles(step.Source, step.FileMask);
+        return files.Length;
+    }
+
 }

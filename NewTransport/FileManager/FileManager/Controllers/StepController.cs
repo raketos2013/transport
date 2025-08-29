@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace FileManager.Controllers;
 
 [Authorize(Roles = "o.br.ДИТ")]
-public class StepController(IStepService stepService)
+public class StepController(IStepService stepService,
+                            ILockService lockService,
+                            IHttpContextAccessor httpContextAccessor)
             : Controller
 {
     public IActionResult Steps()
@@ -24,6 +26,13 @@ public class StepController(IStepService stepService)
     [HttpGet]
     public IActionResult CreateStep(string taskId)
     {
+        var LockedTask = lockService.IsLocked(taskId);
+        if (LockedTask != null)
+        {
+            ViewBag.UserId = LockedTask.UserId;
+            return PartialView("../Task/_LockedTask");
+        }
+        lockService.Lock(taskId, httpContextAccessor.HttpContext.User.Identity.Name);
         ViewBag.MaxNumber = stepService.GetAllStepsByTaskId(taskId).Count + 1;
         TaskStepEntity step = new()
         {
@@ -57,6 +66,12 @@ public class StepController(IStepService stepService)
     [HttpPost]
     public IActionResult ReplaceStep(string taskId, string numberStep, string operation)
     {
+        var LockedTask = lockService.IsLocked(taskId);
+        if (LockedTask != null)
+        {
+            ViewBag.UserId = LockedTask.UserId;
+            return PartialView("../Task/_LockedTask");
+        }
         stepService.ReplaceSteps(taskId, numberStep, operation);
         return RedirectToAction("Steps");
     }
@@ -64,6 +79,12 @@ public class StepController(IStepService stepService)
     [HttpPost]
     public IActionResult ActivatedStep(string taskId, int stepNumber)
     {
+        var LockedTask = lockService.IsLocked(taskId);
+        if (LockedTask != null)
+        {
+            ViewBag.UserId = LockedTask.UserId;
+            return PartialView("../Task/_LockedTask");
+        }
         var step = stepService.GetStepByTaskId(taskId, stepNumber);
         stepService.ActivatedStep(step.StepId);
         return RedirectToAction("Steps");
@@ -78,6 +99,13 @@ public class StepController(IStepService stepService)
     [HttpGet]
     public IActionResult EditStep(string taskId, string stepNumber)
     {
+        var LockedTask = lockService.IsLocked(taskId);
+        if (LockedTask != null)
+        {
+            ViewBag.UserId = LockedTask.UserId;
+            return PartialView("../Task/_LockedTask");
+        }
+        lockService.Lock(taskId, httpContextAccessor.HttpContext.User.Identity.Name);
         ViewBag.MaxNumber = stepService.GetAllStepsByTaskId(taskId).Count + 1;
         TaskStepEntity step = stepService.GetStepByTaskId(taskId, int.Parse(stepNumber));
         return PartialView("_EditStep", step);
@@ -98,6 +126,13 @@ public class StepController(IStepService stepService)
     [HttpPost]
     public IActionResult DeleteStep(int stepId)
     {
+        var step = stepService.GetStepByStepId(stepId);
+        var LockedTask = lockService.IsLocked(step.TaskId);
+        if (LockedTask != null)
+        {
+            ViewBag.UserId = LockedTask.UserId;
+            return PartialView("../Task/_LockedTask");
+        }
         stepService.DeleteStep(stepId);
         return RedirectToAction("Steps");
     }
@@ -105,6 +140,12 @@ public class StepController(IStepService stepService)
     [HttpPost]
     public IActionResult CopyStep(string taskId, int stepNumber, int newNumber)
     {
+        var LockedTask = lockService.IsLocked(taskId);
+        if (LockedTask != null)
+        {
+            ViewBag.UserId = LockedTask.UserId;
+            return PartialView("../Task/_LockedTask");
+        }
         var step = stepService.GetStepByTaskId(taskId, stepNumber);
         stepService.CopyStep(step.StepId, newNumber);
         return RedirectToAction("Steps");

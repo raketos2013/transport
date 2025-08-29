@@ -76,8 +76,6 @@ public class TaskService(ITaskRepository taskRepository,
 
     public bool EditTask(TaskEntity task)
     {
-        //var oldTask = taskRepository.GetTaskById(task.TaskId);
-        //userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, $"Изменение задачи {task.TaskId}, было", JsonSerializer.Serialize(oldTask, _options));
         bool edited = taskRepository.EditTask(task);
         userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, $"Изменение задачи {task.TaskId}", JsonSerializer.Serialize(task, _options));
         return edited;

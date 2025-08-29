@@ -30,6 +30,7 @@ public class AppDbContext : DbContext
     public DbSet<OperationExistEntity> OperationExist { get; set; }
     public DbSet<OperationRenameEntity> OperationRename { get; set; }
     public DbSet<OperationClrbufEntity> OperationClrbuf { get; set; }
+    public DbSet<LockInfoEntity> LockInfo { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

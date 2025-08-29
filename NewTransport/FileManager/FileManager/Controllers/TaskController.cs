@@ -14,7 +14,9 @@ namespace FileManager.Controllers;
 public class TaskController(ITaskService taskService,
                             IAddresseeService addresseeService,
                             IStepService stepService,
-                            ITaskLogService taskLogService)
+                            ITaskLogService taskLogService,
+                            ILockService lockService,
+                            IHttpContextAccessor httpContextAccessor)
             : Controller
 {
     public IActionResult Tasks()
@@ -464,11 +466,25 @@ public class TaskController(ITaskService taskService,
         return RedirectToAction("Tasks");
     }
 
+    [HttpPost]
+    public IActionResult UnlockTask(string taskId)
+    {
+        lockService.Unlock(taskId);
+        return NoContent();
+    }
+
     public IActionResult EditTask(string taskId)
     {
+        var LockedTask = lockService.IsLocked(taskId);
+        if (LockedTask != null)
+        {
+            ViewBag.UserId = LockedTask.UserId;
+            return PartialView("_LockedTask");
+        }
         var task = taskService.GetTaskById(taskId);
         ViewBag.AddresseeGroups = addresseeService.GetAllAddresseeGroups();
         ViewBag.TaskGroups = taskService.GetAllGroups();
+        lockService.Lock(taskId, httpContextAccessor.HttpContext.User.Identity.Name);
         return PartialView("_EditTask", task);
     }
 
@@ -531,5 +547,19 @@ public class TaskController(ITaskService taskService,
         }
         taskService.EditTask(task);
         return RedirectToAction("Tasks");
+    }
+
+    [HttpGet]
+    public ActionResult<bool> IsLockedTask(string taskId)
+    {
+        var lockedTask = lockService.IsLocked(taskId);
+        if (lockedTask != null)
+        {
+            return Ok(true);
+        }
+        else
+        {
+            return Ok(false);
+        }
     }
 }

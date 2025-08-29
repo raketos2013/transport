@@ -15,6 +15,7 @@ public static class RegistrationExtensions
         services.AddScoped<IOperationRepository, OperationRepository>();
         services.AddScoped<ITaskLogRepository, TaskLogRepository>();
         services.AddScoped<IUserLogRepository, UserLogRepository>();
+        services.AddScoped<ILockRepository, LockRepository>();
         return services;
     }
 
@@ -29,6 +30,8 @@ public static class RegistrationExtensions
 
         services.AddScoped<ITaskLogger, TaskLogger>();
         services.AddScoped<IMailSender, MailSender>();
+
+        services.AddScoped<ILockService, Lockservice>();
 
         //services.AddScoped<IUserLogging, UserLogging>();
         return services;

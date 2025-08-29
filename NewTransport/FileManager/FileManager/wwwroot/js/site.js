@@ -557,35 +557,53 @@ function ShowEditStepModal() {
 
 function replaceStep(operation) {
     var cookieTaskId = getCookie("selectedTask");
-    var cookieStepNumber = getCookie("selectedStepNumber");
     $.ajax({
-        method: 'POST',
-        url: '/Step/ReplaceStep',
+        method: 'GET',
+        url: '/Task/IsLockedTask',
         data: {
-            "taskId": cookieTaskId,
-            "numberStep": cookieStepNumber,
-            "operation": operation
+            "taskId": cookieTaskId
         },
         dataType: 'html',
         success: function (result) {
-            switch (operation) {
-                case 'up':
-                    newNumber = parseInt(cookieStepNumber) + 1;
-                    break;
-                case 'down':
-                    newNumber = parseInt(cookieStepNumber) + 1;
-                    break;
-                case 'maxup':
-                    newNumber = parseInt(cookieStepNumber) + 1;
-                    break;
-                case 'maxup':
-                    newNumber = parseInt(cookieStepNumber) + 1;
-                    break;
-                default:
+            if (result == "false") {
+                var cookieStepNumber = getCookie("selectedStepNumber");
+                $.ajax({
+                    method: 'POST',
+                    url: '/Step/ReplaceStep',
+                    data: {
+                        "taskId": cookieTaskId,
+                        "numberStep": cookieStepNumber,
+                        "operation": operation
+                    },
+                    dataType: 'html',
+                    success: function (result) {
+                        //switch (operation) {
+                        //    case 'up':
+                        //        newNumber = parseInt(cookieStepNumber) + 1;
+                        //        break;
+                        //    case 'down':
+                        //        newNumber = parseInt(cookieStepNumber) + 1;
+                        //        break;
+                        //    case 'maxup':
+                        //        newNumber = parseInt(cookieStepNumber) + 1;
+                        //        break;
+                        //    case 'maxup':
+                        //        newNumber = parseInt(cookieStepNumber) + 1;
+                        //        break;
+                        //    default:
+                        //}
+                        ShowStepList();
+                    }
+                });
+            } else if (result == "true") {
+                console.log(result)
             }
-            ShowStepList();
+           
         }
     });
+
+    //var cookieTaskId = getCookie("selectedTask");
+    
 }
 
 function SelectRow(tableId) {
@@ -776,30 +794,35 @@ function OkCopyStep() {
     });
 
 }
-//function SelectStep() {
-//    tableSteps = document.getElementById("tableTasks");
-//    tr = tableSteps.getElementsByTagName("tr");
-//    for (var i = 0; i < tr.length; i++) {
-//        MakeRowHoverTasks(tr[i], i);
-//    }
-//}
 
-//function MakeRowHoverSteps(row, numRow) {
-//    row.addEventListener("click", function (numRow) {
-//        let td = this.querySelectorAll('td');
-//        for (var i = 0; i < tr.length; i++) {
-//            if (tr[i] == this) {
-//                tr[i].classList.add('selected-tr');
-//                selectedStepNumber = tr[i].querySelectorAll('td')[1].innerText;
-//                document.cookie = "selectedStepNumber=" + selectedStepNumber + "; path=/";
-//            }
-//        }
-//        for (var i = 0; i < tr.length; i++) {
-//            if (tr[i] != this) {
-//                td = tr[i].querySelectorAll('td');
-//                tr[i].classList.remove('selected-tr');
-//            }
-//        }
-//    });
-//}
+function UnlockTask(){
+    var cookieTaskId = getCookie("selectedTask");
+    CloseModal('modal-edit-task');
+    $.ajax({
+        method: 'POST',
+        url: '/Task/UnlockTask',
+        data: {
+            "taskId": cookieTaskId
+        },
+        dataType: 'html',
+        success: function (result) {
+            location.reload();
+        }
+    });
+}
 
+function IsLockedTask() {
+    var cookieTaskId = getCookie("selectedTask");
+    //let isLocked = false;
+    $.ajax({
+        method: 'GET',
+        url: '/Task/IsLockedTask',
+        data: {
+            "taskId": cookieTaskId
+        },
+        dataType: 'html',
+        success: function (result) {
+            return result;
+        }
+    });
+}

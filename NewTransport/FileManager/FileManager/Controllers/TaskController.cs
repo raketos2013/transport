@@ -475,16 +475,10 @@ public class TaskController(ITaskService taskService,
 
     public IActionResult EditTask(string taskId)
     {
-        var LockedTask = lockService.IsLocked(taskId);
-        if (LockedTask != null)
-        {
-            ViewBag.UserId = LockedTask.UserId;
-            return PartialView("_LockedTask");
-        }
+        lockService.Lock(taskId, httpContextAccessor.HttpContext.User.Identity.Name);
         var task = taskService.GetTaskById(taskId);
         ViewBag.AddresseeGroups = addresseeService.GetAllAddresseeGroups();
         ViewBag.TaskGroups = taskService.GetAllGroups();
-        lockService.Lock(taskId, httpContextAccessor.HttpContext.User.Identity.Name);
         return PartialView("_EditTask", task);
     }
 
@@ -492,6 +486,7 @@ public class TaskController(ITaskService taskService,
     public IActionResult EditTask(TaskEntity task, string taskId)
     {
         taskService.EditTask(task);
+        lockService.Unlock(taskId);
         return RedirectToAction("Tasks", "Task", new { taskId });
     }
 
@@ -524,6 +519,7 @@ public class TaskController(ITaskService taskService,
     public IActionResult CopyTask(CopyTaskViewModel task)
     {
         taskService.CopyTask(task.TaskId, task.NewTaskId, task.IsCopySteps.ToString(), task.CopySteps);
+        lockService.Unlock(task.TaskId);
         return RedirectToAction("Tasks");
     }
 
@@ -550,16 +546,20 @@ public class TaskController(ITaskService taskService,
     }
 
     [HttpGet]
-    public ActionResult<bool> IsLockedTask(string taskId)
+    public ActionResult<LockedTaskViewModel> IsLockedTask(string taskId)
     {
         var lockedTask = lockService.IsLocked(taskId);
+        LockedTaskViewModel result = new();
         if (lockedTask != null)
         {
-            return Ok(true);
+            result.IsLocked = true;
+            result.UserId = lockedTask.UserId;
+            return Ok(result);
         }
         else
         {
-            return Ok(false);
+            result.IsLocked = false;
+            return Ok(result);
         }
     }
 }

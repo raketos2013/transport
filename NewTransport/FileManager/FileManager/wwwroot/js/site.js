@@ -395,13 +395,30 @@ function TaskDetails(taskId) {
 function EditTask(taskId) {
     $.ajax({
         method: 'GET',
-        url: '/Task/EditTask',
-        data: { "taskId": taskId },
+        url: '/Task/IsLockedTask',
+        data: {
+            "taskId": taskId
+        },
         dataType: 'html',
         success: function (result) {
-            $('#edit-task-content').empty();
-            $('#edit-task-content').append(result);
-            ShowModal('modal-edit-task');
+            let jsonObj = JSON.parse(result)
+            if (jsonObj.isLocked == false) {
+                $.ajax({
+                    method: 'GET',
+                    url: '/Task/EditTask',
+                    data: { "taskId": taskId },
+                    dataType: 'html',
+                    success: function (result) {
+                        $('#edit-task-content').empty();
+                        $('#edit-task-content').append(result);
+                        ShowModal('modal-edit-task');
+                    }
+                });
+            } else if (jsonObj.isLocked == true) {
+                ShowModal('modal-locked-task')
+                document.getElementById('userId-locked-task').innerText = jsonObj.userId
+            }
+
         }
     });
 }
@@ -464,18 +481,36 @@ function CreateAddressee() {
 }
 
 function CreateStep() {
-    var cookieTask = getCookie("selectedTask");
+    var cookieTaskId = getCookie("selectedTask");
     $.ajax({
         method: 'GET',
-        url: '/Step/CreateStep',
-        data: { "taskId": cookieTask },
+        url: '/Task/IsLockedTask',
+        data: {
+            "taskId": cookieTaskId
+        },
         dataType: 'html',
         success: function (result) {
-            $('#create-step-content').empty();
-            $('#create-step-content').append(result);
-            ShowModal('modal-add-step');
+            let jsonObj = JSON.parse(result)
+            if (jsonObj.isLocked == false) {
+                $.ajax({
+                    method: 'GET',
+                    url: '/Step/CreateStep',
+                    data: { "taskId": cookieTaskId },
+                    dataType: 'html',
+                    success: function (result) {
+                        $('#create-step-content').empty();
+                        $('#create-step-content').append(result);
+                        ShowModal('modal-add-step');
+                    }
+                });
+            } else if (jsonObj.isLocked == true) {
+                ShowModal('modal-locked-task')
+                document.getElementById('userId-locked-task').innerText = jsonObj.userId
+            }
+
         }
     });
+    
 
 }
 
@@ -533,20 +568,39 @@ function StepDetails(taskId, stepNumber) {
 }
 
 function EditStep(taskId, stepNumber) {
+    var cookieTaskId = getCookie("selectedTask");
     $.ajax({
         method: 'GET',
-        url: '/Step/EditStep',
+        url: '/Task/IsLockedTask',
         data: {
-            "taskId": taskId,
-            "stepNumber": stepNumber
+            "taskId": cookieTaskId
         },
         dataType: 'html',
         success: function (result) {
-            $('#edit-step-content').empty();
-            $('#edit-step-content').append(result);
-            ShowModal('modal-edit-step');
+            let jsonObj = JSON.parse(result)
+            if (jsonObj.isLocked == false) {
+                $.ajax({
+                    method: 'GET',
+                    url: '/Step/EditStep',
+                    data: {
+                        "taskId": taskId,
+                        "stepNumber": stepNumber
+                    },
+                    dataType: 'html',
+                    success: function (result) {
+                        $('#edit-step-content').empty();
+                        $('#edit-step-content').append(result);
+                        ShowModal('modal-edit-step');
+                    }
+                });
+            } else if (jsonObj.isLocked == true) {
+                ShowModal('modal-locked-task')
+                document.getElementById('userId-locked-task').innerText = jsonObj.userId
+            }
+
         }
     });
+    
 }
 
 function ShowEditStepModal() {
@@ -565,7 +619,8 @@ function replaceStep(operation) {
         },
         dataType: 'html',
         success: function (result) {
-            if (result == "false") {
+            let jsonObj = JSON.parse(result)
+            if (jsonObj.isLocked == false) {
                 var cookieStepNumber = getCookie("selectedStepNumber");
                 $.ajax({
                     method: 'POST',
@@ -577,33 +632,16 @@ function replaceStep(operation) {
                     },
                     dataType: 'html',
                     success: function (result) {
-                        //switch (operation) {
-                        //    case 'up':
-                        //        newNumber = parseInt(cookieStepNumber) + 1;
-                        //        break;
-                        //    case 'down':
-                        //        newNumber = parseInt(cookieStepNumber) + 1;
-                        //        break;
-                        //    case 'maxup':
-                        //        newNumber = parseInt(cookieStepNumber) + 1;
-                        //        break;
-                        //    case 'maxup':
-                        //        newNumber = parseInt(cookieStepNumber) + 1;
-                        //        break;
-                        //    default:
-                        //}
                         ShowStepList();
                     }
                 });
-            } else if (result == "true") {
-                console.log(result)
+            } else if (jsonObj.isLocked == true) {
+                ShowModal('modal-locked-task')
+                document.getElementById('userId-locked-task').innerText = jsonObj.userId
             }
            
         }
     });
-
-    //var cookieTaskId = getCookie("selectedTask");
-    
 }
 
 function SelectRow(tableId) {
@@ -666,38 +704,72 @@ function StepOperationInfo(stepNumber, operationName) {
 
 function StepOperationEdit() {
     var cookieTaskId = getCookie("selectedTask");
-    var cookieStepNumber = getCookie("selectedStepNumber");
     $.ajax({
-        type: 'GET',
-        url: "/Operation/EditOperation",
+        method: 'GET',
+        url: '/Task/IsLockedTask',
         data: {
-            "taskId": cookieTaskId,
-            "stepNumber": cookieStepNumber
+            "taskId": cookieTaskId
         },
         dataType: 'html',
         success: function (result) {
-            $('#operation-edit-content').empty();
-            $('#operation-edit-content').append(result);
-            ShowModal('modal-edit-additional-settings');
+            let jsonObj = JSON.parse(result)
+            if (jsonObj.isLocked == false) {
+                var cookieStepNumber = getCookie("selectedStepNumber");
+                $.ajax({
+                    type: 'GET',
+                    url: "/Operation/EditOperation",
+                    data: {
+                        "taskId": cookieTaskId,
+                        "stepNumber": cookieStepNumber
+                    },
+                    dataType: 'html',
+                    success: function (result) {
+                        $('#operation-edit-content').empty();
+                        $('#operation-edit-content').append(result);
+                        ShowModal('modal-edit-additional-settings');
+                    }
+                });
+            } else if (jsonObj.isLocked == true) {
+                ShowModal('modal-locked-task')
+                document.getElementById('userId-locked-task').innerText = jsonObj.userId
+            }
+
         }
     });
-
 }
 
 function CopyTask() {
     var cookieTaskId = getCookie("selectedTask");
-    document.getElementById('copied-taskId').innerText = cookieTaskId;
     $.ajax({
-        method: 'POST',
-        url: '/Task/StepsForCopy',
-        data: { "taskId": cookieTaskId },
+        method: 'GET',
+        url: '/Task/IsLockedTask',
+        data: {
+            "taskId": cookieTaskId
+        },
         dataType: 'html',
         success: function (result) {
-            $('#copy-steps-content').empty();
-            $('#copy-steps-content').append(result);
-            ShowModal('modal-copy-task');
+            let jsonObj = JSON.parse(result)
+            if (jsonObj.isLocked == false) {
+                document.getElementById('copied-taskId').innerText = cookieTaskId;
+                $.ajax({
+                    method: 'POST',
+                    url: '/Task/StepsForCopy',
+                    data: { "taskId": cookieTaskId },
+                    dataType: 'html',
+                    success: function (result) {
+                        $('#copy-steps-content').empty();
+                        $('#copy-steps-content').append(result);
+                        ShowModal('modal-copy-task');
+                    }
+                });
+            } else if (jsonObj.isLocked == true) {
+                ShowModal('modal-locked-task')
+                document.getElementById('userId-locked-task').innerText = jsonObj.userId
+            }
+           
         }
     });
+    
 
 }
 
@@ -743,9 +815,27 @@ function CancelDeleteTask() {
 }
 
 function ModalDeleteStep(stepId, stepNumber) {
-    document.getElementById('idStepDelInfo').innerText = stepNumber;
-    document.getElementById('idStepDel').innerText = stepId;
-    ShowModal('modal-delete-step');
+    var cookieTaskId = getCookie("selectedTask");
+    $.ajax({
+        method: 'GET',
+        url: '/Task/IsLockedTask',
+        data: {
+            "taskId": cookieTaskId
+        },
+        dataType: 'html',
+        success: function (result) {
+            let jsonObj = JSON.parse(result)
+            if (jsonObj.isLocked == false) {
+                document.getElementById('idStepDelInfo').innerText = stepNumber;
+                document.getElementById('idStepDel').innerText = stepId;
+                ShowModal('modal-delete-step');
+            } else if (jsonObj.isLocked == true) {
+                ShowModal('modal-locked-task')
+                document.getElementById('userId-locked-task').innerText = jsonObj.userId
+            }
+
+        }
+    });
 }
 function OkDeleteStep() {
     var stepId = document.getElementById('idStepDel').innerText;
@@ -767,9 +857,44 @@ function CancelDeleteStep() {
 }
 
 function CopyStep() {
-    var cookieStepNumber = getCookie("selectedStepNumber");
-    document.getElementById('idStepCopyInfo').innerText = cookieStepNumber;
-    ShowModal('modal-copy-step');
+    var cookieTaskId = getCookie("selectedTask");
+    $.ajax({
+        method: 'GET',
+        url: '/Task/IsLockedTask',
+        data: {
+            "taskId": cookieTaskId
+        },
+        dataType: 'html',
+        success: function (result) {
+            let jsonObj = JSON.parse(result)
+            if (jsonObj.isLocked == false) {
+                $.ajax({
+                    method: 'GET',
+                    url: '/Task/IsLockedTask',
+                    data: {
+                        "taskId": cookieTaskId
+                    },
+                    dataType: 'html',
+                    success: function (result) {
+                        let jsonObj = JSON.parse(result)
+                        if (jsonObj.isLocked == false) {
+                            var cookieStepNumber = getCookie("selectedStepNumber");
+                            document.getElementById('idStepCopyInfo').innerText = cookieStepNumber;
+                            ShowModal('modal-copy-step');
+                        } else if (jsonObj.isLocked == true) {
+                            ShowModal('modal-locked-task')
+                            document.getElementById('userId-locked-task').innerText = jsonObj.userId
+                        }
+
+                    }
+                });
+            } else if (jsonObj.isLocked == true) {
+                ShowModal('modal-locked-task')
+                document.getElementById('userId-locked-task').innerText = jsonObj.userId
+            }
+
+        }
+    });
 }
 function CancelCopyStep() {
     CloseModal('modal-copy-step');

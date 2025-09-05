@@ -1,6 +1,7 @@
 ﻿using FileManager.Core.Entities;
 using FileManager.Core.Enums;
 using FileManager.Core.Interfaces.Services;
+using System.Net.Http.Headers;
 
 namespace FileManager.Core.Operations;
 
@@ -102,7 +103,7 @@ public class Copy(TaskStepEntity step,
             }
         }
 
-            bool isOverwriteFile = false;
+        bool isOverwriteFile = false;
         foreach (var file in infoFiles)
         {
             FileAttributes attributs = File.GetAttributes(file.FullName);
@@ -199,6 +200,18 @@ public class Copy(TaskStepEntity step,
                 else if (operation.FileInDestination == FileInDestination.ERR)
                 {
                     isOverwriteFile = false;
+                }
+
+                if (TaskStep.Destination.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+                {
+                    HttpClient client = new();
+                    byte[] fileBytes = File.ReadAllBytes(file.FullName);
+                    HttpContent fileContent = new ByteArrayContent(fileBytes);
+                    fileContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
+                    {
+                        Name = "\"file\"", 
+                        FileName = $"\"{fileName}\""
+                    };
                 }
 
                 fileNameDestination = Path.Combine(TaskStep.Destination, destFileName);

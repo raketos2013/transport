@@ -766,11 +766,8 @@ function CopyTask() {
                 ShowModal('modal-locked-task')
                 document.getElementById('userId-locked-task').innerText = jsonObj.userId
             }
-           
         }
     });
-    
-
 }
 
 function CopyTaskSteps() {
@@ -870,24 +867,18 @@ function CopyStep() {
             if (jsonObj.isLocked == false) {
                 $.ajax({
                     method: 'GET',
-                    url: '/Task/IsLockedTask',
+                    url: '/Task/LockTask',
                     data: {
                         "taskId": cookieTaskId
                     },
                     dataType: 'html',
                     success: function (result) {
-                        let jsonObj = JSON.parse(result)
-                        if (jsonObj.isLocked == false) {
-                            var cookieStepNumber = getCookie("selectedStepNumber");
-                            document.getElementById('idStepCopyInfo').innerText = cookieStepNumber;
-                            ShowModal('modal-copy-step');
-                        } else if (jsonObj.isLocked == true) {
-                            ShowModal('modal-locked-task')
-                            document.getElementById('userId-locked-task').innerText = jsonObj.userId
-                        }
-
+                        
                     }
                 });
+                var cookieStepNumber = getCookie("selectedStepNumber");
+                document.getElementById('idStepCopyInfo').innerText = cookieStepNumber;
+                ShowModal('modal-copy-step');
             } else if (jsonObj.isLocked == true) {
                 ShowModal('modal-locked-task')
                 document.getElementById('userId-locked-task').innerText = jsonObj.userId
@@ -898,6 +889,7 @@ function CopyStep() {
 }
 function CancelCopyStep() {
     CloseModal('modal-copy-step');
+    UnlockTask()
 }
 function OkCopyStep() {
     var cookieTaskId = getCookie("selectedTask");
@@ -922,7 +914,6 @@ function OkCopyStep() {
 
 function UnlockTask(){
     var cookieTaskId = getCookie("selectedTask");
-    CloseModal('modal-edit-task');
     $.ajax({
         method: 'POST',
         url: '/Task/UnlockTask',
@@ -931,7 +922,7 @@ function UnlockTask(){
         },
         dataType: 'html',
         success: function (result) {
-            location.reload();
+            //location.reload();
         }
     });
 }

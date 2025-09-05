@@ -47,6 +47,7 @@ public class StepController(IStepService stepService,
                     modelStep.Destination = "";
                 }
                 stepService.CreateStep(modelStep);
+                lockService.Unlock(modelStep.TaskId);
                 return RedirectToAction("Steps");
             }
             return PartialView("_CreateStep", modelStep);
@@ -112,7 +113,7 @@ public class StepController(IStepService stepService,
     {
         var step = stepService.GetStepByTaskId(taskId, stepNumber);
         stepService.CopyStep(step.StepId, newNumber);
-        
+        lockService.Unlock(taskId);
         return RedirectToAction("Steps");
     }
 

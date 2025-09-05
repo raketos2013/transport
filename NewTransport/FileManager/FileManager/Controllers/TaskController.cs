@@ -472,6 +472,12 @@ public class TaskController(ITaskService taskService,
         lockService.Unlock(taskId);
         return NoContent();
     }
+    [HttpGet]
+    public IActionResult LockTask(string taskId)
+    {
+        lockService.Lock(taskId, httpContextAccessor.HttpContext.User.Identity.Name);
+        return NoContent();
+    }
 
     public IActionResult EditTask(string taskId)
     {
@@ -512,6 +518,7 @@ public class TaskController(ITaskService taskService,
         }
         task.CopySteps = copySteps;
         task.IsCopySteps = false;
+        lockService.Lock(taskId, httpContextAccessor.HttpContext.User.Identity.Name);
         return PartialView("_StepsForCopy", task);
     }
 
@@ -542,6 +549,7 @@ public class TaskController(ITaskService taskService,
             task.ExecutionLeft = task.ExecutionLimit - executing;
         }
         taskService.EditTask(task);
+        lockService.Unlock(taskId);
         return RedirectToAction("Tasks");
     }
 
@@ -562,4 +570,5 @@ public class TaskController(ITaskService taskService,
             return Ok(result);
         }
     }
+
 }

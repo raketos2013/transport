@@ -9,12 +9,15 @@ namespace FileManager.Controllers;
 [Authorize(Roles = "o.br.ДИТ")]
 public class OperationController(IOperationService operationService,
                                     IStepService stepService,
-                                    IAddresseeService addresseeService)
+                                    IAddresseeService addresseeService,
+                                    ILockService lockService,
+                                    IHttpContextAccessor httpContextAccessor)
             : Controller
 {
     [HttpGet]
     public IActionResult EditOperation(string taskId, string stepNumber)
     {
+        lockService.Lock(taskId, httpContextAccessor.HttpContext.User.Identity.Name);
         ViewBag.AddresseeGroups = addresseeService.GetAllAddresseeGroups();
         var step = stepService.GetStepByTaskId(taskId, int.Parse(stepNumber));
         if (step == null) 
@@ -134,6 +137,8 @@ public class OperationController(IOperationService operationService,
         else
         {
             operationService.UpdateCopy(operation);
+            var step = stepService.GetStepByStepId(operation.StepId);
+            lockService.Unlock(step.TaskId);
         }
         return RedirectToAction("Steps", "Step");
     }
@@ -147,6 +152,8 @@ public class OperationController(IOperationService operationService,
         else
         {
             operationService.UpdateMove(operation);
+            var step = stepService.GetStepByStepId(operation.StepId);
+            lockService.Unlock(step.TaskId);
         }
         return RedirectToAction("Steps", "Step");
     }
@@ -160,6 +167,8 @@ public class OperationController(IOperationService operationService,
         else
         {
             operationService.UpdateDelete(operation);
+            var step = stepService.GetStepByStepId(operation.StepId);
+            lockService.Unlock(step.TaskId);
         }
         return RedirectToAction("Steps", "Step");
     }
@@ -174,6 +183,8 @@ public class OperationController(IOperationService operationService,
         else
         {
             operationService.UpdateRead(operation);
+            var step = stepService.GetStepByStepId(operation.StepId);
+            lockService.Unlock(step.TaskId);
         }
         return RedirectToAction("Steps", "Step");
     }
@@ -187,6 +198,8 @@ public class OperationController(IOperationService operationService,
         else
         {
             operationService.UpdateExist(operation);
+            var step = stepService.GetStepByStepId(operation.StepId);
+            lockService.Unlock(step.TaskId);
         }
         return RedirectToAction("Steps", "Step");
     }
@@ -202,6 +215,8 @@ public class OperationController(IOperationService operationService,
         else
         {
             operationService.UpdateRename(operation);
+            var step = stepService.GetStepByStepId(operation.StepId);
+            lockService.Unlock(step.TaskId);
         }
         return RedirectToAction("Steps", "Step");
     }
@@ -215,6 +230,8 @@ public class OperationController(IOperationService operationService,
         else
         {
             operationService.UpdateClrbuf(operation);
+            var step = stepService.GetStepByStepId(operation.StepId);
+            lockService.Unlock(step.TaskId);
         }
         return RedirectToAction("Steps", "Step");
     }

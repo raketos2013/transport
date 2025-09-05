@@ -349,9 +349,38 @@
 
 
     function SetExecutionLimit(taskId){
-        console.log(taskId)
-        ShowModal('modal-change-limit');
-        document.getElementById('limit-taskId').value = taskId;
+        $.ajax({
+            method: 'GET',
+            url: '/Task/IsLockedTask',
+            data: {
+                "taskId": taskId
+            },
+            dataType: 'html',
+            success: function (result) {
+                let jsonObj = JSON.parse(result)
+                if (jsonObj.isLocked == false) {
+                    var cookieTaskId = getCookie("selectedTask");
+                    $.ajax({
+                        method: 'GET',
+                        url: '/Task/LockTask',
+                        data: {
+                            "taskId": cookieTaskId
+                        },
+                        dataType: 'html',
+                        success: function (result) {
+                            ShowModal('modal-change-limit');
+                            document.getElementById('limit-taskId').value = taskId;
+                        }
+                    });
+                    
+                } else if (jsonObj.isLocked == true) {
+                    ShowModal('modal-locked-task')
+                    document.getElementById('userId-locked-task').innerText = jsonObj.userId
+                }
+
+            }
+        });
+        
     }
 
 

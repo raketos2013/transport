@@ -60,6 +60,8 @@ builder.Services.AddQuartzHostedService(options =>
     options.WaitForJobsToComplete = true;
 });
 
+builder.Services.AddHttpClient();
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())

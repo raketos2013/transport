@@ -1,8 +1,10 @@
+using FileManager.Core.ViewModels;
 using FileManager.Extensions;
 using FileManager.Infrastructure.Data;
 using FileManager.Jobs;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Quartz;
+using System.Net.Http.Headers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,11 +24,14 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddRepositories();
 builder.Services.AddServices();
 
+builder.Services.Configure<AuthTokenConfiguration>(builder.Configuration.GetSection("AuthMMR"));
+
 builder.Services.AddAntiforgery(options => options.HeaderName = "XSRF-TOKEN");
 
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession();
 
+builder.Services.AddTransient<JobForTask>();
 builder.Services.AddQuartz(options =>
 {
     options.SchedulerId = "Scheduler.Core";
@@ -51,6 +56,7 @@ builder.Services.AddQuartz(options =>
         .StartAt(DateTimeOffset.Parse("00:00"))
         .EndAt(DateTimeOffset.Parse("23:59"))
     );
+    options.UseMicrosoftDependencyInjectionJobFactory();
 });
 
 builder.Services.AddQuartzHostedService(options =>
@@ -60,7 +66,14 @@ builder.Services.AddQuartzHostedService(options =>
     options.WaitForJobsToComplete = true;
 });
 
-builder.Services.AddHttpClient();
+builder.Services.AddHttpClient("MMR", httpClient =>
+{
+    //httpClient.BaseAddress = new Uri(urlSap);
+    httpClient.DefaultRequestHeaders.Accept.Clear();
+    httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+    //httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0");
+});
+
 
 var app = builder.Build();
 

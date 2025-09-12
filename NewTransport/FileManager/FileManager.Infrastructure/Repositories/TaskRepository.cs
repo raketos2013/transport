@@ -1,26 +1,28 @@
 ﻿using FileManager.Core.Entities;
 using FileManager.Core.Interfaces.Repositories;
 using FileManager.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace FileManager.Infrastructure.Repositories;
 
 public class TaskRepository(AppDbContext dbContext) : ITaskRepository
 {
-    public TaskEntity CreateTask(TaskEntity task)
+    public async Task<TaskEntity> CreateTask(TaskEntity task)
     {
         task.LastModified = DateTime.Now;
-        dbContext.Task.Add(task);
-        dbContext.SaveChanges();
-        CreateTaskStatuse(task.TaskId);
+        await dbContext.Task.AddAsync(task);
+        await dbContext.SaveChangesAsync();
+        await CreateTaskStatuse(task.TaskId);
         return task;
     }
 
-    public bool DeleteTask(string idTask)
+    public async Task<bool> DeleteTask(string idTask)
     {
         try
         {
-            dbContext.Task.Remove(GetTaskById(idTask));
-            dbContext.SaveChanges();
+            var task = await GetTaskById(idTask);
+            dbContext.Task.Remove(task);
+            await dbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception)
@@ -29,35 +31,35 @@ public class TaskRepository(AppDbContext dbContext) : ITaskRepository
         }
     }
 
-    public List<TaskGroupEntity> GetAllGroups()
+    public async Task<List<TaskGroupEntity>> GetAllGroups()
     {
-        return dbContext.TaskGroup.ToList();
+        return await dbContext.TaskGroup.ToListAsync();
     }
 
-    public List<TaskEntity> GetAllTasks()
+    public async Task<List<TaskEntity>> GetAllTasks()
     {
-        return dbContext.Task.ToList();
+        return await dbContext.Task.ToListAsync();
     }
 
-    public TaskEntity GetTaskById(string idTask)
+    public async Task<TaskEntity> GetTaskById(string idTask)
     {
-        return dbContext.Task.FirstOrDefault(x => x.TaskId == idTask);
+        return await dbContext.Task.FirstOrDefaultAsync(x => x.TaskId == idTask);
     }
 
-    public TaskGroupEntity GetTaskGroupByName(string groupName)
+    public async Task<TaskGroupEntity> GetTaskGroupByName(string groupName)
     {
-        return dbContext.TaskGroup.FirstOrDefault(x => x.Name == groupName);
+        return await dbContext.TaskGroup.FirstOrDefaultAsync(x => x.Name == groupName);
     }
 
-    public List<TaskEntity> GetTasksByGroup(int idGroup)
+    public async Task<List<TaskEntity>> GetTasksByGroup(int idGroup)
     {
-        return dbContext.Task.Where(x => x.TaskGroupId == idGroup).ToList();
+        return await dbContext.Task.Where(x => x.TaskGroupId == idGroup).ToListAsync();
     }
 
-    public bool EditTask(TaskEntity task)
+    public async Task<bool> EditTask(TaskEntity task)
     {
 
-        TaskEntity? oldTask = dbContext.Task.FirstOrDefault(x => x.TaskId == task.TaskId);
+        TaskEntity? oldTask = await dbContext.Task.FirstOrDefaultAsync(x => x.TaskId == task.TaskId);
         if (oldTask != null)
         {
             oldTask.Name = task.Name;
@@ -70,22 +72,22 @@ public class TaskRepository(AppDbContext dbContext) : ITaskRepository
             oldTask.TimeBegin = task.TimeBegin;
             oldTask.LastModified = DateTime.Now;
             dbContext.Task.Update(oldTask);
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
             return true;
         }
         return false;
     }
 
-    public bool UpdateLastModifiedTask(string idTask)
+    public async Task<bool> UpdateLastModifiedTask(string idTask)
     {
         try
         {
-            TaskEntity? task = dbContext.Task.FirstOrDefault(x => x.TaskId == idTask);
+            TaskEntity? task = await dbContext.Task.FirstOrDefaultAsync(x => x.TaskId == idTask);
             if (task != null)
             {
                 task.LastModified = DateTime.Now;
                 dbContext.Task.Update(task);
-                dbContext.SaveChanges();
+                await dbContext.SaveChangesAsync();
                 return true;
             }
             return false;
@@ -97,19 +99,19 @@ public class TaskRepository(AppDbContext dbContext) : ITaskRepository
         }
     }
 
-    public TaskGroupEntity? CreateTaskGroup(string name)
+    public async Task<TaskGroupEntity?> CreateTaskGroup(string name)
     {
         try
         {
-            TaskGroupEntity? taskGroups = dbContext.TaskGroup.FirstOrDefault(x => x.Name == name);
+            TaskGroupEntity? taskGroups = await dbContext.TaskGroup.FirstOrDefaultAsync(x => x.Name == name);
             if (taskGroups == null)
             {
                 TaskGroupEntity taskGroupEntity = new()
                 {
                     Name = name
                 };
-                dbContext.TaskGroup.Add(taskGroupEntity);
-                dbContext.SaveChanges();
+                await dbContext.TaskGroup.AddAsync(taskGroupEntity);
+                await dbContext.SaveChangesAsync();
                 return taskGroupEntity;
             }
             return null;
@@ -120,21 +122,21 @@ public class TaskRepository(AppDbContext dbContext) : ITaskRepository
         }
     }
 
-    public bool DeleteTaskGroup(int idGroup)
+    public async Task<bool> DeleteTaskGroup(int idGroup)
     {
         try
         {
-            List<TaskEntity> tasks = dbContext.Task.Where(x => x.TaskGroupId == idGroup).ToList();
+            List<TaskEntity> tasks = await dbContext.Task.Where(x => x.TaskGroupId == idGroup).ToListAsync();
             foreach (var task in tasks)
             {
                 task.TaskGroupId = 0;
             }
-            dbContext.SaveChanges();
-            TaskGroupEntity? taskGroup = dbContext.TaskGroup.FirstOrDefault(x => x.Id == idGroup);
+            await dbContext.SaveChangesAsync();
+            TaskGroupEntity? taskGroup = await dbContext.TaskGroup.FirstOrDefaultAsync(x => x.Id == idGroup);
             if (taskGroup != null)
             {
                 dbContext.TaskGroup.Remove(taskGroup);
-                dbContext.SaveChanges();
+                await dbContext.SaveChangesAsync();
                 return true;
             }
             return false;
@@ -145,17 +147,17 @@ public class TaskRepository(AppDbContext dbContext) : ITaskRepository
         }
     }
 
-    public bool ActivatedTask(string idTask)
+    public async Task<bool> ActivatedTask(string idTask)
     {
         try
         {
-            TaskEntity? task = dbContext.Task.FirstOrDefault(x => x.TaskId == idTask);
+            TaskEntity? task = await dbContext.Task.FirstOrDefaultAsync(x => x.TaskId == idTask);
             if (task != null)
             {
                 task.IsActive = !task.IsActive;
                 task.LastModified = DateTime.Now;
                 dbContext.Task.Update(task);
-                dbContext.SaveChanges();
+                await dbContext.SaveChangesAsync();
             }
             //if (task.IsActive)
             //{
@@ -173,7 +175,7 @@ public class TaskRepository(AppDbContext dbContext) : ITaskRepository
         }
     }
 
-    public bool CreateTaskStatuse(string idTask)
+    public async Task<bool> CreateTaskStatuse(string idTask)
     {
         try
         {
@@ -181,8 +183,8 @@ public class TaskRepository(AppDbContext dbContext) : ITaskRepository
             {
                 TaskId = idTask
             };
-            dbContext.TaskStatuse.Add(taskStatuse);
-            dbContext.SaveChanges();
+            await dbContext.TaskStatuse.AddAsync(taskStatuse);
+            await dbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception)
@@ -191,17 +193,17 @@ public class TaskRepository(AppDbContext dbContext) : ITaskRepository
         }
     }
 
-    public List<TaskStatusEntity> GetTaskStatuses()
+    public async Task<List<TaskStatusEntity>> GetTaskStatuses()
     {
-        return dbContext.TaskStatuse.ToList();
+        return await dbContext.TaskStatuse.ToListAsync();
     }
 
-    public bool UpdateTaskStatus(TaskStatusEntity taskStatus)
+    public async Task<bool> UpdateTaskStatus(TaskStatusEntity taskStatus)
     {
         try
         {
             dbContext.TaskStatuse.Update(taskStatus);
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception)

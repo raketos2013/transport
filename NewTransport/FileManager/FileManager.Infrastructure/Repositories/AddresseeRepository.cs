@@ -1,39 +1,36 @@
 ﻿using FileManager.Core.Entities;
 using FileManager.Core.Interfaces.Repositories;
-using FileManager.Core.Services;
 using FileManager.Infrastructure.Data;
-using Microsoft.AspNetCore.Http;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Text.Json;
-using FileManager.Core.Interfaces.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace FileManager.Infrastructure.Repositories;
 
 public class AddresseeRepository(AppDbContext appDbContext) : IAddresseeRepository
 {
-    public bool CreateAddressee(AddresseeEntity addressee)
+    public async Task<bool> CreateAddressee(AddresseeEntity addressee)
     {
-        appDbContext.Addressee.Add(addressee);
-        var result = appDbContext.SaveChanges();
+        await appDbContext.Addressee.AddAsync(addressee);
+        var result = await appDbContext.SaveChangesAsync();
         return result > 0;
     }
 
-    public bool CreateAddresseeGroup(AddresseeGroupEntity group)
+    public async Task<bool> CreateAddresseeGroup(AddresseeGroupEntity group)
     {
-        appDbContext.AddresseeGroup.Add(group);
-        var result = appDbContext.SaveChanges();
+        await appDbContext.AddresseeGroup.AddAsync(group);
+        var result = await appDbContext.SaveChangesAsync();
         return result > 0;
     }
 
-    public bool DeleteAddressee(string number, int idGroup)
+    public async Task<bool> DeleteAddressee(string number, int idGroup)
     {
         try
         {
-            var addressee = appDbContext.Addressee.FirstOrDefault(x => x.PersonalNumber == number && x.AddresseeGroupId == idGroup);
+            var addressee = await appDbContext.Addressee.FirstOrDefaultAsync(x => x.PersonalNumber == number && 
+                                                                                  x.AddresseeGroupId == idGroup);
             if (addressee != null)
             {
                 appDbContext.Addressee.Remove(addressee);
-                appDbContext.SaveChanges();
+                await appDbContext.SaveChangesAsync();
             }
             return true;
         }
@@ -43,20 +40,20 @@ public class AddresseeRepository(AppDbContext appDbContext) : IAddresseeReposito
         }
     }
 
-    public bool DeleteAddresseeGroup(int id)
+    public async Task<bool> DeleteAddresseeGroup(int id)
     {
         try
         {
-            var deletedGroup = GetAddresseeGroupById(id);
+            var deletedGroup = await GetAddresseeGroupById(id);
             appDbContext.AddresseeGroup.Remove(deletedGroup);
-            List<AddresseeEntity> deletedAddresses = appDbContext.Addressee.Where(x => x.AddresseeGroupId == id).ToList();
+            var deletedAddresses = await appDbContext.Addressee.Where(x => x.AddresseeGroupId == id).ToListAsync();
             appDbContext.Addressee.RemoveRange(deletedAddresses);
-            List<TaskEntity> tasks = appDbContext.Task.Where(x => x.AddresseeGroupId == id).ToList();
+            var tasks = await appDbContext.Task.Where(x => x.AddresseeGroupId == id).ToListAsync();
             foreach (TaskEntity task in tasks)
             {
                 task.AddresseeGroupId = null;
             }
-            appDbContext.SaveChanges();
+            await appDbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception)
@@ -65,12 +62,12 @@ public class AddresseeRepository(AppDbContext appDbContext) : IAddresseeReposito
         }
     }
 
-    public bool EditAddressee(AddresseeEntity addressee)
+    public async Task<bool> EditAddressee(AddresseeEntity addressee)
     {
         try
         {
             appDbContext.Addressee.Update(addressee);
-            appDbContext.SaveChanges();
+            await appDbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception)
@@ -79,28 +76,28 @@ public class AddresseeRepository(AppDbContext appDbContext) : IAddresseeReposito
         }
     }
 
-    public bool EditAddresseeGroup(AddresseeGroupEntity group)
+    public Task<bool> EditAddresseeGroup(AddresseeGroupEntity group)
     {
         throw new NotImplementedException();
     }
 
-    public AddresseeEntity? GetAddresseeById(string id)
+    public async Task<AddresseeEntity?> GetAddresseeById(string id)
     {
-        return appDbContext.Addressee.FirstOrDefault(x => x.PersonalNumber == id);
+        return await appDbContext.Addressee.FirstOrDefaultAsync(x => x.PersonalNumber == id);
     }
 
-    public AddresseeGroupEntity? GetAddresseeGroupById(int id)
+    public async Task<AddresseeGroupEntity?> GetAddresseeGroupById(int id)
     {
-        return appDbContext.AddresseeGroup.FirstOrDefault(x => x.Id == id);
+        return await appDbContext.AddresseeGroup.FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public List<AddresseeGroupEntity> GetAllAddresseeGroups()
+    public async Task<List<AddresseeGroupEntity>> GetAllAddresseeGroups()
     {
-        return appDbContext.AddresseeGroup.ToList();
+        return await appDbContext.AddresseeGroup.ToListAsync();
     }
 
-    public List<AddresseeEntity> GetAllAddressees()
+    public async Task<List<AddresseeEntity>> GetAllAddressees()
     {
-        return appDbContext.Addressee.ToList();
+        return await appDbContext.Addressee.ToListAsync();
     }
 }

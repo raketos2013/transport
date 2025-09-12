@@ -1,24 +1,34 @@
 ﻿using FileManager.Core.Entities;
 using FileManager.Core.Enums;
 using FileManager.Core.Interfaces.Services;
+using FileManager.Core.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace FileManager.Core.Operations;
 
 public class Read(TaskStepEntity step,
                     TaskOperation? operation,
-                    ITaskLogger taskLogger,
-                    IMailSender mailSender,
-                    IOperationService operationService,
-                    IAddresseeService addresseeService,
-                    ITaskLogService taskLogService)
-            : StepOperation(step, operation, taskLogger, mailSender, operationService, addresseeService, taskLogService)
+                    //ITaskLogger taskLogger,
+                    //IMailSender mailSender,
+                    //IOptions<AuthTokenConfiguration> authTokenConfigurations,
+                    //IOperationService operationService,
+                    //IAddresseeService addresseeService,
+                    //ITaskLogService taskLogService,
+                    //IHttpClientFactory httpClientFactory
+                    IServiceScopeFactory scopeFactory)
+            : StepOperation(step, operation, 
+                            //taskLogger, mailSender, authTokenConfigurations, 
+                            //operationService, addresseeService, taskLogService, httpClientFactory
+                            scopeFactory)
 {
-    public override void Execute(List<string>? bufferFiles)
+    public override async Task Execute(List<string>? bufferFiles)
     {
-        _taskLogger.StepLog(TaskStep, $"ЧТЕНИЕ: {TaskStep.Source} => {TaskStep.Destination}");
-        _taskLogger.OperationLog(TaskStep);
+        await _taskLogger.StepLog(TaskStep, $"ЧТЕНИЕ: {TaskStep.Source} => {TaskStep.Destination}");
+        await _taskLogger.OperationLog(TaskStep);
 
         string[] files = [];
         string fileName;
@@ -47,18 +57,19 @@ public class Read(TaskStepEntity step,
                 infoFiles.Add(new FileInfo(file));
             }
         }
-        _taskLogger.StepLog(TaskStep, $"Количество найденных файлов по маске '{TaskStep.FileMask}': {files.Length}");
+        await _taskLogger.StepLog(TaskStep, $"Количество найденных файлов по маске '{TaskStep.FileMask}': {files.Length}");
         bool isReadFile = true;
         if (infoFiles.Count > 0)
         {
-            operation = _operationService.GetReadByStepId(TaskStep.StepId);
+            operation = await _operationService.GetReadByStepId(TaskStep.StepId);
             //_appDbContext.OperationRead.FirstOrDefault(x => x.StepId == TaskStep.StepId);
             if (operation != null)
             {
 
                 if (operation.InformSuccess)
                 {
-                    addresses = _addresseeService.GetAllAddressees()
+                    var addressesAsync = await _addresseeService.GetAllAddressees();
+                    addresses = addressesAsync
                                                     .Where(x => x.AddresseeGroupId == operation.AddresseeGroupId &&
                                                                 x.IsActive == true).ToList();
                 }
@@ -75,9 +86,10 @@ public class Read(TaskStepEntity step,
                     fileName = Path.GetFileName(fileInfo.FullName);
 
                     // файл в источнике
-                    TaskLogEntity? taskLogs = _taskLogService.GetLogsByTaskId(TaskStep.TaskId)
-                                                            .FirstOrDefault(x => x.StepId == TaskStep.StepId &&
-                                                                                    x.FileName == fileName);
+                    TaskLogEntity? taskLogs = null;
+                    //_taskLogService.GetLogsByTaskId(TaskStep.TaskId)
+                    //                                        .FirstOrDefault(x => x.StepId == TaskStep.StepId &&
+                    //                                                                x.FileName == fileName);
                     /*_appDbContext.TaskLog.FirstOrDefault(x => x.StepId == TaskStep.StepId &&
                                                                                     x.FileName == fileName);*/
 
@@ -192,11 +204,11 @@ public class Read(TaskStepEntity step,
                 }
                 if (isBreakTask)
                 {
-                    _taskLogger.StepLog(TaskStep, $"Прерывание задачи: несоответствие ожидаемому результату", "", ResultOperation.W);
+                    await _taskLogger.StepLog(TaskStep, $"Прерывание задачи: несоответствие ожидаемому результату", "", ResultOperation.W);
                     throw new Exception("Ошибка при операции Read: несоответствие ожидаемому результату");
                 }
 
-                _taskLogger.StepLog(TaskStep, $"{bufferFiles.Count} файлов добавлено в BUFFER");
+                await _taskLogger.StepLog(TaskStep, $"{bufferFiles.Count} файлов добавлено в BUFFER");
 
             }
         }
@@ -204,17 +216,17 @@ public class Read(TaskStepEntity step,
         {
             if (TaskStep.IsBreak)
             {
-                _taskLogger.StepLog(TaskStep, $"Прерывание задачи: найдено 0 файлов", "", ResultOperation.W);
+                await _taskLogger.StepLog(TaskStep, $"Прерывание задачи: найдено 0 файлов", "", ResultOperation.W);
                 throw new Exception("Операция Read: найдено 0 файлов");
             }
         }
 
         if (addresses.Count > 0 && successFiles.Count > 0)
         {
-            _mailSender.Send(TaskStep, addresses, successFiles);
+            await _mailSender.Send(TaskStep, addresses, successFiles);
         }
 
-        _taskLogger.StepLog(TaskStep, "Переход к следующему шагу");
+        await _taskLogger.StepLog(TaskStep, "Переход к следующему шагу");
 
         _nextStep?.Execute(bufferFiles);
     }

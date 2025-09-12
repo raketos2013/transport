@@ -6,7 +6,7 @@ namespace FileManager.Core.Services;
 
 public class UserLogService(IUserLogRepository userLogRepository) : IUserLogService
 {
-    public void AddLog(string username, string action, string data)
+    public async Task AddLog(string username, string action, string data)
     {
         UserLogEntity log = new()
         {
@@ -15,11 +15,11 @@ public class UserLogService(IUserLogRepository userLogRepository) : IUserLogServ
             UserName = username,
             DateTimeLog = DateTime.Now
         };
-        userLogRepository.AddUserLog(log);
+        await userLogRepository.AddUserLog(log);
     }
 
-    public List<UserLogEntity> GetAllLogs()
+    public async Task<List<UserLogEntity>> GetAllLogs()
     {
-        return userLogRepository.GetAllLogs();
+        return await userLogRepository.GetAllLogs();
     }
 }

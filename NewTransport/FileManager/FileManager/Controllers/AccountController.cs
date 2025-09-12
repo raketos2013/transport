@@ -5,10 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 using System.DirectoryServices.AccountManagement;
 using System.Security.Claims;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace FileManager.Controllers;
 
-public class AccountController(ILogger<AccountController> logger, IUserLogService userLogService) : Controller
+public class AccountController(ILogger<AccountController> logger,
+                                IUserLogService userLogService,
+                                IAuthService authService) : Controller
 {
 
     private readonly ILogger _logger = logger;
@@ -20,23 +23,22 @@ public class AccountController(ILogger<AccountController> logger, IUserLogServic
     }
 
 
-    public IActionResult Logout()
+    public async Task<IActionResult> Logout()
     {
         HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        userLogService.AddLog(HttpContext.User.Identity.Name, "Выход из системы", JsonSerializer.Serialize(""));
+        await userLogService.AddLog(HttpContext.User.Identity.Name, "Выход из системы", JsonSerializer.Serialize(""));
         return RedirectToAction("Login");
     }
 
     [NonAction]
-    public void LogoutX()
+    public async Task LogoutX()
     {
         HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        userLogService.AddLog(HttpContext.User.Identity.Name, "Выход из системы", JsonSerializer.Serialize(""));
+        await userLogService.AddLog(HttpContext.User.Identity.Name, "Выход из системы", JsonSerializer.Serialize(""));
     }
 
-
     [HttpPost]
-    public IActionResult Login(string? username, string? password)
+    public async Task<IActionResult> Login(string? username, string? password)
     {
         ClaimsIdentity? identity;
         ClaimsPrincipal? principal;
@@ -50,9 +52,30 @@ public class AccountController(ILogger<AccountController> logger, IUserLogServic
             }
             bool isAuthenticated;
             string displayName;
-            //(isAuthenticated, displayName) = await _authLdapService.AuthenticateUser(model.UserName, model.Password);
+            (isAuthenticated, displayName) = await authService.AuthenticateUser(username, password);
+
+            if (isAuthenticated)
+            {
+                List<Claim> claims =
+                [
+                    new Claim(ClaimsIdentity.DefaultRoleClaimType, "o.br.ДИТ"),
+                    new Claim(ClaimsIdentity.DefaultNameClaimType, username),
+                    new Claim(ClaimTypes.GivenName, displayName),
+                ];
 
 
+                identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                principal = new ClaimsPrincipal(identity);
+                if (principal != null && HttpContext != null)
+                {
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties { IsPersistent = true });
+                }
+            }
+            else
+            {
+                ViewBag.MessageAuthenticate = "Неправильный логин и (или) пароль";
+                return View();
+            }
         }
         catch (Exception ex)
         {
@@ -140,6 +163,6 @@ public class AccountController(ILogger<AccountController> logger, IUserLogServic
         //    _logger.LogError(ex, ex.Message);
         //}
 
-        return View();
+        return RedirectToAction("Tasks", "Task");
     }
 }

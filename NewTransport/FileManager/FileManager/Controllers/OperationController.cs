@@ -15,11 +15,11 @@ public class OperationController(IOperationService operationService,
             : Controller
 {
     [HttpGet]
-    public IActionResult EditOperation(string taskId, string stepNumber)
+    public async Task<IActionResult> EditOperation(string taskId, string stepNumber)
     {
-        lockService.Lock(taskId, httpContextAccessor.HttpContext.User.Identity.Name);
-        ViewBag.AddresseeGroups = addresseeService.GetAllAddresseeGroups();
-        var step = stepService.GetStepByTaskId(taskId, int.Parse(stepNumber));
+        await lockService.Lock(taskId, httpContextAccessor.HttpContext.User.Identity.Name);
+        ViewBag.AddresseeGroups = await addresseeService.GetAllAddresseeGroups();
+        var step = await stepService.GetStepByTaskId(taskId, int.Parse(stepNumber));
         if (step == null) 
         {
             return RedirectToAction("Steps", "Step");
@@ -29,7 +29,7 @@ public class OperationController(IOperationService operationService,
             case OperationName.None:
                 break;
             case OperationName.Copy:
-                var copy = operationService.GetCopyByStepId(step.StepId) ?? new OperationCopyEntity
+                var copy = await operationService.GetCopyByStepId(step.StepId) ?? new OperationCopyEntity
                 {
                     StepId = step.StepId,
                     AddresseeGroupId = 0,
@@ -37,7 +37,7 @@ public class OperationController(IOperationService operationService,
                 };
                 return PartialView("_OperationCopyEdit", copy);
             case OperationName.Move:
-                var move = operationService.GetMoveByStepId(step.StepId) ?? new OperationMoveEntity
+                var move = await operationService.GetMoveByStepId(step.StepId) ?? new OperationMoveEntity
                 {
                     StepId = step.StepId,
                     AddresseeGroupId = 0,
@@ -45,7 +45,7 @@ public class OperationController(IOperationService operationService,
                 };
                 return PartialView("_OperationMoveEdit", move);
             case OperationName.Read:
-                var read = operationService.GetReadByStepId(step.StepId) ?? new OperationReadEntity
+                var read = await operationService.GetReadByStepId(step.StepId) ?? new OperationReadEntity
                 {
                     StepId = step.StepId,
                     AddresseeGroupId = 0,
@@ -54,7 +54,7 @@ public class OperationController(IOperationService operationService,
                 };
                 return PartialView("_OperationReadEdit", read);
             case OperationName.Exist:
-                var exist = operationService.GetExistByStepId(step.StepId) ?? new OperationExistEntity
+                var exist = await operationService.GetExistByStepId(step.StepId) ?? new OperationExistEntity
                 {
                     StepId = step.StepId,
                     AddresseeGroupId = 0,
@@ -62,7 +62,7 @@ public class OperationController(IOperationService operationService,
                 };
                 return PartialView("_OperationExistEdit", exist);
             case OperationName.Rename:
-                var rename = operationService.GetRenameByStepId(step.StepId) ?? new OperationRenameEntity
+                var rename = await operationService.GetRenameByStepId(step.StepId) ?? new OperationRenameEntity
                 {
                     StepId = step.StepId,
                     AddresseeGroupId = 0,
@@ -72,7 +72,7 @@ public class OperationController(IOperationService operationService,
                 };
                 return PartialView("_OperationRenameEdit", rename);
             case OperationName.Delete:
-                var delete = operationService.GetDeleteByStepId(step.StepId) ?? new OperationDeleteEntity
+                var delete = await operationService.GetDeleteByStepId(step.StepId) ?? new OperationDeleteEntity
                 {
                     StepId = step.StepId,
                     AddresseeGroupId = 0,
@@ -80,7 +80,7 @@ public class OperationController(IOperationService operationService,
                 };
                 return PartialView("_OperationDeleteEdit", delete);
             case OperationName.Clrbuf:
-                var clrbuf = operationService.GetClrbufByStepId(step.StepId) ?? new OperationClrbufEntity
+                var clrbuf = await operationService.GetClrbufByStepId(step.StepId) ?? new OperationClrbufEntity
                 {
                     StepId = step.StepId,
                     AddresseeGroupId = 0,
@@ -94,32 +94,32 @@ public class OperationController(IOperationService operationService,
     }
 
     [HttpGet]
-    public IActionResult Operations(string taskId, string stepNumber, string operationName)
+    public async Task<IActionResult> Operations(string taskId, string stepNumber, string operationName)
     {
         TaskOperation? taskOperation;
-        var step = stepService.GetStepByTaskId(taskId, int.Parse(stepNumber));
+        var step = await stepService.GetStepByTaskId(taskId, int.Parse(stepNumber));
         switch (operationName)
         {
             case "Copy":
-                taskOperation = operationService.GetCopyByStepId(step.StepId);
+                taskOperation = await operationService.GetCopyByStepId(step.StepId);
                 return PartialView("_OperationCopyInfo", taskOperation);
             case "Exist":
-                taskOperation = operationService.GetExistByStepId(step.StepId);
+                taskOperation = await operationService.GetExistByStepId(step.StepId);
                 return PartialView("_OperationExistInfo", taskOperation);
             case "Move":
-                taskOperation = operationService.GetMoveByStepId(step.StepId);
+                taskOperation = await operationService.GetMoveByStepId(step.StepId);
                 return PartialView("_OperationMoveInfo", taskOperation);
             case "Read":
-                taskOperation = operationService.GetReadByStepId(step.StepId);
+                taskOperation = await operationService.GetReadByStepId(step.StepId);
                 return PartialView("_OperationReadInfo", taskOperation);
             case "Rename":
-                taskOperation = operationService.GetRenameByStepId(step.StepId);
+                taskOperation = await operationService.GetRenameByStepId(step.StepId);
                 return PartialView("_OperationRenameInfo", taskOperation);
             case "Delete":
-                taskOperation = operationService.GetDeleteByStepId(step.StepId);
+                taskOperation = await operationService.GetDeleteByStepId(step.StepId);
                 return PartialView("_OperationDeleteInfo", taskOperation);
             case "Clrbuf":
-                taskOperation = operationService.GetClrbufByStepId(step.StepId);
+                taskOperation = await operationService.GetClrbufByStepId(step.StepId);
                 return PartialView("_OperationClrbufInfo", taskOperation);
             default:
                 break;
@@ -128,110 +128,110 @@ public class OperationController(IOperationService operationService,
     }
 
     [HttpPost]
-    public IActionResult EditOperationCopy(OperationCopyEntity operation)
+    public async Task<IActionResult> EditOperationCopy(OperationCopyEntity operation)
     {
         if (operation.OperationId == 0)
         {
-            operationService.CreateCopy(operation);
+            await operationService.CreateCopy(operation);
         }
         else
         {
-            operationService.UpdateCopy(operation);
-            var step = stepService.GetStepByStepId(operation.StepId);
-            lockService.Unlock(step.TaskId);
+            await operationService.UpdateCopy(operation);
+            var step = await stepService.GetStepByStepId(operation.StepId);
+            await lockService.Unlock(step.TaskId);
         }
         return RedirectToAction("Steps", "Step");
     }
 
-    public IActionResult EditOperationMove(OperationMoveEntity operation)
+    public async Task<IActionResult> EditOperationMove(OperationMoveEntity operation)
     {
         if (operation.OperationId == 0)
         {
-            operationService.CreateMove(operation);
+            await operationService.CreateMove(operation);
         }
         else
         {
-            operationService.UpdateMove(operation);
-            var step = stepService.GetStepByStepId(operation.StepId);
-            lockService.Unlock(step.TaskId);
+            await operationService.UpdateMove(operation);
+            var step = await stepService.GetStepByStepId(operation.StepId);
+            await lockService.Unlock(step.TaskId);
         }
         return RedirectToAction("Steps", "Step");
     }
 
-    public IActionResult EditOperationDelete(OperationDeleteEntity operation)
+    public async Task<IActionResult> EditOperationDelete(OperationDeleteEntity operation)
     {
         if (operation.OperationId == 0)
         {
-            operationService.CreateDelete(operation);
+            await operationService.CreateDelete(operation);
         }
         else
         {
-            operationService.UpdateDelete(operation);
-            var step = stepService.GetStepByStepId(operation.StepId);
-            lockService.Unlock(step.TaskId);
+            await operationService.UpdateDelete(operation);
+            var step = await stepService.GetStepByStepId(operation.StepId);
+            await lockService.Unlock(step.TaskId);
         }
         return RedirectToAction("Steps", "Step");
     }
 
-    public IActionResult EditOperationRead(OperationReadEntity operation)
+    public async Task<IActionResult> EditOperationRead(OperationReadEntity operation)
     {
         operation.FindString ??= string.Empty;
         if (operation.OperationId == 0)
         {
-            operationService.CreateRead(operation);
+            await operationService.CreateRead(operation);
         }
         else
         {
-            operationService.UpdateRead(operation);
-            var step = stepService.GetStepByStepId(operation.StepId);
-            lockService.Unlock(step.TaskId);
+            await operationService.UpdateRead(operation);
+            var step = await stepService.GetStepByStepId(operation.StepId);
+            await lockService.Unlock(step.TaskId);
         }
         return RedirectToAction("Steps", "Step");
     }
 
-    public IActionResult EditOperationExist(OperationExistEntity operation)
+    public async Task<IActionResult> EditOperationExist(OperationExistEntity operation)
     {
         if (operation.OperationId == 0)
         {
-            operationService.CreateExist(operation);
+            await operationService.CreateExist(operation);
         }
         else
         {
-            operationService.UpdateExist(operation);
-            var step = stepService.GetStepByStepId(operation.StepId);
-            lockService.Unlock(step.TaskId);
+            await operationService.UpdateExist(operation);
+            var step = await stepService.GetStepByStepId(operation.StepId);
+            await lockService.Unlock(step.TaskId);
         }
         return RedirectToAction("Steps", "Step");
     }
 
-    public IActionResult EditOperationRename(OperationRenameEntity operation)
+    public async Task<IActionResult> EditOperationRename(OperationRenameEntity operation)
     {
         operation.OldPattern ??= string.Empty;
         operation.NewPattern ??= string.Empty;
         if (operation.OperationId == 0)
         {
-            operationService.CreateRename(operation);
+            await operationService.CreateRename(operation);
         }
         else
         {
-            operationService.UpdateRename(operation);
-            var step = stepService.GetStepByStepId(operation.StepId);
-            lockService.Unlock(step.TaskId);
+            await operationService.UpdateRename(operation);
+            var step = await stepService.GetStepByStepId(operation.StepId);
+            await lockService.Unlock(step.TaskId);
         }
         return RedirectToAction("Steps", "Step");
     }
 
-    public IActionResult EditOperationClrbuf(OperationClrbufEntity operation)
+    public async Task<IActionResult> EditOperationClrbuf(OperationClrbufEntity operation)
     {
         if (operation.OperationId == 0)
         {
-            operationService.CreateClrbuf(operation);
+            await operationService.CreateClrbuf(operation);
         }
         else
         {
-            operationService.UpdateClrbuf(operation);
-            var step = stepService.GetStepByStepId(operation.StepId);
-            lockService.Unlock(step.TaskId);
+            await operationService.UpdateClrbuf(operation);
+            var step = await stepService.GetStepByStepId(operation.StepId);
+            await lockService.Unlock(step.TaskId);
         }
         return RedirectToAction("Steps", "Step");
     }

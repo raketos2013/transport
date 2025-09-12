@@ -6,12 +6,12 @@ namespace FileManager.Core.Services;
 
 public class Lockservice(ILockRepository lockRepository) : ILockService
 {
-    public LockInfoEntity? IsLocked(string taskId)
+    public async Task<LockInfoEntity?> IsLocked(string taskId)
     {
-        return lockRepository.GetByTaskId(taskId);
+        return await lockRepository.GetByTaskId(taskId);
     }
 
-    public bool Lock(string taskId, string userId)
+    public async Task<bool> Lock(string taskId, string userId)
     {
         LockInfoEntity lockInfo = new()
         {
@@ -19,11 +19,11 @@ public class Lockservice(ILockRepository lockRepository) : ILockService
             EntityId = taskId,
             Created = DateTime.Now
         };
-        return lockRepository.Create(lockInfo);
+        return await lockRepository.Create(lockInfo);
     }
 
-    public bool Unlock(string taskId)
+    public async Task<bool> Unlock(string taskId)
     {
-        return lockRepository.DeleteByTaskId(taskId);
+        return await lockRepository.DeleteByTaskId(taskId);
     }
 }

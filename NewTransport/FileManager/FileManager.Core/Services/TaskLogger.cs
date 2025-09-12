@@ -11,7 +11,7 @@ public class TaskLogger(
                         IOperationRepository operationRepository,
                         ITaskLogRepository taskLogRepository) : ITaskLogger
 {
-    public void OperationLog(TaskStepEntity step)
+    public async Task OperationLog(TaskStepEntity step)
     {
         if (step.OperationId == 0)
         {
@@ -29,110 +29,110 @@ public class TaskLogger(
         switch (step.OperationName)
         {
             case OperationName.Copy:
-                OperationCopyEntity? operation = operationRepository.GetCopyByOperationId(step.OperationId);
+                OperationCopyEntity? operation = await operationRepository.GetCopyByOperationId(step.OperationId);
                     //appDbContext.OperationCopy.FirstOrDefault(x => x.OperationId == step.OperationId);
                 if (operation != null)
                 {
                     taskLog.ResultText = "Свойства операции - ";
                     taskLog.DateTimeLog = DateTime.Now;
-                    taskLogRepository.AddTaskLog(taskLog);
+                    await taskLogRepository.AddTaskLog(taskLog);
                     //appDbContext.SaveChanges();
                     taskLog.ResultText = $"---Сортировка: {operation.Sort.GetDescription()}";
                     taskLog.DateTimeLog = DateTime.Now;
-                    taskLogRepository.AddTaskLog(taskLog);
+                    await taskLogRepository.AddTaskLog(taskLog);
                     //appDbContext.SaveChanges();
                     taskLog.ResultText = $"---Контроль дублирования по журналу: {operation.FileInLog}";
                     taskLog.DateTimeLog = DateTime.Now;
-                    taskLogRepository.AddTaskLog(taskLog);
+                    await taskLogRepository.AddTaskLog(taskLog);
                     //appDbContext.SaveChanges();
                     taskLog.ResultText = $"---Контроль Файл есть в назначении: {operation.FileInSource.GetDescription()}";
                     taskLog.DateTimeLog = DateTime.Now;
-                    taskLogRepository.AddTaskLog(taskLog);
+                    await taskLogRepository.AddTaskLog(taskLog);
                     //appDbContext.SaveChanges();
                     taskLog.ResultText = $"---Аттрибуты файла: {operation.FileAttribute.GetDescription()}";
                     taskLog.DateTimeLog = DateTime.Now;
-                    taskLogRepository.AddTaskLog(taskLog);
+                    await taskLogRepository.AddTaskLog(taskLog);
                     //appDbContext.SaveChanges();
 
                 }
                 break;
             case OperationName.Move:
-                OperationMoveEntity? move = operationRepository.GetMoveByOperationId(step.OperationId);
+                OperationMoveEntity? move = await operationRepository.GetMoveByOperationId(step.OperationId);
                     //appDbContext.OperationMove.FirstOrDefault(x => x.OperationId == step.OperationId);
                 if (move != null)
                 {
                     taskLog.ResultText = "Свойства операции - ";
                     taskLog.DateTimeLog = DateTime.Now;
-                    taskLogRepository.AddTaskLog(taskLog);
+                    await taskLogRepository.AddTaskLog(taskLog);
                     //appDbContext.SaveChanges();
                     taskLog.ResultText = $"---Контроль дублирования по журналу: {move.FileInLog}";
                     taskLog.DateTimeLog = DateTime.Now;
-                    taskLogRepository.AddTaskLog(taskLog);
+                    await taskLogRepository.AddTaskLog(taskLog);
                     //appDbContext.SaveChanges();
                     taskLog.ResultText = $"---Сортировка: {move.Sort.GetDescription()}";
                     taskLog.DateTimeLog = DateTime.Now;
-                    taskLogRepository.AddTaskLog(taskLog);
+                    await taskLogRepository.AddTaskLog(taskLog);
                     //appDbContext.SaveChanges();
                     taskLog.ResultText = $"---Аттрибуты файла: {move.FileAttribute.GetDescription()}";
                     taskLog.DateTimeLog = DateTime.Now;
-                    taskLogRepository.AddTaskLog(taskLog);
+                    await taskLogRepository.AddTaskLog(taskLog);
                     //appDbContext.SaveChanges();
                 }
                 break;
             case OperationName.Read:
-                OperationReadEntity? operationRead = operationRepository.GetReadByOperationId(step.OperationId);
+                OperationReadEntity? operationRead = await operationRepository.GetReadByOperationId(step.OperationId);
                     //appDbContext.OperationRead.FirstOrDefault(x => x.OperationId == step.OperationId);
                 if (operationRead != null)
                 {
                     taskLog.ResultText = "Свойства операции - ";
                     taskLog.DateTimeLog = DateTime.Now;
-                    taskLogRepository.AddTaskLog(taskLog);
+                    await taskLogRepository.AddTaskLog(taskLog);
                     //appDbContext.SaveChanges();
                     taskLog.ResultText = $"---Кодировка: {operationRead.Encode}";
                     taskLog.DateTimeLog = DateTime.Now;
-                    taskLogRepository.AddTaskLog(taskLog);
+                    await taskLogRepository.AddTaskLog(taskLog);
                    // appDbContext.SaveChanges();
                     taskLog.ResultText = $"--Контроль Файл есть в назначении: {operationRead.FileInSource.GetDescription()}";
                     taskLog.DateTimeLog = DateTime.Now;
-                    taskLogRepository.AddTaskLog(taskLog);
+                    await taskLogRepository.AddTaskLog(taskLog);
                     //appDbContext.SaveChanges();
                 }
                 break;
             case OperationName.Exist:
-                OperationExistEntity? exist = operationRepository.GetExistByOperationId(step.OperationId);
+                OperationExistEntity? exist = await operationRepository.GetExistByOperationId(step.OperationId);
                     //appDbContext.OperationExist.FirstOrDefault(x => x.OperationId == step.OperationId);
                 if (exist != null)
                 {
                     taskLog.ResultText = "Свойства операции - ";
                     taskLog.DateTimeLog = DateTime.Now;
-                    taskLogRepository.AddTaskLog(taskLog);
+                    await taskLogRepository.AddTaskLog(taskLog);
                    // appDbContext.SaveChanges();
                     taskLog.ResultText = $"---Ожидаемый результат: {exist.ExpectedResult.GetDescription()}";
                     taskLog.DateTimeLog = DateTime.Now;
-                    taskLogRepository.AddTaskLog(taskLog);
+                    await taskLogRepository.AddTaskLog(taskLog);
                     //appDbContext.SaveChanges();
                     taskLog.ResultText = $"---Прервать задачу: {exist.BreakTaskAfterError}";
                     taskLog.DateTimeLog = DateTime.Now;
-                    taskLogRepository.AddTaskLog(taskLog);
+                    await taskLogRepository.AddTaskLog(taskLog);
                     //appDbContext.SaveChanges();
                 }
                 break;
             case OperationName.Rename:
-                OperationRenameEntity? rename = operationRepository.GetRenameByOperationId(step.OperationId);
+                OperationRenameEntity? rename = await operationRepository.GetRenameByOperationId(step.OperationId);
                     //appDbContext.OperationRename.FirstOrDefault(x => x.OperationId == step.OperationId);
                 if (rename != null)
                 {
                     taskLog.ResultText = "Свойства операции - ";
                     taskLog.DateTimeLog = DateTime.Now;
-                    taskLogRepository.AddTaskLog(taskLog);
+                    await taskLogRepository.AddTaskLog(taskLog);
                     //appDbContext.SaveChanges();
                     taskLog.ResultText = $"---Шаблон: {rename.OldPattern}";
                     taskLog.DateTimeLog = DateTime.Now;
-                    taskLogRepository.AddTaskLog(taskLog);
+                    await taskLogRepository.AddTaskLog(taskLog);
                     //appDbContext.SaveChanges();
                     taskLog.ResultText = $"---Новый шаблон: {rename.NewPattern}";
                     taskLog.DateTimeLog = DateTime.Now;
-                    taskLogRepository.AddTaskLog(taskLog);
+                    await taskLogRepository.AddTaskLog(taskLog);
                     //appDbContext.SaveChanges();
                 }
                 break;
@@ -148,7 +148,7 @@ public class TaskLogger(
 
     }
 
-    public void StepLog(TaskStepEntity step, string text, string filename = "", ResultOperation resultOperation = ResultOperation.I)
+    public async Task StepLog(TaskStepEntity step, string text, string filename = "", ResultOperation resultOperation = ResultOperation.I)
     {
         TaskLogEntity taskLog = new()
         {
@@ -166,11 +166,11 @@ public class TaskLogger(
         }
         taskLog.ResultOperation = resultOperation;
 
-        taskLogRepository.AddTaskLog(taskLog);
+        await taskLogRepository.AddTaskLog(taskLog);
         //appDbContext.SaveChanges();
     }
 
-    public void TaskLog(string TaskId, string text, ResultOperation? resultOperation = null)
+    public async Task TaskLog(string TaskId, string text, ResultOperation? resultOperation = null)
     {
         TaskLogEntity taskLog = new()
         {
@@ -180,7 +180,7 @@ public class TaskLogger(
             ResultOperation = resultOperation
         };
 
-        taskLogRepository.AddTaskLog(taskLog);
+        await taskLogRepository.AddTaskLog(taskLog);
         //appDbContext.SaveChanges();
     }
 }

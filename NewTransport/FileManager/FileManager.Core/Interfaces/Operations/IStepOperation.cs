@@ -3,5 +3,5 @@
 public interface IStepOperation
 {
     void SetNext(IStepOperation nextStep);
-    void Execute(List<string>? bufferFiles);
+    Task Execute(List<string>? bufferFiles);
 }

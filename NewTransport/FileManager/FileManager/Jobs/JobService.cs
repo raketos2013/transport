@@ -21,7 +21,7 @@ public class JobService(ITaskService taskService,
         IJobDetail? jobDetail;
         ITrigger jobTrigger;
 
-        var tasks = taskService.GetAllTasks();
+        var tasks = await taskService.GetAllTasks();
         foreach (var task in tasks)
         {
             jobKey = new JobKey(task.TaskId, "FManager");

@@ -1,5 +1,4 @@
-﻿using FileManager.Core.Entities;
-using FileManager.Core.Interfaces.Services;
+﻿using FileManager.Core.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
@@ -22,12 +21,13 @@ public class UserLogsController(IUserLogService userLogService) : Controller
         return View();
     }
 
-    public IActionResult LogsList(string dateFrom = "", string dateTo = "")
+    public async Task<IActionResult> LogsList(string dateFrom = "", string dateTo = "")
     {
         DateTime date = dateFrom == "" ? DateTime.Today : DateTime.Parse(dateFrom);
         DateTime date2 = dateTo == "" ? DateTime.Today : DateTime.Parse(dateTo);
 
-        List<UserLogEntity> userLogs = userLogService.GetAllLogs().Where(x => x.DateTimeLog.Date >= date &&
+        var userLogsAsync = await userLogService.GetAllLogs();
+        var userLogs = userLogsAsync.Where(x => x.DateTimeLog.Date >= date &&
                                                                                 x.DateTimeLog.Date <= date2)
                                                             .OrderByDescending(x => x.DateTimeLog)
                                                             .ToList();
@@ -37,13 +37,13 @@ public class UserLogsController(IUserLogService userLogService) : Controller
     }
 
     // GET: UserLogsController/Details/5
-    public ActionResult Details(string dateTime, string username)
+    public async Task<ActionResult> Details(string dateTime, string username)
     {
         DateTime myDate = DateTime.ParseExact(dateTime, "yyyy-MM-dd HH:mm:ss.ffffff",
                                    CultureInfo.InvariantCulture);
 
-        UserLogEntity userLogs = userLogService.GetAllLogs()
-                                                .First(x => x.DateTimeLog == myDate &&
+        var userLogsAsync = await userLogService.GetAllLogs();
+        var userLogs = userLogsAsync.First(x => x.DateTimeLog == myDate &&
                                                             x.UserName == username);
 
         return PartialView("_LogDetails", userLogs);

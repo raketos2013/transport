@@ -17,53 +17,53 @@ public class AddresseeService(IAddresseeRepository addresseeRepository,
         ReferenceHandler = ReferenceHandler.Preserve,
         WriteIndented = true
     };
-    public bool CreateAddressee(AddresseeEntity addressee)
+    public async Task<bool> CreateAddressee(AddresseeEntity addressee)
     {
-        return addresseeRepository.CreateAddressee(addressee);
+        return await addresseeRepository.CreateAddressee(addressee);
     }
 
-    public bool CreateAddresseeGroup(AddresseeGroupEntity group)
+    public async Task<bool> CreateAddresseeGroup(AddresseeGroupEntity group)
     {
-        return addresseeRepository.CreateAddresseeGroup(group);
+        return await addresseeRepository.CreateAddresseeGroup(group);
     }
 
-    public bool DeleteAddressee(string number, int idGroup)
+    public async Task<bool> DeleteAddressee(string number, int idGroup)
     {
-        return addresseeRepository.DeleteAddressee(number, idGroup);
+        return await addresseeRepository.DeleteAddressee(number, idGroup);
     }
 
-    public bool DeleteAddresseeGroup(int id)
+    public async Task<bool> DeleteAddresseeGroup(int id)
     {
-        return addresseeRepository.DeleteAddresseeGroup(id);
+        return await addresseeRepository.DeleteAddresseeGroup(id);
     }
 
-    public bool EditAddressee(AddresseeEntity addressee)
+    public async Task<bool> EditAddressee(AddresseeEntity addressee)
     {
-        return addresseeRepository.EditAddressee(addressee);
+        return await addresseeRepository.EditAddressee(addressee);
     }
 
-    public bool EditAddresseeGroup(AddresseeGroupEntity group)
+    public Task<bool> EditAddresseeGroup(AddresseeGroupEntity group)
     {
         throw new NotImplementedException();
     }
 
-    public AddresseeEntity? GetAddresseeById(string id)
+    public async Task<AddresseeEntity?> GetAddresseeById(string id)
     {
-        return addresseeRepository.GetAddresseeById(id);
+        return await addresseeRepository.GetAddresseeById(id);
     }
 
-    public AddresseeGroupEntity? GetAddresseeGroupById(int id)
+    public async Task<AddresseeGroupEntity?> GetAddresseeGroupById(int id)
     {
-        return addresseeRepository.GetAddresseeGroupById(id);
+        return await addresseeRepository.GetAddresseeGroupById(id);
     }
 
-    public List<AddresseeGroupEntity> GetAllAddresseeGroups()
+    public async Task<List<AddresseeGroupEntity>> GetAllAddresseeGroups()
     {
-        return addresseeRepository.GetAllAddresseeGroups();
+        return await addresseeRepository.GetAllAddresseeGroups();
     }
 
-    public List<AddresseeEntity> GetAllAddressees()
+    public async Task<List<AddresseeEntity>> GetAllAddressees()
     {
-        return addresseeRepository.GetAllAddressees();
+        return await addresseeRepository.GetAllAddressees();
     }
 }

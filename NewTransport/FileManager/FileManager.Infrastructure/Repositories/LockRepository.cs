@@ -1,30 +1,31 @@
 ﻿using FileManager.Core.Entities;
 using FileManager.Core.Interfaces.Repositories;
 using FileManager.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace FileManager.Infrastructure.Repositories;
 
 public class LockRepository(AppDbContext context) : ILockRepository
 {
-    public bool Create(LockInfoEntity entity)
+    public async Task<bool> Create(LockInfoEntity entity)
     {
-        context.LockInfo.Add(entity);
-        return context.SaveChanges() > 0;
+        await context.LockInfo.AddAsync(entity);
+        return await context.SaveChangesAsync() > 0;
     }
 
-    public bool DeleteByTaskId(string taskId)
+    public async Task<bool> DeleteByTaskId(string taskId)
     {
-        var lockInfo = GetByTaskId(taskId);
+        var lockInfo = await GetByTaskId(taskId);
         if (lockInfo != null)
         {
             context.LockInfo.Remove(lockInfo);
-            return context.SaveChanges() > 0;
+            return await context.SaveChangesAsync() > 0;
         }
         return false;
     }
 
-    public LockInfoEntity? GetByTaskId(string taskId)
+    public async Task<LockInfoEntity?> GetByTaskId(string taskId)
     {
-        return context.LockInfo.FirstOrDefault(x => x.EntityId == taskId);
+        return await context.LockInfo.FirstOrDefaultAsync(x => x.EntityId == taskId);
     }
 }

@@ -4,15 +4,15 @@ namespace FileManager.Core.Interfaces.Services;
 
 public interface IStepService
 {
-    List<TaskStepEntity> GetAllSteps();
-    TaskStepEntity? GetStepByTaskId(string taskId, int stepNumber);
-    TaskStepEntity? GetStepByStepId(int stepId);
-    List<TaskStepEntity> GetAllStepsByTaskId(string taskId);
-    bool CreateStep(TaskStepEntity taskStep);
-    bool EditStep(TaskStepEntity taskStep);
-    bool ReplaceSteps(string taskId, string numberStep, string operation);
-    bool ActivatedStep(int stepId);
-    bool DeleteStep(int stepId);
-    bool CopyStep(int stepId, int newNumber);
-    int CountFiles(int stepId);
+    Task<List<TaskStepEntity>> GetAllSteps();
+    Task<TaskStepEntity?> GetStepByTaskId(string taskId, int stepNumber);
+    Task<TaskStepEntity?> GetStepByStepId(int stepId);
+    Task<List<TaskStepEntity>> GetAllStepsByTaskId(string taskId);
+    Task<bool> CreateStep(TaskStepEntity taskStep);
+    Task<bool> EditStep(TaskStepEntity taskStep);
+    Task<bool> ReplaceSteps(string taskId, string numberStep, string operation);
+    Task<bool> ActivatedStep(int stepId);
+    Task<bool> DeleteStep(int stepId);
+    Task<bool> CopyStep(int stepId, int newNumber);
+    Task<int> CountFiles(int stepId);
 }

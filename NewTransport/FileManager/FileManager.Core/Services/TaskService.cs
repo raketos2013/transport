@@ -22,92 +22,93 @@ public class TaskService(ITaskRepository taskRepository,
         ReferenceHandler = ReferenceHandler.Preserve,
         WriteIndented = true
     };
-    public TaskEntity CreateTask(TaskEntity task)
+    public async Task<TaskEntity> CreateTask(TaskEntity task)
     {
         task.ExecutionLeft = 1;
         task.ExecutionLimit = 1;
-        var taskEntity = taskRepository.CreateTask(task);
-        userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, "Создание задачи", JsonSerializer.Serialize(taskEntity, _options));
+        var taskEntity = await taskRepository.CreateTask(task);
+        await userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, "Создание задачи", JsonSerializer.Serialize(taskEntity, _options));
         return taskEntity;
     }
 
-    public bool DeleteTask(string idTask)
+    public async Task<bool> DeleteTask(string idTask)
     {
-        var deletedSteps = stepRepository.DeleteStepsByTaskId(idTask);
-        var deletedTask = taskRepository.DeleteTask(idTask);
+        var deletedSteps = await stepRepository.DeleteStepsByTaskId(idTask);
+        var deletedTask = await taskRepository.DeleteTask(idTask);
         return deletedSteps && deletedTask;
     }
 
-    public List<TaskGroupEntity> GetAllGroups()
+    public async Task<List<TaskGroupEntity>> GetAllGroups()
     {
-        return taskRepository.GetAllGroups();
+        return await taskRepository.GetAllGroups();
     }
 
-    public List<TaskEntity> GetAllTasks()
+    public async Task<List<TaskEntity>> GetAllTasks()
     {
-        return taskRepository.GetAllTasks();
+        return await taskRepository.GetAllTasks();
     }
 
-    public TaskEntity GetTaskById(string idTask)
+    public async Task<TaskEntity> GetTaskById(string idTask)
     {
-        return taskRepository.GetTaskById(idTask);
+        return await taskRepository.GetTaskById(idTask);
     }
 
-    public List<TaskEntity> GetTasksByGroup(string nameGroup)
+    public async Task<List<TaskEntity>> GetTasksByGroup(string nameGroup)
     {
-        List<TaskEntity> tasks = [];
-        TaskGroupEntity taskGroup = taskRepository.GetTaskGroupByName(nameGroup);
-        if (nameGroup == "Все")
-        {
-            tasks = taskRepository.GetAllTasks()
-                                    .OrderByDescending(x => x.IsActive)
-                                    .ThenBy(x => x.TaskId)
-                                    .ToList();
-        }
-        else
-        {
-            tasks = taskRepository.GetTasksByGroup(taskGroup.Id)
-                                    .OrderByDescending(x => x.IsActive)
-                                    .ThenBy(x => x.TaskId)
-                                    .ToList();
-        }
-        return tasks;
+        //List<TaskEntity> tasks = [];
+        //TaskGroupEntity taskGroup = await taskRepository.GetTaskGroupByName(nameGroup);
+        //if (nameGroup == "Все")
+        //{
+        //    tasks = await taskRepository.GetAllTasks()
+        //                            .OrderByDescending(x => x.IsActive)
+        //                            .ThenBy(x => x.TaskId)
+        //                            .ToList();
+        //}
+        //else
+        //{
+        //    tasks = taskRepository.GetTasksByGroup(taskGroup.Id)
+        //                            .OrderByDescending(x => x.IsActive)
+        //                            .ThenBy(x => x.TaskId)
+        //                            .ToList();
+        //}
+        //return tasks;
+        throw new NotImplementedException();
     }
 
-    public bool EditTask(TaskEntity task)
+    public async Task<bool> EditTask(TaskEntity task)
     {
-        bool edited = taskRepository.EditTask(task);
-        userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, $"Изменение задачи {task.TaskId}", JsonSerializer.Serialize(task, _options));
+        bool edited = await taskRepository.EditTask(task);
+        await userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, $"Изменение задачи {task.TaskId}", JsonSerializer.Serialize(task, _options));
         return edited;
     }
 
-    public bool UpdateLastModifiedTask(string idTask)
-    {
-        return taskRepository.UpdateLastModifiedTask(idTask);
+    public async Task<bool> UpdateLastModifiedTask(string idTask)
+    { 
+        return await taskRepository.UpdateLastModifiedTask(idTask);
     }
-    public TaskGroupEntity? CreateTaskGroup(string name)
+    public async Task<TaskGroupEntity?> CreateTaskGroup(string name)
     {
-        var taskGroup = taskRepository.CreateTaskGroup(name);
-        userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, $"Создание группы задач {name}", JsonSerializer.Serialize(taskGroup, _options));
+        var taskGroup = await taskRepository.CreateTaskGroup(name);
+        await userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, $"Создание группы задач {name}", JsonSerializer.Serialize(taskGroup, _options));
         return taskGroup;
     }
-    public bool DeleteTaskGroup(int idGroup)
+    public async Task<bool> DeleteTaskGroup(int idGroup)
     {
-        return taskRepository.DeleteTaskGroup(idGroup);
+        return await taskRepository.DeleteTaskGroup(idGroup);
     }
 
-    public bool ActivatedTask(string idTask)
+    public async Task<bool> ActivatedTask(string idTask)
     {
-        var result = taskRepository.ActivatedTask(idTask);
-        var task = taskRepository.GetTaskById(idTask);
+        var result = await taskRepository.ActivatedTask(idTask);
+        var task = await taskRepository.GetTaskById(idTask);
         var text = task.IsActive ? "Включение" : "Выключение";
-        userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, $"{text} задачи {idTask}", JsonSerializer.Serialize(task, _options));
+        await userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, $"{text} задачи {idTask}", JsonSerializer.Serialize(task, _options));
         return result;
     }
 
-    public bool CopyTask(string idTask, string newIdTask, string isCopySteps, List<CopyStepViewModel> copyStep)
+    public async Task<bool> CopyTask(string idTask, string newIdTask, string isCopySteps, List<CopyStepViewModel> copyStep)
     {
-        TaskEntity copiedTask = GetTaskById(idTask);
+        TaskEntity copiedTask = await GetTaskById(idTask);
         if (copiedTask == null)
         {
             return false;
@@ -127,13 +128,13 @@ public class TaskService(ITaskRepository taskRepository,
             ExecutionLimit = copiedTask.ExecutionLimit,
             IsProgress = copiedTask.IsProgress
         };
-        CreateTask(newTask);
+        await CreateTask(newTask);
 
         if (isCopySteps == "True")
         {
-            List<TaskStepEntity> steps = stepRepository.GetAllStepsByTaskId(idTask)
-                                                        .OrderBy(x => x.StepNumber)
-                                                        .ToList();
+            var stepsAsync = await stepRepository.GetAllStepsByTaskId(idTask);
+            var steps = stepsAsync.OrderBy(x => x.StepNumber)
+                                    .ToList();
             int i = 1;
             foreach (var item in copyStep)
             {
@@ -155,7 +156,7 @@ public class TaskService(ITaskRepository taskRepository,
                             IsBreak = oldStep.IsBreak,
                             IsActive = oldStep.IsActive
                         };
-                        stepRepository.CreateStep(newStep);
+                        await stepRepository.CreateStep(newStep);
                         i++;
                         if (item.IsCopyOperation)
                         {
@@ -163,7 +164,7 @@ public class TaskService(ITaskRepository taskRepository,
                             {
                                 case OperationName.Copy:
                                     OperationCopyEntity newCopy = new();
-                                    OperationCopyEntity? oldCopy = operationRepository.GetCopyByStepId(oldStep.StepId);
+                                    OperationCopyEntity? oldCopy = await operationRepository.GetCopyByStepId(oldStep.StepId);
                                     if (oldCopy != null)
                                     {
                                         newCopy.StepId = newStep.StepId;
@@ -175,12 +176,12 @@ public class TaskService(ITaskRepository taskRepository,
                                         newCopy.FileInLog = oldCopy.FileInLog;
                                         newCopy.Sort = oldCopy.Sort;
                                         newCopy.FileAttribute = oldCopy.FileAttribute;
-                                        operationRepository.CreateCopy(newCopy);
+                                        await operationRepository.CreateCopy(newCopy);
                                     }
                                     break;
                                 case OperationName.Move:
                                     OperationMoveEntity newMove = new();
-                                    OperationMoveEntity? oldMove = operationRepository.GetMoveByStepId(oldStep.StepId);
+                                    OperationMoveEntity? oldMove = await operationRepository.GetMoveByStepId(oldStep.StepId);
                                     if (oldMove != null)
                                     {
                                         newMove.StepId = newStep.StepId;
@@ -191,12 +192,12 @@ public class TaskService(ITaskRepository taskRepository,
                                         newMove.FileInLog = oldMove.FileInLog;
                                         newMove.Sort = oldMove.Sort;
                                         newMove.FileAttribute = oldMove.FileAttribute;
-                                        operationRepository.CreateMove(newMove);
+                                        await operationRepository.CreateMove(newMove);
                                     }
                                     break;
                                 case OperationName.Read:
                                     OperationReadEntity newRead = new();
-                                    OperationReadEntity? oldRead = operationRepository.GetReadByStepId(oldStep.StepId);
+                                    OperationReadEntity? oldRead = await operationRepository.GetReadByStepId(oldStep.StepId);
                                     if (oldRead != null)
                                     {
                                         newRead.StepId = newStep.StepId;
@@ -209,12 +210,12 @@ public class TaskService(ITaskRepository taskRepository,
                                         newRead.FindString = oldRead.FindString;
                                         newRead.ExpectedResult = oldRead.ExpectedResult;
                                         newRead.BreakTaskAfterError = oldRead.BreakTaskAfterError;
-                                        operationRepository.CreateRead(newRead);
+                                        await operationRepository.CreateRead(newRead);
                                     }
                                     break;
                                 case OperationName.Exist:
                                     OperationExistEntity newExist = new();
-                                    OperationExistEntity? oldExist = operationRepository.GetExistByStepId(oldStep.StepId);
+                                    OperationExistEntity? oldExist = await operationRepository.GetExistByStepId(oldStep.StepId);
                                     if (oldExist != null)
                                     {
                                         newExist.StepId = newStep.StepId;
@@ -223,12 +224,12 @@ public class TaskService(ITaskRepository taskRepository,
                                         newExist.AdditionalText = oldExist.AdditionalText;
                                         newExist.ExpectedResult = oldExist.ExpectedResult;
                                         newExist.BreakTaskAfterError = oldExist.BreakTaskAfterError;
-                                        operationRepository.CreateExist(newExist);
+                                        await operationRepository.CreateExist(newExist);
                                     }
                                     break;
                                 case OperationName.Rename:
                                     OperationRenameEntity newRename = new();
-                                    OperationRenameEntity? oldRename = operationRepository.GetRenameByStepId(oldStep.StepId);
+                                    OperationRenameEntity? oldRename = await operationRepository.GetRenameByStepId(oldStep.StepId);
                                     if (oldRename != null)
                                     {
                                         newRename.StepId = newStep.StepId;
@@ -237,31 +238,31 @@ public class TaskService(ITaskRepository taskRepository,
                                         newRename.AdditionalText = oldRename.AdditionalText;
                                         newRename.OldPattern = oldRename.OldPattern;
                                         newRename.NewPattern = oldRename.NewPattern;
-                                        operationRepository.CreateRename(newRename);
+                                        await operationRepository.CreateRename(newRename);
                                     }
                                     break;
                                 case OperationName.Delete:
                                     OperationDeleteEntity newDelete = new();
-                                    OperationDeleteEntity? oldDelete = operationRepository.GetDeleteByStepId(oldStep.StepId);
+                                    OperationDeleteEntity? oldDelete = await operationRepository.GetDeleteByStepId(oldStep.StepId);
                                     if (oldDelete != null)
                                     {
                                         newDelete.StepId = newStep.StepId;
                                         newDelete.InformSuccess = oldDelete.InformSuccess;
                                         newDelete.AddresseeGroupId = oldDelete.AddresseeGroupId;
                                         newDelete.AdditionalText = oldDelete.AdditionalText;
-                                        operationRepository.CreateDelete(newDelete);
+                                        await operationRepository.CreateDelete(newDelete);
                                     }
                                     break;
                                 case OperationName.Clrbuf:
                                     OperationClrbufEntity newClrbuf = new();
-                                    OperationClrbufEntity? oldClrbuf = operationRepository.GetClrbufByStepId(oldStep.StepId);
+                                    OperationClrbufEntity? oldClrbuf = await operationRepository.GetClrbufByStepId(oldStep.StepId);
                                     if (oldClrbuf != null)
                                     {
                                         newClrbuf.StepId = newStep.StepId;
                                         newClrbuf.InformSuccess = oldClrbuf.InformSuccess;
                                         newClrbuf.AddresseeGroupId = oldClrbuf.AddresseeGroupId;
                                         newClrbuf.AdditionalText = oldClrbuf.AdditionalText;
-                                        operationRepository.CreateClrbuf(newClrbuf);
+                                        await operationRepository.CreateClrbuf(newClrbuf);
                                     }
                                     break;
                                 default:
@@ -275,18 +276,18 @@ public class TaskService(ITaskRepository taskRepository,
         return true;
     }
 
-    public bool CreateTaskStatuse(string idTask)
+    public async Task<bool> CreateTaskStatuse(string idTask)
     {
-        return taskRepository.CreateTaskStatuse(idTask);
+        return await taskRepository.CreateTaskStatuse(idTask);
     }
 
-    public List<TaskStatusEntity> GetTaskStatuses()
+    public async Task<List<TaskStatusEntity>> GetTaskStatuses()
     {
-        return taskRepository.GetTaskStatuses();
+        return await taskRepository.GetTaskStatuses();
     }
 
-    public bool UpdateTaskStatus(TaskStatusEntity taskStatus)
+    public async Task<bool> UpdateTaskStatus(TaskStatusEntity taskStatus)
     {
-        return taskRepository.UpdateTaskStatus(taskStatus);
+        return await taskRepository.UpdateTaskStatus(taskStatus);
     }
 }

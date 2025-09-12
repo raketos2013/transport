@@ -7,18 +7,18 @@ namespace FileManager.Core.Services;
 public class TaskLogService(ITaskLogRepository taskLogRepository)
             : ITaskLogService
 {
-    public bool AddTaskLog(TaskLogEntity taskLog)
+    public async Task<bool> AddTaskLog(TaskLogEntity taskLog)
     {
-        return taskLogRepository.AddTaskLog(taskLog);
+        return await taskLogRepository.AddTaskLog(taskLog);
     }
 
-    public List<TaskLogEntity> GetLogs()
+    public async Task<List<TaskLogEntity>> GetLogs()
     {
-        return taskLogRepository.GetLogs();
+        return await taskLogRepository.GetLogs();
     }
 
-    public List<TaskLogEntity> GetLogsByTaskId(string taskId)
+    public async Task<List<TaskLogEntity>> GetLogsByTaskId(string taskId)
     {
-        return taskLogRepository.GetLogsByTaskId(taskId);
+        return await taskLogRepository.GetLogsByTaskId(taskId);
     }
 }

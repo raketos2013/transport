@@ -1,22 +1,32 @@
 ﻿using FileManager.Core.Entities;
 using FileManager.Core.Enums;
 using FileManager.Core.Interfaces.Services;
+using FileManager.Core.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using System.Threading.Tasks;
 
 namespace FileManager.Core.Operations;
 
 public class Move(TaskStepEntity step,
                     TaskOperation? operation,
-                    ITaskLogger taskLogger,
-                    IMailSender mailSender,
-                    IOperationService operationService,
-                    IAddresseeService addresseeService,
-                    ITaskLogService taskLogService)
-            : StepOperation(step, operation, taskLogger, mailSender, operationService, addresseeService, taskLogService)
+                    //ITaskLogger taskLogger,
+                    //IMailSender mailSender,
+                    //IOptions<AuthTokenConfiguration> authTokenConfigurations,
+                    //IOperationService operationService,
+                    //IAddresseeService addresseeService,
+                    //ITaskLogService taskLogService,
+                    //IHttpClientFactory httpClientFactory
+                    IServiceScopeFactory scopeFactory)
+            : StepOperation(step, operation, 
+                            //taskLogger, mailSender, authTokenConfigurations, 
+                            //operationService, addresseeService, taskLogService, httpClientFactory
+                            scopeFactory)
 {
-    public override void Execute(List<string>? bufferFiles)
+    public override async Task Execute(List<string>? bufferFiles)
     {
-        _taskLogger.StepLog(TaskStep, $"ПЕРЕМЕЩЕНИЕ: {TaskStep.Source} => {TaskStep.Destination}");
-        _taskLogger.OperationLog(TaskStep);
+        await _taskLogger.StepLog(TaskStep, $"ПЕРЕМЕЩЕНИЕ: {TaskStep.Source} => {TaskStep.Destination}");
+        await _taskLogger.OperationLog(TaskStep);
 
         string[] files = [];
         string fileNameDestination, fileName;
@@ -44,11 +54,11 @@ public class Move(TaskStepEntity step,
                 infoFiles.Add(new FileInfo(file));
             }
         }
-        _taskLogger.StepLog(TaskStep, $"Количество найденный файлов по маске '{TaskStep.FileMask}': {infoFiles.Count}");
+        await _taskLogger.StepLog(TaskStep, $"Количество найденный файлов по маске '{TaskStep.FileMask}': {infoFiles.Count}");
 
         if (infoFiles.Count > 0)
         {
-            operation = _operationService.GetMoveByStepId(TaskStep.StepId);
+            operation = await _operationService.GetMoveByStepId(TaskStep.StepId);
             //_appDbContext.OperationMove.FirstOrDefault(x => x.StepId == TaskStep.StepId);
             // список файлов с атрибутами
 
@@ -61,7 +71,8 @@ public class Move(TaskStepEntity step,
 
                 if (operation.InformSuccess)
                 {
-                    addresses = _addresseeService.GetAllAddressees()
+                    var addressesAsync = await _addresseeService.GetAllAddressees();
+                    addresses = addressesAsync
                                                     .Where(x => x.AddresseeGroupId == operation.AddresseeGroupId &&
                                                                 x.IsActive == true).ToList();
                 }
@@ -103,7 +114,7 @@ public class Move(TaskStepEntity step,
         {
             if (TaskStep.IsBreak)
             {
-                _taskLogger.StepLog(TaskStep, $"Прерывание задачи: найдено 0 файлов", "", ResultOperation.W);
+                await _taskLogger.StepLog(TaskStep, $"Прерывание задачи: найдено 0 файлов", "", ResultOperation.W);
                 throw new Exception("Операция Move: найдено 0 файлов");
             }
         }
@@ -124,9 +135,10 @@ public class Move(TaskStepEntity step,
             if (operation != null)
             {
                 // дубль по журналу
-                TaskLogEntity? taskLogs = _taskLogService.GetLogsByTaskId(TaskStep.TaskId)
-                                                            .FirstOrDefault(x => x.StepId == TaskStep.StepId &&
-                                                                                    x.FileName == fileName);
+                TaskLogEntity? taskLogs = null;
+                //_taskLogService.GetLogsByTaskId(TaskStep.TaskId)
+                //                                            .FirstOrDefault(x => x.StepId == TaskStep.StepId &&
+                //                                                                    x.FileName == fileName);
                 if (taskLogs != null)
                 {
                     if (operation.FileInLog == DoubleInLog.INADAY)
@@ -214,14 +226,14 @@ public class Move(TaskStepEntity step,
                 {
                     destinationFileInfo.IsReadOnly = false;
                     File.Move(file.FullName, fileNameDestination, isOverwriteFile);
-                    _taskLogger.StepLog(TaskStep, "Файл успешно перемещён", fileName);
+                    await _taskLogger.StepLog(TaskStep, "Файл успешно перемещён", fileName);
                     destinationFileInfo.IsReadOnly = true;
                     successFiles.Add(fileName);
                 }
                 else if (destinationFileInfo.Exists && isOverwriteFile || !destinationFileInfo.Exists)
                 {
                    File.Move(file.FullName, fileNameDestination, isOverwriteFile);
-                    _taskLogger.StepLog(TaskStep, "Файл успешно перемещён", fileName);
+                    await _taskLogger.StepLog(TaskStep, "Файл успешно перемещён", fileName);
                     successFiles.Add(fileName);
                 }
             }
@@ -229,13 +241,13 @@ public class Move(TaskStepEntity step,
 
         if (addresses.Count > 0 && successFiles.Count > 0)
         {
-            _mailSender.Send(TaskStep, addresses, successFiles);
+            await _mailSender.Send(TaskStep, addresses, successFiles);
         }
 
         _nextStep?.Execute(bufferFiles);
     }
 
-    public void FileInUse(FileInfo file)
+    public async Task FileInUse(FileInfo file)
     {
         try
         {
@@ -244,7 +256,7 @@ public class Move(TaskStepEntity step,
         }
         catch (Exception)
         {
-            _taskLogger.StepLog(TaskStep, $"Прерывание задачи: файл {file.Name} занят", "", ResultOperation.E);
+            await _taskLogger.StepLog(TaskStep, $"Прерывание задачи: файл {file.Name} занят", "", ResultOperation.E);
             throw new Exception("Операция Move: файл недоступен");
         }
     }

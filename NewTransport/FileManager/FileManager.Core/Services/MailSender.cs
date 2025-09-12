@@ -9,7 +9,7 @@ namespace FileManager.Core.Services;
 
 public class MailSender : IMailSender
 {
-    public void Send(TaskStepEntity step, List<AddresseeEntity> addresses, List<string> files)
+    public async Task Send(TaskStepEntity step, List<AddresseeEntity> addresses, List<string> files)
     {
         StringBuilder message = new();
         try
@@ -65,7 +65,7 @@ public class MailSender : IMailSender
 
     }
 
-    public void SendOffSteps(string taskId, List<AddresseeEntity> addresses, List<int> numberSteps)
+    public async Task SendOffSteps(string taskId, List<AddresseeEntity> addresses, List<int> numberSteps)
     {
         if (numberSteps.Count == 0)
         {

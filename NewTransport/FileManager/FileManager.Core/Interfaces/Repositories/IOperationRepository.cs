@@ -4,44 +4,44 @@ namespace FileManager.Core.Interfaces.Repositories;
 
 public interface IOperationRepository
 {
-    OperationCopyEntity? GetCopyByStepId(int stepId);
-    OperationMoveEntity? GetMoveByStepId(int stepId);
-    OperationReadEntity? GetReadByStepId(int stepId);
-    OperationExistEntity? GetExistByStepId(int stepId);
-    OperationRenameEntity? GetRenameByStepId(int stepId);
-    OperationDeleteEntity? GetDeleteByStepId(int stepId);
-    OperationClrbufEntity? GetClrbufByStepId(int stepId);
+    Task<OperationCopyEntity?> GetCopyByStepId(int stepId);
+    Task<OperationMoveEntity?> GetMoveByStepId(int stepId);
+    Task<OperationReadEntity?> GetReadByStepId(int stepId);
+    Task<OperationExistEntity?> GetExistByStepId(int stepId);
+    Task<OperationRenameEntity?> GetRenameByStepId(int stepId);
+    Task<OperationDeleteEntity?> GetDeleteByStepId(int stepId);
+    Task<OperationClrbufEntity?> GetClrbufByStepId(int stepId);
 
-    bool DeleteCopy(OperationCopyEntity operation);
-    bool DeleteMove(OperationMoveEntity operation);
-    bool DeleteRead(OperationReadEntity operation);
-    bool DeleteExist(OperationExistEntity operation);
-    bool DeleteDelete(OperationDeleteEntity operation);
-    bool DeleteRename(OperationRenameEntity operation);
-    bool DeleteClrbuf(OperationClrbufEntity operation);
+    Task<bool> DeleteCopy(OperationCopyEntity operation);
+    Task<bool> DeleteMove(OperationMoveEntity operation);
+    Task<bool> DeleteRead(OperationReadEntity operation);
+    Task<bool> DeleteExist(OperationExistEntity operation);
+    Task<bool> DeleteDelete(OperationDeleteEntity operation);
+    Task<bool> DeleteRename(OperationRenameEntity operation);
+    Task<bool> DeleteClrbuf(OperationClrbufEntity operation);
 
-    bool CreateCopy(OperationCopyEntity operation);
-    bool CreateMove(OperationMoveEntity operation);
-    bool CreateRead(OperationReadEntity operation);
-    bool CreateExist(OperationExistEntity operation);
-    bool CreateDelete(OperationDeleteEntity operation);
-    bool CreateRename(OperationRenameEntity operation);
-    bool CreateClrbuf(OperationClrbufEntity operation);
+    Task<bool> CreateCopy(OperationCopyEntity operation);
+    Task<bool> CreateMove(OperationMoveEntity operation);
+    Task<bool> CreateRead(OperationReadEntity operation);
+    Task<bool> CreateExist(OperationExistEntity operation);
+    Task<bool> CreateDelete(OperationDeleteEntity operation);
+    Task<bool> CreateRename(OperationRenameEntity operation);
+    Task<bool> CreateClrbuf(OperationClrbufEntity operation);
 
-    bool UpdateCopy(OperationCopyEntity operation);
-    bool UpdateMove(OperationMoveEntity operation);
-    bool UpdateRead(OperationReadEntity operation);
-    bool UpdateExist(OperationExistEntity operation);
-    bool UpdateDelete(OperationDeleteEntity operation);
-    bool UpdateRename(OperationRenameEntity operation);
-    bool UpdateClrbuf(OperationClrbufEntity operation);
+    Task<bool> UpdateCopy(OperationCopyEntity operation);
+    Task<bool>   UpdateMove(OperationMoveEntity operation);
+    Task<bool> UpdateRead(OperationReadEntity operation);
+    Task<bool>   UpdateExist(OperationExistEntity operation);
+    Task<bool> UpdateDelete(OperationDeleteEntity operation);
+    Task<bool> UpdateRename(OperationRenameEntity operation);
+    Task<bool> UpdateClrbuf(OperationClrbufEntity operation);
 
-    OperationCopyEntity? GetCopyByOperationId(int operationId);
-    OperationMoveEntity? GetMoveByOperationId(int operationId);
-    OperationReadEntity? GetReadByOperationId(int operationId);
-    OperationExistEntity? GetExistByOperationId(int operationId);
-    OperationRenameEntity? GetRenameByOperationId(int operationId);
-    OperationDeleteEntity? GetDeleteByOperationId(int operationId);
-    OperationClrbufEntity? GetClrbufByOperationId(int operationId);
+    Task<OperationCopyEntity?> GetCopyByOperationId(int operationId);
+    Task<OperationMoveEntity?> GetMoveByOperationId(int operationId);
+    Task<OperationReadEntity?> GetReadByOperationId(int operationId);
+    Task<OperationExistEntity?> GetExistByOperationId(int operationId);
+    Task<OperationRenameEntity?> GetRenameByOperationId(int operationId);
+    Task<OperationDeleteEntity?> GetDeleteByOperationId(int operationId);
+    Task<OperationClrbufEntity?> GetClrbufByOperationId(int operationId);
 
 }

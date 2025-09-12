@@ -1,18 +1,19 @@
 ﻿using FileManager.Core.Entities;
 using FileManager.Core.Interfaces.Repositories;
 using FileManager.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace FileManager.Infrastructure.Repositories;
 
 public class TaskLogRepository(AppDbContext appDbContext) : ITaskLogRepository
 {
-    public bool AddTaskLog(TaskLogEntity taskLog)
+    public async Task<bool> AddTaskLog(TaskLogEntity taskLog)
     {
         try
         {
 
             appDbContext.TaskLog.Add(taskLog);
-            appDbContext.SaveChanges();
+            await appDbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception)
@@ -21,13 +22,13 @@ public class TaskLogRepository(AppDbContext appDbContext) : ITaskLogRepository
         }
     }
 
-    public List<TaskLogEntity> GetLogs()
+    public async Task<List<TaskLogEntity>> GetLogs()
     {
-        return appDbContext.TaskLog.ToList();
+        return await appDbContext.TaskLog.ToListAsync();
     }
 
-    public List<TaskLogEntity> GetLogsByTaskId(string taskId)
+    public async Task<List<TaskLogEntity>> GetLogsByTaskId(string taskId)
     {
-        return appDbContext.TaskLog.Where(x => x.TaskId == taskId).ToList();
+        return await appDbContext.TaskLog.Where(x => x.TaskId == taskId).ToListAsync();
     }
 }

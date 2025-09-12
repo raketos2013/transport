@@ -1,26 +1,36 @@
 ﻿using FileManager.Core.Entities;
 using FileManager.Core.Enums;
 using FileManager.Core.Interfaces.Services;
+using FileManager.Core.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.VisualBasic;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 
 namespace FileManager.Core.Operations;
 
 public class Rename(TaskStepEntity step,
                     TaskOperation? operation,
-                    ITaskLogger taskLogger,
-                    IMailSender mailSender,
-                    IOperationService operationService,
-                    IAddresseeService addresseeService,
-                    ITaskLogService taskLogService)
-             : StepOperation(step, operation, taskLogger, mailSender, operationService, addresseeService, taskLogService)
+                    //ITaskLogger taskLogger,
+                    //IMailSender mailSender,
+                    //IOptions<AuthTokenConfiguration> authTokenConfigurations,
+                    //IOperationService operationService,
+                    //IAddresseeService addresseeService,
+                    //ITaskLogService taskLogService,
+                    //IHttpClientFactory httpClientFactory
+                    IServiceScopeFactory scopeFactory)
+             : StepOperation(step, operation, 
+                                //taskLogger, mailSender, authTokenConfigurations, 
+                                //operationService, addresseeService, taskLogService, httpClientFactory
+                                scopeFactory)
 {
-    public override void Execute(List<string>? bufferFiles)
+    public override async Task Execute(List<string>? bufferFiles)
     {
-        _taskLogger.StepLog(TaskStep, $"ПЕРЕИМЕНОВАНИЕ: {TaskStep.Source}");
-        _taskLogger.OperationLog(TaskStep);
+        await _taskLogger.StepLog(TaskStep, $"ПЕРЕИМЕНОВАНИЕ: {TaskStep.Source}");
+        await _taskLogger.OperationLog(TaskStep);
 
         string[] files;
         string fileName, newFileName;
@@ -44,18 +54,19 @@ public class Rename(TaskStepEntity step,
             }
         }
         List<AddresseeEntity> addresses = [];
-        _taskLogger.StepLog(TaskStep, $"Количество найденный файлов по маске '{TaskStep.FileMask}': {infoFiles.Count}");
+        await _taskLogger.StepLog(TaskStep, $"Количество найденный файлов по маске '{TaskStep.FileMask}': {infoFiles.Count}");
 
         if (infoFiles.Count > 0)
         {
             //List<string> successFiles = [];
-            OperationRenameEntity? operation = _operationService.GetRenameByStepId(TaskStep.StepId);
+            OperationRenameEntity? operation = await _operationService.GetRenameByStepId(TaskStep.StepId);
             //_appDbContext.OperationRename.FirstOrDefault(x => x.StepId == TaskStep.StepId);
             if (operation != null)
             {
                 if (operation.InformSuccess)
                 {
-                    addresses = _addresseeService.GetAllAddressees()
+                    var addressesAsync = await _addresseeService.GetAllAddressees();
+                    addresses = addressesAsync
                                                     .Where(x => x.AddresseeGroupId == operation.AddresseeGroupId &&
                                                                 x.IsActive == true).ToList();
                 }
@@ -65,7 +76,7 @@ public class Rename(TaskStepEntity step,
                     fileName = Path.GetFileName(file.FullName);
                     newFileName = RenameFileNew(fileName, operation.OldPattern, operation.NewPattern);
                     FileSystem.Rename(file.FullName, file.DirectoryName + "\\\\" + newFileName);
-                    _taskLogger.StepLog(TaskStep, $"Файл переименован в {newFileName}", fileName);
+                    await _taskLogger.StepLog(TaskStep, $"Файл переименован в {newFileName}", fileName);
                 }
             }
         }
@@ -73,7 +84,7 @@ public class Rename(TaskStepEntity step,
         {
             if (TaskStep.IsBreak)
             {
-                _taskLogger.StepLog(TaskStep, $"Прерывание задачи: найдено 0 файлов", "", ResultOperation.W);
+                await _taskLogger.StepLog(TaskStep, $"Прерывание задачи: найдено 0 файлов", "", ResultOperation.W);
                 throw new Exception("Операция Rename: найдено 0 файлов");
             }
         }

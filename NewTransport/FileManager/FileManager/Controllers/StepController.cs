@@ -17,17 +17,19 @@ public class StepController(IStepService stepService,
         return View();
     }
 
-    public IActionResult StepList(string taskId)
+    public async Task<IActionResult> StepList(string taskId)
     {
-        List<TaskStepEntity> steps = stepService.GetAllStepsByTaskId(taskId).OrderBy(x => x.StepNumber).ToList();
+        var stepsAsync = await stepService.GetAllStepsByTaskId(taskId);
+        var steps = stepsAsync.OrderBy(x => x.StepNumber).ToList();
         return PartialView("_StepList", steps);
     }
 
     [HttpGet]
-    public IActionResult CreateStep(string taskId)
+    public async Task<IActionResult> CreateStep(string taskId)
     {
-        lockService.Lock(taskId, httpContextAccessor.HttpContext.User.Identity.Name);
-        ViewBag.MaxNumber = stepService.GetAllStepsByTaskId(taskId).Count + 1;
+        await lockService.Lock(taskId, httpContextAccessor.HttpContext.User.Identity.Name);
+        var steps = await stepService.GetAllStepsByTaskId(taskId);
+        ViewBag.MaxNumber = steps.Count + 1;
         TaskStepEntity step = new()
         {
             TaskId = taskId
@@ -35,7 +37,7 @@ public class StepController(IStepService stepService,
         return PartialView("_CreateStep", step);
     }
     [HttpPost]
-    public IActionResult CreateStep(TaskStepEntity modelStep)
+    public async Task<IActionResult> CreateStep(TaskStepEntity modelStep)
     {
         try
         {
@@ -46,8 +48,8 @@ public class StepController(IStepService stepService,
                 {
                     modelStep.Destination = "";
                 }
-                stepService.CreateStep(modelStep);
-                lockService.Unlock(modelStep.TaskId);
+                await stepService.CreateStep(modelStep);
+                await lockService.Unlock(modelStep.TaskId);
                 return RedirectToAction("Steps");
             }
             return PartialView("_CreateStep", modelStep);
@@ -59,71 +61,73 @@ public class StepController(IStepService stepService,
     }
 
     [HttpPost]
-    public IActionResult ReplaceStep(string taskId, string numberStep, string operation)
+    public async Task<IActionResult> ReplaceStep(string taskId, string numberStep, string operation)
     {
-        stepService.ReplaceSteps(taskId, numberStep, operation);
+        await stepService.ReplaceSteps(taskId, numberStep, operation);
         return RedirectToAction("Steps");
     }
 
     [HttpPost]
-    public IActionResult ActivatedStep(string taskId, int stepNumber)
+    public async Task<IActionResult> ActivatedStep(string taskId, int stepNumber)
     {
-        var step = stepService.GetStepByTaskId(taskId, stepNumber);
-        stepService.ActivatedStep(step.StepId);
+        var step = await stepService.GetStepByTaskId(taskId, stepNumber);
+        await stepService.ActivatedStep(step.StepId);
         return RedirectToAction("Steps");
     }
 
-    public IActionResult StepDetails(string taskId, string stepNumber)
+    public async Task<IActionResult> StepDetails(string taskId, string stepNumber)
     {
-        TaskStepEntity? taskStep = stepService.GetStepByTaskId(taskId, int.Parse(stepNumber));
+        TaskStepEntity? taskStep = await stepService.GetStepByTaskId(taskId, int.Parse(stepNumber));
         return PartialView("_StepDetails", taskStep);
     }
 
     [HttpGet]
-    public IActionResult EditStep(string taskId, string stepNumber)
+    public async Task<IActionResult> EditStep(string taskId, string stepNumber)
     {
-        lockService.Lock(taskId, httpContextAccessor.HttpContext.User.Identity.Name);
-        ViewBag.MaxNumber = stepService.GetAllStepsByTaskId(taskId).Count + 1;
-        TaskStepEntity step = stepService.GetStepByTaskId(taskId, int.Parse(stepNumber));
+        await lockService.Lock(taskId, httpContextAccessor.HttpContext.User.Identity.Name);
+        var steps = await stepService.GetAllStepsByTaskId(taskId);
+        ViewBag.MaxNumber = steps.Count + 1;
+        TaskStepEntity step = await stepService.GetStepByTaskId(taskId, int.Parse(stepNumber));
         return PartialView("_EditStep", step);
     }
 
     [HttpPost]
-    public IActionResult EditStep(TaskStepEntity stepModel)
+    public async Task<IActionResult> EditStep(TaskStepEntity stepModel)
     {
         if (stepModel.OperationName == OperationName.Delete || stepModel.OperationName == OperationName.Clrbuf ||
             stepModel.OperationName == OperationName.Read || stepModel.OperationName == OperationName.Exist)
         {
             stepModel.Destination = "";
         }
-        stepService.EditStep(stepModel);
-        lockService.Unlock(stepModel.TaskId);
+        await stepService.EditStep(stepModel);
+        await lockService.Unlock(stepModel.TaskId);
         return RedirectToAction("Steps");
     }
 
     [HttpPost]
-    public IActionResult DeleteStep(int stepId)
+    public async Task<IActionResult> DeleteStep(int stepId)
     {
-        stepService.DeleteStep(stepId);
+        await stepService.DeleteStep(stepId);
         return RedirectToAction("Steps");
     }
 
     [HttpPost]
-    public IActionResult CopyStep(string taskId, int stepNumber, int newNumber)
+    public async Task<IActionResult> CopyStep(string taskId, int stepNumber, int newNumber)
     {
-        var step = stepService.GetStepByTaskId(taskId, stepNumber);
-        stepService.CopyStep(step.StepId, newNumber);
-        lockService.Unlock(taskId);
+        var step = await stepService.GetStepByTaskId(taskId, stepNumber);
+        await stepService.CopyStep(step.StepId, newNumber);
+        await lockService.Unlock(taskId);
         return RedirectToAction("Steps");
     }
 
-    public IActionResult ExistFiles(string taskId)
+    public async Task<IActionResult> ExistFiles(string taskId)
     {
         List<int> countFiles = [];
-        var steps = stepService.GetAllStepsByTaskId(taskId);
+        var steps = await stepService.GetAllStepsByTaskId(taskId);
         foreach (var step in steps)
         {
-            countFiles.Add(stepService.CountFiles(step.StepId));
+            var count = await stepService.CountFiles(step.StepId);
+            countFiles.Add(count);
         }
         return Ok(countFiles);
     }

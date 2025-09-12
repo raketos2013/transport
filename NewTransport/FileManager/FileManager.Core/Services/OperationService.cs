@@ -18,192 +18,227 @@ public class OperationService(IOperationRepository operationRepository,
         ReferenceHandler = ReferenceHandler.Preserve,
         WriteIndented = true
     };
-    public bool CreateClrbuf(OperationClrbufEntity operation)
+    public async Task<bool> CreateClrbuf(OperationClrbufEntity operation)
     {
-        var result = operationRepository.CreateClrbuf(operation);
-        var step = stepRepository.GetStepByStepId(operation.StepId);
+        var result = await operationRepository.CreateClrbuf(operation);
+        var step = await stepRepository.GetStepByStepId(operation.StepId);
+        if (step == null)
+        {
+            await operationRepository.DeleteClrbuf(operation);
+            return false;
+        }
         step.OperationId = operation.OperationId;
-        stepRepository.EditStep(step);
-        userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name,
+        await stepRepository.EditStep(step);
+        await userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name,
                                 $"Добавление доп. св-в операции Clrbuf для шага номер {step.StepNumber} задачи {step.TaskId}",
                                 JsonSerializer.Serialize(operation, _options));
         return result;
     }
 
-    public bool CreateCopy(OperationCopyEntity operation)
+    public async Task<bool> CreateCopy(OperationCopyEntity operation)
     {
-        var result = operationRepository.CreateCopy(operation);
-        var step = stepRepository.GetStepByStepId(operation.StepId);
+        var result = await operationRepository.CreateCopy(operation);
+        var step = await stepRepository.GetStepByStepId(operation.StepId);
+        if (step == null)
+        {
+            await operationRepository.DeleteCopy(operation);
+            return false;
+        }
         step.OperationId = operation.OperationId;
-        stepRepository.EditStep(step);
-        userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name,
+        await stepRepository.EditStep(step);
+        await userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name,
                                 $"Добавление доп. св-в операции Copy для шага номер {step.StepNumber} задачи {step.TaskId}",
                                 JsonSerializer.Serialize(operation, _options));
         return result;
     }
 
-    public bool CreateDelete(OperationDeleteEntity operation)
+    public async Task<bool> CreateDelete(OperationDeleteEntity operation)
     {
-        var result = operationRepository.CreateDelete(operation);
-        var step = stepRepository.GetStepByStepId(operation.StepId);
+        var result = await operationRepository.CreateDelete(operation);
+        var step = await stepRepository.GetStepByStepId(operation.StepId);
+        if (step == null)
+        {
+            await operationRepository.DeleteDelete(operation);
+            return false;
+        }
         step.OperationId = operation.OperationId;
-        stepRepository.EditStep(step);
-        userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name,
+        await stepRepository.EditStep(step);
+        await userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name,
                                 $"Добавление доп. св-в операции Delete для шага номер {step.StepNumber} задачи {step.TaskId}",
                                 JsonSerializer.Serialize(operation, _options));
         return result;
     }
 
-    public bool CreateExist(OperationExistEntity operation)
+    public async Task<bool> CreateExist(OperationExistEntity operation)
     {
-        var result = operationRepository.CreateExist(operation);
-        var step = stepRepository.GetStepByStepId(operation.StepId);
+        var result = await operationRepository.CreateExist(operation);
+        var step = await stepRepository.GetStepByStepId(operation.StepId);
+        if (step == null)
+        {
+            await operationRepository.DeleteExist(operation);
+            return false;
+        }
         step.OperationId = operation.OperationId;
-        stepRepository.EditStep(step);
-        userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name,
+        await stepRepository.EditStep(step);
+        await userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name,
                                 $"Добавление доп. св-в операции Exist для шага номер {step.StepNumber} задачи {step.TaskId}",
                                 JsonSerializer.Serialize(operation, _options));
         return result;
     }
 
-    public bool CreateMove(OperationMoveEntity operation)
+    public async Task<bool> CreateMove(OperationMoveEntity operation)
     {
-        var result = operationRepository.CreateMove(operation);
-        var step = stepRepository.GetStepByStepId(operation.StepId);
+        var result = await operationRepository.CreateMove(operation);
+        var step = await stepRepository.GetStepByStepId(operation.StepId);
+        if (step == null)
+        {
+            await operationRepository.DeleteMove(operation);
+            return false;
+        }
         step.OperationId = operation.OperationId;
-        stepRepository.EditStep(step);
-        userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name,
+        await stepRepository.EditStep(step);
+        await userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name,
                                 $"Добавление доп. св-в операции Move для шага номер {step.StepNumber} задачи {step.TaskId}",
                                 JsonSerializer.Serialize(operation, _options));
         return result;
     }
 
-    public bool CreateRead(OperationReadEntity operation)
+    public async Task<bool> CreateRead(OperationReadEntity operation)
     {
-        var result = operationRepository.CreateRead(operation);
-        var step = stepRepository.GetStepByStepId(operation.StepId);
+        var result = await operationRepository.CreateRead(operation);
+        var step = await stepRepository.GetStepByStepId(operation.StepId);
+        if (step == null)
+        {
+            await operationRepository.DeleteRead(operation);
+            return false;
+        }
         step.OperationId = operation.OperationId;
-        stepRepository.EditStep(step);
-        userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name,
+        await stepRepository.EditStep(step);
+        await userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name,
                                 $"Добавление доп. св-в операции Read для шага номер {step.StepNumber} задачи {step.TaskId}",
                                 JsonSerializer.Serialize(operation, _options));
         return result;
     }
 
-    public bool CreateRename(OperationRenameEntity operation)
+    public async Task<bool> CreateRename(OperationRenameEntity operation)
     {
-        var result = operationRepository.CreateRename(operation);
-        var step = stepRepository.GetStepByStepId(operation.StepId);
+        var result = await operationRepository.CreateRename(operation);
+        var step = await stepRepository.GetStepByStepId(operation.StepId);
+        if (step == null)
+        {
+            await operationRepository.DeleteRename(operation);
+            return false;
+        }
         step.OperationId = operation.OperationId;
-        stepRepository.EditStep(step);
-        userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name,
+        await stepRepository.EditStep(step);
+        await userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name,
                                 $"Добавление доп. св-в операции Rename для шага номер {step.StepNumber} задачи {step.TaskId}",
                                 JsonSerializer.Serialize(operation, _options));
         return result;
     }
 
-    public bool DeleteClrbuf(OperationClrbufEntity operation)
+    public async Task<bool> DeleteClrbuf(OperationClrbufEntity operation)
     {
-        return operationRepository.DeleteClrbuf(operation);
+        return await operationRepository.DeleteClrbuf(operation);
     }
 
-    public bool DeleteCopy(OperationCopyEntity operation)
+    public async Task<bool> DeleteCopy(OperationCopyEntity operation)
     {
-        return operationRepository.DeleteCopy(operation);
+        return await operationRepository.DeleteCopy(operation);
     }
 
-    public bool DeleteDelete(OperationDeleteEntity operation)
+    public async Task<bool> DeleteDelete(OperationDeleteEntity operation)
     {
-        return operationRepository.DeleteDelete(operation);
+        return await operationRepository.DeleteDelete(operation);
     }
 
-    public bool DeleteExist(OperationExistEntity operation)
+    public async Task<bool> DeleteExist(OperationExistEntity operation)
     {
-        return operationRepository.DeleteExist(operation);
+        return await operationRepository.DeleteExist(operation);
     }
 
-    public bool DeleteMove(OperationMoveEntity operation)
+    public async Task<bool> DeleteMove(OperationMoveEntity operation)
     {
-        return operationRepository.DeleteMove(operation);
+        return await operationRepository.DeleteMove(operation);
     }
 
-    public bool DeleteRead(OperationReadEntity operation)
+    public async Task<bool> DeleteRead(OperationReadEntity operation)
     {
-        return operationRepository.DeleteRead(operation);
+        return await operationRepository.DeleteRead(operation);
     }
 
-    public bool DeleteRename(OperationRenameEntity operation)
+    public async Task<bool> DeleteRename(OperationRenameEntity operation)
     {
-        return operationRepository.DeleteRename(operation);
+        return await operationRepository.DeleteRename(operation);
     }
 
-    public OperationClrbufEntity? GetClrbufByStepId(int stepId)
+    public async Task<OperationClrbufEntity?> GetClrbufByStepId(int stepId)
     {
-        return operationRepository.GetClrbufByStepId(stepId);
+        return await operationRepository.GetClrbufByStepId(stepId);
     }
 
-    public OperationCopyEntity? GetCopyByStepId(int stepId)
+    public async Task<OperationCopyEntity?> GetCopyByStepId(int stepId)
     {
-        return operationRepository.GetCopyByStepId(stepId);
+        return await operationRepository.GetCopyByStepId(stepId);
     }
 
-    public OperationDeleteEntity? GetDeleteByStepId(int stepId)
+    public async Task<OperationDeleteEntity?> GetDeleteByStepId(int stepId)
     {
-        return operationRepository.GetDeleteByStepId(stepId);
+        return await operationRepository.GetDeleteByStepId(stepId);
     }
 
-    public OperationExistEntity? GetExistByStepId(int stepId)
+    public async Task<OperationExistEntity?> GetExistByStepId(int stepId)
     {
-        return operationRepository.GetExistByStepId(stepId);
+        return await operationRepository.GetExistByStepId(stepId);
     }
 
-    public OperationMoveEntity? GetMoveByStepId(int stepId)
+    public async Task<OperationMoveEntity?> GetMoveByStepId(int stepId)
     {
-        return operationRepository.GetMoveByStepId(stepId);
+        return await operationRepository.GetMoveByStepId(stepId);
     }
 
-    public OperationReadEntity? GetReadByStepId(int stepId)
+    public async Task<OperationReadEntity?> GetReadByStepId(int stepId)
     {
-        return operationRepository.GetReadByStepId(stepId);
+        return await operationRepository.GetReadByStepId(stepId);
     }
 
-    public OperationRenameEntity? GetRenameByStepId(int stepId)
+    public async Task<OperationRenameEntity?> GetRenameByStepId(int stepId)
     {
-        return operationRepository.GetRenameByStepId(stepId);
+        return await operationRepository.GetRenameByStepId(stepId);
     }
 
-    public bool UpdateClrbuf(OperationClrbufEntity operation)
+    public async Task<bool> UpdateClrbuf(OperationClrbufEntity operation)
     {
-        return operationRepository.UpdateClrbuf(operation);
+        return await operationRepository.UpdateClrbuf(operation);
     }
 
-    public bool UpdateCopy(OperationCopyEntity operation)
+    public async Task<bool> UpdateCopy(OperationCopyEntity operation)
     {
-        return operationRepository.UpdateCopy(operation);
+        return await operationRepository.UpdateCopy(operation);
     }
 
-    public bool UpdateDelete(OperationDeleteEntity operation)
+    public async Task<bool> UpdateDelete(OperationDeleteEntity operation)
     {
-        return operationRepository.UpdateDelete(operation);
+        return await operationRepository.UpdateDelete(operation);
     }
 
-    public bool UpdateExist(OperationExistEntity operation)
+    public async Task<bool> UpdateExist(OperationExistEntity operation)
     {
-        return operationRepository.UpdateExist(operation);
+        return await operationRepository.UpdateExist(operation);
     }
 
-    public bool UpdateMove(OperationMoveEntity operation)
+    public async Task<bool> UpdateMove(OperationMoveEntity operation)
     {
-        return operationRepository.UpdateMove(operation);
+        return await operationRepository.UpdateMove(operation);
     }
 
-    public bool UpdateRead(OperationReadEntity operation)
+    public async Task<bool> UpdateRead(OperationReadEntity operation)
     {
-        return operationRepository.UpdateRead(operation);
+        return await operationRepository.UpdateRead(operation);
     }
 
-    public bool UpdateRename(OperationRenameEntity operation)
+    public async Task<bool> UpdateRename(OperationRenameEntity operation)
     {
-        return operationRepository.UpdateRename(operation);
+        return await operationRepository.UpdateRename(operation);
     }
 }

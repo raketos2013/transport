@@ -1,7 +1,9 @@
 ﻿using FileManager.Core.Interfaces.Repositories;
 using FileManager.Core.Interfaces.Services;
 using FileManager.Core.Services;
+using FileManager.Core.ViewModels;
 using FileManager.Infrastructure.Repositories;
+using System.Configuration;
 
 namespace FileManager.Extensions;
 
@@ -32,6 +34,7 @@ public static class RegistrationExtensions
         services.AddScoped<IMailSender, MailSender>();
 
         services.AddScoped<ILockService, Lockservice>();
+        services.AddScoped<IAuthService, AuthService>();
 
         //services.AddScoped<IUserLogging, UserLogging>();
         return services;

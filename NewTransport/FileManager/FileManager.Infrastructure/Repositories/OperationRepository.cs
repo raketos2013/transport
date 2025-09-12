@@ -1,17 +1,18 @@
 ﻿using FileManager.Core.Entities;
 using FileManager.Core.Interfaces.Repositories;
 using FileManager.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace FileManager.Infrastructure.Repositories;
 
 public class OperationRepository(AppDbContext appDbContext) : IOperationRepository
 {
-    public bool CreateClrbuf(OperationClrbufEntity operation)
+    public async Task<bool> CreateClrbuf(OperationClrbufEntity operation)
     {
         try
         {
-            appDbContext.OperationClrbuf.Add(operation);
-            appDbContext.SaveChanges();
+            await appDbContext.OperationClrbuf.AddAsync(operation);
+            await appDbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception)
@@ -20,12 +21,12 @@ public class OperationRepository(AppDbContext appDbContext) : IOperationReposito
         }
     }
 
-    public bool CreateCopy(OperationCopyEntity operation)
+    public async Task<bool> CreateCopy(OperationCopyEntity operation)
     {
         try
         {
-            appDbContext.OperationCopy.Add(operation);
-            appDbContext.SaveChanges();
+            await appDbContext.OperationCopy.AddAsync(operation);
+            await appDbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception)
@@ -34,12 +35,12 @@ public class OperationRepository(AppDbContext appDbContext) : IOperationReposito
         }
     }
 
-    public bool CreateDelete(OperationDeleteEntity operation)
+    public async Task<bool> CreateDelete(OperationDeleteEntity operation)
     {
         try
         {
-            appDbContext.OperationDelete.Add(operation);
-            appDbContext.SaveChanges();
+            await appDbContext.OperationDelete.AddAsync(operation);
+            await appDbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception)
@@ -48,12 +49,12 @@ public class OperationRepository(AppDbContext appDbContext) : IOperationReposito
         }
     }
 
-    public bool CreateExist(OperationExistEntity operation)
+    public async Task<bool> CreateExist(OperationExistEntity operation)
     {
         try
         {
-            appDbContext.OperationExist.Add(operation);
-            appDbContext.SaveChanges();
+            await appDbContext.OperationExist.AddAsync(operation);
+            await appDbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception)
@@ -62,12 +63,12 @@ public class OperationRepository(AppDbContext appDbContext) : IOperationReposito
         }
     }
 
-    public bool CreateMove(OperationMoveEntity operation)
+    public async Task<bool> CreateMove(OperationMoveEntity operation)
     {
         try
         {
-            appDbContext.OperationMove.Add(operation);
-            appDbContext.SaveChanges();
+            await appDbContext.OperationMove.AddAsync(operation);
+            await appDbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception)
@@ -76,12 +77,12 @@ public class OperationRepository(AppDbContext appDbContext) : IOperationReposito
         }
     }
 
-    public bool CreateRead(OperationReadEntity operation)
+    public async Task<bool> CreateRead(OperationReadEntity operation)
     {
         try
         {
-            appDbContext.OperationRead.Add(operation);
-            appDbContext.SaveChanges();
+            await appDbContext.OperationRead.AddAsync(operation);
+            await appDbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception)
@@ -90,12 +91,12 @@ public class OperationRepository(AppDbContext appDbContext) : IOperationReposito
         }
     }
 
-    public bool CreateRename(OperationRenameEntity operation)
+    public async Task<bool> CreateRename(OperationRenameEntity operation)
     {
         try
         {
-            appDbContext.OperationRename.Add(operation);
-            appDbContext.SaveChanges();
+            await appDbContext.OperationRename.AddAsync(operation);
+            await appDbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception)
@@ -104,12 +105,12 @@ public class OperationRepository(AppDbContext appDbContext) : IOperationReposito
         }
     }
 
-    public bool DeleteClrbuf(OperationClrbufEntity operation)
+    public async Task<bool> DeleteClrbuf(OperationClrbufEntity operation)
     {
         try
         {
             appDbContext.OperationClrbuf.Remove(operation);
-            appDbContext.SaveChanges();
+            await appDbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception)
@@ -118,12 +119,12 @@ public class OperationRepository(AppDbContext appDbContext) : IOperationReposito
         }
     }
 
-    public bool DeleteCopy(OperationCopyEntity operation)
+    public async Task<bool> DeleteCopy(OperationCopyEntity operation)
     {
         try
         {
             appDbContext.OperationCopy.Remove(operation);
-            appDbContext.SaveChanges();
+            await appDbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception)
@@ -132,12 +133,12 @@ public class OperationRepository(AppDbContext appDbContext) : IOperationReposito
         }
     }
 
-    public bool DeleteDelete(OperationDeleteEntity operation)
+    public async Task<bool> DeleteDelete(OperationDeleteEntity operation)
     {
         try
         {
             appDbContext.OperationDelete.Remove(operation);
-            appDbContext.SaveChanges();
+            await appDbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception)
@@ -146,12 +147,12 @@ public class OperationRepository(AppDbContext appDbContext) : IOperationReposito
         }
     }
 
-    public bool DeleteExist(OperationExistEntity operation)
+    public async Task<bool> DeleteExist(OperationExistEntity operation)
     {
         try
         {
             appDbContext.OperationExist.Remove(operation);
-            appDbContext.SaveChanges();
+            await appDbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception)
@@ -160,12 +161,12 @@ public class OperationRepository(AppDbContext appDbContext) : IOperationReposito
         }
     }
 
-    public bool DeleteMove(OperationMoveEntity operation)
+    public async Task<bool> DeleteMove(OperationMoveEntity operation)
     {
         try
         {
             appDbContext.OperationMove.Remove(operation);
-            appDbContext.SaveChanges();
+            await appDbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception)
@@ -174,12 +175,12 @@ public class OperationRepository(AppDbContext appDbContext) : IOperationReposito
         }
     }
 
-    public bool DeleteRead(OperationReadEntity operation)
+    public async Task<bool> DeleteRead(OperationReadEntity operation)
     {
         try
         {
             appDbContext.OperationRead.Remove(operation);
-            appDbContext.SaveChanges();
+            await appDbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception)
@@ -188,12 +189,12 @@ public class OperationRepository(AppDbContext appDbContext) : IOperationReposito
         }
     }
 
-    public bool DeleteRename(OperationRenameEntity operation)
+    public async Task<bool> DeleteRename(OperationRenameEntity operation)
     {
         try
         {
             appDbContext.OperationRename.Remove(operation);
-            appDbContext.SaveChanges();
+            await appDbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception)
@@ -202,82 +203,82 @@ public class OperationRepository(AppDbContext appDbContext) : IOperationReposito
         }
     }
 
-    public OperationClrbufEntity? GetClrbufByOperationId(int operationId)
+    public async Task<OperationClrbufEntity?> GetClrbufByOperationId(int operationId)
     {
-        return appDbContext.OperationClrbuf.FirstOrDefault(x => x.OperationId == operationId);
+        return await appDbContext.OperationClrbuf.FirstOrDefaultAsync(x => x.OperationId == operationId);
     }
 
-    public OperationClrbufEntity? GetClrbufByStepId(int stepId)
+    public async Task<OperationClrbufEntity?> GetClrbufByStepId(int stepId)
     {
-        return appDbContext.OperationClrbuf.FirstOrDefault(x => x.StepId == stepId);
+        return await appDbContext.OperationClrbuf.FirstOrDefaultAsync(x => x.StepId == stepId);
     }
 
-    public OperationCopyEntity? GetCopyByOperationId(int operationId)
+    public async Task<OperationCopyEntity?> GetCopyByOperationId(int operationId)
     {
-        return appDbContext.OperationCopy.FirstOrDefault(x => x.OperationId == operationId);
+        return await appDbContext.OperationCopy.FirstOrDefaultAsync(x => x.OperationId == operationId);
     }
 
-    public OperationCopyEntity? GetCopyByStepId(int stepId)
+    public async Task<OperationCopyEntity?> GetCopyByStepId(int stepId)
     {
-        return appDbContext.OperationCopy.FirstOrDefault(x => x.StepId == stepId);
+        return await appDbContext.OperationCopy.FirstOrDefaultAsync(x => x.StepId == stepId);
     }
 
-    public OperationDeleteEntity? GetDeleteByOperationId(int operationId)
+    public async Task<OperationDeleteEntity?> GetDeleteByOperationId(int operationId)
     {
-        return appDbContext.OperationDelete.FirstOrDefault(x => x.OperationId == operationId);
+        return await appDbContext.OperationDelete.FirstOrDefaultAsync(x => x.OperationId == operationId);
     }
 
-    public OperationDeleteEntity? GetDeleteByStepId(int stepId)
+    public async Task<OperationDeleteEntity?> GetDeleteByStepId(int stepId)
     {
-        return appDbContext.OperationDelete.FirstOrDefault(x => x.StepId == stepId);
+        return await appDbContext.OperationDelete.FirstOrDefaultAsync(x => x.StepId == stepId);
     }
 
-    public OperationExistEntity? GetExistByOperationId(int operationId)
+    public async Task<OperationExistEntity?> GetExistByOperationId(int operationId)
     {
-        return appDbContext.OperationExist.FirstOrDefault(x => x.OperationId == operationId);
+        return await appDbContext.OperationExist.FirstOrDefaultAsync(x => x.OperationId == operationId);
     }
 
-    public OperationExistEntity? GetExistByStepId(int stepId)
+    public async Task<OperationExistEntity?> GetExistByStepId(int stepId)
     {
-        return appDbContext.OperationExist.FirstOrDefault(x => x.StepId == stepId);
+        return await appDbContext.OperationExist.FirstOrDefaultAsync(x => x.StepId == stepId);
     }
 
-    public OperationMoveEntity? GetMoveByOperationId(int operationId)
+    public async Task<OperationMoveEntity?> GetMoveByOperationId(int operationId)
     {
-        return appDbContext.OperationMove.FirstOrDefault(x => x.OperationId == operationId);
+        return await appDbContext.OperationMove.FirstOrDefaultAsync(x => x.OperationId == operationId);
     }
 
-    public OperationMoveEntity? GetMoveByStepId(int stepId)
+    public async Task<OperationMoveEntity?> GetMoveByStepId(int stepId)
     {
-        return appDbContext.OperationMove.FirstOrDefault(x => x.StepId == stepId);
+        return await appDbContext.OperationMove.FirstOrDefaultAsync(x => x.StepId == stepId);
     }
 
-    public OperationReadEntity? GetReadByOperationId(int operationId)
+    public async Task<OperationReadEntity?> GetReadByOperationId(int operationId)
     {
-        return appDbContext.OperationRead.FirstOrDefault(x => x.OperationId == operationId);
+        return await appDbContext.OperationRead.FirstOrDefaultAsync(x => x.OperationId == operationId);
     }
 
-    public OperationReadEntity? GetReadByStepId(int stepId)
+    public async Task<OperationReadEntity?> GetReadByStepId(int stepId)
     {
-        return appDbContext.OperationRead.FirstOrDefault(x => x.StepId == stepId);
+        return await appDbContext.OperationRead.FirstOrDefaultAsync(x => x.StepId == stepId);
     }
 
-    public OperationRenameEntity? GetRenameByOperationId(int operationId)
+    public async Task<OperationRenameEntity?> GetRenameByOperationId(int operationId)
     {
-        return appDbContext.OperationRename.FirstOrDefault(x => x.OperationId == operationId);
+        return await appDbContext.OperationRename.FirstOrDefaultAsync(x => x.OperationId == operationId);
     }
 
-    public OperationRenameEntity? GetRenameByStepId(int stepId)
+    public async Task<OperationRenameEntity?> GetRenameByStepId(int stepId)
     {
-        return appDbContext.OperationRename.FirstOrDefault(x => x.StepId == stepId);
+        return await appDbContext.OperationRename.FirstOrDefaultAsync(x => x.StepId == stepId);
     }
 
-    public bool UpdateClrbuf(OperationClrbufEntity operation)
+    public async Task<bool> UpdateClrbuf(OperationClrbufEntity operation)
     {
         try
         {
             appDbContext.OperationClrbuf.Update(operation);
-            appDbContext.SaveChanges();
+            await appDbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception)
@@ -286,12 +287,12 @@ public class OperationRepository(AppDbContext appDbContext) : IOperationReposito
         }
     }
 
-    public bool UpdateCopy(OperationCopyEntity operation)
+    public async Task<bool> UpdateCopy(OperationCopyEntity operation)
     {
         try
         {
             appDbContext.OperationCopy.Update(operation);
-            appDbContext.SaveChanges();
+            await appDbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception)
@@ -300,12 +301,12 @@ public class OperationRepository(AppDbContext appDbContext) : IOperationReposito
         }
     }
 
-    public bool UpdateDelete(OperationDeleteEntity operation)
+    public async Task<bool> UpdateDelete(OperationDeleteEntity operation)
     {
         try
         {
             appDbContext.OperationDelete.Update(operation);
-            appDbContext.SaveChanges();
+            await appDbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception)
@@ -314,12 +315,12 @@ public class OperationRepository(AppDbContext appDbContext) : IOperationReposito
         }
     }
 
-    public bool UpdateExist(OperationExistEntity operation)
+    public async Task<bool> UpdateExist(OperationExistEntity operation)
     {
         try
         {
             appDbContext.OperationExist.Update(operation);
-            appDbContext.SaveChanges();
+            await appDbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception)
@@ -328,12 +329,12 @@ public class OperationRepository(AppDbContext appDbContext) : IOperationReposito
         }
     }
 
-    public bool UpdateMove(OperationMoveEntity operation)
+    public async Task<bool> UpdateMove(OperationMoveEntity operation)
     {
         try
         {
             appDbContext.OperationMove.Update(operation);
-            appDbContext.SaveChanges();
+            await appDbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception)
@@ -342,12 +343,12 @@ public class OperationRepository(AppDbContext appDbContext) : IOperationReposito
         }
     }
 
-    public bool UpdateRead(OperationReadEntity operation)
+    public async Task<bool> UpdateRead(OperationReadEntity operation)
     {
         try
         {
             appDbContext.OperationRead.Update(operation);
-            appDbContext.SaveChanges();
+            await appDbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception)
@@ -356,12 +357,12 @@ public class OperationRepository(AppDbContext appDbContext) : IOperationReposito
         }
     }
 
-    public bool UpdateRename(OperationRenameEntity operation)
+    public async Task<bool> UpdateRename(OperationRenameEntity operation)
     {
         try
         {
             appDbContext.OperationRename.Update(operation);
-            appDbContext.SaveChanges();
+            await appDbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception)

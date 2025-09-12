@@ -1,19 +1,20 @@
 ﻿using FileManager.Core.Entities;
 using FileManager.Core.Interfaces.Repositories;
 using FileManager.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace FileManager.Infrastructure.Repositories;
 
 public class UserLogRepository(AppDbContext appDbContext) : IUserLogRepository
 {
-    public void AddUserLog(UserLogEntity userLog)
+    public async Task AddUserLog(UserLogEntity userLog)
     {
-        appDbContext.UserLog.Add(userLog);
-        appDbContext.SaveChanges();
+        await appDbContext.UserLog.AddAsync(userLog);
+        await appDbContext.SaveChangesAsync();
     }
 
-    public List<UserLogEntity> GetAllLogs()
+    public async Task<List<UserLogEntity>> GetAllLogs()
     {
-        return appDbContext.UserLog.ToList();
+        return await appDbContext.UserLog.ToListAsync();
     }
 }

@@ -1,23 +1,33 @@
 ﻿using FileManager.Core.Entities;
 using FileManager.Core.Enums;
 using FileManager.Core.Interfaces.Services;
+using FileManager.Core.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System.Net.Http.Headers;
+using System.Text.Json;
 
 namespace FileManager.Core.Operations;
 
 public class Copy(TaskStepEntity step,
                     TaskOperation? operation,
-                    ITaskLogger taskLogger,
-                    IMailSender mailSender,
-                    IOperationService operationService,
-                    IAddresseeService addresseeService,
-                    ITaskLogService taskLogService)
-            : StepOperation(step, operation, taskLogger, mailSender, operationService, addresseeService, taskLogService)
+                    //ITaskLogger taskLogger,
+                    //IMailSender mailSender,
+                    //IOptions<AuthTokenConfiguration> authTokenConfigurations,
+                    //IOperationService operationService,
+                    //IAddresseeService addresseeService,
+                    //ITaskLogService taskLogService,
+                    //IHttpClientFactory httpClientFactory,
+                    IServiceScopeFactory scopeFactory)
+            : StepOperation(step, operation, 
+                            //taskLogger, mailSender, authTokenConfigurations, 
+                            //operationService, addresseeService, taskLogService, httpClientFactory,
+                            scopeFactory)
 {
-    public override void Execute(List<string>? bufferFiles)
+    public override async Task Execute(List<string>? bufferFiles)
     {
-        _taskLogger.StepLog(TaskStep, $"КОПИРОВАНИЕ: {TaskStep.Source} => {TaskStep.Destination}");
-        _taskLogger.OperationLog(TaskStep);
+        await _taskLogger.StepLog(TaskStep, $"КОПИРОВАНИЕ: {TaskStep.Source} => {TaskStep.Destination}");
+        await _taskLogger.OperationLog(TaskStep);
 
         string[] files = [];
         string fileNameDestination, fileName;
@@ -45,10 +55,10 @@ public class Copy(TaskStepEntity step,
             }
         }
         List<AddresseeEntity> addresses = [];
-        _taskLogger.StepLog(TaskStep, $"Количество найденный файлов по маске '{TaskStep.FileMask}': {infoFiles.Count}");
+        await _taskLogger.StepLog(TaskStep, $"Количество найденный файлов по маске '{TaskStep.FileMask}': {infoFiles.Count}");
         if (infoFiles.Count > 0)
         {
-            operation = _operationService.GetCopyByStepId(TaskStep.StepId);
+            operation = await _operationService.GetCopyByStepId(TaskStep.StepId);
             //operation = _appDbContext.OperationCopy.FirstOrDefault(x => x.StepId == TaskStep.StepId);
 
             if (operation != null)
@@ -56,7 +66,8 @@ public class Copy(TaskStepEntity step,
 
                 if (operation.InformSuccess)
                 {
-                    addresses = _addresseeService.GetAllAddressees()
+                    var addressesAsync = await _addresseeService.GetAllAddressees();
+                    addresses = addressesAsync
                                                     .Where(x => x.AddresseeGroupId == operation.AddresseeGroupId &&
                                                                 x.IsActive == true).ToList();
                 }
@@ -98,7 +109,7 @@ public class Copy(TaskStepEntity step,
         {
             if (TaskStep.IsBreak)
             {
-                _taskLogger.StepLog(TaskStep, $"Прерывание задачи: найдено 0 файлов", "", ResultOperation.W);
+                await _taskLogger.StepLog(TaskStep, $"Прерывание задачи: найдено 0 файлов", "", ResultOperation.W);
                 throw new Exception("Операция Copy: найдено 0 файлов");
             }
         }
@@ -113,8 +124,8 @@ public class Copy(TaskStepEntity step,
             if (operation != null)
             {
                 // дубль по журналу и файл в источнике
-                TaskLogEntity? taskLogs = _taskLogService.GetLogsByTaskId(TaskStep.TaskId)
-                                                            .FirstOrDefault(x => x.StepId == TaskStep.StepId &&
+                var taskLogsAsync = await _taskLogService.GetLogsByTaskId(TaskStep.TaskId);
+                                                           var taskLogs = taskLogsAsync.FirstOrDefault(x => x.StepId == TaskStep.StepId &&
                                                                                     x.FileName == fileName);
                 if (taskLogs != null)
                 {
@@ -125,7 +136,7 @@ public class Copy(TaskStepEntity step,
                     else if (operation.FileInSource == FileInSource.Always && operation.FileInLog == DoubleInLog.INADAY)
                     {
                         // stop task
-                        _taskLogger.StepLog(TaskStep, "Сработал контроль: \"Дублирование по журналу\"", fileName);
+                        await _taskLogger.StepLog(TaskStep, "Сработал контроль: \"Дублирование по журналу\"", fileName);
                         throw new Exception("Дублирование файла по журналу!");
 
                     }
@@ -194,7 +205,7 @@ public class Copy(TaskStepEntity step,
                 }
                 else if (operation.FileInDestination == FileInDestination.RNM)
                 {
-                    destFileName = destFileName + DateTime.Now.ToString("_yyyyMMdd_HHmmss");
+                    destFileName += DateTime.Now.ToString("_yyyyMMdd_HHmmss");
                     isOverwriteFile = false;
                 }
                 else if (operation.FileInDestination == FileInDestination.ERR)
@@ -202,41 +213,78 @@ public class Copy(TaskStepEntity step,
                     isOverwriteFile = false;
                 }
 
-                if (TaskStep.Destination.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+                if (TaskStep.Destination.StartsWith("http", StringComparison.OrdinalIgnoreCase))
                 {
-                    HttpClient client = new();
-                    byte[] fileBytes = File.ReadAllBytes(file.FullName);
-                    HttpContent fileContent = new ByteArrayContent(fileBytes);
-                    fileContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
+                    
+                    var client = _httpClientFactory.CreateClient("MMR");
+
+                    var data = new Dictionary<string, string>
                     {
-                        Name = "\"file\"", 
-                        FileName = $"\"{fileName}\""
+                        { "grant_type", "client_credentials" },
+                        { "client_id", _authTokenConfigurations.Value.ClientId },
+                        { "client_secret", _authTokenConfigurations.Value.ClientSecret }
                     };
+                    var content = new FormUrlEncodedContent(data);
+                    var response = await client.PostAsync(_authTokenConfigurations.Value.TokenUrl, content);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var jsonResponse = await response.Content.ReadAsStringAsync();
+                        var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(jsonResponse);
+
+                        if (tokenResponse != null)
+                        {
+                            var form = new MultipartFormDataContent();
+                            
+                                var fileContent = new ByteArrayContent(File.ReadAllBytes(file.FullName));
+                                fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse("multipart/form-data");
+                                form.Add(fileContent, "file", Path.GetFileName(file.FullName));
+
+                                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenResponse.access_token);
+                                var responseFile = await client.PostAsync(TaskStep.Destination, form);
+
+
+
+                                if (responseFile.IsSuccessStatusCode)
+                                {
+                                    Console.WriteLine("File uploaded successfully.");
+                                }
+                                else
+                                {
+                                    Console.WriteLine($"Error uploading file: {response.StatusCode}");
+                                }
+                            
+                        }
+                    }
+                }
+                else
+                {
+                    fileNameDestination = Path.Combine(TaskStep.Destination, destFileName);
+                    FileInfo destinationFileInfo = new(fileNameDestination);
+                    if (destinationFileInfo.Exists && destinationFileInfo.IsReadOnly && isOverwriteFile)
+                    {
+                        destinationFileInfo.IsReadOnly = false;
+                        File.Copy(file.FullName, fileNameDestination, isOverwriteFile);
+                        await _taskLogger.StepLog(TaskStep, "Файл успешно скопирован", fileName);
+                        destinationFileInfo.IsReadOnly = true;
+                        successFiles.Add(fileName);
+                    }
+                    else if (destinationFileInfo.Exists && isOverwriteFile || !destinationFileInfo.Exists)
+                    {
+                        File.Copy(file.FullName, fileNameDestination, isOverwriteFile);
+                        await _taskLogger.StepLog(TaskStep, "Файл успешно скопирован", fileName);
+                        successFiles.Add(fileName);
+                    }
                 }
 
-                fileNameDestination = Path.Combine(TaskStep.Destination, destFileName);
-                FileInfo destinationFileInfo = new(fileNameDestination);
-                if (destinationFileInfo.Exists && destinationFileInfo.IsReadOnly && isOverwriteFile)
-                {
-                    destinationFileInfo.IsReadOnly = false;
-                    File.Copy(file.FullName, fileNameDestination, isOverwriteFile);
-                    _taskLogger.StepLog(TaskStep, "Файл успешно скопирован", fileName);
-                    destinationFileInfo.IsReadOnly = true;
-                    successFiles.Add(fileName);
-                }
-                else if (destinationFileInfo.Exists && isOverwriteFile || !destinationFileInfo.Exists)
-                {
-                    File.Copy(file.FullName, fileNameDestination, isOverwriteFile);
-                    _taskLogger.StepLog(TaskStep, "Файл успешно скопирован", fileName);
-                    successFiles.Add(fileName);
-                }
+                    
             }
 
         }
 
         if (addresses.Count > 0 && successFiles.Count > 0)
         {
-            _mailSender.Send(TaskStep, addresses, successFiles);
+            await _mailSender.Send(TaskStep, addresses, successFiles);
         }
 
 

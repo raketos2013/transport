@@ -5,7 +5,7 @@ namespace FileManager.Core.Interfaces.Services;
 
 public interface ITaskLogger
 {
-    void TaskLog(string TaskId, string text, ResultOperation? resultOperation = null);
-    void StepLog(TaskStepEntity step, string text, string filename = "", ResultOperation resultOperation = ResultOperation.I);
-    void OperationLog(TaskStepEntity step);
+    Task TaskLog(string TaskId, string text, ResultOperation? resultOperation = null);
+    Task StepLog(TaskStepEntity step, string text, string filename = "", ResultOperation resultOperation = ResultOperation.I);
+    Task OperationLog(TaskStepEntity step);
 }

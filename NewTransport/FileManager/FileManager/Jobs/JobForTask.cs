@@ -3,41 +3,60 @@ using FileManager.Core.Enums;
 using FileManager.Core.Interfaces.Operations;
 using FileManager.Core.Interfaces.Services;
 using FileManager.Core.OperationFactory;
-using FileManager.Core.Services;
+using FileManager.Core.ViewModels;
+using Microsoft.Extensions.Options;
 using Quartz;
 
 namespace FileManager.Jobs;
 
 [DisallowConcurrentExecution]
-public class JobForTask(ILogger<JobForTask> logger,
-                        ITaskLogger taskLogger,
-                        IMailSender mailSender,
-                        ISchedulerFactory jobFactory,
-                        ITaskService taskService,
-                        IStepService stepService,
-                        IOperationService operationService,
-                        IAddresseeService addresseeService,
-                        ITaskLogService taskLogService) : IJob
+public class JobForTask(
+                        //ILogger<JobForTask> logger,
+                        //ITaskLogger taskLogger,
+                        //IMailSender mailSender,
+                        //ISchedulerFactory jobFactory,
+                        //ITaskService taskService,
+                        //IStepService stepService,
+                        //IOperationService operationService,
+                        //IAddresseeService addresseeService,
+                        //ITaskLogService taskLogService,
+                        //IOptions<AuthTokenConfiguration> authTokenConfigurations,
+                        //IHttpClientFactory httpClientFactory,
+                        IServiceScopeFactory scopeFactory) : IJob
 {
     public async Task Execute(IJobExecutionContext context)
     {
+        using var scope = scopeFactory.CreateScope();
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<JobForTask>>();
+        var taskLogger = scope.ServiceProvider.GetRequiredService<ITaskLogger>();
+        var mailSender = scope.ServiceProvider.GetRequiredService<IMailSender>();
+        var jobFactory = scope.ServiceProvider.GetRequiredService<ISchedulerFactory>();
+        var taskService = scope.ServiceProvider.GetRequiredService<ITaskService>();
+        var stepService = scope.ServiceProvider.GetRequiredService<IStepService>();
+        var operationService = scope.ServiceProvider.GetRequiredService<IOperationService>();
+        var addresseeService = scope.ServiceProvider.GetRequiredService<IAddresseeService>();
+        var taskLogService = scope.ServiceProvider.GetRequiredService<ITaskLogService>();
+        var authTokenConfigurations = scope.ServiceProvider.GetRequiredService<IOptions<AuthTokenConfiguration>>();
+        var httpClientFactory = scope.ServiceProvider.GetRequiredService<IHttpClientFactory>();
+
         var hz = jobFactory.GetScheduler().Result;
-        var taskChecked = taskService.GetTaskById(context.JobDetail.Key.Name);
+        var taskChecked = await taskService.GetTaskById(context.JobDetail.Key.Name);
         if (taskChecked == null || !taskChecked.IsActive)
         {
             return;
         }
-        taskLogger.TaskLog(context.JobDetail.Key.Name, $"<<< Начало работы задачи {context.JobDetail.Key.Name} >>>");
+        await taskLogger.TaskLog(context.JobDetail.Key.Name, $"<<< Начало работы задачи {context.JobDetail.Key.Name} >>>");
 
 
 
-        TaskStatusEntity status = taskService.GetTaskStatuses().First(x => x.TaskId == context.JobDetail.Key.Name); ;
+        var statusAsync = await taskService.GetTaskStatuses();
+        var status = statusAsync.First(x => x.TaskId == context.JobDetail.Key.Name);
         if (status != null)
         {
             status.IsProgress = true;
             status.IsError = false;
             status.DateLastExecute = DateTime.Now;
-            taskService.UpdateTaskStatus(status);
+            await taskService.UpdateTaskStatus(status);
         }
         if (context.RefireCount > 5)
         {
@@ -45,13 +64,13 @@ public class JobForTask(ILogger<JobForTask> logger,
         }
         try
         {
-            TaskEntity? taskEntity = taskService.GetTaskById(context.JobDetail.Key.Name);
+            TaskEntity? taskEntity = await taskService.GetTaskById(context.JobDetail.Key.Name);
             if (taskEntity is null)
             {
                 throw new ArgumentNullException(nameof(taskEntity));
             }
-            List<TaskStepEntity> taskSteps = stepService.GetAllStepsByTaskId(taskEntity.TaskId)
-                                                            .OrderBy(x => x.StepNumber)
+            var taskStepsAsync = await stepService.GetAllStepsByTaskId(taskEntity.TaskId);
+            var taskSteps = taskStepsAsync.OrderBy(x => x.StepNumber)
                                                             .ToList();
             List<int> offSteps = [];
             foreach (var taskStep in taskSteps)
@@ -63,12 +82,12 @@ public class JobForTask(ILogger<JobForTask> logger,
             }
             if (offSteps.Count > 0)
             {
-                var addresses = addresseeService.GetAllAddressees()
-                                                    .Where(x => x.AddresseeGroupId == taskEntity.AddresseeGroupId &&
+                var addressesAsync = await addresseeService.GetAllAddressees();
+                var addresses = addressesAsync.Where(x => x.AddresseeGroupId == taskEntity.AddresseeGroupId &&
                                                                 x.IsActive == true).ToList();
                 if (addresses.Count > 0)
                 {
-                    mailSender.SendOffSteps(taskEntity.TaskId, addresses, offSteps);
+                    await mailSender.SendOffSteps(taskEntity.TaskId, addresses, offSteps);
                 }
             }
 
@@ -84,46 +103,60 @@ public class JobForTask(ILogger<JobForTask> logger,
                     switch (step.OperationName)
                     {
                         case OperationName.Copy:
-                            operation = operationService.GetCopyByStepId(step.StepId);
+                            operation = await operationService.GetCopyByStepId(step.StepId);
                             CreatorFactoryMethod copyCreator = new CopyCreator();
-                            steps.Add(copyCreator.FactoryMethod(step, operation, taskLogger, mailSender,
-                                                                operationService, addresseeService, taskLogService));
+                            steps.Add(copyCreator.FactoryMethod(step, operation, 
+                                                                //taskLogger, mailSender, authTokenConfigurations,
+                                                                //operationService, addresseeService, taskLogService, httpClientFactory
+                                                                scopeFactory));
                             break;
                         case OperationName.Move:
-                            operation = operationService.GetMoveByStepId(step.StepId);
+                            operation = await operationService.GetMoveByStepId(step.StepId);
                             CreatorFactoryMethod moveCreator = new MoveCreator();
-                            steps.Add(moveCreator.FactoryMethod(step, operation, taskLogger, mailSender,
-                                                                operationService, addresseeService, taskLogService));
+                            steps.Add(moveCreator.FactoryMethod(step, operation, 
+                                                                //taskLogger, mailSender, authTokenConfigurations,
+                                                                //operationService, addresseeService, taskLogService, httpClientFactory
+                                                                scopeFactory));
                             break;
                         case OperationName.Read:
-                            operation = operationService.GetReadByStepId(step.StepId);
+                            operation = await operationService.GetReadByStepId(step.StepId);
                             CreatorFactoryMethod readCreator = new ReadCreator();
-                            steps.Add(readCreator.FactoryMethod(step, operation, taskLogger, mailSender,
-                                                                operationService, addresseeService, taskLogService));
+                            steps.Add(readCreator.FactoryMethod(step, operation, 
+                                                                //taskLogger, mailSender, authTokenConfigurations,
+                                                                //operationService, addresseeService, taskLogService, httpClientFactory
+                                                                scopeFactory));
                             break;
                         case OperationName.Exist:
-                            operation = operationService.GetExistByStepId(step.StepId);
+                            operation = await operationService.GetExistByStepId(step.StepId);
                             CreatorFactoryMethod existCreator = new ExistCreator();
-                            steps.Add(existCreator.FactoryMethod(step, operation, taskLogger, mailSender,
-                                                                operationService, addresseeService, taskLogService));
+                            steps.Add(existCreator.FactoryMethod(step, operation, 
+                                                                //taskLogger, mailSender, authTokenConfigurations,
+                                                                //operationService, addresseeService, taskLogService, httpClientFactory
+                                                                scopeFactory));
                             break;
                         case OperationName.Rename:
-                            operation = operationService.GetRenameByStepId(step.StepId);
+                            operation = await operationService.GetRenameByStepId(step.StepId);
                             CreatorFactoryMethod renameCreator = new RenameCreator();
-                            steps.Add(renameCreator.FactoryMethod(step, operation, taskLogger, mailSender,
-                                                                operationService, addresseeService, taskLogService));
+                            steps.Add(renameCreator.FactoryMethod(step, operation, 
+                                                                //taskLogger, mailSender, authTokenConfigurations,
+                                                                //operationService, addresseeService, taskLogService, httpClientFactory
+                                                                scopeFactory));
                             break;
                         case OperationName.Delete:
-                            operation = operationService.GetDeleteByStepId(step.StepId);
+                            operation = await operationService.GetDeleteByStepId(step.StepId);
                             CreatorFactoryMethod deleteCreator = new DeleteCreator();
-                            steps.Add(deleteCreator.FactoryMethod(step, operation, taskLogger, mailSender,
-                                                                operationService, addresseeService, taskLogService));
+                            steps.Add(deleteCreator.FactoryMethod(step, operation, 
+                                                                //taskLogger, mailSender, authTokenConfigurations,
+                                                                //operationService, addresseeService, taskLogService, httpClientFactory
+                                                                scopeFactory));
                             break;
                         case OperationName.Clrbuf:
-                            operation = operationService.GetClrbufByStepId(step.StepId);
+                            operation = await operationService.GetClrbufByStepId(step.StepId);
                             CreatorFactoryMethod clrbufCreator = new ClrbufCreator();
-                            steps.Add(clrbufCreator.FactoryMethod(step, operation, taskLogger, mailSender,
-                                                                operationService, addresseeService, taskLogService));
+                            steps.Add(clrbufCreator.FactoryMethod(step, operation, 
+                                                                //taskLogger, mailSender, authTokenConfigurations,
+                                                                //operationService, addresseeService, taskLogService, httpClientFactory
+                                                                scopeFactory));
                             break;
                         default:
                             break;
@@ -141,25 +174,26 @@ public class JobForTask(ILogger<JobForTask> logger,
             }
             await Task.CompletedTask;
 
-            taskLogger.TaskLog(context.JobDetail.Key.Name, $"<<< Окончание работы задачи {context.JobDetail.Key.Name} >>>");
+            await taskLogger.TaskLog(context.JobDetail.Key.Name, $"<<< Окончание работы задачи {context.JobDetail.Key.Name} >>>");
         }
         catch (Exception ex)
         {
             try
             {
-                TaskStatusEntity status2 = taskService.GetTaskStatuses().First(x => x.TaskId == context.JobDetail.Key.Name);
+                var status2Async = await taskService.GetTaskStatuses();
+                var status2 = status2Async.First(x => x.TaskId == context.JobDetail.Key.Name);
                 if (status != null)
                 {
                     status.IsProgress = false;
                     status.IsError = true;
                     status.DateLastExecute = DateTime.Now;
-                    taskService.UpdateTaskStatus(status2);
+                    await taskService.UpdateTaskStatus(status2);
                 }
-                TaskEntity task = taskService.GetTaskById(context.JobDetail.Key.Name);
+                TaskEntity task = await taskService.GetTaskById(context.JobDetail.Key.Name);
                 if (task != null)
                 {
                     task.IsActive = false;
-                    taskService.EditTask(task);
+                    await taskService.EditTask(task);
                 }
                 logger.LogError($"{DateTime.Now} задача: {context.JobDetail.Key.Name} - {ex.Message}");
             }

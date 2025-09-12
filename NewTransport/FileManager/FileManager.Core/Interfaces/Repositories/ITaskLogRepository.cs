@@ -4,7 +4,7 @@ namespace FileManager.Core.Interfaces.Repositories;
 
 public interface ITaskLogRepository
 {
-    List<TaskLogEntity> GetLogsByTaskId(string taskId);
-    bool AddTaskLog(TaskLogEntity taskLog);
-    List<TaskLogEntity> GetLogs();
+    Task<List<TaskLogEntity>> GetLogsByTaskId(string taskId);
+    Task<bool> AddTaskLog(TaskLogEntity taskLog);
+    Task<List<TaskLogEntity>> GetLogs();
 }

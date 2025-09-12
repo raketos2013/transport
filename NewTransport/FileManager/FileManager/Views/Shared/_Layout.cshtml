@@ -47,7 +47,7 @@
                         </div>
                     </div>
                     <div class="sub-menu-items">
-                        @foreach (var item in addresseeService.GetAllAddresseeGroups())
+                        @foreach (var item in await addresseeService.GetAllAddresseeGroups())
                         {
                             <div class="sub-menu-item">
 

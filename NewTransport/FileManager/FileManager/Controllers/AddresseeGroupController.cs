@@ -26,31 +26,32 @@ public class AddresseeGroupController(IAddresseeService addresseeService,
     }
 
     [HttpPost]
-    public IActionResult AddresseeList(int groupId)
+    public async Task<IActionResult> AddresseeList(int groupId)
     {
-        List<AddresseeEntity> addressees = addresseeService.GetAllAddressees().Where(x => x.AddresseeGroupId == groupId).ToList();
+        var addresseesAsync = await addresseeService.GetAllAddressees();
+        var addressees = addresseesAsync.Where(x => x.AddresseeGroupId == groupId).ToList();
         //context.Addressee.Where(x => x.AddresseeGroupId == groupId).ToList();
 
         return PartialView("_AddresseeList", addressees);
     }
 
-    public IActionResult CreateGroup(string number, string name)
+    public async Task<IActionResult> CreateGroup(string number, string name)
     {
         AddresseeGroupEntity group = new()
         {
             Id = int.Parse(number),
             Name = name
         };
-        addresseeService.CreateAddresseeGroup(group);
+        await addresseeService.CreateAddresseeGroup(group);
         /*context.AddresseeGroup.Add(group);
         context.SaveChanges();*/
         return RedirectToAction("Addressees");
     }
 
     [HttpGet]
-    public IActionResult CreateAddressee()
+    public async Task<IActionResult> CreateAddressee()
     {
-        List<AddresseeGroupEntity> addresseeGroups = addresseeService.GetAllAddresseeGroups();
+        List<AddresseeGroupEntity> addresseeGroups = await addresseeService.GetAllAddresseeGroups();
             //context.AddresseeGroup.ToList();
         ViewBag.AddresseeGroups = addresseeGroups;
         AddresseeEntity newAddressee = new();
@@ -58,11 +59,11 @@ public class AddresseeGroupController(IAddresseeService addresseeService,
     }
 
     [HttpPost]
-    public IActionResult CreateAddressee(AddresseeEntity addressee)
+    public async Task<IActionResult> CreateAddressee(AddresseeEntity addressee)
     {
         try
         {
-            List<AddresseeGroupEntity> addresseeGroups = addresseeService.GetAllAddresseeGroups();
+            List<AddresseeGroupEntity> addresseeGroups = await addresseeService.GetAllAddresseeGroups();
                 //context.AddresseeGroup.ToList();
             ViewBag.AddresseeGroups = addresseeGroups;
 
@@ -76,7 +77,7 @@ public class AddresseeGroupController(IAddresseeService addresseeService,
                     StructuralUnit = addressee.PersonalNumber,
                     AddresseeGroupId = addressee.AddresseeGroupId
                 };
-                addresseeService.CreateAddressee(entity);
+                await addresseeService.CreateAddressee(entity);
                 /*context.Addressee.Add(entity);
                 context.SaveChanges();*/
 
@@ -91,31 +92,32 @@ public class AddresseeGroupController(IAddresseeService addresseeService,
     }
 
     [HttpPost]
-    public IActionResult ActivatedAddressee(string id)
+    public async Task<IActionResult> ActivatedAddressee(string id)
     {
-        AddresseeEntity addressee = addresseeService.GetAllAddressees().FirstOrDefault(x => x.PersonalNumber == id);
+        var addresseeAsync = await addresseeService.GetAllAddressees();
+        var addressee = addresseeAsync.FirstOrDefault(x => x.PersonalNumber == id);
             //context.Addressee.FirstOrDefault(x => x.PersonalNumber == id);
         if (addressee != null)
         {
             addressee.IsActive = !addressee.IsActive;
-            addresseeService.EditAddressee(addressee);
+            await addresseeService.EditAddressee(addressee);
             /*context.Addressee.Update(addressee);
             context.SaveChanges();*/
         }
         return RedirectToAction("Addressees");
     }
 
-    public IActionResult DeleteAddresseeGroup(int id)
+    public async Task<IActionResult> DeleteAddresseeGroup(int id)
     {
-        addresseeService.DeleteAddresseeGroup(id);
+        await addresseeService.DeleteAddresseeGroup(id);
         return RedirectToAction("Tasks", "Task");
     }
 
-    public IActionResult DeleteAddressee(string number, int idGroup)
+    public async Task<IActionResult> DeleteAddressee(string number, int idGroup)
     {
-        var addr = addresseeService.GetAllAddressees()
-                                    .FirstOrDefault(x => x.PersonalNumber == number && 
-                                                        x.AddresseeGroupId == idGroup);
+        var addrAsync = await addresseeService.GetAllAddressees();
+        var addr = addrAsync.FirstOrDefault(x => x.PersonalNumber == number && 
+                                                    x.AddresseeGroupId == idGroup);
         var deletedAddressee = new AddresseeEntity()
         {
             PersonalNumber = number,
@@ -125,8 +127,8 @@ public class AddresseeGroupController(IAddresseeService addresseeService,
             IsActive = addr.IsActive,
             Fio = addr.Fio
         };
-        addresseeService.DeleteAddressee(number, idGroup);
-        userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name,
+        await addresseeService.DeleteAddressee(number, idGroup);
+        await userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name,
                                         $"Удаление адресата {number} из группы номер {idGroup}",
                                         JsonSerializer.Serialize(deletedAddressee, _options));
         return RedirectToAction("Addressees");

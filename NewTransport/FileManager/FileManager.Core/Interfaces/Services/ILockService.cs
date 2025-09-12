@@ -4,7 +4,7 @@ namespace FileManager.Core.Interfaces.Services;
 
 public interface ILockService
 {
-    public bool Lock(string taskId, string userId);
-    public bool Unlock(string taskId);
-    public LockInfoEntity? IsLocked(string taskId);
+    Task<bool> Lock(string taskId, string userId);
+    Task<bool> Unlock(string taskId);
+    Task<LockInfoEntity?> IsLocked(string taskId);
 }

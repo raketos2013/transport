@@ -1,16 +1,23 @@
 ﻿using FileManager.Core.Entities;
 using FileManager.Core.Interfaces.Operations;
 using FileManager.Core.Interfaces.Services;
+using FileManager.Core.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace FileManager.Core.OperationFactory;
 
 public abstract class CreatorFactoryMethod
 {
-    public abstract IStepOperation FactoryMethod(TaskStepEntity step,
+    public abstract IStepOperation FactoryMethod(
+                                                    TaskStepEntity step,
                                                     TaskOperation? operation,
-                                                    ITaskLogger taskLogger,
-                                                    IMailSender mailSender,
-                                                    IOperationService operationService,
-                                                    IAddresseeService addresseeService,
-                                                    ITaskLogService taskLogService);
+                                                    //ITaskLogger taskLogger,
+                                                    //IMailSender mailSender,
+                                                    //IOptions<AuthTokenConfiguration> authTokenConfigurations,
+                                                    //IOperationService operationService,
+                                                    //IAddresseeService addresseeService,
+                                                    //ITaskLogService taskLogService,
+                                                    //IHttpClientFactory httpClientFactory,
+                                                    IServiceScopeFactory scopeFactory);
 }

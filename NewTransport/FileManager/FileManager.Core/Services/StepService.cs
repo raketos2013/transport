@@ -22,33 +22,33 @@ public class StepService(IStepRepository stepRepository,
         WriteIndented = true
     };
 
-    public bool ActivatedStep(int stepId)
+    public async Task<bool> ActivatedStep(int stepId)
     {
-        var result = stepRepository.ActivatedStep(stepId);
-        var step = stepRepository.GetStepByStepId(stepId);
+        var result = await stepRepository.ActivatedStep(stepId);
+        var step = await stepRepository.GetStepByStepId(stepId);
         var text = step.IsActive ? "Включение" : "Выключение";
-        userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, $"{text} шага номер {step.StepNumber} задачи {step.TaskId}",
+        await userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, $"{text} шага номер {step.StepNumber} задачи {step.TaskId}",
                                 JsonSerializer.Serialize(step, _options));
         return result;
     }
 
-    public bool CreateStep(TaskStepEntity taskStep)
+    public async Task<bool> CreateStep(TaskStepEntity taskStep)
     {
         //stepRepository.CreateStep(taskStep);
-        taskService.UpdateLastModifiedTask(taskStep.TaskId);
-        userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, $"Добавление шага для задачи {taskStep.TaskId}",
+        await taskService.UpdateLastModifiedTask(taskStep.TaskId);
+        await userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, $"Добавление шага для задачи {taskStep.TaskId}",
                                 JsonSerializer.Serialize(taskStep, _options));
-        return stepRepository.CreateStep(taskStep);
+        return await stepRepository.CreateStep(taskStep);
     }
 
-    public bool DeleteStep(int stepId)
+    public async Task<bool> DeleteStep(int stepId)
     {
-        return stepRepository.DeleteStep(stepId);
+        return await stepRepository.DeleteStep(stepId);
     }
 
-    public bool EditStep(TaskStepEntity taskStep)
+    public async Task<bool> EditStep(TaskStepEntity taskStep)
     {
-        var step = stepRepository.GetStepByTaskId(taskStep.TaskId, taskStep.StepNumber);
+        var step = await stepRepository.GetStepByTaskId(taskStep.TaskId, taskStep.StepNumber);
         if (step == null)
         {
             return false;
@@ -66,88 +66,88 @@ public class StepService(IStepRepository stepRepository,
             switch (step.OperationName)
             {
                 case OperationName.Copy:
-                    OperationCopyEntity? copy = operationRepository.GetCopyByStepId(step.StepId);
+                    OperationCopyEntity? copy = await operationRepository.GetCopyByStepId(step.StepId);
                     if (copy != null)
                     {
-                        operationRepository.DeleteCopy(copy);
+                        await operationRepository.DeleteCopy(copy);
                     }
                     break;
                 case OperationName.Move:
-                    OperationMoveEntity? move = operationRepository.GetMoveByStepId(step.StepId);
+                    OperationMoveEntity? move = await operationRepository.GetMoveByStepId(step.StepId);
                     if (move != null)
                     {
-                        operationRepository.DeleteMove(move);
+                        await operationRepository.DeleteMove(move);
                     }
                     break;
                 case OperationName.Read:
-                    OperationReadEntity? read = operationRepository.GetReadByStepId(step.StepId);
+                    OperationReadEntity? read = await operationRepository.GetReadByStepId(step.StepId);
                     if (read != null)
                     {
-                        operationRepository.DeleteRead(read);
+                        await operationRepository.DeleteRead(read);
                     }
                     break;
                 case OperationName.Exist:
-                    OperationExistEntity? exist = operationRepository.GetExistByStepId(step.StepId);
+                    OperationExistEntity? exist = await operationRepository.GetExistByStepId(step.StepId);
                     if (exist != null)
                     {
-                        operationRepository.DeleteExist(exist);
+                        await operationRepository.DeleteExist(exist);
                     }
                     break;
                 case OperationName.Rename:
-                    OperationRenameEntity? rename = operationRepository.GetRenameByStepId(step.StepId);
+                    OperationRenameEntity? rename = await operationRepository.GetRenameByStepId(step.StepId);
                     if (rename != null)
                     {
-                        operationRepository.DeleteRename(rename);
+                        await operationRepository.DeleteRename(rename);
                     }
                     break;
                 case OperationName.Delete:
-                    OperationDeleteEntity? delete = operationRepository.GetDeleteByStepId(step.StepId);
+                    OperationDeleteEntity? delete = await operationRepository.GetDeleteByStepId(step.StepId);
                     if (delete != null)
                     {
-                        operationRepository.DeleteDelete(delete);
+                        await operationRepository.DeleteDelete(delete);
                     }
                     break;
                 case OperationName.Clrbuf:
-                    OperationClrbufEntity? clrbuf = operationRepository.GetClrbufByStepId(step.StepId);
+                    OperationClrbufEntity? clrbuf = await operationRepository.GetClrbufByStepId(step.StepId);
                     if (clrbuf != null)
                     {
-                        operationRepository.DeleteClrbuf(clrbuf);
+                        await operationRepository.DeleteClrbuf(clrbuf);
                     }
                     break;
                 default:
                     break;
             }
         }
-        return stepRepository.EditStep(step);
+        return await stepRepository.EditStep(step);
     }
 
-    public List<TaskStepEntity> GetAllSteps()
+    public async Task<List<TaskStepEntity>> GetAllSteps()
     {
-        return stepRepository.GetAllSteps();
+        return await stepRepository.GetAllSteps();
     }
 
-    public List<TaskStepEntity> GetAllStepsByTaskId(string taskId)
+    public async Task<List<TaskStepEntity>> GetAllStepsByTaskId(string taskId)
     {
-        return stepRepository.GetAllStepsByTaskId(taskId);
+        return await stepRepository.GetAllStepsByTaskId(taskId);
     }
 
-    public TaskStepEntity? GetStepByStepId(int stepId)
+    public async Task<TaskStepEntity?> GetStepByStepId(int stepId)
     {
-        return stepRepository.GetStepByStepId(stepId);
+        return await stepRepository.GetStepByStepId(stepId);
     }
 
-    public TaskStepEntity? GetStepByTaskId(string taskId, int stepNumber)
+    public async Task<TaskStepEntity?> GetStepByTaskId(string taskId, int stepNumber)
     {
-        return stepRepository.GetStepByTaskId(taskId, stepNumber);
+        return await stepRepository.GetStepByTaskId(taskId, stepNumber);
     }
 
-    public bool ReplaceSteps(string taskId, string numberStep, string operation)
+    public async Task<bool> ReplaceSteps(string taskId, string numberStep, string operation)
     {
         try
         {
-            List<TaskStepEntity> steps = stepRepository.GetAllStepsByTaskId(taskId)
-                                                        .OrderBy(x => x.StepNumber)
-                                                        .ToList();
+            var stepsAsync = await stepRepository.GetAllStepsByTaskId(taskId);
+            var steps = stepsAsync.OrderBy(x => x.StepNumber)
+                                    .ToList();
             TaskStepEntity step1, step2, tmpStep;
             switch (operation)
             {
@@ -199,7 +199,7 @@ public class StepService(IStepRepository stepRepository,
                     break;
             }
 
-            return stepRepository.UpdateRangeSteps(steps);
+            return await stepRepository.UpdateRangeSteps(steps);
         }
         catch (Exception)
         {
@@ -207,9 +207,9 @@ public class StepService(IStepRepository stepRepository,
         }
     }
 
-    public bool CopyStep(int stepId, int newNumber)
+    public async Task<bool> CopyStep(int stepId, int newNumber)
     {
-        var step = GetStepByStepId(stepId);
+        var step = await GetStepByStepId(stepId);
         if (step == null)
         {
             return false;
@@ -233,7 +233,7 @@ public class StepService(IStepRepository stepRepository,
                     item.StepNumber++;
                     EditStep(item);
                 }*/
-        CreateStep(newStep);
+        await CreateStep(newStep);
         if (step.OperationId != 0)
         {
             int newOperationId = 0;
@@ -241,7 +241,7 @@ public class StepService(IStepRepository stepRepository,
             switch (step.OperationName)
             {
                 case OperationName.Copy:
-                    OperationCopyEntity? oldCopy = operationService.GetCopyByStepId(step.StepId);
+                    OperationCopyEntity? oldCopy = await operationService.GetCopyByStepId(step.StepId);
                     if (oldCopy != null)
                     {
                         OperationCopyEntity newCopy = new()
@@ -257,12 +257,12 @@ public class StepService(IStepRepository stepRepository,
                             Sort = oldCopy.Sort,
                             FileAttribute = oldCopy.FileAttribute
                         };
-                        operationService.CreateCopy(newCopy);
+                        await operationService.CreateCopy(newCopy);
                         newOperationId = newCopy.OperationId;
                     }
                     break;
                 case OperationName.Move:
-                    OperationMoveEntity? oldMove = operationRepository.GetMoveByStepId(step.StepId);
+                    OperationMoveEntity? oldMove = await operationRepository.GetMoveByStepId(step.StepId);
                     if (oldMove != null)
                     {
                         OperationMoveEntity newMove = new()
@@ -276,12 +276,12 @@ public class StepService(IStepRepository stepRepository,
                             Sort = oldMove.Sort,
                             FileAttribute = oldMove.FileAttribute
                         };
-                        operationRepository.CreateMove(newMove);
+                        await operationRepository.CreateMove(newMove);
                         newOperationId = newMove.OperationId;
                     }
                     break;
                 case OperationName.Read:
-                    OperationReadEntity? oldRead = operationRepository.GetReadByStepId(step.StepId);
+                    OperationReadEntity? oldRead = await operationRepository.GetReadByStepId(step.StepId);
                     if (oldRead != null)
                     {
                         OperationReadEntity newRead = new()
@@ -297,12 +297,12 @@ public class StepService(IStepRepository stepRepository,
                             ExpectedResult = oldRead.ExpectedResult,
                             BreakTaskAfterError = oldRead.BreakTaskAfterError
                         };
-                        operationRepository.CreateRead(newRead);
+                        await operationRepository.CreateRead(newRead);
                         newOperationId = newRead.OperationId;
                     }
                     break;
                 case OperationName.Exist:
-                    OperationExistEntity? oldExist = operationRepository.GetExistByStepId(step.StepId);
+                    OperationExistEntity? oldExist = await operationRepository.GetExistByStepId(step.StepId);
                     if (oldExist != null)
                     {
                         OperationExistEntity newExist = new()
@@ -314,12 +314,12 @@ public class StepService(IStepRepository stepRepository,
                             ExpectedResult = oldExist.ExpectedResult,
                             BreakTaskAfterError = oldExist.BreakTaskAfterError
                         };
-                        operationRepository.CreateExist(newExist);
+                        await operationRepository.CreateExist(newExist);
                         newOperationId = newExist.OperationId;
                     }
                     break;
                 case OperationName.Rename:
-                    OperationRenameEntity? oldRename = operationRepository.GetRenameByStepId(step.StepId);
+                    OperationRenameEntity? oldRename = await operationRepository.GetRenameByStepId(step.StepId);
                     if (oldRename != null)
                     {
                         OperationRenameEntity newRename = new()
@@ -331,12 +331,12 @@ public class StepService(IStepRepository stepRepository,
                             OldPattern = oldRename.OldPattern,
                             NewPattern = oldRename.NewPattern
                         };
-                        operationRepository.CreateRename(newRename);
+                        await operationRepository.CreateRename(newRename);
                         newOperationId = newRename.OperationId;
                     }
                     break;
                 case OperationName.Delete:
-                    OperationDeleteEntity? oldDelete = operationRepository.GetDeleteByStepId(step.StepId);
+                    OperationDeleteEntity? oldDelete = await operationRepository.GetDeleteByStepId(step.StepId);
                     if (oldDelete != null)
                     {
                         OperationDeleteEntity newDelete = new()
@@ -346,12 +346,12 @@ public class StepService(IStepRepository stepRepository,
                             AddresseeGroupId = oldDelete.AddresseeGroupId,
                             AdditionalText = oldDelete.AdditionalText
                         };
-                        operationRepository.CreateDelete(newDelete);
+                        await operationRepository.CreateDelete(newDelete);
                         newOperationId = newDelete.OperationId;
                     }
                     break;
                 case OperationName.Clrbuf:
-                    OperationClrbufEntity? oldClrbuf = operationRepository.GetClrbufByStepId(step.StepId);
+                    OperationClrbufEntity? oldClrbuf = await operationRepository.GetClrbufByStepId(step.StepId);
                     if (oldClrbuf != null)
                     {
                         OperationClrbufEntity newClrbuf = new()
@@ -361,21 +361,21 @@ public class StepService(IStepRepository stepRepository,
                             AddresseeGroupId = oldClrbuf.AddresseeGroupId,
                             AdditionalText = oldClrbuf.AdditionalText
                         };
-                        operationRepository.CreateClrbuf(newClrbuf);
+                        await operationRepository.CreateClrbuf(newClrbuf);
                         newOperationId = newClrbuf.OperationId;
                     }
                     break;
             }
             newStep.OperationId = newOperationId;
-            EditStep(newStep);
+            await EditStep(newStep);
         }
         return true;
     }
 
 
-    public int CountFiles(int stepId)
+    public async Task<int> CountFiles(int stepId)
     {
-        var step = GetStepByStepId(stepId);
+        var step = await GetStepByStepId(stepId);
         string[] files = Directory.GetFiles(step.Source, step.FileMask);
         return files.Length;
     }

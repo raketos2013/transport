@@ -1,28 +1,15 @@
-﻿using FileManager.Core.Entities;
+﻿using FileManager.Core.Constants;
+using FileManager.Core.Entities;
 using FileManager.Core.Enums;
-using FileManager.Core.Interfaces.Services;
-using FileManager.Core.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace FileManager.Core.Operations;
 
 public class Clrbuf(TaskStepEntity step,
                     TaskOperation? operation,
-                    //ITaskLogger taskLogger,
-                    //IMailSender mailSender,
-                    //IOptions<AuthTokenConfiguration> authTokenConfigurations,
-                    //IOperationService operationService,
-                    //IAddresseeService addresseeService,
-                    //ITaskLogService taskLogService,
-                    //IHttpClientFactory httpClientFactory
                     IServiceScopeFactory scopeFactory)
-            : StepOperation(step, operation, 
-                            //taskLogger, mailSender, authTokenConfigurations, 
-                            //operationService, addresseeService, taskLogService, httpClientFactory,
-                            scopeFactory)
+            : StepOperation(step, operation, scopeFactory)
 {
     public override async Task Execute(List<string>? bufferFiles)
     {
@@ -30,7 +17,7 @@ public class Clrbuf(TaskStepEntity step,
         int countFiles = 0;
         if (bufferFiles != null)
         {
-            if (TaskStep.FileMask == "{BUFFER}")
+            if (TaskStep.FileMask == AppConstants.BUFFER_FILE_MASK)
             {
                 countFiles = bufferFiles.Count;
                 bufferFiles = null;

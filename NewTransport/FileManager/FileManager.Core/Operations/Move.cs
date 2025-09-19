@@ -1,27 +1,14 @@
-﻿using FileManager.Core.Entities;
+﻿using FileManager.Core.Constants;
+using FileManager.Core.Entities;
 using FileManager.Core.Enums;
-using FileManager.Core.Interfaces.Services;
-using FileManager.Core.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using System.Threading.Tasks;
 
 namespace FileManager.Core.Operations;
 
 public class Move(TaskStepEntity step,
                     TaskOperation? operation,
-                    //ITaskLogger taskLogger,
-                    //IMailSender mailSender,
-                    //IOptions<AuthTokenConfiguration> authTokenConfigurations,
-                    //IOperationService operationService,
-                    //IAddresseeService addresseeService,
-                    //ITaskLogService taskLogService,
-                    //IHttpClientFactory httpClientFactory
                     IServiceScopeFactory scopeFactory)
-            : StepOperation(step, operation, 
-                            //taskLogger, mailSender, authTokenConfigurations, 
-                            //operationService, addresseeService, taskLogService, httpClientFactory
-                            scopeFactory)
+            : StepOperation(step, operation, scopeFactory)
 {
     public override async Task Execute(List<string>? bufferFiles)
     {
@@ -36,7 +23,7 @@ public class Move(TaskStepEntity step,
         List<AddresseeEntity> addresses = [];
         List<string> successFiles = [];
 
-        if (TaskStep.FileMask == "{BUFFER}")
+        if (TaskStep.FileMask == AppConstants.BUFFER_FILE_MASK)
         {
             if (bufferFiles != null)
             {
@@ -59,55 +46,18 @@ public class Move(TaskStepEntity step,
         if (infoFiles.Count > 0)
         {
             operation = await _operationService.GetMoveByStepId(TaskStep.StepId);
-            //_appDbContext.OperationMove.FirstOrDefault(x => x.StepId == TaskStep.StepId);
-            // список файлов с атрибутами
-
-            /*foreach (var file in files)
-				{
-					infoFiles.Add(new FileInfo(file));
-				}*/
             if (operation != null)
             {
-
                 if (operation.InformSuccess)
                 {
                     var addressesAsync = await _addresseeService.GetAllAddressees();
-                    addresses = addressesAsync
-                                                    .Where(x => x.AddresseeGroupId == operation.AddresseeGroupId &&
-                                                                x.IsActive == true).ToList();
+                    addresses = addressesAsync.Where(x => x.AddresseeGroupId == operation.AddresseeGroupId &&
+                                                          x.IsActive == true).ToList();
                 }
-
                 // сортировка
-                switch (operation.Sort)
-                {
-                    case SortFiles.NoSortFiles:
-                        break;
-                    case SortFiles.NameAscending:
-                        infoFiles = infoFiles.OrderBy(o => o.Name).ToList();
-                        break;
-                    case SortFiles.NameDescending:
-                        infoFiles = infoFiles.OrderByDescending(o => o.Name).ToList();
-                        break;
-                    case SortFiles.TimeAscending:
-                        infoFiles = infoFiles.OrderBy(o => o.CreationTime).ToList();
-                        break;
-                    case SortFiles.TimeDescending:
-                        infoFiles = [.. infoFiles.OrderByDescending(o => o.CreationTime)];
-                        break;
-                    case SortFiles.SizeAscending:
-                        infoFiles = infoFiles.OrderBy(o => o.Length).ToList();
-                        break;
-                    case SortFiles.SizeDescending:
-                        infoFiles = infoFiles.OrderByDescending(o => o.Length).ToList();
-                        break;
-                    default:
-                        break;
-                }
+                infoFiles = SortFilesList(infoFiles, operation.Sort);
                 // макс файлов
-                if (operation.FilesForProcessing != 0 & operation.FilesForProcessing < infoFiles.Count - 2)
-                {
-                    infoFiles.RemoveRange(operation.FilesForProcessing, infoFiles.Count - 2);
-                }
+                infoFiles = MaxFiles(infoFiles, operation.FilesForProcessing);
             }
         }
         else
@@ -118,8 +68,6 @@ public class Move(TaskStepEntity step,
                 throw new Exception("Операция Move: найдено 0 файлов");
             }
         }
-
-
 
         bool isOverwriteFile = false;
         foreach (var file in infoFiles)
@@ -135,10 +83,9 @@ public class Move(TaskStepEntity step,
             if (operation != null)
             {
                 // дубль по журналу
-                TaskLogEntity? taskLogs = null;
-                //_taskLogService.GetLogsByTaskId(TaskStep.TaskId)
-                //                                            .FirstOrDefault(x => x.StepId == TaskStep.StepId &&
-                //                                                                    x.FileName == fileName);
+                var taskLogsAsync = await _taskLogService.GetLogsByTaskId(TaskStep.TaskId);
+                var taskLogs = taskLogsAsync.FirstOrDefault(x => x.StepId == TaskStep.StepId &&
+                                                                 x.FileName == fileName);
                 if (taskLogs != null)
                 {
                     if (operation.FileInLog == DoubleInLog.INADAY)
@@ -152,75 +99,21 @@ public class Move(TaskStepEntity step,
                 }
 
                 // атрибуты
-                switch (operation.FileAttribute)
+                if (isMoveFile)
                 {
-                    case AttributeFile.H:
-                        isMoveFile = false;
-                        if ((attributs & FileAttributes.Hidden) == FileAttributes.Hidden)
-                        {
-                            isMoveFile = true;
-                        }
-                        break;
-                    case AttributeFile.A:
-                        isMoveFile = false;
-                        if ((attributs & FileAttributes.Compressed) == FileAttributes.Compressed)
-                        {
-                            isMoveFile = true;
-                        }
-                        break;
-                    case AttributeFile.R:
-                        isMoveFile = false;
-                        if ((attributs & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
-                        {
-                            isMoveFile = true;
-                        }
-                        break;
-                    case AttributeFile.X:
-                        isMoveFile = true;
-                        break;
-                    case AttributeFile.V:
-                        isMoveFile = false;
-                        if ((attributs & FileAttributes.Archive) == FileAttributes.Archive)
-                        {
-                            isMoveFile = true;
-                        }
-                        if ((attributs & FileAttributes.Hidden) == FileAttributes.Hidden)
-                        {
-                            isMoveFile = false;
-                        }
-                        break;
-                    default:
-                        break;
+                    isMoveFile = CheckAttributeFile(operation.FileAttribute, file.FullName);
                 }
+                
             }
 
             if (isMoveFile)
             {
-
-
-
-                var destFileName = fileName;
-
                 // файл в назначении
-                if (operation.FileInDestination == FileInDestination.OVR)
-                {
-                    isOverwriteFile = true;
-                }
-                else if (operation.FileInDestination == FileInDestination.RNM)
-                {
-                    destFileName = destFileName + DateTime.Now.ToString("_yyyyMMdd_HHmmss");
-                    isOverwriteFile = false;
-                }
-                else if (operation.FileInDestination == FileInDestination.ERR)
-                {
-                    isOverwriteFile = false;
-                }
-
+                string destFileName = fileName;
+                (isOverwriteFile, destFileName) = await ExistInDestination(operation, fileName);
 
                 fileNameDestination = Path.Combine(TaskStep.Destination, destFileName);
                 FileInfo destinationFileInfo = new(fileNameDestination);
-
-                
 
                 if (destinationFileInfo.Exists && destinationFileInfo.IsReadOnly && isOverwriteFile)
                 {
@@ -259,5 +152,110 @@ public class Move(TaskStepEntity step,
             await _taskLogger.StepLog(TaskStep, $"Прерывание задачи: файл {file.Name} занят", "", ResultOperation.E);
             throw new Exception("Операция Move: файл недоступен");
         }
+    }
+
+    public List<FileInfo> SortFilesList(List<FileInfo> infoFiles, SortFiles sortParam)
+    {
+        switch (sortParam)
+        {
+            case SortFiles.NoSortFiles:
+                break;
+            case SortFiles.NameAscending:
+                infoFiles = infoFiles.OrderBy(o => o.Name).ToList();
+                break;
+            case SortFiles.NameDescending:
+                infoFiles = infoFiles.OrderByDescending(o => o.Name).ToList();
+                break;
+            case SortFiles.TimeAscending:
+                infoFiles = infoFiles.OrderBy(o => o.CreationTime).ToList();
+                break;
+            case SortFiles.TimeDescending:
+                infoFiles = [.. infoFiles.OrderByDescending(o => o.CreationTime)];
+                break;
+            case SortFiles.SizeAscending:
+                infoFiles = infoFiles.OrderBy(o => o.Length).ToList();
+                break;
+            case SortFiles.SizeDescending:
+                infoFiles = infoFiles.OrderByDescending(o => o.Length).ToList();
+                break;
+            default:
+                break;
+        }
+        return infoFiles;
+    }
+
+    public List<FileInfo> MaxFiles(List<FileInfo> infoFiles, int maxFiles)
+    {
+        if (maxFiles != 0 & maxFiles < infoFiles.Count - 2)
+        {
+            infoFiles.RemoveRange(maxFiles, infoFiles.Count - 2);
+        }
+        return infoFiles;
+    }
+
+    public bool CheckAttributeFile(AttributeFile fileAttribute, string fileName)
+    {
+        FileAttributes attributs = File.GetAttributes(fileName);
+        bool isMoveFile = true;
+        switch (fileAttribute)
+        {
+            case AttributeFile.H:
+                isMoveFile = false;
+                if ((attributs & FileAttributes.Hidden) == FileAttributes.Hidden)
+                {
+                    isMoveFile = true;
+                }
+                break;
+            case AttributeFile.A:
+                isMoveFile = false;
+                if ((attributs & FileAttributes.Compressed) == FileAttributes.Compressed)
+                {
+                    isMoveFile = true;
+                }
+                break;
+            case AttributeFile.R:
+                isMoveFile = false;
+                if ((attributs & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                {
+                    isMoveFile = true;
+                }
+                break;
+            case AttributeFile.X:
+                isMoveFile = true;
+                break;
+            case AttributeFile.V:
+                isMoveFile = false;
+                if ((attributs & FileAttributes.Archive) == FileAttributes.Archive)
+                {
+                    isMoveFile = true;
+                }
+                if ((attributs & FileAttributes.Hidden) == FileAttributes.Hidden)
+                {
+                    isMoveFile = false;
+                }
+                break;
+            default:
+                break;
+        }
+        return isMoveFile;
+    }
+
+    public async Task<(bool, string)> ExistInDestination(OperationMoveEntity operation, string fileName)
+    {
+        var destFileName = fileName;
+        if (operation.FileInDestination == FileInDestination.OVR)
+        {
+            return (true, destFileName);
+        }
+        else if (operation.FileInDestination == FileInDestination.RNM)
+        {
+            destFileName += DateTime.Now.ToString("_yyyyMMdd_HHmmss");
+            return (false, destFileName);
+        }
+        else if (operation.FileInDestination == FileInDestination.ERR)
+        {
+            return (false, destFileName);
+        }
+        return (true, destFileName);
     }
 }

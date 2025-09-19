@@ -25,9 +25,8 @@ public class TaskController(ITaskService taskService,
     }
 
     [HttpPost]
-    public async Task<IActionResult> TasksList(/*string taskGroup*/)
+    public async Task<IActionResult> TasksList()
     {
-        //List<TaskEntity> tasks = taskService.GetTasksByGroup(taskGroup);
         var tasks = await taskService.GetAllTasks();
         List<TaskStatusEntity> statuses = await taskService.GetTaskStatuses();
         foreach (var item in tasks)
@@ -41,7 +40,6 @@ public class TaskController(ITaskService taskService,
     public async Task<IActionResult> CreateTask()
     {
         ViewBag.AddresseeGroups = await addresseeService.GetAllAddresseeGroups();
-        //ViewBag.TaskGroups = taskService.GetAllGroups();
         TaskEntity task = new();
         return PartialView("_CreateTask", task);
     }
@@ -51,7 +49,6 @@ public class TaskController(ITaskService taskService,
     public async Task<IActionResult> CreateTask(TaskEntity task)
     {
         ViewBag.AddresseeGroups = await addresseeService.GetAllAddresseeGroups();
-        //ViewBag.TaskGroups = taskService.GetAllGroups();
         try
         {
             if (ModelState.IsValid)
@@ -75,7 +72,6 @@ public class TaskController(ITaskService taskService,
                                  .ToList();
         TaskDetailsViewModel taskDetails = new(task, steps);
         ViewBag.AddresseeGroups = await addresseeService.GetAllAddresseeGroups();
-        //ViewBag.TaskGroups = taskService.GetAllGroups();
         return PartialView("_TaskDetails", taskDetails);
     }
 
@@ -83,7 +79,7 @@ public class TaskController(ITaskService taskService,
     public async Task<IActionResult> DeleteTask(string taskId)
     {
         await taskService.DeleteTask(taskId);
-        return RedirectToAction("Tasks");
+        return RedirectToAction(nameof(Tasks));
     }
 
     public async Task<IActionResult> TaskLog(TaskLogViewModel model, string? taskId, int? page)
@@ -103,7 +99,7 @@ public class TaskController(ITaskService taskService,
 
         if (model.PageSize == 0)
         {
-            model.PageSize = 10;
+            model.PageSize = 20;
         }
 
         TaskLogViewModel sessionModel = HttpContext?.Session.Get<TaskLogViewModel>("LogFilters");
@@ -116,30 +112,27 @@ public class TaskController(ITaskService taskService,
             IEnumerable<TaskLogEntity> taskLogs = [];
             if (sessionModel.TaskId != null)
             {
+                var taskLogsAsync = await taskLogService.GetLogsByTaskId(sessionModel.TaskId);
                 if (sessionModel.TimeFrom.TimeOfDay == DateTime.MinValue.TimeOfDay && sessionModel.TimeTo.TimeOfDay == DateTime.MinValue.TimeOfDay)
                 {
-                    taskLogs = null;
-                    //taskLogService.GetLogsByTaskId(sessionModel.TaskId)
-                    //                                    .Where(x => x.DateTimeLog.Date >= date &&
-                    //                                                x.DateTimeLog.Date <= date2)
-                    //                                    .ToList();
+                    taskLogs = taskLogsAsync.Where(x => x.DateTimeLog.Date >= date &&
+                                                        x.DateTimeLog.Date <= date2)
+                                            .ToList();
                 }
                 else
                 {
-                    taskLogs = null;
-                    //taskLogService.GetLogsByTaskId(sessionModel.TaskId)
-                    //                                    .Where(x => x.DateTimeLog.Date >= date &&
-                    //                                                x.DateTimeLog.Date <= date2 &&
-                    //                                                x.DateTimeLog.TimeOfDay >= timeFrom.TimeOfDay &&
-                    //                                                x.DateTimeLog.TimeOfDay <= timeTo.TimeOfDay)
-                    //                                    .ToList();
+                    taskLogs = taskLogsAsync.Where(x => x.DateTimeLog.Date >= date &&
+                                                        x.DateTimeLog.Date <= date2 &&
+                                                        x.DateTimeLog.TimeOfDay >= timeFrom.TimeOfDay &&
+                                                        x.DateTimeLog.TimeOfDay <= timeTo.TimeOfDay)
+                                            .ToList();
                 }
             }
             else
             {
+                var taskLogsAsync = await taskLogService.GetLogs();
                 if (sessionModel.TimeFrom.TimeOfDay == DateTime.MinValue.TimeOfDay && sessionModel.TimeTo.TimeOfDay == DateTime.MinValue.TimeOfDay)
                 {
-                    var taskLogsAsync = await taskLogService.GetLogs();
                     taskLogs = taskLogsAsync
                                             .Where(x => x.DateTimeLog.Date >= date &&
                                                         x.DateTimeLog.Date <= date2)
@@ -147,7 +140,6 @@ public class TaskController(ITaskService taskService,
                 }
                 else
                 {
-                    var taskLogsAsync = await taskLogService.GetLogs();
                     taskLogs = taskLogsAsync
                                             .Where(x => x.DateTimeLog.Date >= date &&
                                                         x.DateTimeLog.Date <= date2 &&
@@ -274,12 +266,11 @@ public class TaskController(ITaskService taskService,
         }
         else
         {
-            taskLogs2 = null;
-            //taskLogService.GetLogsByTaskId(taskId)
-            //                            .OrderBy(x => x.DateTimeLog)
-            //                            .Where(x => x.DateTimeLog.Date >= date &&
-            //                                        x.DateTimeLog.Date <= date2)
-            //                            .ToList();
+            var taskLogsAsync = await taskLogService.GetLogsByTaskId(taskId);
+            taskLogs2 = taskLogsAsync.OrderBy(x => x.DateTimeLog)
+                                     .Where(x => x.DateTimeLog.Date >= date &&
+                                                 x.DateTimeLog.Date <= date2)
+                                     .ToList();
         }
 
 
@@ -288,6 +279,7 @@ public class TaskController(ITaskService taskService,
             TaskId = taskId,
             DateFrom = date,
             DateTo = date2,
+            PageSize = model.PageSize,
             Logs = taskLogs2.ToPagedList(pageNumber, model.PageSize)
         };
 
@@ -304,44 +296,40 @@ public class TaskController(ITaskService taskService,
 
         if (string.IsNullOrEmpty(model.TaskId))
         {
+            var taskLogsAsync = await taskLogService.GetLogs();
             if (model.TimeFrom.TimeOfDay == DateTime.MinValue.TimeOfDay && model.TimeTo.TimeOfDay == DateTime.MinValue.TimeOfDay)
             {
-                var taskLogsAsync = await taskLogService.GetLogs();
-                taskLogs = taskLogsAsync
-                                            .Where(x => x.DateTimeLog.Date >= date &&
-                                                        x.DateTimeLog.Date <= date2)
-                                            .ToList();
+                taskLogs = taskLogsAsync.Where(x => x.DateTimeLog.Date >= date &&
+                                                    x.DateTimeLog.Date <= date2)
+                                        .ToList();
             }
             else
-            {
-                var taskLogsAsync = await taskLogService.GetLogs();
-                taskLogs = taskLogsAsync
-                                        .Where(x => x.DateTimeLog.Date >= date &&
-                                                        x.DateTimeLog.Date <= date2 &&
-                                                        x.DateTimeLog.TimeOfDay >= model.TimeFrom.TimeOfDay &&
-                                                        x.DateTimeLog.TimeOfDay <= model.TimeTo.TimeOfDay)
-                                            .ToList();
+            {   
+                taskLogs = taskLogsAsync.Where(x => x.DateTimeLog.Date >= date &&
+                                                    x.DateTimeLog.Date <= date2 &&
+                                                    x.DateTimeLog.TimeOfDay >= model.TimeFrom.TimeOfDay &&
+                                                    x.DateTimeLog.TimeOfDay <= model.TimeTo.TimeOfDay)
+                                        .ToList();
             }
         }
         else
         {
+            var taskLogsAsync = await taskLogService.GetLogsByTaskId(model.TaskId);
             if (model.TimeFrom.TimeOfDay == DateTime.MinValue.TimeOfDay && model.TimeTo.TimeOfDay == DateTime.MinValue.TimeOfDay)
             {
-                taskLogs = null;
-                    //taskLogService.GetLogsByTaskId(model.TaskId)
-                    //                                    .Where(x => x.DateTimeLog.Date >= date &&
-                    //                                                x.DateTimeLog.Date <= date2)
-                    //                                    .ToList();
+                
+                taskLogs = taskLogsAsync.Where(x => x.DateTimeLog.Date >= date &&
+                                                    x.DateTimeLog.Date <= date2)
+                                        .ToList();
             }
             else
             {
-                taskLogs = null;
-                //taskLogService.GetLogsByTaskId(model.TaskId)
-                //                                        .Where(x => x.DateTimeLog.Date >= date &&
-                //                                                    x.DateTimeLog.Date <= date2 &&
-                //                                                    x.DateTimeLog.TimeOfDay >= model.TimeFrom.TimeOfDay &&
-                //                                                    x.DateTimeLog.TimeOfDay <= model.TimeTo.TimeOfDay)
-                //                                        .ToList();
+                
+                taskLogs = taskLogsAsync.Where(x => x.DateTimeLog.Date >= date &&
+                                                    x.DateTimeLog.Date <= date2 &&
+                                                    x.DateTimeLog.TimeOfDay >= model.TimeFrom.TimeOfDay &&
+                                                    x.DateTimeLog.TimeOfDay <= model.TimeTo.TimeOfDay)
+                                        .ToList();
             }
         }
         if (taskLogs != null)
@@ -429,7 +417,7 @@ public class TaskController(ITaskService taskService,
 
         if (model.PageSize == 0)
         {
-            model.PageSize = 10;
+            model.PageSize = 20;
         }
         int pageNumber = 1;
 
@@ -456,24 +444,24 @@ public class TaskController(ITaskService taskService,
     public async Task<IActionResult> CreateTaskGroup(string nameGroup)
     {
         await taskService.CreateTaskGroup(nameGroup);
-        return RedirectToAction("Tasks");
+        return RedirectToAction(nameof(Tasks));
     }
 
     public async Task<IActionResult> DeleteTaskGroup(int idDeleteGroup)
     {
         if (idDeleteGroup == 0)
         {
-            return RedirectToAction("Tasks");
+            return RedirectToAction(nameof(Tasks));
         }
         await taskService.DeleteTaskGroup(idDeleteGroup);
-        return RedirectToAction("Tasks");
+        return RedirectToAction(nameof(Tasks));
     }
 
     [HttpPost]
     public async Task<IActionResult> ActivatedTask(string id)
     {
         await taskService.ActivatedTask(id);
-        return RedirectToAction("Tasks");
+        return RedirectToAction(nameof(Tasks));
     }
 
     [HttpPost]
@@ -503,7 +491,7 @@ public class TaskController(ITaskService taskService,
     {
         await taskService.EditTask(task);
         await lockService.Unlock(taskId);
-        return RedirectToAction("Tasks", "Task", new { taskId });
+        return RedirectToAction(nameof(Tasks), "Task", new { taskId });
     }
 
     [HttpPost]
@@ -537,7 +525,7 @@ public class TaskController(ITaskService taskService,
     {
         await taskService.CopyTask(task.TaskId, task.NewTaskId, task.IsCopySteps.ToString(), task.CopySteps);
         await lockService.Unlock(task.TaskId);
-        return RedirectToAction("Tasks");
+        return RedirectToAction(nameof(Tasks));
     }
 
     [HttpPost]
@@ -546,7 +534,7 @@ public class TaskController(ITaskService taskService,
         var task = await taskService.GetTaskById(taskId);
         if (task == null)
         {
-            return RedirectToAction("Tasks");
+            return RedirectToAction(nameof(Tasks));
         }
         var executing = task.ExecutionLimit - task.ExecutionLeft;
         task.ExecutionLimit = limit;
@@ -560,7 +548,7 @@ public class TaskController(ITaskService taskService,
         }
         await taskService.EditTask(task);
         await lockService.Unlock(taskId);
-        return RedirectToAction("Tasks");
+        return RedirectToAction(nameof(Tasks));
     }
 
     [HttpGet]

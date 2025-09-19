@@ -7,7 +7,8 @@ using System.Text.Json.Serialization;
 
 namespace FileManager.Core.Services;
 
-public class AddresseeService(IAddresseeRepository addresseeRepository,
+public class AddresseeService(IUnitOfWork unitOfWork,
+                                IAddresseeRepository addresseeRepository,
                                 IUserLogService userLogService,
                                 IHttpContextAccessor httpContextAccessor)
             : IAddresseeService
@@ -19,12 +20,12 @@ public class AddresseeService(IAddresseeRepository addresseeRepository,
     };
     public async Task<bool> CreateAddressee(AddresseeEntity addressee)
     {
-        return await addresseeRepository.CreateAddressee(addressee);
+        return await unitOfWork.AddresseeRepository.CreateAddressee(addressee);
     }
 
     public async Task<bool> CreateAddresseeGroup(AddresseeGroupEntity group)
     {
-        return await addresseeRepository.CreateAddresseeGroup(group);
+        return await unitOfWork.AddresseeRepository.CreateAddresseeGroup(group);
     }
 
     public async Task<bool> DeleteAddressee(string number, int idGroup)

@@ -7,23 +7,10 @@ using Microsoft.Extensions.Options;
 
 namespace FileManager.Core.Operations;
 
-public abstract class StepOperation
-    //(TaskStepEntity step,
-    //                                TaskOperation? operation,
-    //                                //ITaskLogger taskLogger,
-    //                                //IMailSender mailSender,
-    //                                //IOptions<AuthTokenConfiguration> authTokenConfigurations,
-    //                                //IOperationService operationService,
-    //                                //IAddresseeService addresseeService,
-    //                                //ITaskLogService taskLogService,
-    //                                //IHttpClientFactory httpClientFactory,
-    //                                IServiceScopeFactory scopeFactory)
-                    : IStepOperation
+public abstract class StepOperation : IStepOperation
 {
     protected IStepOperation? _nextStep;
-
     public TaskStepEntity TaskStep { get; set; }
-
     public TaskOperation? TaskOperation { get; set; }
 
     protected readonly ITaskLogger _taskLogger;
@@ -38,16 +25,16 @@ public abstract class StepOperation
                             TaskOperation? operation, 
                             IServiceScopeFactory scopeFactory)
     {
-        this.TaskStep = step;
-        this.TaskOperation = operation;
+        TaskStep = step;
+        TaskOperation = operation;
         using var scope = scopeFactory.CreateScope();
-        this._taskLogger = scope.ServiceProvider.GetRequiredService<ITaskLogger>();
-        this._mailSender = scope.ServiceProvider.GetRequiredService<IMailSender>();
-        this._operationService = scope.ServiceProvider.GetRequiredService<IOperationService>();
-        this._addresseeService = scope.ServiceProvider.GetRequiredService<IAddresseeService>();
-        this._taskLogService = scope.ServiceProvider.GetRequiredService<ITaskLogService>();
-        this._httpClientFactory = scope.ServiceProvider.GetRequiredService<IHttpClientFactory>();
-        this._authTokenConfigurations = scope.ServiceProvider.GetRequiredService<IOptions<AuthTokenConfiguration>>();
+        _taskLogger = scope.ServiceProvider.GetRequiredService<ITaskLogger>();
+        _mailSender = scope.ServiceProvider.GetRequiredService<IMailSender>();
+        _operationService = scope.ServiceProvider.GetRequiredService<IOperationService>();
+        _addresseeService = scope.ServiceProvider.GetRequiredService<IAddresseeService>();
+        _taskLogService = scope.ServiceProvider.GetRequiredService<ITaskLogService>();
+        _httpClientFactory = scope.ServiceProvider.GetRequiredService<IHttpClientFactory>();
+        _authTokenConfigurations = scope.ServiceProvider.GetRequiredService<IOptions<AuthTokenConfiguration>>();
     }
 
     public abstract Task Execute(List<string>? bufferFiles);

@@ -64,7 +64,7 @@ public class StepController(IStepService stepService,
     public async Task<IActionResult> ReplaceStep(string taskId, string numberStep, string operation)
     {
         await stepService.ReplaceSteps(taskId, numberStep, operation);
-        return RedirectToAction("Steps");
+        return RedirectToAction(nameof(Steps));
     }
 
     [HttpPost]
@@ -72,7 +72,7 @@ public class StepController(IStepService stepService,
     {
         var step = await stepService.GetStepByTaskId(taskId, stepNumber);
         await stepService.ActivatedStep(step.StepId);
-        return RedirectToAction("Steps");
+        return RedirectToAction(nameof(Steps));
     }
 
     public async Task<IActionResult> StepDetails(string taskId, string stepNumber)
@@ -101,14 +101,14 @@ public class StepController(IStepService stepService,
         }
         await stepService.EditStep(stepModel);
         await lockService.Unlock(stepModel.TaskId);
-        return RedirectToAction("Steps");
+        return RedirectToAction(nameof(Steps));
     }
 
     [HttpPost]
     public async Task<IActionResult> DeleteStep(int stepId)
     {
         await stepService.DeleteStep(stepId);
-        return RedirectToAction("Steps");
+        return RedirectToAction(nameof(Steps));
     }
 
     [HttpPost]
@@ -117,7 +117,7 @@ public class StepController(IStepService stepService,
         var step = await stepService.GetStepByTaskId(taskId, stepNumber);
         await stepService.CopyStep(step.StepId, newNumber);
         await lockService.Unlock(taskId);
-        return RedirectToAction("Steps");
+        return RedirectToAction(nameof(Steps));
     }
 
     public async Task<IActionResult> ExistFiles(string taskId)

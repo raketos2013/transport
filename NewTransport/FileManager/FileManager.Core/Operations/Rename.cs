@@ -1,31 +1,17 @@
-﻿using FileManager.Core.Entities;
+﻿using FileManager.Core.Constants;
+using FileManager.Core.Entities;
 using FileManager.Core.Enums;
-using FileManager.Core.Interfaces.Services;
-using FileManager.Core.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Microsoft.VisualBasic;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-
 
 namespace FileManager.Core.Operations;
 
 public class Rename(TaskStepEntity step,
                     TaskOperation? operation,
-                    //ITaskLogger taskLogger,
-                    //IMailSender mailSender,
-                    //IOptions<AuthTokenConfiguration> authTokenConfigurations,
-                    //IOperationService operationService,
-                    //IAddresseeService addresseeService,
-                    //ITaskLogService taskLogService,
-                    //IHttpClientFactory httpClientFactory
                     IServiceScopeFactory scopeFactory)
-             : StepOperation(step, operation, 
-                                //taskLogger, mailSender, authTokenConfigurations, 
-                                //operationService, addresseeService, taskLogService, httpClientFactory
-                                scopeFactory)
+             : StepOperation(step, operation, scopeFactory)
 {
     public override async Task Execute(List<string>? bufferFiles)
     {
@@ -35,7 +21,7 @@ public class Rename(TaskStepEntity step,
         string[] files;
         string fileName, newFileName;
         List<FileInfo> infoFiles = [];
-        if (TaskStep.FileMask == "{BUFFER}")
+        if (TaskStep.FileMask == AppConstants.BUFFER_FILE_MASK)
         {
             if (bufferFiles != null)
             {
@@ -60,17 +46,14 @@ public class Rename(TaskStepEntity step,
         {
             //List<string> successFiles = [];
             OperationRenameEntity? operation = await _operationService.GetRenameByStepId(TaskStep.StepId);
-            //_appDbContext.OperationRename.FirstOrDefault(x => x.StepId == TaskStep.StepId);
             if (operation != null)
             {
                 if (operation.InformSuccess)
                 {
                     var addressesAsync = await _addresseeService.GetAllAddressees();
-                    addresses = addressesAsync
-                                                    .Where(x => x.AddresseeGroupId == operation.AddresseeGroupId &&
-                                                                x.IsActive == true).ToList();
+                    addresses = addressesAsync.Where(x => x.AddresseeGroupId == operation.AddresseeGroupId &&
+                                                          x.IsActive == true).ToList();
                 }
-
                 foreach (var file in infoFiles)
                 {
                     fileName = Path.GetFileName(file.FullName);

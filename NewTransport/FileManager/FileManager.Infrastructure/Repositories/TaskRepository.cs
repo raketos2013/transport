@@ -11,7 +11,6 @@ public class TaskRepository(AppDbContext dbContext) : ITaskRepository
     {
         task.LastModified = DateTime.Now;
         await dbContext.Task.AddAsync(task);
-        await dbContext.SaveChangesAsync();
         await CreateTaskStatuse(task.TaskId);
         return task;
     }
@@ -184,7 +183,6 @@ public class TaskRepository(AppDbContext dbContext) : ITaskRepository
                 TaskId = idTask
             };
             await dbContext.TaskStatuse.AddAsync(taskStatuse);
-            await dbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception)

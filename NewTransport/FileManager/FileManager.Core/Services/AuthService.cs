@@ -34,7 +34,7 @@ public class AuthService : IAuthService
 
                     string searchBase = @"OU=50000104,OU=Users,OU=BB,DC=bb,DC=asb";
                     string? searchFilter = $"Name={username}";
-                    string[] attrs = ["Name", "displayName"];
+                    string[] attrs = ["memberOf", "displayName", "Name"];
                     LdapSearchResults? results = (LdapSearchResults)ldapConnection.Search(searchBase,
                                                                                                 LdapConnection.ScopeSub,
                                                                                                 searchFilter,
@@ -42,6 +42,7 @@ public class AuthService : IAuthService
                                                                                                 false,
                                                                                                 constraints);
                     Thread.Sleep(5000);
+
                     if (results != null)
                     {
                         if (results.Count > 0)

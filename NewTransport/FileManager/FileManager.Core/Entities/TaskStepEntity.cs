@@ -14,11 +14,8 @@ public class TaskStepEntity
     public string TaskId { get; set; }
     [ForeignKey(nameof(TaskId))]
     public TaskEntity? Task { get; set; }
-
     [Display(Name = "Идентификатор операции")]
     public int OperationId { get; set; }
-    /*        [ForeignKey(nameof(OperationId))]
-            public TaskOperation Operation { get; set; }*/
     [Display(Name = "Операция")]
     public OperationName OperationName { get; set; }
     [Display(Name = "Номер шага")]

@@ -13,7 +13,8 @@ public class TaskService(ITaskRepository taskRepository,
                             IStepRepository stepRepository,
                             IOperationRepository operationRepository,
                             IUserLogService userLogService,
-                            IHttpContextAccessor httpContextAccessor
+                            IHttpContextAccessor httpContextAccessor,
+                            IUnitOfWork unitOfWork
                             )
             : ITaskService
 {
@@ -26,8 +27,10 @@ public class TaskService(ITaskRepository taskRepository,
     {
         task.ExecutionLeft = 1;
         task.ExecutionLimit = 1;
-        var taskEntity = await taskRepository.CreateTask(task);
-        await userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, "Создание задачи", JsonSerializer.Serialize(taskEntity, _options));
+        var taskEntity = await unitOfWork.TaskRepository.CreateTask(task);
+        await unitOfWork.SaveAsync();
+        await userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, 
+                                    "Создание задачи", JsonSerializer.Serialize(taskEntity, _options));
         return taskEntity;
     }
 
@@ -86,12 +89,14 @@ public class TaskService(ITaskRepository taskRepository,
     { 
         return await taskRepository.UpdateLastModifiedTask(idTask);
     }
+
     public async Task<TaskGroupEntity?> CreateTaskGroup(string name)
     {
         var taskGroup = await taskRepository.CreateTaskGroup(name);
         await userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, $"Создание группы задач {name}", JsonSerializer.Serialize(taskGroup, _options));
         return taskGroup;
     }
+
     public async Task<bool> DeleteTaskGroup(int idGroup)
     {
         return await taskRepository.DeleteTaskGroup(idGroup);
@@ -290,4 +295,5 @@ public class TaskService(ITaskRepository taskRepository,
     {
         return await taskRepository.UpdateTaskStatus(taskStatus);
     }
+
 }

@@ -2,10 +2,8 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using System.DirectoryServices.AccountManagement;
 using System.Security.Claims;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace FileManager.Controllers;
 
@@ -13,7 +11,6 @@ public class AccountController(ILogger<AccountController> logger,
                                 IUserLogService userLogService,
                                 IAuthService authService) : Controller
 {
-
     private readonly ILogger _logger = logger;
 
     public IActionResult Login()
@@ -27,7 +24,7 @@ public class AccountController(ILogger<AccountController> logger,
     {
         HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         await userLogService.AddLog(HttpContext.User.Identity.Name, "Выход из системы", JsonSerializer.Serialize(""));
-        return RedirectToAction("Login");
+        return RedirectToAction(nameof(Login));
     }
 
     [NonAction]

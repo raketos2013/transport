@@ -1,29 +1,16 @@
-﻿using FileManager.Core.Entities;
+﻿using FileManager.Core.Constants;
+using FileManager.Core.Entities;
 using FileManager.Core.Enums;
-using FileManager.Core.Interfaces.Services;
-using FileManager.Core.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace FileManager.Core.Operations;
 
 public class Read(TaskStepEntity step,
                     TaskOperation? operation,
-                    //ITaskLogger taskLogger,
-                    //IMailSender mailSender,
-                    //IOptions<AuthTokenConfiguration> authTokenConfigurations,
-                    //IOperationService operationService,
-                    //IAddresseeService addresseeService,
-                    //ITaskLogService taskLogService,
-                    //IHttpClientFactory httpClientFactory
                     IServiceScopeFactory scopeFactory)
-            : StepOperation(step, operation, 
-                            //taskLogger, mailSender, authTokenConfigurations, 
-                            //operationService, addresseeService, taskLogService, httpClientFactory
-                            scopeFactory)
+            : StepOperation(step, operation, scopeFactory)
 {
     public override async Task Execute(List<string>? bufferFiles)
     {
@@ -39,7 +26,7 @@ public class Read(TaskStepEntity step,
 
         bufferFiles ??= [];
 
-        if (TaskStep.FileMask == "{BUFFER}")
+        if (TaskStep.FileMask == AppConstants.BUFFER_FILE_MASK)
         {
             if (bufferFiles != null)
             {
@@ -62,7 +49,6 @@ public class Read(TaskStepEntity step,
         if (infoFiles.Count > 0)
         {
             operation = await _operationService.GetReadByStepId(TaskStep.StepId);
-            //_appDbContext.OperationRead.FirstOrDefault(x => x.StepId == TaskStep.StepId);
             if (operation != null)
             {
 
@@ -77,8 +63,6 @@ public class Read(TaskStepEntity step,
                 Encoding encoding = Encoding.Default;
                 isReadFile = true;
 
-
-
                 foreach (var file in files)
                 {
                     FileInfo fileInfo = new(file);
@@ -86,12 +70,9 @@ public class Read(TaskStepEntity step,
                     fileName = Path.GetFileName(fileInfo.FullName);
 
                     // файл в источнике
-                    TaskLogEntity? taskLogs = null;
-                    //_taskLogService.GetLogsByTaskId(TaskStep.TaskId)
-                    //                                        .FirstOrDefault(x => x.StepId == TaskStep.StepId &&
-                    //                                                                x.FileName == fileName);
-                    /*_appDbContext.TaskLog.FirstOrDefault(x => x.StepId == TaskStep.StepId &&
-                                                                                    x.FileName == fileName);*/
+                    var taskLogsAsync = await _taskLogService.GetLogsByTaskId(TaskStep.TaskId);
+                    var taskLogs = taskLogsAsync.FirstOrDefault(x => x.StepId == TaskStep.StepId &&
+                                                                     x.FileName == fileName);
 
                     if (!string.IsNullOrEmpty(operation.FindString))
                     {
@@ -113,13 +94,11 @@ public class Read(TaskStepEntity step,
                             {
                                 if (line.Contains("qweqwe"))
                                 {
-                                    //Console.WriteLine($"Файл содержит строку: {line}");
                                     isReadFile = true;
                                 }
                             }
 
                         }
-                        //Console.WriteLine($"Текст 'qwqwe' не найден в файле.");
                     }
 
                     if (taskLogs != null)
@@ -131,10 +110,8 @@ public class Read(TaskStepEntity step,
                     }
                     if (isReadFile)
                     {
-                       
                             bufferFiles.Add(file);
                             successFiles.Add(fileName);
-
                     } 
                 }
 

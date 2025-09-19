@@ -11,7 +11,6 @@ namespace FileManager.Controllers;
 public class AddresseeGroupController(IAddresseeService addresseeService,
                                         IUserLogService userLogService,
                                         IHttpContextAccessor httpContextAccessor
-                                        //AppDbContext context
                                         )
             : Controller
 {
@@ -30,8 +29,6 @@ public class AddresseeGroupController(IAddresseeService addresseeService,
     {
         var addresseesAsync = await addresseeService.GetAllAddressees();
         var addressees = addresseesAsync.Where(x => x.AddresseeGroupId == groupId).ToList();
-        //context.Addressee.Where(x => x.AddresseeGroupId == groupId).ToList();
-
         return PartialView("_AddresseeList", addressees);
     }
 
@@ -43,16 +40,13 @@ public class AddresseeGroupController(IAddresseeService addresseeService,
             Name = name
         };
         await addresseeService.CreateAddresseeGroup(group);
-        /*context.AddresseeGroup.Add(group);
-        context.SaveChanges();*/
-        return RedirectToAction("Addressees");
+        return RedirectToAction(nameof(Addressees));
     }
 
     [HttpGet]
     public async Task<IActionResult> CreateAddressee()
     {
         List<AddresseeGroupEntity> addresseeGroups = await addresseeService.GetAllAddresseeGroups();
-            //context.AddresseeGroup.ToList();
         ViewBag.AddresseeGroups = addresseeGroups;
         AddresseeEntity newAddressee = new();
         return PartialView("_CreateAddressee", newAddressee);
@@ -64,7 +58,6 @@ public class AddresseeGroupController(IAddresseeService addresseeService,
         try
         {
             List<AddresseeGroupEntity> addresseeGroups = await addresseeService.GetAllAddresseeGroups();
-                //context.AddresseeGroup.ToList();
             ViewBag.AddresseeGroups = addresseeGroups;
 
             if (ModelState.IsValid)
@@ -78,8 +71,6 @@ public class AddresseeGroupController(IAddresseeService addresseeService,
                     AddresseeGroupId = addressee.AddresseeGroupId
                 };
                 await addresseeService.CreateAddressee(entity);
-                /*context.Addressee.Add(entity);
-                context.SaveChanges();*/
 
                 return RedirectToAction(nameof(Addressees));
             }
@@ -96,15 +87,12 @@ public class AddresseeGroupController(IAddresseeService addresseeService,
     {
         var addresseeAsync = await addresseeService.GetAllAddressees();
         var addressee = addresseeAsync.FirstOrDefault(x => x.PersonalNumber == id);
-            //context.Addressee.FirstOrDefault(x => x.PersonalNumber == id);
         if (addressee != null)
         {
             addressee.IsActive = !addressee.IsActive;
             await addresseeService.EditAddressee(addressee);
-            /*context.Addressee.Update(addressee);
-            context.SaveChanges();*/
         }
-        return RedirectToAction("Addressees");
+        return RedirectToAction(nameof(Addressees));
     }
 
     public async Task<IActionResult> DeleteAddresseeGroup(int id)
@@ -117,7 +105,7 @@ public class AddresseeGroupController(IAddresseeService addresseeService,
     {
         var addrAsync = await addresseeService.GetAllAddressees();
         var addr = addrAsync.FirstOrDefault(x => x.PersonalNumber == number && 
-                                                    x.AddresseeGroupId == idGroup);
+                                                 x.AddresseeGroupId == idGroup);
         var deletedAddressee = new AddresseeEntity()
         {
             PersonalNumber = number,
@@ -129,8 +117,8 @@ public class AddresseeGroupController(IAddresseeService addresseeService,
         };
         await addresseeService.DeleteAddressee(number, idGroup);
         await userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name,
-                                        $"Удаление адресата {number} из группы номер {idGroup}",
-                                        JsonSerializer.Serialize(deletedAddressee, _options));
-        return RedirectToAction("Addressees");
+                                    $"Удаление адресата {number} из группы номер {idGroup}",
+                                    JsonSerializer.Serialize(deletedAddressee, _options));
+        return RedirectToAction(nameof(Addressees));
     }
 }

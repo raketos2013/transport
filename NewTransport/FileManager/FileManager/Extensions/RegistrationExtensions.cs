@@ -18,6 +18,8 @@ public static class RegistrationExtensions
         services.AddScoped<ITaskLogRepository, TaskLogRepository>();
         services.AddScoped<IUserLogRepository, UserLogRepository>();
         services.AddScoped<ILockRepository, LockRepository>();
+
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
         return services;
     }
 

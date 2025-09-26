@@ -1,122 +1,66 @@
-﻿using FileManager.Core.Entities;
+﻿using FileManager.Core.Constants;
+using FileManager.Core.Entities;
 using FileManager.Core.Enums;
+using FileManager.Core.Exceptions;
 using FileManager.Core.Interfaces.Repositories;
 using FileManager.Core.Interfaces.Services;
 using FileManager.Core.ViewModels;
-using Microsoft.AspNetCore.Http;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace FileManager.Core.Services;
 
-public class TaskService(ITaskRepository taskRepository,
-                            IStepRepository stepRepository,
-                            IOperationRepository operationRepository,
-                            IUserLogService userLogService,
-                            IHttpContextAccessor httpContextAccessor,
-                            IUnitOfWork unitOfWork
-                            )
+public class TaskService(IUnitOfWork unitOfWork)
             : ITaskService
 {
-    private static readonly JsonSerializerOptions _options = new()
-    {
-        ReferenceHandler = ReferenceHandler.Preserve,
-        WriteIndented = true
-    };
     public async Task<TaskEntity> CreateTask(TaskEntity task)
     {
         task.ExecutionLeft = 1;
         task.ExecutionLimit = 1;
-        var taskEntity = await unitOfWork.TaskRepository.CreateTask(task);
-        await unitOfWork.SaveAsync();
-        await userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, 
-                                    "Создание задачи", JsonSerializer.Serialize(taskEntity, _options));
-        return taskEntity;
+        var createdTask = await unitOfWork.TaskRepository.CreateTask(task);
+        return await unitOfWork.SaveAsync() > 0 ? createdTask
+                        : throw new DomainException("Ошибка создания задачи");
     }
 
     public async Task<bool> DeleteTask(string idTask)
     {
-        var deletedSteps = await stepRepository.DeleteStepsByTaskId(idTask);
-        var deletedTask = await taskRepository.DeleteTask(idTask);
-        return deletedSteps && deletedTask;
-    }
-
-    public async Task<List<TaskGroupEntity>> GetAllGroups()
-    {
-        return await taskRepository.GetAllGroups();
+        var deletedSteps = await unitOfWork.StepRepository.DeleteStepsByTaskId(idTask);
+        var deletedTask = await unitOfWork.TaskRepository.DeleteTask(idTask);
+        return deletedSteps && 
+                deletedTask && 
+                await unitOfWork.SaveAsync() > 0;
     }
 
     public async Task<List<TaskEntity>> GetAllTasks()
     {
-        return await taskRepository.GetAllTasks();
+        return await unitOfWork.TaskRepository.GetAllTasks();
     }
 
-    public async Task<TaskEntity> GetTaskById(string idTask)
+    public async Task<TaskEntity?> GetTaskById(string idTask)
     {
-        return await taskRepository.GetTaskById(idTask);
+        return await unitOfWork.TaskRepository.GetTaskById(idTask);
     }
 
-    public async Task<List<TaskEntity>> GetTasksByGroup(string nameGroup)
+    public async Task<TaskEntity> EditTask(TaskEntity task)
     {
-        //List<TaskEntity> tasks = [];
-        //TaskGroupEntity taskGroup = await taskRepository.GetTaskGroupByName(nameGroup);
-        //if (nameGroup == "Все")
-        //{
-        //    tasks = await taskRepository.GetAllTasks()
-        //                            .OrderByDescending(x => x.IsActive)
-        //                            .ThenBy(x => x.TaskId)
-        //                            .ToList();
-        //}
-        //else
-        //{
-        //    tasks = taskRepository.GetTasksByGroup(taskGroup.Id)
-        //                            .OrderByDescending(x => x.IsActive)
-        //                            .ThenBy(x => x.TaskId)
-        //                            .ToList();
-        //}
-        //return tasks;
-        throw new NotImplementedException();
+        var editedTask = unitOfWork.TaskRepository.EditTask(task);
+        return await unitOfWork.SaveAsync() > 0 ? await editedTask
+                        : throw new DomainException("Ошибка обновления задачи");
     }
 
-    public async Task<bool> EditTask(TaskEntity task)
+    public async Task<TaskEntity> ActivatedTask(string idTask)
     {
-        bool edited = await taskRepository.EditTask(task);
-        await userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, $"Изменение задачи {task.TaskId}", JsonSerializer.Serialize(task, _options));
-        return edited;
+        var task = await unitOfWork.TaskRepository.GetTaskById(idTask)
+                                    ?? throw new DomainException("Задача с таким Id не найдена");
+        task.IsActive = !task.IsActive;
+        var editedTask = await EditTask(task);
+        return editedTask;
     }
 
-    public async Task<bool> UpdateLastModifiedTask(string idTask)
-    { 
-        return await taskRepository.UpdateLastModifiedTask(idTask);
-    }
-
-    public async Task<TaskGroupEntity?> CreateTaskGroup(string name)
+    public async Task<TaskEntity?> CopyTask(string idTask, string newIdTask, string isCopySteps, List<CopyStepViewModel> copyStep)
     {
-        var taskGroup = await taskRepository.CreateTaskGroup(name);
-        await userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, $"Создание группы задач {name}", JsonSerializer.Serialize(taskGroup, _options));
-        return taskGroup;
-    }
-
-    public async Task<bool> DeleteTaskGroup(int idGroup)
-    {
-        return await taskRepository.DeleteTaskGroup(idGroup);
-    }
-
-    public async Task<bool> ActivatedTask(string idTask)
-    {
-        var result = await taskRepository.ActivatedTask(idTask);
-        var task = await taskRepository.GetTaskById(idTask);
-        var text = task.IsActive ? "Включение" : "Выключение";
-        await userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name, $"{text} задачи {idTask}", JsonSerializer.Serialize(task, _options));
-        return result;
-    }
-
-    public async Task<bool> CopyTask(string idTask, string newIdTask, string isCopySteps, List<CopyStepViewModel> copyStep)
-    {
-        TaskEntity copiedTask = await GetTaskById(idTask);
+        var copiedTask = await GetTaskById(idTask);
         if (copiedTask == null)
         {
-            return false;
+            return null;
         }
         TaskEntity newTask = new()
         {
@@ -137,7 +81,7 @@ public class TaskService(ITaskRepository taskRepository,
 
         if (isCopySteps == "True")
         {
-            var stepsAsync = await stepRepository.GetAllStepsByTaskId(idTask);
+            var stepsAsync = await unitOfWork.StepRepository.GetAllStepsByTaskId(idTask);
             var steps = stepsAsync.OrderBy(x => x.StepNumber)
                                     .ToList();
             int i = 1;
@@ -161,7 +105,7 @@ public class TaskService(ITaskRepository taskRepository,
                             IsBreak = oldStep.IsBreak,
                             IsActive = oldStep.IsActive
                         };
-                        await stepRepository.CreateStep(newStep);
+                        await unitOfWork.StepRepository.CreateStep(newStep);
                         i++;
                         if (item.IsCopyOperation)
                         {
@@ -169,7 +113,7 @@ public class TaskService(ITaskRepository taskRepository,
                             {
                                 case OperationName.Copy:
                                     OperationCopyEntity newCopy = new();
-                                    OperationCopyEntity? oldCopy = await operationRepository.GetCopyByStepId(oldStep.StepId);
+                                    OperationCopyEntity? oldCopy = await unitOfWork.OperationRepository.GetCopyByStepId(oldStep.StepId);
                                     if (oldCopy != null)
                                     {
                                         newCopy.StepId = newStep.StepId;
@@ -181,12 +125,12 @@ public class TaskService(ITaskRepository taskRepository,
                                         newCopy.FileInLog = oldCopy.FileInLog;
                                         newCopy.Sort = oldCopy.Sort;
                                         newCopy.FileAttribute = oldCopy.FileAttribute;
-                                        await operationRepository.CreateCopy(newCopy);
+                                        await unitOfWork.OperationRepository.CreateCopy(newCopy);
                                     }
                                     break;
                                 case OperationName.Move:
                                     OperationMoveEntity newMove = new();
-                                    OperationMoveEntity? oldMove = await operationRepository.GetMoveByStepId(oldStep.StepId);
+                                    OperationMoveEntity? oldMove = await unitOfWork.OperationRepository.GetMoveByStepId(oldStep.StepId);
                                     if (oldMove != null)
                                     {
                                         newMove.StepId = newStep.StepId;
@@ -197,12 +141,12 @@ public class TaskService(ITaskRepository taskRepository,
                                         newMove.FileInLog = oldMove.FileInLog;
                                         newMove.Sort = oldMove.Sort;
                                         newMove.FileAttribute = oldMove.FileAttribute;
-                                        await operationRepository.CreateMove(newMove);
+                                        await unitOfWork.OperationRepository.CreateMove(newMove);
                                     }
                                     break;
                                 case OperationName.Read:
                                     OperationReadEntity newRead = new();
-                                    OperationReadEntity? oldRead = await operationRepository.GetReadByStepId(oldStep.StepId);
+                                    OperationReadEntity? oldRead = await unitOfWork.OperationRepository.GetReadByStepId(oldStep.StepId);
                                     if (oldRead != null)
                                     {
                                         newRead.StepId = newStep.StepId;
@@ -215,12 +159,12 @@ public class TaskService(ITaskRepository taskRepository,
                                         newRead.FindString = oldRead.FindString;
                                         newRead.ExpectedResult = oldRead.ExpectedResult;
                                         newRead.BreakTaskAfterError = oldRead.BreakTaskAfterError;
-                                        await operationRepository.CreateRead(newRead);
+                                        await unitOfWork.OperationRepository.CreateRead(newRead);
                                     }
                                     break;
                                 case OperationName.Exist:
                                     OperationExistEntity newExist = new();
-                                    OperationExistEntity? oldExist = await operationRepository.GetExistByStepId(oldStep.StepId);
+                                    OperationExistEntity? oldExist = await unitOfWork.OperationRepository.GetExistByStepId(oldStep.StepId);
                                     if (oldExist != null)
                                     {
                                         newExist.StepId = newStep.StepId;
@@ -229,12 +173,12 @@ public class TaskService(ITaskRepository taskRepository,
                                         newExist.AdditionalText = oldExist.AdditionalText;
                                         newExist.ExpectedResult = oldExist.ExpectedResult;
                                         newExist.BreakTaskAfterError = oldExist.BreakTaskAfterError;
-                                        await operationRepository.CreateExist(newExist);
+                                        await unitOfWork.OperationRepository.CreateExist(newExist);
                                     }
                                     break;
                                 case OperationName.Rename:
                                     OperationRenameEntity newRename = new();
-                                    OperationRenameEntity? oldRename = await operationRepository.GetRenameByStepId(oldStep.StepId);
+                                    OperationRenameEntity? oldRename = await unitOfWork.OperationRepository.GetRenameByStepId(oldStep.StepId);
                                     if (oldRename != null)
                                     {
                                         newRename.StepId = newStep.StepId;
@@ -243,57 +187,62 @@ public class TaskService(ITaskRepository taskRepository,
                                         newRename.AdditionalText = oldRename.AdditionalText;
                                         newRename.OldPattern = oldRename.OldPattern;
                                         newRename.NewPattern = oldRename.NewPattern;
-                                        await operationRepository.CreateRename(newRename);
+                                        await unitOfWork.OperationRepository.CreateRename(newRename);
                                     }
                                     break;
                                 case OperationName.Delete:
                                     OperationDeleteEntity newDelete = new();
-                                    OperationDeleteEntity? oldDelete = await operationRepository.GetDeleteByStepId(oldStep.StepId);
+                                    OperationDeleteEntity? oldDelete = await unitOfWork.OperationRepository.GetDeleteByStepId(oldStep.StepId);
                                     if (oldDelete != null)
                                     {
                                         newDelete.StepId = newStep.StepId;
                                         newDelete.InformSuccess = oldDelete.InformSuccess;
                                         newDelete.AddresseeGroupId = oldDelete.AddresseeGroupId;
                                         newDelete.AdditionalText = oldDelete.AdditionalText;
-                                        await operationRepository.CreateDelete(newDelete);
+                                        await unitOfWork.OperationRepository.CreateDelete(newDelete);
                                     }
                                     break;
                                 case OperationName.Clrbuf:
                                     OperationClrbufEntity newClrbuf = new();
-                                    OperationClrbufEntity? oldClrbuf = await operationRepository.GetClrbufByStepId(oldStep.StepId);
+                                    OperationClrbufEntity? oldClrbuf = await unitOfWork.OperationRepository.GetClrbufByStepId(oldStep.StepId);
                                     if (oldClrbuf != null)
                                     {
                                         newClrbuf.StepId = newStep.StepId;
                                         newClrbuf.InformSuccess = oldClrbuf.InformSuccess;
                                         newClrbuf.AddresseeGroupId = oldClrbuf.AddresseeGroupId;
                                         newClrbuf.AdditionalText = oldClrbuf.AdditionalText;
-                                        await operationRepository.CreateClrbuf(newClrbuf);
+                                        await unitOfWork.OperationRepository.CreateClrbuf(newClrbuf);
                                     }
                                     break;
                                 default:
                                     break;
                             }
+                            await unitOfWork.SaveAsync();
                         }
                     }
                 }
             }
         }
-        return true;
+        return newTask;
     }
 
-    public async Task<bool> CreateTaskStatuse(string idTask)
+    public async Task<TaskStatusEntity> CreateTaskStatus(string idTask)
     {
-        return await taskRepository.CreateTaskStatuse(idTask);
+        var createdStatus = await unitOfWork.TaskRepository.CreateTaskStatus(idTask);
+        return await unitOfWork.SaveAsync() > 0 ? createdStatus
+                            : throw new DomainException("Ошибка создания статуса задачи");
     }
 
     public async Task<List<TaskStatusEntity>> GetTaskStatuses()
     {
-        return await taskRepository.GetTaskStatuses();
+        return await unitOfWork.TaskRepository.GetTaskStatuses();
     }
 
-    public async Task<bool> UpdateTaskStatus(TaskStatusEntity taskStatus)
+    public async Task<TaskStatusEntity> UpdateTaskStatus(TaskStatusEntity taskStatus)
     {
-        return await taskRepository.UpdateTaskStatus(taskStatus);
+        var editedStatus = unitOfWork.TaskRepository.UpdateTaskStatus(taskStatus);
+        return await unitOfWork.SaveAsync() > 0 ? editedStatus
+                            : throw new DomainException("Ошибка обновления статуса задачи");
     }
 
 }

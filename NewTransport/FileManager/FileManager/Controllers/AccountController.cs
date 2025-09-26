@@ -23,7 +23,7 @@ public class AccountController(ILogger<AccountController> logger,
     public async Task<IActionResult> Logout()
     {
         HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        await userLogService.AddLog(HttpContext.User.Identity.Name, "Выход из системы", JsonSerializer.Serialize(""));
+        await userLogService.AddLog("Выход из системы", JsonSerializer.Serialize(""));
         return RedirectToAction(nameof(Login));
     }
 
@@ -31,7 +31,7 @@ public class AccountController(ILogger<AccountController> logger,
     public async Task LogoutX()
     {
         HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        await userLogService.AddLog(HttpContext.User.Identity.Name, "Выход из системы", JsonSerializer.Serialize(""));
+        await userLogService.AddLog("Выход из системы", JsonSerializer.Serialize(""));
     }
 
     [HttpPost]

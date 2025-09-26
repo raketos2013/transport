@@ -5,9 +5,6 @@ namespace FileManager.Core.Entities;
 
 public class TaskStatusEntity
 {
-    /*[Key]
-    [Display(Name = "Id статуса")]
-    public int StatusId { get; set; }*/
     [Key]
     [Display(Name = "Идентификатор задачи")]
     public string TaskId { get; set; }

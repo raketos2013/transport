@@ -7,110 +7,53 @@ namespace FileManager.Infrastructure.Repositories;
 
 public class OperationRepository(AppDbContext appDbContext) : IOperationRepository
 {
-    public async Task<bool> CreateClrbuf(OperationClrbufEntity operation)
+    public async Task<OperationClrbufEntity> CreateClrbuf(OperationClrbufEntity operation)
     {
-        try
-        {
-            await appDbContext.OperationClrbuf.AddAsync(operation);
-            await appDbContext.SaveChangesAsync();
-            return true;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
+        await appDbContext.OperationClrbuf.AddAsync(operation);
+        return operation;
     }
 
-    public async Task<bool> CreateCopy(OperationCopyEntity operation)
+    public async Task<OperationCopyEntity> CreateCopy(OperationCopyEntity operation)
     {
-        try
-        {
-            await appDbContext.OperationCopy.AddAsync(operation);
-            await appDbContext.SaveChangesAsync();
-            return true;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
+        await appDbContext.OperationCopy.AddAsync(operation);
+        return operation;
     }
 
-    public async Task<bool> CreateDelete(OperationDeleteEntity operation)
+    public async Task<OperationDeleteEntity> CreateDelete(OperationDeleteEntity operation)
     {
-        try
-        {
-            await appDbContext.OperationDelete.AddAsync(operation);
-            await appDbContext.SaveChangesAsync();
-            return true;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
+        await appDbContext.OperationDelete.AddAsync(operation);
+        return operation;
     }
 
-    public async Task<bool> CreateExist(OperationExistEntity operation)
+    public async Task<OperationExistEntity> CreateExist(OperationExistEntity operation)
     {
-        try
-        {
-            await appDbContext.OperationExist.AddAsync(operation);
-            await appDbContext.SaveChangesAsync();
-            return true;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
+        await appDbContext.OperationExist.AddAsync(operation);
+        return operation;
     }
 
-    public async Task<bool> CreateMove(OperationMoveEntity operation)
+    public async Task<OperationMoveEntity> CreateMove(OperationMoveEntity operation)
     {
-        try
-        {
-            await appDbContext.OperationMove.AddAsync(operation);
-            await appDbContext.SaveChangesAsync();
-            return true;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
+        await appDbContext.OperationMove.AddAsync(operation);
+        return operation;
     }
 
-    public async Task<bool> CreateRead(OperationReadEntity operation)
+    public async Task<OperationReadEntity> CreateRead(OperationReadEntity operation)
     {
-        try
-        {
-            await appDbContext.OperationRead.AddAsync(operation);
-            await appDbContext.SaveChangesAsync();
-            return true;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
+        await appDbContext.OperationRead.AddAsync(operation);
+        return operation;
     }
 
-    public async Task<bool> CreateRename(OperationRenameEntity operation)
+    public async Task<OperationRenameEntity> CreateRename(OperationRenameEntity operation)
     {
-        try
-        {
-            await appDbContext.OperationRename.AddAsync(operation);
-            await appDbContext.SaveChangesAsync();
-            return true;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
+        await appDbContext.OperationRename.AddAsync(operation);
+        return operation;
     }
 
-    public async Task<bool> DeleteClrbuf(OperationClrbufEntity operation)
+    public bool DeleteClrbuf(OperationClrbufEntity operation)
     {
         try
         {
             appDbContext.OperationClrbuf.Remove(operation);
-            await appDbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception)
@@ -119,12 +62,11 @@ public class OperationRepository(AppDbContext appDbContext) : IOperationReposito
         }
     }
 
-    public async Task<bool> DeleteCopy(OperationCopyEntity operation)
+    public bool DeleteCopy(OperationCopyEntity operation)
     {
         try
         {
             appDbContext.OperationCopy.Remove(operation);
-            await appDbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception)
@@ -133,12 +75,11 @@ public class OperationRepository(AppDbContext appDbContext) : IOperationReposito
         }
     }
 
-    public async Task<bool> DeleteDelete(OperationDeleteEntity operation)
+    public bool DeleteDelete(OperationDeleteEntity operation)
     {
         try
         {
             appDbContext.OperationDelete.Remove(operation);
-            await appDbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception)
@@ -147,12 +88,11 @@ public class OperationRepository(AppDbContext appDbContext) : IOperationReposito
         }
     }
 
-    public async Task<bool> DeleteExist(OperationExistEntity operation)
+    public bool DeleteExist(OperationExistEntity operation)
     {
         try
         {
             appDbContext.OperationExist.Remove(operation);
-            await appDbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception)
@@ -161,12 +101,11 @@ public class OperationRepository(AppDbContext appDbContext) : IOperationReposito
         }
     }
 
-    public async Task<bool> DeleteMove(OperationMoveEntity operation)
+    public bool DeleteMove(OperationMoveEntity operation)
     {
         try
         {
             appDbContext.OperationMove.Remove(operation);
-            await appDbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception)
@@ -175,12 +114,11 @@ public class OperationRepository(AppDbContext appDbContext) : IOperationReposito
         }
     }
 
-    public async Task<bool> DeleteRead(OperationReadEntity operation)
+    public bool DeleteRead(OperationReadEntity operation)
     {
         try
         {
             appDbContext.OperationRead.Remove(operation);
-            await appDbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception)
@@ -189,12 +127,11 @@ public class OperationRepository(AppDbContext appDbContext) : IOperationReposito
         }
     }
 
-    public async Task<bool> DeleteRename(OperationRenameEntity operation)
+    public bool DeleteRename(OperationRenameEntity operation)
     {
         try
         {
             appDbContext.OperationRename.Remove(operation);
-            await appDbContext.SaveChangesAsync();
             return true;
         }
         catch (Exception)
@@ -273,101 +210,45 @@ public class OperationRepository(AppDbContext appDbContext) : IOperationReposito
         return await appDbContext.OperationRename.FirstOrDefaultAsync(x => x.StepId == stepId);
     }
 
-    public async Task<bool> UpdateClrbuf(OperationClrbufEntity operation)
+    public OperationClrbufEntity UpdateClrbuf(OperationClrbufEntity operation)
     {
-        try
-        {
-            appDbContext.OperationClrbuf.Update(operation);
-            await appDbContext.SaveChangesAsync();
-            return true;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
+        appDbContext.OperationClrbuf.Update(operation);
+        return operation;
     }
 
-    public async Task<bool> UpdateCopy(OperationCopyEntity operation)
+    public OperationCopyEntity UpdateCopy(OperationCopyEntity operation)
     {
-        try
-        {
-            appDbContext.OperationCopy.Update(operation);
-            await appDbContext.SaveChangesAsync();
-            return true;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
+        appDbContext.OperationCopy.Update(operation);
+        return operation;
     }
 
-    public async Task<bool> UpdateDelete(OperationDeleteEntity operation)
+    public OperationDeleteEntity UpdateDelete(OperationDeleteEntity operation)
     {
-        try
-        {
-            appDbContext.OperationDelete.Update(operation);
-            await appDbContext.SaveChangesAsync();
-            return true;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
+        appDbContext.OperationDelete.Update(operation);
+        return operation;
     }
 
-    public async Task<bool> UpdateExist(OperationExistEntity operation)
+    public OperationExistEntity UpdateExist(OperationExistEntity operation)
     {
-        try
-        {
-            appDbContext.OperationExist.Update(operation);
-            await appDbContext.SaveChangesAsync();
-            return true;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
+        appDbContext.OperationExist.Update(operation);
+        return operation;
     }
 
-    public async Task<bool> UpdateMove(OperationMoveEntity operation)
+    public OperationMoveEntity UpdateMove(OperationMoveEntity operation)
     {
-        try
-        {
-            appDbContext.OperationMove.Update(operation);
-            await appDbContext.SaveChangesAsync();
-            return true;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
+        appDbContext.OperationMove.Update(operation);
+        return operation;
     }
 
-    public async Task<bool> UpdateRead(OperationReadEntity operation)
+    public OperationReadEntity UpdateRead(OperationReadEntity operation)
     {
-        try
-        {
-            appDbContext.OperationRead.Update(operation);
-            await appDbContext.SaveChangesAsync();
-            return true;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
+        appDbContext.OperationRead.Update(operation);
+        return operation;
     }
 
-    public async Task<bool> UpdateRename(OperationRenameEntity operation)
+    public OperationRenameEntity UpdateRename(OperationRenameEntity operation)
     {
-        try
-        {
-            appDbContext.OperationRename.Update(operation);
-            await appDbContext.SaveChangesAsync();
-            return true;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
+        appDbContext.OperationRename.Update(operation);
+        return operation;
     }
 }

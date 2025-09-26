@@ -8,10 +8,10 @@ public interface IStepRepository
     Task<TaskStepEntity?> GetStepByTaskId(string taskId, int stepNumber);
     Task<TaskStepEntity?> GetStepByStepId(int stepId);
     Task<List<TaskStepEntity>> GetAllStepsByTaskId(string taskId);
-    Task<bool> CreateStep(TaskStepEntity taskStep);
-    Task<bool> EditStep(TaskStepEntity taskStep);
-    Task<bool> UpdateRangeSteps(List<TaskStepEntity> steps);
-    Task<bool> ActivatedStep(int stepId);
+    Task<TaskStepEntity> CreateStep(TaskStepEntity taskStep);
+    TaskStepEntity EditStep(TaskStepEntity taskStep);
+    List<TaskStepEntity> UpdateRangeSteps(List<TaskStepEntity> steps);
+    Task<TaskStepEntity> ActivatedStep(int stepId);
     Task<bool> DeleteStepsByTaskId(string taskId);
     Task<bool> DeleteStep(int stepId);
 }

@@ -12,29 +12,29 @@ public interface IOperationRepository
     Task<OperationDeleteEntity?> GetDeleteByStepId(int stepId);
     Task<OperationClrbufEntity?> GetClrbufByStepId(int stepId);
 
-    Task<bool> DeleteCopy(OperationCopyEntity operation);
-    Task<bool> DeleteMove(OperationMoveEntity operation);
-    Task<bool> DeleteRead(OperationReadEntity operation);
-    Task<bool> DeleteExist(OperationExistEntity operation);
-    Task<bool> DeleteDelete(OperationDeleteEntity operation);
-    Task<bool> DeleteRename(OperationRenameEntity operation);
-    Task<bool> DeleteClrbuf(OperationClrbufEntity operation);
+    bool DeleteCopy(OperationCopyEntity operation);
+    bool DeleteMove(OperationMoveEntity operation);
+    bool DeleteRead(OperationReadEntity operation);
+    bool DeleteExist(OperationExistEntity operation);
+    bool DeleteDelete(OperationDeleteEntity operation);
+    bool DeleteRename(OperationRenameEntity operation);
+    bool DeleteClrbuf(OperationClrbufEntity operation);
 
-    Task<bool> CreateCopy(OperationCopyEntity operation);
-    Task<bool> CreateMove(OperationMoveEntity operation);
-    Task<bool> CreateRead(OperationReadEntity operation);
-    Task<bool> CreateExist(OperationExistEntity operation);
-    Task<bool> CreateDelete(OperationDeleteEntity operation);
-    Task<bool> CreateRename(OperationRenameEntity operation);
-    Task<bool> CreateClrbuf(OperationClrbufEntity operation);
+    Task<OperationCopyEntity> CreateCopy(OperationCopyEntity operation);
+    Task<OperationMoveEntity> CreateMove(OperationMoveEntity operation);
+    Task<OperationReadEntity> CreateRead(OperationReadEntity operation);
+    Task<OperationExistEntity> CreateExist(OperationExistEntity operation);
+    Task<OperationDeleteEntity> CreateDelete(OperationDeleteEntity operation);
+    Task<OperationRenameEntity> CreateRename(OperationRenameEntity operation);
+    Task<OperationClrbufEntity> CreateClrbuf(OperationClrbufEntity operation);
 
-    Task<bool> UpdateCopy(OperationCopyEntity operation);
-    Task<bool>   UpdateMove(OperationMoveEntity operation);
-    Task<bool> UpdateRead(OperationReadEntity operation);
-    Task<bool>   UpdateExist(OperationExistEntity operation);
-    Task<bool> UpdateDelete(OperationDeleteEntity operation);
-    Task<bool> UpdateRename(OperationRenameEntity operation);
-    Task<bool> UpdateClrbuf(OperationClrbufEntity operation);
+    OperationCopyEntity UpdateCopy(OperationCopyEntity operation);
+    OperationMoveEntity UpdateMove(OperationMoveEntity operation);
+    OperationReadEntity UpdateRead(OperationReadEntity operation);
+    OperationExistEntity UpdateExist(OperationExistEntity operation);
+    OperationDeleteEntity UpdateDelete(OperationDeleteEntity operation);
+    OperationRenameEntity UpdateRename(OperationRenameEntity operation);
+    OperationClrbufEntity UpdateClrbuf(OperationClrbufEntity operation);
 
     Task<OperationCopyEntity?> GetCopyByOperationId(int operationId);
     Task<OperationMoveEntity?> GetMoveByOperationId(int operationId);
@@ -43,5 +43,4 @@ public interface IOperationRepository
     Task<OperationRenameEntity?> GetRenameByOperationId(int operationId);
     Task<OperationDeleteEntity?> GetDeleteByOperationId(int operationId);
     Task<OperationClrbufEntity?> GetClrbufByOperationId(int operationId);
-
 }

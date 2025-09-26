@@ -15,7 +15,6 @@ public class Exist(TaskStepEntity step,
         await _taskLogger.OperationLog(TaskStep);
 
         string[] files = [];
-        string fileName;
         OperationExistEntity? operation = null;
         List<AddresseeEntity> addresses = [];
         List<string> successFiles = [];
@@ -31,7 +30,6 @@ public class Exist(TaskStepEntity step,
         operation = await _operationService.GetExistByStepId(TaskStep.StepId);
         if (operation != null)
         {
-
             if (operation.InformSuccess)
             {
                 var addressesAsync = await _addresseeService.GetAllAddressees();
@@ -39,7 +37,6 @@ public class Exist(TaskStepEntity step,
                                                       x.IsActive == true).ToList();
             }
             bool isBreakTask = false;
-            //_taskLogger.StepLog(TaskStep, $"Ожидаемый результат - {operation.ExpectedResult.GetDescription()}");
             CheckExpectedResult(operation.ExpectedResult, operation.BreakTaskAfterError, files.Length);
             if (isBreakTask)
             {

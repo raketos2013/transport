@@ -7,19 +7,11 @@ namespace FileManager.Infrastructure.Repositories;
 
 public class TaskLogRepository(AppDbContext appDbContext) : ITaskLogRepository
 {
-    public async Task<bool> AddTaskLog(TaskLogEntity taskLog)
+    public async Task<TaskLogEntity> AddTaskLog(TaskLogEntity taskLog)
     {
-        try
-        {
+        await appDbContext.TaskLog.AddAsync(taskLog);
+        return taskLog;
 
-            appDbContext.TaskLog.Add(taskLog);
-            await appDbContext.SaveChangesAsync();
-            return true;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
     }
 
     public async Task<List<TaskLogEntity>> GetLogs()

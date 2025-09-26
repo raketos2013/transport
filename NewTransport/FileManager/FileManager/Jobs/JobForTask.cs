@@ -10,19 +10,7 @@ using Quartz;
 namespace FileManager.Jobs;
 
 [DisallowConcurrentExecution]
-public class JobForTask(
-                        //ILogger<JobForTask> logger,
-                        //ITaskLogger taskLogger,
-                        //IMailSender mailSender,
-                        //ISchedulerFactory jobFactory,
-                        //ITaskService taskService,
-                        //IStepService stepService,
-                        //IOperationService operationService,
-                        //IAddresseeService addresseeService,
-                        //ITaskLogService taskLogService,
-                        //IOptions<AuthTokenConfiguration> authTokenConfigurations,
-                        //IHttpClientFactory httpClientFactory,
-                        IServiceScopeFactory scopeFactory) : IJob
+public class JobForTask(IServiceScopeFactory scopeFactory) : IJob
 {
     public async Task Execute(IJobExecutionContext context)
     {
@@ -46,8 +34,6 @@ public class JobForTask(
             return;
         }
         await taskLogger.TaskLog(context.JobDetail.Key.Name, $"<<< Начало работы задачи {context.JobDetail.Key.Name} >>>");
-
-
 
         var statusAsync = await taskService.GetTaskStatuses();
         var status = statusAsync.First(x => x.TaskId == context.JobDetail.Key.Name);
@@ -91,7 +77,6 @@ public class JobForTask(
                 }
             }
 
-
             List<IStepOperation> steps = [];
             List<string> bufferFiles = [];
             int numberChainLink = 0;
@@ -105,58 +90,37 @@ public class JobForTask(
                         case OperationName.Copy:
                             operation = await operationService.GetCopyByStepId(step.StepId);
                             CreatorFactoryMethod copyCreator = new CopyCreator();
-                            steps.Add(copyCreator.FactoryMethod(step, operation, 
-                                                                //taskLogger, mailSender, authTokenConfigurations,
-                                                                //operationService, addresseeService, taskLogService, httpClientFactory
-                                                                scopeFactory));
+                            steps.Add(copyCreator.FactoryMethod(step, operation, scopeFactory));
                             break;
                         case OperationName.Move:
                             operation = await operationService.GetMoveByStepId(step.StepId);
                             CreatorFactoryMethod moveCreator = new MoveCreator();
-                            steps.Add(moveCreator.FactoryMethod(step, operation, 
-                                                                //taskLogger, mailSender, authTokenConfigurations,
-                                                                //operationService, addresseeService, taskLogService, httpClientFactory
-                                                                scopeFactory));
+                            steps.Add(moveCreator.FactoryMethod(step, operation, scopeFactory));
                             break;
                         case OperationName.Read:
                             operation = await operationService.GetReadByStepId(step.StepId);
                             CreatorFactoryMethod readCreator = new ReadCreator();
-                            steps.Add(readCreator.FactoryMethod(step, operation, 
-                                                                //taskLogger, mailSender, authTokenConfigurations,
-                                                                //operationService, addresseeService, taskLogService, httpClientFactory
-                                                                scopeFactory));
+                            steps.Add(readCreator.FactoryMethod(step, operation, scopeFactory));
                             break;
                         case OperationName.Exist:
                             operation = await operationService.GetExistByStepId(step.StepId);
                             CreatorFactoryMethod existCreator = new ExistCreator();
-                            steps.Add(existCreator.FactoryMethod(step, operation, 
-                                                                //taskLogger, mailSender, authTokenConfigurations,
-                                                                //operationService, addresseeService, taskLogService, httpClientFactory
-                                                                scopeFactory));
+                            steps.Add(existCreator.FactoryMethod(step, operation, scopeFactory));
                             break;
                         case OperationName.Rename:
                             operation = await operationService.GetRenameByStepId(step.StepId);
                             CreatorFactoryMethod renameCreator = new RenameCreator();
-                            steps.Add(renameCreator.FactoryMethod(step, operation, 
-                                                                //taskLogger, mailSender, authTokenConfigurations,
-                                                                //operationService, addresseeService, taskLogService, httpClientFactory
-                                                                scopeFactory));
+                            steps.Add(renameCreator.FactoryMethod(step, operation, scopeFactory));
                             break;
                         case OperationName.Delete:
                             operation = await operationService.GetDeleteByStepId(step.StepId);
                             CreatorFactoryMethod deleteCreator = new DeleteCreator();
-                            steps.Add(deleteCreator.FactoryMethod(step, operation, 
-                                                                //taskLogger, mailSender, authTokenConfigurations,
-                                                                //operationService, addresseeService, taskLogService, httpClientFactory
-                                                                scopeFactory));
+                            steps.Add(deleteCreator.FactoryMethod(step, operation, scopeFactory));
                             break;
                         case OperationName.Clrbuf:
                             operation = await operationService.GetClrbufByStepId(step.StepId);
                             CreatorFactoryMethod clrbufCreator = new ClrbufCreator();
-                            steps.Add(clrbufCreator.FactoryMethod(step, operation, 
-                                                                //taskLogger, mailSender, authTokenConfigurations,
-                                                                //operationService, addresseeService, taskLogService, httpClientFactory
-                                                                scopeFactory));
+                            steps.Add(clrbufCreator.FactoryMethod(step, operation, scopeFactory));
                             break;
                         default:
                             break;
@@ -189,7 +153,7 @@ public class JobForTask(
                     status.DateLastExecute = DateTime.Now;
                     await taskService.UpdateTaskStatus(status2);
                 }
-                TaskEntity task = await taskService.GetTaskById(context.JobDetail.Key.Name);
+                var task = await taskService.GetTaskById(context.JobDetail.Key.Name);
                 if (task != null)
                 {
                     task.IsActive = false;
@@ -201,9 +165,6 @@ public class JobForTask(
             {
                 logger.LogError($"{DateTime.Now} задача: {context.JobDetail.Key.Name} - {ex2.Message}");
             }
-
-
-            //throw new JobExecutionException(msg: "", refireImmediately: true, cause: ex);
         }
     }
 }

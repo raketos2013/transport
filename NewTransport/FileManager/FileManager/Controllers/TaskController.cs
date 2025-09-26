@@ -1,11 +1,14 @@
-﻿using FileManager.Core.Entities;
+﻿using FileManager.Core.Constants;
+using FileManager.Core.Entities;
 using FileManager.Core.Enums;
+using FileManager.Core.Exceptions;
 using FileManager.Core.Interfaces.Services;
 using FileManager.Core.ViewModels;
 using FileManager.Extensions;
 using FileManager.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 using X.PagedList.Extensions;
 
 namespace FileManager.Controllers;
@@ -16,7 +19,7 @@ public class TaskController(ITaskService taskService,
                             IStepService stepService,
                             ITaskLogService taskLogService,
                             ILockService lockService,
-                            IHttpContextAccessor httpContextAccessor)
+                            IUserLogService userLogService)
             : Controller
 {
     public IActionResult Tasks()
@@ -48,25 +51,21 @@ public class TaskController(ITaskService taskService,
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateTask(TaskEntity task)
     {
+        if (ModelState.IsValid)
+        {
+            var createdTask = await taskService.CreateTask(task);
+            await userLogService.AddLog($"Создание задачи {createdTask.TaskId}",
+                                        JsonSerializer.Serialize(createdTask, AppConstants.JSON_OPTIONS));
+            return RedirectToAction(nameof(Tasks));
+        }
         ViewBag.AddresseeGroups = await addresseeService.GetAllAddresseeGroups();
-        try
-        {
-            if (ModelState.IsValid)
-            {
-                await taskService.CreateTask(task);
-                return RedirectToAction(nameof(Tasks));
-            }
-            return PartialView("_CreateTask", task);
-        }
-        catch (Exception)
-        {
-            return PartialView("_CreateTask", task);
-        }
+        return PartialView("_CreateTask", task);
     }
 
     public async Task<IActionResult> TaskDetails(string taskId)
     {
-        TaskEntity task = await taskService.GetTaskById(taskId);
+        var task = await taskService.GetTaskById(taskId)
+                                ?? throw new DomainException("Задача не найдена");
         var stepsAsync = await stepService.GetAllStepsByTaskId(taskId);
         var steps = stepsAsync.OrderBy(x => x.StepNumber)
                                  .ToList();
@@ -304,7 +303,7 @@ public class TaskController(ITaskService taskService,
                                         .ToList();
             }
             else
-            {   
+            {
                 taskLogs = taskLogsAsync.Where(x => x.DateTimeLog.Date >= date &&
                                                     x.DateTimeLog.Date <= date2 &&
                                                     x.DateTimeLog.TimeOfDay >= model.TimeFrom.TimeOfDay &&
@@ -317,14 +316,14 @@ public class TaskController(ITaskService taskService,
             var taskLogsAsync = await taskLogService.GetLogsByTaskId(model.TaskId);
             if (model.TimeFrom.TimeOfDay == DateTime.MinValue.TimeOfDay && model.TimeTo.TimeOfDay == DateTime.MinValue.TimeOfDay)
             {
-                
+
                 taskLogs = taskLogsAsync.Where(x => x.DateTimeLog.Date >= date &&
                                                     x.DateTimeLog.Date <= date2)
                                         .ToList();
             }
             else
             {
-                
+
                 taskLogs = taskLogsAsync.Where(x => x.DateTimeLog.Date >= date &&
                                                     x.DateTimeLog.Date <= date2 &&
                                                     x.DateTimeLog.TimeOfDay >= model.TimeFrom.TimeOfDay &&
@@ -441,23 +440,6 @@ public class TaskController(ITaskService taskService,
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateTaskGroup(string nameGroup)
-    {
-        await taskService.CreateTaskGroup(nameGroup);
-        return RedirectToAction(nameof(Tasks));
-    }
-
-    public async Task<IActionResult> DeleteTaskGroup(int idDeleteGroup)
-    {
-        if (idDeleteGroup == 0)
-        {
-            return RedirectToAction(nameof(Tasks));
-        }
-        await taskService.DeleteTaskGroup(idDeleteGroup);
-        return RedirectToAction(nameof(Tasks));
-    }
-
-    [HttpPost]
     public async Task<IActionResult> ActivatedTask(string id)
     {
         await taskService.ActivatedTask(id);
@@ -473,16 +455,15 @@ public class TaskController(ITaskService taskService,
     [HttpGet]
     public async Task<IActionResult> LockTask(string taskId)
     {
-        await lockService.Lock(taskId, httpContextAccessor.HttpContext.User.Identity.Name);
+        await lockService.Lock(taskId);
         return NoContent();
     }
 
     public async Task<IActionResult> EditTask(string taskId)
     {
-        await lockService.Lock(taskId, httpContextAccessor.HttpContext.User.Identity.Name);
+        await lockService.Lock(taskId);
         var task = await taskService.GetTaskById(taskId);
         ViewBag.AddresseeGroups = await addresseeService.GetAllAddresseeGroups();
-        ViewBag.TaskGroups = await taskService.GetAllGroups();
         return PartialView("_EditTask", task);
     }
 
@@ -516,7 +497,7 @@ public class TaskController(ITaskService taskService,
         }
         task.CopySteps = copySteps;
         task.IsCopySteps = false;
-        await lockService.Lock(taskId, httpContextAccessor.HttpContext.User.Identity.Name);
+        await lockService.Lock(taskId);
         return PartialView("_StepsForCopy", task);
     }
 

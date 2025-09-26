@@ -1,24 +1,18 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json.Serialization;
 using System.Text.Json;
 using FileManager.Core.Interfaces.Services;
 using FileManager.Core.Entities;
+using FileManager.Core.Constants;
+using FileManager.Core.Exceptions;
 
 namespace FileManager.Controllers;
 
 [Authorize(Roles = "o.br.ДИТ")]
 public class AddresseeGroupController(IAddresseeService addresseeService,
-                                        IUserLogService userLogService,
-                                        IHttpContextAccessor httpContextAccessor
-                                        )
+                                        IUserLogService userLogService)
             : Controller
 {
-    private static readonly JsonSerializerOptions _options = new()
-    {
-        ReferenceHandler = ReferenceHandler.Preserve,
-        WriteIndented = true
-    };
     public IActionResult Addressees()
     {
         return View();
@@ -39,7 +33,9 @@ public class AddresseeGroupController(IAddresseeService addresseeService,
             Id = int.Parse(number),
             Name = name
         };
-        await addresseeService.CreateAddresseeGroup(group);
+        var createdGroup = await addresseeService.CreateAddresseeGroup(group);
+        await userLogService.AddLog($"Создание группы рассылки номер {createdGroup.Id}",
+                                    JsonSerializer.Serialize(createdGroup, AppConstants.JSON_OPTIONS));
         return RedirectToAction(nameof(Addressees));
     }
 
@@ -55,31 +51,24 @@ public class AddresseeGroupController(IAddresseeService addresseeService,
     [HttpPost]
     public async Task<IActionResult> CreateAddressee(AddresseeEntity addressee)
     {
-        try
+        List<AddresseeGroupEntity> addresseeGroups = await addresseeService.GetAllAddresseeGroups();
+        ViewBag.AddresseeGroups = addresseeGroups;
+        if (ModelState.IsValid)
         {
-            List<AddresseeGroupEntity> addresseeGroups = await addresseeService.GetAllAddresseeGroups();
-            ViewBag.AddresseeGroups = addresseeGroups;
-
-            if (ModelState.IsValid)
+            AddresseeEntity entity = new()
             {
-                AddresseeEntity entity = new()
-                {
-                    PersonalNumber = addressee.PersonalNumber,
-                    EMail = addressee.EMail,
-                    Fio = addressee.Fio,
-                    StructuralUnit = addressee.PersonalNumber,
-                    AddresseeGroupId = addressee.AddresseeGroupId
-                };
-                await addresseeService.CreateAddressee(entity);
-
-                return RedirectToAction(nameof(Addressees));
-            }
-            return PartialView("_CreateAddressee", addressee);
+                PersonalNumber = addressee.PersonalNumber,
+                EMail = addressee.EMail,
+                Fio = addressee.Fio,
+                StructuralUnit = addressee.PersonalNumber,
+                AddresseeGroupId = addressee.AddresseeGroupId
+            };
+            var createdAddressee = await addresseeService.CreateAddressee(entity);
+            await userLogService.AddLog($"Добавление адресата в группу рассылки номер {createdAddressee.AddresseeGroupId}",
+                                        JsonSerializer.Serialize(createdAddressee, AppConstants.JSON_OPTIONS));
+            return RedirectToAction(nameof(Addressees));
         }
-        catch (Exception)
-        {
-            return PartialView("_CreateAddressee", addressee);
-        }
+        return PartialView("_CreateAddressee", addressee);
     }
 
     [HttpPost]
@@ -90,22 +79,37 @@ public class AddresseeGroupController(IAddresseeService addresseeService,
         if (addressee != null)
         {
             addressee.IsActive = !addressee.IsActive;
-            await addresseeService.EditAddressee(addressee);
+            var editedAddressee = await addresseeService.EditAddressee(addressee);
+            string activated = "";
+            if (editedAddressee.IsActive)
+            {
+                activated = "Включение";
+            }
+            else {
+                activated = "Выключение";
+            }
+            await userLogService.AddLog($"{activated} адресата в группе рассылки номер {editedAddressee.AddresseeGroupId}",
+                                        JsonSerializer.Serialize(editedAddressee, AppConstants.JSON_OPTIONS));
         }
         return RedirectToAction(nameof(Addressees));
     }
 
     public async Task<IActionResult> DeleteAddresseeGroup(int id)
     {
-        await addresseeService.DeleteAddresseeGroup(id);
+        var resultDelete = await addresseeService.DeleteAddresseeGroup(id);
+        if (resultDelete)
+        {
+            await userLogService.AddLog($"Удаление группы рассылки номер {id}", "");
+        }
         return RedirectToAction("Tasks", "Task");
     }
 
     public async Task<IActionResult> DeleteAddressee(string number, int idGroup)
     {
         var addrAsync = await addresseeService.GetAllAddressees();
-        var addr = addrAsync.FirstOrDefault(x => x.PersonalNumber == number && 
-                                                 x.AddresseeGroupId == idGroup);
+        var addr = addrAsync.FirstOrDefault(x => x.PersonalNumber == number &&
+                                                 x.AddresseeGroupId == idGroup)
+                                ?? throw new DomainException("Адресат не найден"); 
         var deletedAddressee = new AddresseeEntity()
         {
             PersonalNumber = number,
@@ -115,10 +119,12 @@ public class AddresseeGroupController(IAddresseeService addresseeService,
             IsActive = addr.IsActive,
             Fio = addr.Fio
         };
-        await addresseeService.DeleteAddressee(number, idGroup);
-        await userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name,
-                                    $"Удаление адресата {number} из группы номер {idGroup}",
-                                    JsonSerializer.Serialize(deletedAddressee, _options));
+        var resultDelete = await addresseeService.DeleteAddressee(number, idGroup);
+        if (resultDelete)
+        {
+            await userLogService.AddLog($"Удаление адресата {number} из группы рассылки номер {idGroup}",
+                                        JsonSerializer.Serialize(deletedAddressee, AppConstants.JSON_OPTIONS));
+        }
         return RedirectToAction(nameof(Addressees));
     }
 }

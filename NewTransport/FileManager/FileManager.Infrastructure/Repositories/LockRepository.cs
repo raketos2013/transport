@@ -7,10 +7,10 @@ namespace FileManager.Infrastructure.Repositories;
 
 public class LockRepository(AppDbContext context) : ILockRepository
 {
-    public async Task<bool> Create(LockInfoEntity entity)
+    public async Task<LockInfoEntity> Create(LockInfoEntity entity)
     {
         await context.LockInfo.AddAsync(entity);
-        return await context.SaveChangesAsync() > 0;
+        return entity;
     }
 
     public async Task<bool> DeleteByTaskId(string taskId)
@@ -19,7 +19,7 @@ public class LockRepository(AppDbContext context) : ILockRepository
         if (lockInfo != null)
         {
             context.LockInfo.Remove(lockInfo);
-            return await context.SaveChangesAsync() > 0;
+            return true;
         }
         return false;
     }

@@ -1,244 +1,232 @@
-﻿using FileManager.Core.Entities;
+﻿using FileManager.Core.Constants;
+using FileManager.Core.Entities;
+using FileManager.Core.Exceptions;
 using FileManager.Core.Interfaces.Repositories;
 using FileManager.Core.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace FileManager.Core.Services;
 
-public class OperationService(IOperationRepository operationRepository,
-                                IStepRepository stepRepository,
+public class OperationService(IUnitOfWork unitOfWork,
                                 IUserLogService userLogService,
                                 IHttpContextAccessor httpContextAccessor)
             : IOperationService
 {
-    private static readonly JsonSerializerOptions _options = new()
+    public async Task<OperationClrbufEntity> CreateClrbuf(OperationClrbufEntity operation)
     {
-        ReferenceHandler = ReferenceHandler.Preserve,
-        WriteIndented = true
-    };
-    public async Task<bool> CreateClrbuf(OperationClrbufEntity operation)
-    {
-        var result = await operationRepository.CreateClrbuf(operation);
-        var step = await stepRepository.GetStepByStepId(operation.StepId);
-        if (step == null)
-        {
-            await operationRepository.DeleteClrbuf(operation);
-            return false;
-        }
+        var step = await unitOfWork.StepRepository.GetStepByStepId(operation.StepId) 
+                                ?? throw new DomainException("Шаг не найден");
+        await unitOfWork.OperationRepository.CreateClrbuf(operation);
         step.OperationId = operation.OperationId;
-        await stepRepository.EditStep(step);
-        await userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name,
-                                $"Добавление доп. св-в операции Clrbuf для шага номер {step.StepNumber} задачи {step.TaskId}",
-                                JsonSerializer.Serialize(operation, _options));
-        return result;
+        unitOfWork.StepRepository.EditStep(step);
+        await userLogService.AddLog($"Добавление доп. св-в операции Clrbuf для шага номер {step.StepNumber} задачи {step.TaskId}",
+                                    JsonSerializer.Serialize(operation, AppConstants.JSON_OPTIONS));
+        return await unitOfWork.SaveAsync() > 0 ? operation
+                : throw new DomainException($"Ошибка добавления доп. св-в операции Clrbuf для шага номер {step.StepNumber} задачи {step.TaskId}");
     }
 
-    public async Task<bool> CreateCopy(OperationCopyEntity operation)
+    public async Task<OperationCopyEntity> CreateCopy(OperationCopyEntity operation)
     {
-        var result = await operationRepository.CreateCopy(operation);
-        var step = await stepRepository.GetStepByStepId(operation.StepId);
-        if (step == null)
-        {
-            await operationRepository.DeleteCopy(operation);
-            return false;
-        }
+        var step = await unitOfWork.StepRepository.GetStepByStepId(operation.StepId)
+                                ?? throw new DomainException("Шаг не найден");
+        await unitOfWork.OperationRepository.CreateCopy(operation);
         step.OperationId = operation.OperationId;
-        await stepRepository.EditStep(step);
-        await userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name,
-                                $"Добавление доп. св-в операции Copy для шага номер {step.StepNumber} задачи {step.TaskId}",
-                                JsonSerializer.Serialize(operation, _options));
-        return result;
+        unitOfWork.StepRepository.EditStep(step);
+        await userLogService.AddLog($"Добавление доп. св-в операции Copy для шага номер {step.StepNumber} задачи {step.TaskId}",
+                                    JsonSerializer.Serialize(operation, AppConstants.JSON_OPTIONS));
+        return await unitOfWork.SaveAsync() > 0 ? operation
+                : throw new DomainException($"Ошибка добавления доп. св-в операции Copy для шага номер {step.StepNumber} задачи {step.TaskId}");
     }
 
-    public async Task<bool> CreateDelete(OperationDeleteEntity operation)
+    public async Task<OperationDeleteEntity> CreateDelete(OperationDeleteEntity operation)
     {
-        var result = await operationRepository.CreateDelete(operation);
-        var step = await stepRepository.GetStepByStepId(operation.StepId);
-        if (step == null)
-        {
-            await operationRepository.DeleteDelete(operation);
-            return false;
-        }
+        var step = await unitOfWork.StepRepository.GetStepByStepId(operation.StepId)
+                                ?? throw new DomainException("Шаг не найден");
+        await unitOfWork.OperationRepository.CreateDelete(operation);
         step.OperationId = operation.OperationId;
-        await stepRepository.EditStep(step);
-        await userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name,
-                                $"Добавление доп. св-в операции Delete для шага номер {step.StepNumber} задачи {step.TaskId}",
-                                JsonSerializer.Serialize(operation, _options));
-        return result;
+        unitOfWork.StepRepository.EditStep(step);
+        await userLogService.AddLog($"Добавление доп. св-в операции Delete для шага номер {step.StepNumber} задачи {step.TaskId}",
+                                    JsonSerializer.Serialize(operation, AppConstants.JSON_OPTIONS));
+        return await unitOfWork.SaveAsync() > 0 ? operation
+                : throw new DomainException($"Ошибка добавления доп. св-в операции Delete для шага номер {step.StepNumber} задачи {step.TaskId}");
     }
 
-    public async Task<bool> CreateExist(OperationExistEntity operation)
+    public async Task<OperationExistEntity> CreateExist(OperationExistEntity operation)
     {
-        var result = await operationRepository.CreateExist(operation);
-        var step = await stepRepository.GetStepByStepId(operation.StepId);
-        if (step == null)
-        {
-            await operationRepository.DeleteExist(operation);
-            return false;
-        }
+        var step = await unitOfWork.StepRepository.GetStepByStepId(operation.StepId)
+                                ?? throw new DomainException("Шаг не найден");
+        await unitOfWork.OperationRepository.CreateExist(operation);
         step.OperationId = operation.OperationId;
-        await stepRepository.EditStep(step);
-        await userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name,
-                                $"Добавление доп. св-в операции Exist для шага номер {step.StepNumber} задачи {step.TaskId}",
-                                JsonSerializer.Serialize(operation, _options));
-        return result;
+        unitOfWork.StepRepository.EditStep(step);
+        await userLogService.AddLog($"Добавление доп. св-в операции Exist для шага номер {step.StepNumber} задачи {step.TaskId}",
+                                    JsonSerializer.Serialize(operation, AppConstants.JSON_OPTIONS));
+        return await unitOfWork.SaveAsync() > 0 ? operation
+                : throw new DomainException($"Ошибка добавления доп. св-в операции Exist для шага номер {step.StepNumber} задачи {step.TaskId}");
     }
 
-    public async Task<bool> CreateMove(OperationMoveEntity operation)
+    public async Task<OperationMoveEntity> CreateMove(OperationMoveEntity operation)
     {
-        var result = await operationRepository.CreateMove(operation);
-        var step = await stepRepository.GetStepByStepId(operation.StepId);
-        if (step == null)
-        {
-            await operationRepository.DeleteMove(operation);
-            return false;
-        }
+        var step = await unitOfWork.StepRepository.GetStepByStepId(operation.StepId)
+                                ?? throw new DomainException("Шаг не найден");
+        await unitOfWork.OperationRepository.CreateMove(operation);
         step.OperationId = operation.OperationId;
-        await stepRepository.EditStep(step);
-        await userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name,
-                                $"Добавление доп. св-в операции Move для шага номер {step.StepNumber} задачи {step.TaskId}",
-                                JsonSerializer.Serialize(operation, _options));
-        return result;
+        unitOfWork.StepRepository.EditStep(step);
+        await userLogService.AddLog($"Добавление доп. св-в операции Move для шага номер {step.StepNumber} задачи {step.TaskId}",
+                                    JsonSerializer.Serialize(operation, AppConstants.JSON_OPTIONS));
+        return await unitOfWork.SaveAsync() > 0 ? operation
+                : throw new DomainException($"Ошибка добавления доп. св-в операции Move для шага номер {step.StepNumber} задачи {step.TaskId}");
     }
 
-    public async Task<bool> CreateRead(OperationReadEntity operation)
+    public async Task<OperationReadEntity> CreateRead(OperationReadEntity operation)
     {
-        var result = await operationRepository.CreateRead(operation);
-        var step = await stepRepository.GetStepByStepId(operation.StepId);
-        if (step == null)
-        {
-            await operationRepository.DeleteRead(operation);
-            return false;
-        }
+        var step = await unitOfWork.StepRepository.GetStepByStepId(operation.StepId)
+                                ?? throw new DomainException("Шаг не найден");
+        await unitOfWork.OperationRepository.CreateRead(operation);
         step.OperationId = operation.OperationId;
-        await stepRepository.EditStep(step);
-        await userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name,
-                                $"Добавление доп. св-в операции Read для шага номер {step.StepNumber} задачи {step.TaskId}",
-                                JsonSerializer.Serialize(operation, _options));
-        return result;
+        unitOfWork.StepRepository.EditStep(step);
+        await userLogService.AddLog($"Добавление доп. св-в операции Read для шага номер {step.StepNumber} задачи {step.TaskId}",
+                                    JsonSerializer.Serialize(operation, AppConstants.JSON_OPTIONS));
+        return await unitOfWork.SaveAsync() > 0 ? operation
+                : throw new DomainException($"Ошибка добавления доп. св-в операции Read для шага номер {step.StepNumber} задачи {step.TaskId}");
     }
 
-    public async Task<bool> CreateRename(OperationRenameEntity operation)
+    public async Task<OperationRenameEntity> CreateRename(OperationRenameEntity operation)
     {
-        var result = await operationRepository.CreateRename(operation);
-        var step = await stepRepository.GetStepByStepId(operation.StepId);
-        if (step == null)
-        {
-            await operationRepository.DeleteRename(operation);
-            return false;
-        }
+        var step = await unitOfWork.StepRepository.GetStepByStepId(operation.StepId)
+                                ?? throw new DomainException("Шаг не найден");
+        await unitOfWork.OperationRepository.CreateRename(operation);
         step.OperationId = operation.OperationId;
-        await stepRepository.EditStep(step);
-        await userLogService.AddLog(httpContextAccessor.HttpContext.User.Identity.Name,
-                                $"Добавление доп. св-в операции Rename для шага номер {step.StepNumber} задачи {step.TaskId}",
-                                JsonSerializer.Serialize(operation, _options));
-        return result;
+        unitOfWork.StepRepository.EditStep(step);
+        await userLogService.AddLog($"Добавление доп. св-в операции Rename для шага номер {step.StepNumber} задачи {step.TaskId}",
+                                    JsonSerializer.Serialize(operation, AppConstants.JSON_OPTIONS));
+        return await unitOfWork.SaveAsync() > 0 ? operation
+                : throw new DomainException($"Ошибка добавления доп. св-в операции Rename для шага номер {step.StepNumber} задачи {step.TaskId}");
     }
 
     public async Task<bool> DeleteClrbuf(OperationClrbufEntity operation)
     {
-        return await operationRepository.DeleteClrbuf(operation);
+        var result = unitOfWork.OperationRepository.DeleteClrbuf(operation);
+        return result && await unitOfWork.SaveAsync() > 0;
     }
 
     public async Task<bool> DeleteCopy(OperationCopyEntity operation)
     {
-        return await operationRepository.DeleteCopy(operation);
+        var result = unitOfWork.OperationRepository.DeleteCopy(operation);
+        return result && await unitOfWork.SaveAsync() > 0;
     }
 
     public async Task<bool> DeleteDelete(OperationDeleteEntity operation)
     {
-        return await operationRepository.DeleteDelete(operation);
+        var result = unitOfWork.OperationRepository.DeleteDelete(operation);
+        return result && await unitOfWork.SaveAsync() > 0;
     }
 
     public async Task<bool> DeleteExist(OperationExistEntity operation)
     {
-        return await operationRepository.DeleteExist(operation);
+        var result = unitOfWork.OperationRepository.DeleteExist(operation);
+        return result && await unitOfWork.SaveAsync() > 0;
     }
 
     public async Task<bool> DeleteMove(OperationMoveEntity operation)
     {
-        return await operationRepository.DeleteMove(operation);
+        var result = unitOfWork.OperationRepository.DeleteMove(operation);
+        return result && await unitOfWork.SaveAsync() > 0;
     }
 
     public async Task<bool> DeleteRead(OperationReadEntity operation)
     {
-        return await operationRepository.DeleteRead(operation);
+        var result = unitOfWork.OperationRepository.DeleteRead(operation);
+        return result && await unitOfWork.SaveAsync() > 0;
     }
 
     public async Task<bool> DeleteRename(OperationRenameEntity operation)
     {
-        return await operationRepository.DeleteRename(operation);
+        var result = unitOfWork.OperationRepository.DeleteRename(operation);
+        return result && await unitOfWork.SaveAsync() > 0;
     }
 
     public async Task<OperationClrbufEntity?> GetClrbufByStepId(int stepId)
     {
-        return await operationRepository.GetClrbufByStepId(stepId);
+        return await unitOfWork.OperationRepository.GetClrbufByStepId(stepId);
     }
 
     public async Task<OperationCopyEntity?> GetCopyByStepId(int stepId)
     {
-        return await operationRepository.GetCopyByStepId(stepId);
+        return await unitOfWork.OperationRepository.GetCopyByStepId(stepId);
     }
 
     public async Task<OperationDeleteEntity?> GetDeleteByStepId(int stepId)
     {
-        return await operationRepository.GetDeleteByStepId(stepId);
+        return await unitOfWork.OperationRepository.GetDeleteByStepId(stepId);
     }
 
     public async Task<OperationExistEntity?> GetExistByStepId(int stepId)
     {
-        return await operationRepository.GetExistByStepId(stepId);
+        return await unitOfWork.OperationRepository.GetExistByStepId(stepId);
     }
 
     public async Task<OperationMoveEntity?> GetMoveByStepId(int stepId)
     {
-        return await operationRepository.GetMoveByStepId(stepId);
+        return await unitOfWork.OperationRepository.GetMoveByStepId(stepId);
     }
 
     public async Task<OperationReadEntity?> GetReadByStepId(int stepId)
     {
-        return await operationRepository.GetReadByStepId(stepId);
+        return await unitOfWork.OperationRepository.GetReadByStepId(stepId);
     }
 
     public async Task<OperationRenameEntity?> GetRenameByStepId(int stepId)
     {
-        return await operationRepository.GetRenameByStepId(stepId);
+        return await unitOfWork.OperationRepository.GetRenameByStepId(stepId);
     }
 
-    public async Task<bool> UpdateClrbuf(OperationClrbufEntity operation)
+    public async Task<OperationClrbufEntity> UpdateClrbuf(OperationClrbufEntity operation)
     {
-        return await operationRepository.UpdateClrbuf(operation);
+        var edited = unitOfWork.OperationRepository.UpdateClrbuf(operation);
+        return await unitOfWork.SaveAsync() > 0 ? edited
+                                : throw new DomainException("Ошибка при обновлении операции Clrbuf");
     }
 
-    public async Task<bool> UpdateCopy(OperationCopyEntity operation)
+    public async Task<OperationCopyEntity> UpdateCopy(OperationCopyEntity operation)
     {
-        return await operationRepository.UpdateCopy(operation);
+        var edited = unitOfWork.OperationRepository.UpdateCopy(operation);
+        return await unitOfWork.SaveAsync() > 0 ? edited
+                                : throw new DomainException("Ошибка при обновлении операции Copy");
     }
 
-    public async Task<bool> UpdateDelete(OperationDeleteEntity operation)
+    public async Task<OperationDeleteEntity> UpdateDelete(OperationDeleteEntity operation)
     {
-        return await operationRepository.UpdateDelete(operation);
+        var edited = unitOfWork.OperationRepository.UpdateDelete(operation);
+        return await unitOfWork.SaveAsync() > 0 ? edited
+                                : throw new DomainException("Ошибка при обновлении операции Delete");
     }
 
-    public async Task<bool> UpdateExist(OperationExistEntity operation)
+    public async Task<OperationExistEntity> UpdateExist(OperationExistEntity operation)
     {
-        return await operationRepository.UpdateExist(operation);
+        var edited = unitOfWork.OperationRepository.UpdateExist(operation);
+        return await unitOfWork.SaveAsync() > 0 ? edited
+                                : throw new DomainException("Ошибка при обновлении операции Exist");
     }
 
-    public async Task<bool> UpdateMove(OperationMoveEntity operation)
+    public async Task<OperationMoveEntity> UpdateMove(OperationMoveEntity operation)
     {
-        return await operationRepository.UpdateMove(operation);
+        var edited = unitOfWork.OperationRepository.UpdateMove(operation);
+        return await unitOfWork.SaveAsync() > 0 ? edited
+                                : throw new DomainException("Ошибка при обновлении операции Move");
     }
 
-    public async Task<bool> UpdateRead(OperationReadEntity operation)
+    public async Task<OperationReadEntity> UpdateRead(OperationReadEntity operation)
     {
-        return await operationRepository.UpdateRead(operation);
+        var edited = unitOfWork.OperationRepository.UpdateRead(operation);
+        return await unitOfWork.SaveAsync() > 0 ? edited
+                                : throw new DomainException("Ошибка при обновлении операции Read");
     }
 
-    public async Task<bool> UpdateRename(OperationRenameEntity operation)
+    public async Task<OperationRenameEntity> UpdateRename(OperationRenameEntity operation)
     {
-        return await operationRepository.UpdateRename(operation);
+        var edited = unitOfWork.OperationRepository.UpdateRename(operation);
+        return await unitOfWork.SaveAsync() > 0 ? edited
+                                : throw new DomainException("Ошибка при обновлении операции Rename");
     }
 }

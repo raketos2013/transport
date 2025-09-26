@@ -1,5 +1,6 @@
 ﻿using FileManager.Core.Entities;
 using FileManager.Core.Enums;
+using FileManager.Core.Exceptions;
 using FileManager.Core.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,14 +11,13 @@ namespace FileManager.Controllers;
 public class OperationController(IOperationService operationService,
                                     IStepService stepService,
                                     IAddresseeService addresseeService,
-                                    ILockService lockService,
-                                    IHttpContextAccessor httpContextAccessor)
+                                    ILockService lockService)
             : Controller
 {
     [HttpGet]
     public async Task<IActionResult> EditOperation(string taskId, string stepNumber)
     {
-        await lockService.Lock(taskId, httpContextAccessor.HttpContext.User.Identity.Name);
+        await lockService.Lock(taskId);
         ViewBag.AddresseeGroups = await addresseeService.GetAllAddresseeGroups();
         var step = await stepService.GetStepByTaskId(taskId, int.Parse(stepNumber));
         if (step == null) 
@@ -97,7 +97,8 @@ public class OperationController(IOperationService operationService,
     public async Task<IActionResult> Operations(string taskId, string stepNumber, string operationName)
     {
         TaskOperation? taskOperation;
-        var step = await stepService.GetStepByTaskId(taskId, int.Parse(stepNumber));
+        var step = await stepService.GetStepByTaskId(taskId, int.Parse(stepNumber))
+                                ?? throw new DomainException("Шаг не найден");
         switch (operationName)
         {
             case "Copy":
@@ -136,8 +137,9 @@ public class OperationController(IOperationService operationService,
         }
         else
         {
+            var step = await stepService.GetStepByStepId(operation.StepId)
+                                ?? throw new DomainException("Шаг не найден");
             await operationService.UpdateCopy(operation);
-            var step = await stepService.GetStepByStepId(operation.StepId);
             await lockService.Unlock(step.TaskId);
         }
         return RedirectToAction("Steps", "Step");
@@ -151,8 +153,9 @@ public class OperationController(IOperationService operationService,
         }
         else
         {
+            var step = await stepService.GetStepByStepId(operation.StepId)
+                                ?? throw new DomainException("Шаг не найден");
             await operationService.UpdateMove(operation);
-            var step = await stepService.GetStepByStepId(operation.StepId);
             await lockService.Unlock(step.TaskId);
         }
         return RedirectToAction("Steps", "Step");
@@ -166,8 +169,9 @@ public class OperationController(IOperationService operationService,
         }
         else
         {
+            var step = await stepService.GetStepByStepId(operation.StepId)
+                                ?? throw new DomainException("Шаг не найден");
             await operationService.UpdateDelete(operation);
-            var step = await stepService.GetStepByStepId(operation.StepId);
             await lockService.Unlock(step.TaskId);
         }
         return RedirectToAction("Steps", "Step");
@@ -182,8 +186,9 @@ public class OperationController(IOperationService operationService,
         }
         else
         {
+            var step = await stepService.GetStepByStepId(operation.StepId)
+                                ?? throw new DomainException("Шаг не найден");
             await operationService.UpdateRead(operation);
-            var step = await stepService.GetStepByStepId(operation.StepId);
             await lockService.Unlock(step.TaskId);
         }
         return RedirectToAction("Steps", "Step");
@@ -197,8 +202,9 @@ public class OperationController(IOperationService operationService,
         }
         else
         {
+            var step = await stepService.GetStepByStepId(operation.StepId)
+                                ?? throw new DomainException("Шаг не найден");
             await operationService.UpdateExist(operation);
-            var step = await stepService.GetStepByStepId(operation.StepId);
             await lockService.Unlock(step.TaskId);
         }
         return RedirectToAction("Steps", "Step");
@@ -214,8 +220,9 @@ public class OperationController(IOperationService operationService,
         }
         else
         {
+            var step = await stepService.GetStepByStepId(operation.StepId)
+                                ?? throw new DomainException("Шаг не найден");
             await operationService.UpdateRename(operation);
-            var step = await stepService.GetStepByStepId(operation.StepId);
             await lockService.Unlock(step.TaskId);
         }
         return RedirectToAction("Steps", "Step");
@@ -229,8 +236,9 @@ public class OperationController(IOperationService operationService,
         }
         else
         {
+            var step = await stepService.GetStepByStepId(operation.StepId)
+                                ?? throw new DomainException("Шаг не найден");
             await operationService.UpdateClrbuf(operation);
-            var step = await stepService.GetStepByStepId(operation.StepId);
             await lockService.Unlock(step.TaskId);
         }
         return RedirectToAction("Steps", "Step");

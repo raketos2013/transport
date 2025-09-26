@@ -53,8 +53,7 @@ public class Copy(TaskStepEntity step,
                 if (operation.InformSuccess)
                 {
                     var addressesAsync = await _addresseeService.GetAllAddressees();
-                    addresses = addressesAsync
-                                                    .Where(x => x.AddresseeGroupId == operation.AddresseeGroupId &&
+                    addresses = addressesAsync.Where(x => x.AddresseeGroupId == operation.AddresseeGroupId &&
                                                                 x.IsActive == true).ToList();
                 }
 
@@ -77,7 +76,6 @@ public class Copy(TaskStepEntity step,
         bool isOverwriteFile = false;
         foreach (var file in infoFiles)
         {
-            
             fileName = Path.GetFileName(file.FullName);
             isCopyFile = true;
 
@@ -102,8 +100,11 @@ public class Copy(TaskStepEntity step,
                 {
                     // файл в назначении
                     string destFileName = fileName;
-                    (isOverwriteFile, destFileName) = await ExistInDestination(operation, fileName);
-
+                    if (operation != null)
+                    {
+                        (isOverwriteFile, destFileName) = ExistInDestination(operation, fileName);
+                    }
+                    
                     fileNameDestination = Path.Combine(TaskStep.Destination, destFileName);
                     FileInfo destinationFileInfo = new(fileNameDestination);
 
@@ -133,7 +134,7 @@ public class Copy(TaskStepEntity step,
         _nextStep?.Execute(bufferFiles);
     }
 
-    public async Task<bool> DoubleLog(OperationCopyEntity operation ,string fileName)
+    private async Task<bool> DoubleLog(OperationCopyEntity operation ,string fileName)
     {
         var taskLogsAsync = await _taskLogService.GetLogsByTaskId(TaskStep.TaskId);
         var taskLogs = taskLogsAsync.FirstOrDefault(x => x.StepId == TaskStep.StepId &&
@@ -157,7 +158,7 @@ public class Copy(TaskStepEntity step,
         return true;
     }
 
-    public async Task<(bool, string)> ExistInDestination(OperationCopyEntity operation, string fileName)
+    private static (bool, string) ExistInDestination(OperationCopyEntity operation, string fileName)
     {
         var destFileName = fileName;
         if (operation.FileInDestination == FileInDestination.OVR)
@@ -176,7 +177,7 @@ public class Copy(TaskStepEntity step,
         return (true, destFileName);
     }
 
-    public List<FileInfo> SortFilesList(List<FileInfo> infoFiles, SortFiles sortParam)
+    private static List<FileInfo> SortFilesList(List<FileInfo> infoFiles, SortFiles sortParam)
     {
         switch (sortParam)
         {
@@ -206,7 +207,7 @@ public class Copy(TaskStepEntity step,
         return infoFiles;
     }
 
-    public List<FileInfo> MaxFiles(List<FileInfo> infoFiles, int maxFiles)
+    private static List<FileInfo> MaxFiles(List<FileInfo> infoFiles, int maxFiles)
     {
         if (maxFiles != 0 & maxFiles < infoFiles.Count - 2)
         {
@@ -215,7 +216,7 @@ public class Copy(TaskStepEntity step,
         return infoFiles;
     }
 
-    public bool CheckAttributeFile(AttributeFile fileAttribute, string fileName)
+    private static bool CheckAttributeFile(AttributeFile fileAttribute, string fileName)
     {
         FileAttributes attributs = File.GetAttributes(fileName);
         bool isCopyFile = true;
@@ -262,7 +263,7 @@ public class Copy(TaskStepEntity step,
         return isCopyFile;
     }
 
-    public async Task SendToHttp(string fileName)
+    private async Task SendToHttp(string fileName)
     {
         var client = _httpClientFactory.CreateClient("MMR");
 

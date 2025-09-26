@@ -20,19 +20,19 @@ public interface IOperationService
     Task<bool> DeleteRename(OperationRenameEntity operation);
     Task<bool> DeleteClrbuf(OperationClrbufEntity operation);
 
-    Task<bool> CreateCopy(OperationCopyEntity operation);
-    Task<bool> CreateMove(OperationMoveEntity operation);
-    Task<bool> CreateRead(OperationReadEntity operation);
-    Task<bool> CreateExist(OperationExistEntity operation);
-    Task<bool> CreateDelete(OperationDeleteEntity operation);
-    Task<bool> CreateRename(OperationRenameEntity operation);
-    Task<bool> CreateClrbuf(OperationClrbufEntity operation);
+    Task<OperationCopyEntity> CreateCopy(OperationCopyEntity operation);
+    Task<OperationMoveEntity> CreateMove(OperationMoveEntity operation);
+    Task<OperationReadEntity> CreateRead(OperationReadEntity operation);
+    Task<OperationExistEntity> CreateExist(OperationExistEntity operation);
+    Task<OperationDeleteEntity> CreateDelete(OperationDeleteEntity operation);
+    Task<OperationRenameEntity> CreateRename(OperationRenameEntity operation);
+    Task<OperationClrbufEntity> CreateClrbuf(OperationClrbufEntity operation);
 
-    Task<bool> UpdateCopy(OperationCopyEntity operation);
-    Task<bool> UpdateMove(OperationMoveEntity operation);
-    Task<bool> UpdateRead(OperationReadEntity operation);
-    Task<bool> UpdateExist(OperationExistEntity operation);
-    Task<bool> UpdateDelete(OperationDeleteEntity operation);
-    Task<bool> UpdateRename(OperationRenameEntity operation);
-    Task<bool> UpdateClrbuf(OperationClrbufEntity operation);
+    Task<OperationCopyEntity> UpdateCopy(OperationCopyEntity operation);
+    Task<OperationMoveEntity> UpdateMove(OperationMoveEntity operation);
+    Task<OperationReadEntity> UpdateRead(OperationReadEntity operation);
+    Task<OperationExistEntity> UpdateExist(OperationExistEntity operation);
+    Task<OperationDeleteEntity> UpdateDelete(OperationDeleteEntity operation);
+    Task<OperationRenameEntity> UpdateRename(OperationRenameEntity operation);
+    Task<OperationClrbufEntity> UpdateClrbuf(OperationClrbufEntity operation);
 }

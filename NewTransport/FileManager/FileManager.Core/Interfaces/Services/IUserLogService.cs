@@ -4,6 +4,6 @@ namespace FileManager.Core.Interfaces.Services;
 
 public interface IUserLogService
 {
-    Task AddLog(string username, string action, string data);
+    Task AddLog(string action, string data);
     Task<List<UserLogEntity>> GetAllLogs();
 }

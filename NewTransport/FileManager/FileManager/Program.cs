@@ -8,7 +8,6 @@ using System.Net.Http.Headers;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(option =>
 {
@@ -56,7 +55,7 @@ builder.Services.AddQuartz(options =>
         .StartAt(DateTimeOffset.Parse("00:00"))
         .EndAt(DateTimeOffset.Parse("23:59"))
     );
-    options.UseMicrosoftDependencyInjectionJobFactory();
+    //options.UseMicrosoftDependencyInjectionJobFactory();
 });
 
 builder.Services.AddQuartzHostedService(options =>
@@ -68,10 +67,8 @@ builder.Services.AddQuartzHostedService(options =>
 
 builder.Services.AddHttpClient("MMR", httpClient =>
 {
-    //httpClient.BaseAddress = new Uri(urlSap);
     httpClient.DefaultRequestHeaders.Accept.Clear();
     httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-    //httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0");
 });
 
 

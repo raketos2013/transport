@@ -12,12 +12,5 @@ public abstract class CreatorFactoryMethod
     public abstract IStepOperation FactoryMethod(
                                                     TaskStepEntity step,
                                                     TaskOperation? operation,
-                                                    //ITaskLogger taskLogger,
-                                                    //IMailSender mailSender,
-                                                    //IOptions<AuthTokenConfiguration> authTokenConfigurations,
-                                                    //IOperationService operationService,
-                                                    //IAddresseeService addresseeService,
-                                                    //ITaskLogService taskLogService,
-                                                    //IHttpClientFactory httpClientFactory,
-                                                    IServiceScopeFactory scopeFactory);
+                                                    IServiceScope scopeFactory);
 }

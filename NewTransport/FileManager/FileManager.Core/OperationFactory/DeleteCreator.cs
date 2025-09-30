@@ -19,7 +19,7 @@ public class DeleteCreator : CreatorFactoryMethod
                                                     //IAddresseeService addresseeService,
                                                     //ITaskLogService taskLogService,
                                                     //IHttpClientFactory httpClientFactory
-                                                    IServiceScopeFactory scopeFactory)
+                                                    IServiceScope scopeFactory)
     {
         return new Delete(step, operation, 
                             //taskLogger, mailSender, authTokenConfigurations, 

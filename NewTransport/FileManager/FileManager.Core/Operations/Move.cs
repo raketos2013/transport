@@ -7,7 +7,7 @@ namespace FileManager.Core.Operations;
 
 public class Move(TaskStepEntity step,
                     TaskOperation? operation,
-                    IServiceScopeFactory scopeFactory)
+                    IServiceScope scopeFactory)
             : StepOperation(step, operation, scopeFactory)
 {
     public override async Task Execute(List<string>? bufferFiles)
@@ -72,9 +72,7 @@ public class Move(TaskStepEntity step,
         bool isOverwriteFile = false;
         foreach (var file in infoFiles)
         {
-
-            FileInUse(file);
-
+            await FileInUse(file);
 
             FileAttributes attributs = File.GetAttributes(file.FullName);
             fileName = Path.GetFileName(file.FullName);
@@ -103,15 +101,18 @@ public class Move(TaskStepEntity step,
                 {
                     isMoveFile = CheckAttributeFile(operation.FileAttribute, file.FullName);
                 }
-                
             }
 
             if (isMoveFile)
             {
                 // файл в назначении
                 string destFileName = fileName;
-                (isOverwriteFile, destFileName) = await ExistInDestination(operation, fileName);
-
+                fileNameDestination = Path.Combine(TaskStep.Destination, destFileName);
+                if (File.Exists(fileNameDestination))
+                {
+                    (isOverwriteFile, destFileName) = await ExistInDestination(operation, fileName);
+                }
+                
                 fileNameDestination = Path.Combine(TaskStep.Destination, destFileName);
                 FileInfo destinationFileInfo = new(fileNameDestination);
 
@@ -254,7 +255,8 @@ public class Move(TaskStepEntity step,
         }
         else if (operation.FileInDestination == FileInDestination.ERR)
         {
-            return (false, destFileName);
+            await _taskLogger.StepLog(TaskStep, "Не удалось переместить файл. Файл уже существует", fileName, ResultOperation.E);
+            throw new Exception("Файл уже существует!");
         }
         return (true, destFileName);
     }

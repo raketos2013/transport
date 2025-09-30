@@ -90,37 +90,37 @@ public class JobForTask(IServiceScopeFactory scopeFactory) : IJob
                         case OperationName.Copy:
                             operation = await operationService.GetCopyByStepId(step.StepId);
                             CreatorFactoryMethod copyCreator = new CopyCreator();
-                            steps.Add(copyCreator.FactoryMethod(step, operation, scopeFactory));
+                            steps.Add(copyCreator.FactoryMethod(step, operation, scope));
                             break;
                         case OperationName.Move:
                             operation = await operationService.GetMoveByStepId(step.StepId);
                             CreatorFactoryMethod moveCreator = new MoveCreator();
-                            steps.Add(moveCreator.FactoryMethod(step, operation, scopeFactory));
+                            steps.Add(moveCreator.FactoryMethod(step, operation, scope));
                             break;
                         case OperationName.Read:
                             operation = await operationService.GetReadByStepId(step.StepId);
                             CreatorFactoryMethod readCreator = new ReadCreator();
-                            steps.Add(readCreator.FactoryMethod(step, operation, scopeFactory));
+                            steps.Add(readCreator.FactoryMethod(step, operation, scope));
                             break;
                         case OperationName.Exist:
                             operation = await operationService.GetExistByStepId(step.StepId);
                             CreatorFactoryMethod existCreator = new ExistCreator();
-                            steps.Add(existCreator.FactoryMethod(step, operation, scopeFactory));
+                            steps.Add(existCreator.FactoryMethod(step, operation, scope));
                             break;
                         case OperationName.Rename:
                             operation = await operationService.GetRenameByStepId(step.StepId);
                             CreatorFactoryMethod renameCreator = new RenameCreator();
-                            steps.Add(renameCreator.FactoryMethod(step, operation, scopeFactory));
+                            steps.Add(renameCreator.FactoryMethod(step, operation, scope));
                             break;
                         case OperationName.Delete:
                             operation = await operationService.GetDeleteByStepId(step.StepId);
                             CreatorFactoryMethod deleteCreator = new DeleteCreator();
-                            steps.Add(deleteCreator.FactoryMethod(step, operation, scopeFactory));
+                            steps.Add(deleteCreator.FactoryMethod(step, operation, scope));
                             break;
                         case OperationName.Clrbuf:
                             operation = await operationService.GetClrbufByStepId(step.StepId);
                             CreatorFactoryMethod clrbufCreator = new ClrbufCreator();
-                            steps.Add(clrbufCreator.FactoryMethod(step, operation, scopeFactory));
+                            steps.Add(clrbufCreator.FactoryMethod(step, operation, scope));
                             break;
                         default:
                             break;
@@ -134,9 +134,9 @@ public class JobForTask(IServiceScopeFactory scopeFactory) : IJob
             }
             if (steps.Count > 0)
             {
-                steps[0].Execute(bufferFiles);
+                await steps[0].Execute(bufferFiles);
             }
-            await Task.CompletedTask;
+            //await Task.CompletedTask;
 
             await taskLogger.TaskLog(context.JobDetail.Key.Name, $"<<< Окончание работы задачи {context.JobDetail.Key.Name} >>>");
         }
@@ -159,6 +159,7 @@ public class JobForTask(IServiceScopeFactory scopeFactory) : IJob
                     task.IsActive = false;
                     await taskService.EditTask(task);
                 }
+                await taskLogger.TaskLog(context.JobDetail.Key.Name, $"Автозавершение (выключение) задачи", ResultOperation.W);
                 logger.LogError($"{DateTime.Now} задача: {context.JobDetail.Key.Name} - {ex.Message}");
             }
             catch (Exception ex2)

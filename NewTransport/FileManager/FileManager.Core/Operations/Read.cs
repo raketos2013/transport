@@ -9,7 +9,7 @@ namespace FileManager.Core.Operations;
 
 public class Read(TaskStepEntity step,
                     TaskOperation? operation,
-                    IServiceScopeFactory scopeFactory)
+                    IServiceScope scopeFactory)
             : StepOperation(step, operation, scopeFactory)
 {
     public override async Task Execute(List<string>? bufferFiles)

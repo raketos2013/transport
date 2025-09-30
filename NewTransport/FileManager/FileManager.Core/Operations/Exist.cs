@@ -6,7 +6,7 @@ namespace FileManager.Core.Operations;
 
 public class Exist(TaskStepEntity step,
                     TaskOperation? operation,
-                    IServiceScopeFactory scopeFactory)
+                    IServiceScope scopeFactory)
             : StepOperation(step, operation, scopeFactory)
 {
     public override async Task Execute(List<string>? bufferFiles)

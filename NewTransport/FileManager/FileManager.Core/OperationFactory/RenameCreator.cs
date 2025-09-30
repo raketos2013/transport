@@ -19,7 +19,7 @@ public class RenameCreator : CreatorFactoryMethod
                                                     //IAddresseeService addresseeService,
                                                     //ITaskLogService taskLogService,
                                                     //IHttpClientFactory httpClientFactory
-                                                    IServiceScopeFactory scopeFactory)
+                                                    IServiceScope scopeFactory)
     {
         return new Rename(step, operation, 
                             //taskLogger, mailSender, authTokenConfigurations, 

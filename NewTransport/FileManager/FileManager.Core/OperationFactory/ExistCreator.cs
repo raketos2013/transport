@@ -19,7 +19,7 @@ public class ExistCreator : CreatorFactoryMethod
                                                     //IAddresseeService addresseeService,
                                                     //ITaskLogService taskLogService,
                                                     //IHttpClientFactory httpClientFactory
-                                                    IServiceScopeFactory scopeFactory)
+                                                    IServiceScope scopeFactory)
     {
         return new Exist(step, operation, 
                             //taskLogger, mailSender, authTokenConfigurations, 

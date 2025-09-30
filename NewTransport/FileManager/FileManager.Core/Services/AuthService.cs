@@ -47,14 +47,27 @@ public class AuthService : IAuthService
                     {
                         if (results.Count > 0)
                         {
+                            var userInfo = results.FirstOrDefault();
+                            givenName = userInfo.GetAttribute("displayName").StringValue;
+                            var groups = userInfo.GetAttribute("memberOf").StringValueArray;
+
+                            //givenName = results?.FirstOrDefault(p => p.Dn.Contains(username))?.GetAttribute("displayName").StringValue;
+                            if (groups == null)
+                                throw new Exception();
+                            List<string> groupsList = [];
+                            foreach (var item in groups)
+                            {
+                                var group = item.Split(',')[0].Substring(3);
+                                groupsList.Add(group);
+                            }
+
                             isAuthenticated = true;
-                            givenName = results?.FirstOrDefault(p => p.Dn.Contains(username))?.GetAttribute("displayName").StringValue;
+                            
                             ldapConnection.Disconnect();
                             return (isAuthenticated, givenName ?? "");
                         }
                     }
                     ldapConnection.Bind(null, null);
-
                 }
             }
         }

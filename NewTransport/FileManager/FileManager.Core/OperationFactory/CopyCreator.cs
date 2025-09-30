@@ -19,7 +19,7 @@ public class CopyCreator : CreatorFactoryMethod
                                                     //IAddresseeService addresseeService,
                                                     //ITaskLogService taskLogService,
                                                     //IHttpClientFactory httpClientFactory
-                                                    IServiceScopeFactory scopeFactory)
+                                                    IServiceScope scopeFactory)
     {
         return new Copy(step, operation, 
                         //taskLogger, mailSender, authTokenConfigurations, 

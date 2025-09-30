@@ -65,7 +65,9 @@ public class AccountController(ILogger<AccountController> logger,
                 principal = new ClaimsPrincipal(identity);
                 if (principal != null && HttpContext != null)
                 {
-                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties { IsPersistent = true });
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, 
+                                                    principal, 
+                                                    new AuthenticationProperties { IsPersistent = true });
                 }
             }
             else

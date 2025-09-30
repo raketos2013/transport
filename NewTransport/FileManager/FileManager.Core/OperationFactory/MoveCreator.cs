@@ -19,7 +19,7 @@ public class MoveCreator : CreatorFactoryMethod
                                                     //IAddresseeService addresseeService,
                                                     //ITaskLogService taskLogService,
                                                     //IHttpClientFactory httpClientFactory
-                                                    IServiceScopeFactory scopeFactory)
+                                                    IServiceScope scopeFactory)
     {
         return new Move(step, operation, 
                         //taskLogger, mailSender, authTokenConfigurations, 

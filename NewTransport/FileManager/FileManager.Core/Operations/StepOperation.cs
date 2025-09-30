@@ -23,11 +23,11 @@ public abstract class StepOperation : IStepOperation
 
     protected StepOperation(TaskStepEntity step,
                             TaskOperation? operation, 
-                            IServiceScopeFactory scopeFactory)
+                            IServiceScope scope)
     {
         TaskStep = step;
         TaskOperation = operation;
-        using var scope = scopeFactory.CreateScope();
+        //using var scope = scopeFactory.CreateScope();
         _taskLogger = scope.ServiceProvider.GetRequiredService<ITaskLogger>();
         _mailSender = scope.ServiceProvider.GetRequiredService<IMailSender>();
         _operationService = scope.ServiceProvider.GetRequiredService<IOperationService>();

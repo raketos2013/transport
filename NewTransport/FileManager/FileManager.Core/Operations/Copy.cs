@@ -5,17 +5,19 @@ using FileManager.Core.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace FileManager.Core.Operations;
 
 public class Copy(TaskStepEntity step,
                     TaskOperation? operation,
-                    IServiceScopeFactory scopeFactory)
+                    IServiceScope scopeFactory)
             : StepOperation(step, operation, scopeFactory)
 {
     public override async Task Execute(List<string>? bufferFiles)
     {
         await _taskLogger.StepLog(TaskStep, $"КОПИРОВАНИЕ: {TaskStep.Source} => {TaskStep.Destination}");
+        //Thread.Sleep(1000);
         await _taskLogger.OperationLog(TaskStep);
 
         string[] files = [];
@@ -100,9 +102,10 @@ public class Copy(TaskStepEntity step,
                 {
                     // файл в назначении
                     string destFileName = fileName;
-                    if (operation != null)
+                    fileNameDestination = Path.Combine(TaskStep.Destination, destFileName);
+                    if (operation != null && File.Exists(fileNameDestination))
                     {
-                        (isOverwriteFile, destFileName) = ExistInDestination(operation, fileName);
+                        (isOverwriteFile, destFileName) = await ExistInDestination(operation, fileName);
                     }
                     
                     fileNameDestination = Path.Combine(TaskStep.Destination, destFileName);
@@ -131,13 +134,18 @@ public class Copy(TaskStepEntity step,
             await _mailSender.Send(TaskStep, addresses, successFiles);
         }
 
-        _nextStep?.Execute(bufferFiles);
+        if (_nextStep != null)
+        {
+            await _nextStep.Execute(bufferFiles);
+        }
+        
     }
 
     private async Task<bool> DoubleLog(OperationCopyEntity operation ,string fileName)
     {
         var taskLogsAsync = await _taskLogService.GetLogsByTaskId(TaskStep.TaskId);
-        var taskLogs = taskLogsAsync.FirstOrDefault(x => x.StepId == TaskStep.StepId &&
+        var taskLogs = taskLogsAsync.FirstOrDefault(x => x.DateTimeLog.Date == DateTime.Now.Date &&
+                                                         x.StepId == TaskStep.StepId &&
                                                          x.FileName == fileName);
         if (taskLogs != null)
         {
@@ -147,7 +155,7 @@ public class Copy(TaskStepEntity step,
             }
             else if (operation.FileInSource == FileInSource.Always && operation.FileInLog == DoubleInLog.INADAY)
             {
-                await _taskLogger.StepLog(TaskStep, "Сработал контроль: \"Дублирование по журналу\"", fileName);
+                await _taskLogger.StepLog(TaskStep, "Сработал контроль: \"Дублирование по журналу\"", fileName, ResultOperation.E);
                 throw new Exception("Дублирование файла по журналу!");
             }
             else if (operation.FileInSource == FileInSource.OneDay && operation.FileInLog == DoubleInLog.NOCTRL)
@@ -158,7 +166,7 @@ public class Copy(TaskStepEntity step,
         return true;
     }
 
-    private static (bool, string) ExistInDestination(OperationCopyEntity operation, string fileName)
+    private async Task<(bool, string)> ExistInDestination(OperationCopyEntity operation, string fileName)
     {
         var destFileName = fileName;
         if (operation.FileInDestination == FileInDestination.OVR)
@@ -172,7 +180,8 @@ public class Copy(TaskStepEntity step,
         }
         else if (operation.FileInDestination == FileInDestination.ERR)
         {
-            return (false, destFileName);
+            await _taskLogger.StepLog(TaskStep, "Не удалось скопировать файл. Файл уже существует", fileName, ResultOperation.E);
+            throw new Exception("Файл уже существует!");
         }
         return (true, destFileName);
     }

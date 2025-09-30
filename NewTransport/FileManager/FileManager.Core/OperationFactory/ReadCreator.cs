@@ -19,7 +19,7 @@ public class ReadCreator : CreatorFactoryMethod
                                                     //IAddresseeService addresseeService,
                                                     //ITaskLogService taskLogService,
                                                     //IHttpClientFactory httpClientFactory
-                                                    IServiceScopeFactory scopeFactory)
+                                                    IServiceScope scopeFactory)
     {
         return new Read(step, operation, 
                         //taskLogger, mailSender, authTokenConfigurations, 

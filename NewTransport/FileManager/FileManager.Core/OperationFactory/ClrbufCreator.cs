@@ -20,7 +20,7 @@ public class ClrbufCreator : CreatorFactoryMethod
                                                     //IAddresseeService addresseeService,
                                                     //ITaskLogService taskLogService,
                                                     //IHttpClientFactory httpClientFactory,
-                                                    IServiceScopeFactory scopeFactory)
+                                                    IServiceScope scopeFactory)
     {
         return new Clrbuf(step, operation, 
                             //taskLogger, mailsender, authTokenConfigurations, 

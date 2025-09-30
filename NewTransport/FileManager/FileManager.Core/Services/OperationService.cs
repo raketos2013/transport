@@ -8,9 +8,10 @@ using System.Text.Json;
 
 namespace FileManager.Core.Services;
 
-public class OperationService(IUnitOfWork unitOfWork,
-                                IUserLogService userLogService,
-                                IHttpContextAccessor httpContextAccessor)
+public class OperationService(IUnitOfWork unitOfWork
+                                //IUserLogService userLogService,
+                                //IHttpContextAccessor httpContextAccessor
+                                )
             : IOperationService
 {
     public async Task<OperationClrbufEntity> CreateClrbuf(OperationClrbufEntity operation)
@@ -20,8 +21,8 @@ public class OperationService(IUnitOfWork unitOfWork,
         await unitOfWork.OperationRepository.CreateClrbuf(operation);
         step.OperationId = operation.OperationId;
         unitOfWork.StepRepository.EditStep(step);
-        await userLogService.AddLog($"Добавление доп. св-в операции Clrbuf для шага номер {step.StepNumber} задачи {step.TaskId}",
-                                    JsonSerializer.Serialize(operation, AppConstants.JSON_OPTIONS));
+        //await userLogService.AddLog($"Добавление доп. св-в операции Clrbuf для шага номер {step.StepNumber} задачи {step.TaskId}",
+        //                            JsonSerializer.Serialize(operation, AppConstants.JSON_OPTIONS));
         return await unitOfWork.SaveAsync() > 0 ? operation
                 : throw new DomainException($"Ошибка добавления доп. св-в операции Clrbuf для шага номер {step.StepNumber} задачи {step.TaskId}");
     }
@@ -33,8 +34,8 @@ public class OperationService(IUnitOfWork unitOfWork,
         await unitOfWork.OperationRepository.CreateCopy(operation);
         step.OperationId = operation.OperationId;
         unitOfWork.StepRepository.EditStep(step);
-        await userLogService.AddLog($"Добавление доп. св-в операции Copy для шага номер {step.StepNumber} задачи {step.TaskId}",
-                                    JsonSerializer.Serialize(operation, AppConstants.JSON_OPTIONS));
+        //await userLogService.AddLog($"Добавление доп. св-в операции Copy для шага номер {step.StepNumber} задачи {step.TaskId}",
+        //                            JsonSerializer.Serialize(operation, AppConstants.JSON_OPTIONS));
         return await unitOfWork.SaveAsync() > 0 ? operation
                 : throw new DomainException($"Ошибка добавления доп. св-в операции Copy для шага номер {step.StepNumber} задачи {step.TaskId}");
     }
@@ -46,8 +47,8 @@ public class OperationService(IUnitOfWork unitOfWork,
         await unitOfWork.OperationRepository.CreateDelete(operation);
         step.OperationId = operation.OperationId;
         unitOfWork.StepRepository.EditStep(step);
-        await userLogService.AddLog($"Добавление доп. св-в операции Delete для шага номер {step.StepNumber} задачи {step.TaskId}",
-                                    JsonSerializer.Serialize(operation, AppConstants.JSON_OPTIONS));
+        //await userLogService.AddLog($"Добавление доп. св-в операции Delete для шага номер {step.StepNumber} задачи {step.TaskId}",
+        //                            JsonSerializer.Serialize(operation, AppConstants.JSON_OPTIONS));
         return await unitOfWork.SaveAsync() > 0 ? operation
                 : throw new DomainException($"Ошибка добавления доп. св-в операции Delete для шага номер {step.StepNumber} задачи {step.TaskId}");
     }
@@ -59,8 +60,8 @@ public class OperationService(IUnitOfWork unitOfWork,
         await unitOfWork.OperationRepository.CreateExist(operation);
         step.OperationId = operation.OperationId;
         unitOfWork.StepRepository.EditStep(step);
-        await userLogService.AddLog($"Добавление доп. св-в операции Exist для шага номер {step.StepNumber} задачи {step.TaskId}",
-                                    JsonSerializer.Serialize(operation, AppConstants.JSON_OPTIONS));
+        //await userLogService.AddLog($"Добавление доп. св-в операции Exist для шага номер {step.StepNumber} задачи {step.TaskId}",
+        //                            JsonSerializer.Serialize(operation, AppConstants.JSON_OPTIONS));
         return await unitOfWork.SaveAsync() > 0 ? operation
                 : throw new DomainException($"Ошибка добавления доп. св-в операции Exist для шага номер {step.StepNumber} задачи {step.TaskId}");
     }
@@ -72,8 +73,8 @@ public class OperationService(IUnitOfWork unitOfWork,
         await unitOfWork.OperationRepository.CreateMove(operation);
         step.OperationId = operation.OperationId;
         unitOfWork.StepRepository.EditStep(step);
-        await userLogService.AddLog($"Добавление доп. св-в операции Move для шага номер {step.StepNumber} задачи {step.TaskId}",
-                                    JsonSerializer.Serialize(operation, AppConstants.JSON_OPTIONS));
+        //await userLogService.AddLog($"Добавление доп. св-в операции Move для шага номер {step.StepNumber} задачи {step.TaskId}",
+        //                            JsonSerializer.Serialize(operation, AppConstants.JSON_OPTIONS));
         return await unitOfWork.SaveAsync() > 0 ? operation
                 : throw new DomainException($"Ошибка добавления доп. св-в операции Move для шага номер {step.StepNumber} задачи {step.TaskId}");
     }
@@ -85,8 +86,8 @@ public class OperationService(IUnitOfWork unitOfWork,
         await unitOfWork.OperationRepository.CreateRead(operation);
         step.OperationId = operation.OperationId;
         unitOfWork.StepRepository.EditStep(step);
-        await userLogService.AddLog($"Добавление доп. св-в операции Read для шага номер {step.StepNumber} задачи {step.TaskId}",
-                                    JsonSerializer.Serialize(operation, AppConstants.JSON_OPTIONS));
+        //await userLogService.AddLog($"Добавление доп. св-в операции Read для шага номер {step.StepNumber} задачи {step.TaskId}",
+        //                            JsonSerializer.Serialize(operation, AppConstants.JSON_OPTIONS));
         return await unitOfWork.SaveAsync() > 0 ? operation
                 : throw new DomainException($"Ошибка добавления доп. св-в операции Read для шага номер {step.StepNumber} задачи {step.TaskId}");
     }
@@ -98,8 +99,8 @@ public class OperationService(IUnitOfWork unitOfWork,
         await unitOfWork.OperationRepository.CreateRename(operation);
         step.OperationId = operation.OperationId;
         unitOfWork.StepRepository.EditStep(step);
-        await userLogService.AddLog($"Добавление доп. св-в операции Rename для шага номер {step.StepNumber} задачи {step.TaskId}",
-                                    JsonSerializer.Serialize(operation, AppConstants.JSON_OPTIONS));
+        //await userLogService.AddLog($"Добавление доп. св-в операции Rename для шага номер {step.StepNumber} задачи {step.TaskId}",
+        //                            JsonSerializer.Serialize(operation, AppConstants.JSON_OPTIONS));
         return await unitOfWork.SaveAsync() > 0 ? operation
                 : throw new DomainException($"Ошибка добавления доп. св-в операции Rename для шага номер {step.StepNumber} задачи {step.TaskId}");
     }

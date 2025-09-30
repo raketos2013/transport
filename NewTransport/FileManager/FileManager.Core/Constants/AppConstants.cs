@@ -11,4 +11,6 @@ public class AppConstants
         ReferenceHandler = ReferenceHandler.Preserve,
         WriteIndented = true
     };
+    public const string ROLE_DEFAULT = "o.br.ДИТ";
+    public const string ROLE_ADMIN = "";
 }

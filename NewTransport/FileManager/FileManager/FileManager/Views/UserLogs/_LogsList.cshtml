@@ -1,0 +1,71 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model List<UserLogEntity>
+@{
+}
+<div class="main-table grid" scrollable="">
+    <div class="table-header-div">
+        <table class="table-header">
+            <colgroup>
+                <col style="min-width:55px;width:55px;">
+                <col style="min-width:250px;width:250px;">
+                <col style="min-width:200px;width:200px;">
+                <col style="min-width:110px;width:100%;">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>
+                        <p></p>
+                        <div class="separate"></div>
+                        <div class="sorter"></div>
+                    </th>
+                    <th>
+                        <p>Дата время события</p>
+                        <div class="separate"></div>
+                        <div class="sorter"></div>
+                    </th>
+                    <th>
+                        <p>Имя пользователя</p>
+                        <div class="separate"></div>
+                        <div class="sorter"></div>
+                    </th>
+                    <th>
+                        <p>Действие</p>
+                        <div class="separate"></div>
+                        <div class="sorter"></div>
+                    </th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="table-body-div">
+        <table class="table-body">
+            <colgroup>
+                <col style="min-width:55px;width:55px;">
+                <col style="min-width:250px;width:250px;">
+                <col style="min-width:200px;width:200px;">
+                <col style="min-width:110px;width:100%;">
+            </colgroup>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <div class="group-btns-add">
+                                <div class="btn-add" onclick="UserLogDetails('@item.DateTimeLog.ToString("yyyy-MM-dd HH:mm:ss.ffffff")', '@item.UserName')">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M11.9997 9.5C11.3366 9.5 10.7007 9.76339 10.2319 10.2322C9.76307 10.7011 9.49967 11.337 9.49967 12C9.49967 12.663 9.76307 13.2989 10.2319 13.7678C10.7007 14.2366 11.3366 14.5 11.9997 14.5C12.6627 14.5 13.2986 14.2366 13.7674 13.7678C14.2363 13.2989 14.4997 12.663 14.4997 12C14.4997 11.337 14.2363 10.7011 13.7674 10.2322C13.2986 9.76339 12.6627 9.5 11.9997 9.5ZM11.9997 16.1667C10.8946 16.1667 9.8348 15.7277 9.0534 14.9463C8.27199 14.1649 7.83301 13.1051 7.83301 12C7.83301 10.8949 8.27199 9.83512 9.0534 9.05372C9.8348 8.27232 10.8946 7.83333 11.9997 7.83333C13.1047 7.83333 14.1645 8.27232 14.946 9.05372C15.7274 9.83512 16.1663 10.8949 16.1663 12C16.1663 13.1051 15.7274 14.1649 14.946 14.9463C14.1645 15.7277 13.1047 16.1667 11.9997 16.1667ZM11.9997 5.75C7.83301 5.75 4.27467 8.34167 2.83301 12C4.27467 15.6583 7.83301 18.25 11.9997 18.25C16.1663 18.25 19.7247 15.6583 21.1663 12C19.7247 8.34167 16.1663 5.75 11.9997 5.75Z" fill="#999999" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </td>
+                        <td><p>@Html.DisplayFor(modelItem => item.DateTimeLog)</p></td>
+                        <td><p>@item.UserName</p></td>
+                        <td><p>@item.Action</p></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

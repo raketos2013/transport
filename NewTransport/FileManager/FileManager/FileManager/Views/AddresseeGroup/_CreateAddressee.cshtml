@@ -1,0 +1,33 @@
+﻿@using FileManager.Core.Entities
+
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model AddresseeEntity
+@{
+    SelectList addresseeGroups = new SelectList(ViewBag.AddresseeGroups, "Id", "Name");
+}
+<form id="createAddresseeForm" asp-action="CreateAddressee" asp-asp-controller="AddresseeGroup" method="post" class="modal-body-content">
+    <div class="input-with-label">
+        <label asp-for="PersonalNumber"></label>
+        <input asp-for="PersonalNumber">
+    </div>
+    <div class="input-with-label">
+        <label asp-for="AddresseeGroupId"></label>
+        <div class="select-wrapper">
+            <select asp-for="AddresseeGroupId" asp-items=@addresseeGroups></select>
+        </div>
+    </div>
+    <div class="input-with-label">
+        <label asp-for="EMail"></label>
+        <input asp-for="EMail">
+    </div>
+    <div class="input-with-label">
+        <label asp-for="Fio"></label>
+        <input asp-for="Fio">
+    </div>
+    <div class="input-with-label">
+        <label asp-for="StructuralUnit"></label>
+        <input asp-for="StructuralUnit">
+    </div>
+</form>

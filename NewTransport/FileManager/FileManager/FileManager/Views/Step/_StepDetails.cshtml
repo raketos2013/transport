@@ -1,0 +1,65 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model TaskStepEntity
+@{
+}
+
+<div class="modal-body-content">
+    <div class="modal-row">
+        <div class="modal-td">
+            <p class="td-title">Задача</p>
+            <p class="td-text">@Model.TaskId</p>
+        </div>
+        <div class="modal-td">
+            <p class="td-title">Номер шага</p>
+            <p class="td-text">@Model.StepNumber</p>
+        </div>
+        <div class="modal-td">
+            <p class="td-title">Краткое описание</p>
+            <p class="td-text">@Model.Description</p>
+        </div>
+        <div class="modal-td">
+            <p class="td-title">Включён</p>
+            <p class="td-text">
+                @* @Model.IsActive *@
+                <div>
+                    <label class="toggle-checkbox" style="pointer-events: none;">
+                        <input type="checkbox" checked="@Model.IsActive" readonly>
+                        <span class="toggle-checkbox-switch"></span>
+                    </label>
+                </div>
+            </p>
+        </div>
+        <div class="modal-td">
+            <p class="td-title">Прерывание</p>
+            <p class="td-text">
+                @* @Model.IsBreak *@
+                <div>
+                    <label class="toggle-checkbox" style="pointer-events: none;">
+                        <input type="checkbox" checked="@Model.IsBreak" readonly>
+                        <span class="toggle-checkbox-switch"></span>
+                    </label>
+                </div>
+            </p>
+        </div>
+    </div>
+    <div class="modal-row">
+        <div class="modal-td">
+            <p class="td-title">Маска</p>
+            <p class="td-text">@Model.FileMask</p>
+        </div>
+        <div class="modal-td">
+            <p class="td-title">Источник</p>
+            <p class="td-text">@Model.Source</p>
+        </div>
+        <div class="modal-td">
+            <p class="td-title">Назначение</p>
+            <p class="td-text">@Model.Destination</p>
+        </div>
+        <div class="modal-td">
+            <p class="td-title">Операция</p>
+            <p class="td-text">@Model.OperationName.GetDescription()</p>
+        </div>
+    </div>
+</div>

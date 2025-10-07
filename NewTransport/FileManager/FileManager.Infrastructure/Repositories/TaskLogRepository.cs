@@ -10,7 +10,6 @@ public class TaskLogRepository(AppDbContext appDbContext) : ITaskLogRepository
     public async Task<TaskLogEntity> AddTaskLog(TaskLogEntity taskLog)
     {
         await appDbContext.TaskLog.AddAsync(taskLog);
-        await appDbContext.SaveChangesAsync();
         return taskLog;
 
     }

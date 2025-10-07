@@ -8,7 +8,9 @@ using FileManager.Extensions;
 using FileManager.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.NetworkInformation;
 using System.Text.Json;
+using System.Threading.Tasks;
 using X.PagedList.Extensions;
 
 namespace FileManager.Controllers;
@@ -443,6 +445,30 @@ public class TaskController(ITaskService taskService,
     public async Task<IActionResult> ActivatedTask(string id)
     {
         await taskService.ActivatedTask(id);
+        var task = await taskService.GetTaskById(id);
+        if (task != null)
+        {
+            var statusAsync = await taskService.GetTaskStatuses();
+            var status = statusAsync.First(x => x.TaskId == id);
+            if (status != null)
+            {
+                status.IsProgress = false;
+                status.IsError = false;
+                await taskService.UpdateTaskStatus(status);
+            }
+
+            var stringResult = "";
+            if (task.IsActive)
+            {
+                stringResult = "Включение";
+            }
+            else
+            {
+                stringResult = "Выключение";
+            }
+            await userLogService.AddLog($"{stringResult} задачи {task.TaskId}",
+                                            JsonSerializer.Serialize(task, AppConstants.JSON_OPTIONS));
+        }
         return RedirectToAction(nameof(Tasks));
     }
 
@@ -472,6 +498,8 @@ public class TaskController(ITaskService taskService,
     {
         await taskService.EditTask(task);
         await lockService.Unlock(taskId);
+        await userLogService.AddLog($"Изменение задачи {task.TaskId}",
+                                            JsonSerializer.Serialize(task, AppConstants.JSON_OPTIONS));
         return RedirectToAction(nameof(Tasks), "Task", new { taskId });
     }
 
@@ -506,6 +534,9 @@ public class TaskController(ITaskService taskService,
     {
         await taskService.CopyTask(task.TaskId, task.NewTaskId, task.IsCopySteps.ToString(), task.CopySteps);
         await lockService.Unlock(task.TaskId);
+        var copiedTask = await taskService.GetTaskById(task.TaskId);
+        await userLogService.AddLog($"Копирование задачи {task.TaskId}",
+                                            JsonSerializer.Serialize(copiedTask, AppConstants.JSON_OPTIONS));
         return RedirectToAction(nameof(Tasks));
     }
 
@@ -548,6 +579,13 @@ public class TaskController(ITaskService taskService,
             result.IsLocked = false;
             return Ok(result);
         }
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<TaskStatusEntity>> TaskStatuses()
+    {
+        var statuses = await taskLogService.GetLastLogTasks(); 
+        return View(statuses);
     }
 
 }

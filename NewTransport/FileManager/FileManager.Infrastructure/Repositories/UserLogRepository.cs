@@ -10,7 +10,6 @@ public class UserLogRepository(AppDbContext appDbContext) : IUserLogRepository
     public async Task AddUserLog(UserLogEntity userLog)
     {
         await appDbContext.UserLog.AddAsync(userLog);
-        await appDbContext.SaveChangesAsync();
     }
 
     public async Task<List<UserLogEntity>> GetAllLogs()

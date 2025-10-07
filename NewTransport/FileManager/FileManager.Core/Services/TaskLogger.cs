@@ -144,9 +144,6 @@ public class TaskLogger(
                 break;
         }
         await unitOfWork.SaveAsync();
-
-
-
     }
 
     public async Task StepLog(TaskStepEntity step, string text, string filename = "", ResultOperation resultOperation = ResultOperation.I)
@@ -168,8 +165,7 @@ public class TaskLogger(
         taskLog.ResultOperation = resultOperation;
 
         await unitOfWork.TaskLogRepository.AddTaskLog(taskLog);
-        //await unitOfWork.SaveAsync();
-        //appDbContext.SaveChanges();
+        await unitOfWork.SaveAsync();
     }
 
     public async Task TaskLog(string TaskId, string text, ResultOperation? resultOperation = null)
@@ -184,6 +180,5 @@ public class TaskLogger(
 
         await unitOfWork.TaskLogRepository.AddTaskLog(taskLog);
         await unitOfWork.SaveAsync();
-        //appDbContext.SaveChanges();
     }
 }

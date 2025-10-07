@@ -24,4 +24,17 @@ public class TaskLogService(IUnitOfWork unitOfWork)
     {
         return await unitOfWork.TaskLogRepository.GetLogsByTaskId(taskId);
     }
+
+    public async Task<List<TaskLogEntity>> GetLastLogTasks()
+    {
+        var tasks = await unitOfWork.TaskRepository.GetAllTasks();
+        List<TaskLogEntity> logs = [];
+        foreach (var task in tasks)
+        {
+            var taskLogs = await unitOfWork.TaskLogRepository.GetLogsByTaskId(task.TaskId);
+            var lastLog = taskLogs.OrderBy(x => x.DateTimeLog).Last();
+            logs.Add(lastLog);
+        }
+        return logs;
+    }
 }

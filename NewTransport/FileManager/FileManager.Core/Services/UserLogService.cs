@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace FileManager.Core.Services;
 
-public class UserLogService(IUserLogRepository userLogRepository,
+public class UserLogService(IUnitOfWork unitOfWork,
                             IHttpContextAccessor httpContextAccessor) : IUserLogService
 {
     public async Task AddLog(string action, string data)
@@ -17,11 +17,12 @@ public class UserLogService(IUserLogRepository userLogRepository,
             UserName = httpContextAccessor.HttpContext.User.Identity.Name,
             DateTimeLog = DateTime.Now
         };
-        await userLogRepository.AddUserLog(log);
+        await unitOfWork.UserLogRepository.AddUserLog(log);
+        await unitOfWork.SaveAsync();
     }
 
     public async Task<List<UserLogEntity>> GetAllLogs()
     {
-        return await userLogRepository.GetAllLogs();
+        return await unitOfWork.UserLogRepository.GetAllLogs();
     }
 }

@@ -5,7 +5,6 @@ using FileManager.Core.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http.Headers;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace FileManager.Core.Operations;
 

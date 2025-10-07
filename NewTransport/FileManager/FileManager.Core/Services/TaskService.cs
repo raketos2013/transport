@@ -24,9 +24,9 @@ public class TaskService(IUnitOfWork unitOfWork)
     {
         var deletedSteps = await unitOfWork.StepRepository.DeleteStepsByTaskId(idTask);
         var deletedTask = await unitOfWork.TaskRepository.DeleteTask(idTask);
-        return deletedSteps && 
-                deletedTask && 
-                await unitOfWork.SaveAsync() > 0;
+        return await unitOfWork.SaveAsync() > 0 &&
+                    deletedSteps &&
+                    deletedTask;
     }
 
     public async Task<List<TaskEntity>> GetAllTasks()
@@ -41,15 +41,15 @@ public class TaskService(IUnitOfWork unitOfWork)
 
     public async Task<TaskEntity> EditTask(TaskEntity task)
     {
-        var editedTask = unitOfWork.TaskRepository.EditTask(task);
-        return await unitOfWork.SaveAsync() > 0 ? await editedTask
+        var editedTask = await unitOfWork.TaskRepository.EditTask(task);
+        return await unitOfWork.SaveAsync() > 0 ? editedTask
                         : throw new DomainException("Ошибка обновления задачи");
     }
 
     public async Task<TaskEntity> ActivatedTask(string idTask)
     {
         var task = await unitOfWork.TaskRepository.GetTaskById(idTask)
-                                    ?? throw new DomainException("Задача с таким Id не найдена");
+                                ?? throw new DomainException("Задача с таким Id не найдена");
         task.IsActive = !task.IsActive;
         var editedTask = await EditTask(task);
         return editedTask;
@@ -217,11 +217,12 @@ public class TaskService(IUnitOfWork unitOfWork)
                                 default:
                                     break;
                             }
-                            await unitOfWork.SaveAsync();
+
                         }
                     }
                 }
             }
+            await unitOfWork.SaveAsync();
         }
         return newTask;
     }

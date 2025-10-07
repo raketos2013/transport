@@ -18,16 +18,16 @@ public class JobForTask(IServiceScopeFactory scopeFactory) : IJob
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<JobForTask>>();
         var taskLogger = scope.ServiceProvider.GetRequiredService<ITaskLogger>();
         var mailSender = scope.ServiceProvider.GetRequiredService<IMailSender>();
-        var jobFactory = scope.ServiceProvider.GetRequiredService<ISchedulerFactory>();
+        //var jobFactory = scope.ServiceProvider.GetRequiredService<ISchedulerFactory>();
         var taskService = scope.ServiceProvider.GetRequiredService<ITaskService>();
         var stepService = scope.ServiceProvider.GetRequiredService<IStepService>();
         var operationService = scope.ServiceProvider.GetRequiredService<IOperationService>();
         var addresseeService = scope.ServiceProvider.GetRequiredService<IAddresseeService>();
-        var taskLogService = scope.ServiceProvider.GetRequiredService<ITaskLogService>();
-        var authTokenConfigurations = scope.ServiceProvider.GetRequiredService<IOptions<AuthTokenConfiguration>>();
-        var httpClientFactory = scope.ServiceProvider.GetRequiredService<IHttpClientFactory>();
+        //var taskLogService = scope.ServiceProvider.GetRequiredService<ITaskLogService>();
+        //var authTokenConfigurations = scope.ServiceProvider.GetRequiredService<IOptions<AuthTokenConfiguration>>();
+        //var httpClientFactory = scope.ServiceProvider.GetRequiredService<IHttpClientFactory>();
 
-        var hz = jobFactory.GetScheduler().Result;
+        //var hz = jobFactory.GetScheduler().Result;
         var taskChecked = await taskService.GetTaskById(context.JobDetail.Key.Name);
         if (taskChecked == null || !taskChecked.IsActive)
         {

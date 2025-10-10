@@ -19,7 +19,6 @@
             <div class="modal-td">
                 <p class="td-title">Информировать об успехе</p>
                 <p class="td-text">
-                    @* @Model.InformSuccess *@
                     <div>
                         <label class="toggle-checkbox" style="pointer-events: none;">
                             <input type="checkbox" checked="@Model.InformSuccess" readonly>
@@ -45,13 +44,6 @@
             <div class="modal-td">
                 <p class="td-title">Дубль по журналу</p>
                 <p class="td-text">
-                    @* @Model.FileInLog *@
-                    @* <div>
-                        <label class="toggle-checkbox" style="pointer-events: none;">
-                            <input type="checkbox" checked="@Model.FileInLog" readonly>
-                            <span class="toggle-checkbox-switch"></span>
-                        </label>
-                    </div> *@
                     @Model.FileInLog.GetDescription()
                 </p>
             </div>

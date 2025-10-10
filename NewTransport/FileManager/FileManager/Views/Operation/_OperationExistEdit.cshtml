@@ -4,7 +4,6 @@
 @model OperationExistEntity
 @{
     SelectList addresseeGroups = new SelectList(ViewBag.AddresseeGroups, "Id", "Name");
-
 }
 <div class="modal-body">
     <form method="post" asp-action="EditOperationExist" asp-controller="Operation"

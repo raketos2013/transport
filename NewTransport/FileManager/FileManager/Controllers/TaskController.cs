@@ -8,9 +8,7 @@ using FileManager.Extensions;
 using FileManager.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.NetworkInformation;
 using System.Text.Json;
-using System.Threading.Tasks;
 using X.PagedList.Extensions;
 
 namespace FileManager.Controllers;
@@ -586,6 +584,13 @@ public class TaskController(ITaskService taskService,
     {
         var statuses = await taskLogService.GetLastLogTasks(); 
         return View(statuses);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<TaskStatusEntity>> LockedTasks()
+    {
+        var tasks = await lockService.GetLockedTasks();
+        return View(tasks);
     }
 
 }

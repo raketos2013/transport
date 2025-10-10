@@ -4,14 +4,9 @@
 *@
 @model TaskDetailsViewModel
 @{
-	//ViewData["Title"] = "Настройки задачи";
-
 	SelectList addresseeGroupsSelect = new SelectList(ViewBag.AddresseeGroups, "Id", "Name");
-	//SelectList taskGroupsSelect = new SelectList(ViewBag.TaskGroups, "Id", "Name");
 	List<AddresseeGroupEntity> addresseeGroups = ViewBag.AddresseeGroups;
-	//List<TaskGroupEntity> taskGroups = ViewBag.TaskGroups;
 }
-
 
 <div class="modal-body-content">
 	<div class="modal-row">
@@ -31,10 +26,6 @@
 			<p class="td-title">Время окончания</p>
 			<p class="td-text">@Model.Task.TimeEnd.ToLongTimeString()</p>
 		</div>
-		@* <div class="modal-td">
-			<p class="td-title">Последнее изменение</p>
-			<p class="td-text">@Model.Task.LastModified</p>
-		</div> *@
 	</div>
 	<div class="modal-row">
 		<div class="modal-td">
@@ -45,10 +36,6 @@
 			<p class="td-title">Группа рассылки</p>
 			<p class="td-text">@Model.Task.AddresseeGroupId</p>
 		</div>
-		@* <div class="modal-td">
-			<p class="td-title">Группа задач</p>
-			<p class="td-text">@Model.Task.TaskGroupId</p>
-		</div> *@
 		<div class="modal-td">
 			<p class="td-title">Статус</p>
 			<p class="td-text"></p>

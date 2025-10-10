@@ -28,4 +28,9 @@ public class LockRepository(AppDbContext context) : ILockRepository
     {
         return await context.LockInfo.FirstOrDefaultAsync(x => x.EntityId == taskId);
     }
+
+    public async Task<List<LockInfoEntity>> GetLockedTasks()
+    {
+        return await context.LockInfo.ToListAsync();
+    }
 }

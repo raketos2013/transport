@@ -5,9 +5,6 @@
 @{
 }
 
-
-
-
 <div class="main-table grid" scrollable="">
     <div class="table-header-div">
         <table class="table-header">
@@ -19,7 +16,6 @@
                 <col style="min-width:150px;width:150px;">
                 <col style="min-width:140px;width:140px;">
                 <col style="min-width:150px;width:150px;">
-                @* <col style="min-width:130px;width:130px;"> *@
                 <col style="min-width:110px;width:110px;">
                 <col style="min-width:180px;width:180px;">
                 <col style="min-width:110px;width:100%;">
@@ -61,11 +57,6 @@
                         <div class="separate"></div>
                         <div class="sorter"></div>
                     </th>
-                   @*  <th>
-                        <p>Группы задач</p>
-                        <div class="separate"></div>
-                        <div class="sorter"></div>
-                    </th> *@
                     <th>
                         <p>Активно</p>
                         <div class="separate"></div>
@@ -95,7 +86,6 @@
                 <col style="min-width:150px;width:150px;">
                 <col style="min-width:140px;width:140px;">
                 <col style="min-width:150px;width:150px;">
-                @* <col style="min-width:130px;width:130px;"> *@
                 <col style="min-width:110px;width:110px;">
                 <col style="min-width:180px;width:180px;">
                 <col style="min-width:110px;width:100%;">
@@ -136,7 +126,6 @@
                         <td><p>@item.TimeEnd.ToLongTimeString()</p></td>
                         <td><p>@item.DayActive</p></td>
                         <td><p>@item.AddresseeGroupId</p></td>
-                        @* <td><p>@item.TaskGroupId</p></td> *@
                         <td>
                             <div>
                                 <label class="toggle-checkbox">
@@ -191,92 +180,7 @@
 </div>
 
 <footer>
-    @* <div class="pagination">
-
-        <div class="pagination-buttons">
-
-            <div class="btn-short">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <g clip-path="url(#clip0_64_7546)">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.16602 9.56793C4.16631 9.23652 4.29819 8.9188 4.53268 8.6846L8.69935 4.51793C8.93631 4.29713 9.24972 4.17693 9.57355 4.18264C9.89739 4.18835 10.2064 4.31954 10.4354 4.54856C10.6644 4.77759 10.7956 5.08656 10.8013 5.4104C10.807 5.73423 10.6868 6.04764 10.466 6.2846L7.18435 9.56793L10.4677 12.8513C10.6953 13.0871 10.8211 13.4029 10.8181 13.7307C10.8151 14.0584 10.6835 14.3719 10.4516 14.6035C10.2198 14.8352 9.90619 14.9665 9.57844 14.9692C9.25069 14.9719 8.93499 14.8457 8.69935 14.6179L4.53268 10.4513C4.29819 10.2171 4.16631 9.89934 4.16602 9.56793ZM9.16602 9.56793C9.16631 9.23652 9.29819 8.9188 9.53268 8.6846L13.6993 4.51793C13.9363 4.29713 14.2497 4.17693 14.5736 4.18264C14.8974 4.18835 15.2064 4.31954 15.4354 4.54856C15.6644 4.77759 15.7956 5.08656 15.8013 5.4104C15.807 5.73423 15.6868 6.04764 15.466 6.2846L12.1843 9.56793L15.4677 12.8513C15.6953 13.0871 15.8211 13.4029 15.8181 13.7307C15.8151 14.0584 15.6835 14.3719 15.4516 14.6035C15.2198 14.8352 14.9062 14.9665 14.5784 14.9692C14.2507 14.9719 13.935 14.8457 13.6993 14.6179L9.53268 10.4513C9.29819 10.2171 9.16631 9.89934 9.16602 9.56793Z" fill="white" />
-                    </g>
-                    <defs>
-                        <clipPath id="clip0_64_7546">
-                            <rect width="20" height="20" fill="white" />
-                        </clipPath>
-                    </defs>
-                </svg>
-            </div>
-            <div class="btn-short">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <g clip-path="url(#clip0_64_7537)">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M6.66577 9.66608C6.66606 9.33467 6.79795 9.01694 7.03244 8.78274L11.1991 4.61608C11.4361 4.39528 11.7495 4.27507 12.0733 4.28079C12.3971 4.2865 12.7061 4.41769 12.9351 4.64671C13.1642 4.87573 13.2953 5.18471 13.3011 5.50854C13.3068 5.83238 13.1866 6.14579 12.9658 6.38274L9.6841 9.66608L12.9674 12.9494C13.195 13.1853 13.3209 13.5011 13.3179 13.8288C13.3149 14.1566 13.1833 14.47 12.9514 14.7017C12.7195 14.9333 12.4059 15.0646 12.0782 15.0673C11.7504 15.07 11.4347 14.9439 11.1991 14.7161L7.03244 10.5494C6.79795 10.3152 6.66606 9.99749 6.66577 9.66608Z" fill="white" />
-                    </g>
-                    <defs>
-                        <clipPath id="clip0_64_7537">
-                            <rect width="20" height="20" fill="white" />
-                        </clipPath>
-                    </defs>
-                </svg>
-            </div>
-            <div class="btn-short page-number">
-                ...
-            </div>
-            <div class="btn-short page-number">
-                2
-            </div>
-            <div class="btn-short page-number">
-                3
-            </div>
-            <div class="btn-short page-number">
-                4
-            </div>
-            <div class="btn-short page-number">
-                5
-            </div>
-            <div class="btn-short page-number">
-                6
-            </div>
-            <div class="btn-short page-number active">
-                7
-            </div>
-            <div class="btn-short page-number">
-                8
-            </div>
-            <div class="btn-short page-number">
-                9
-            </div>
-            <div class="btn-short page-number">
-                10
-            </div>
-            <div class="btn-short page-number">
-                11
-            </div>
-            <div class="btn-short page-number">
-                ...
-            </div>
-            <div class="btn-short">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M13.3179 9.68207C13.3176 10.0135 13.1857 10.3312 12.9512 10.5654L8.78454 14.7321C8.54758 14.9529 8.23417 15.0731 7.91033 15.0674C7.5865 15.0616 7.27752 14.9305 7.0485 14.7014C6.81948 14.4724 6.68829 14.1634 6.68258 13.8396C6.67687 13.5158 6.79707 13.2024 7.01787 12.9654L10.2995 9.68207L7.0162 6.39873C6.78862 6.16287 6.66277 5.84706 6.66577 5.51931C6.66877 5.19157 6.80038 4.87811 7.03225 4.64646C7.26412 4.41481 7.5777 4.2835 7.90545 4.2808C8.2332 4.27811 8.54889 4.40426 8.78454 4.63207L12.9512 8.79873C13.1857 9.03293 13.3176 9.35066 13.3179 9.68207Z" fill="white" />
-                </svg>
-            </div>
-            <div class="btn-short">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <g clip-path="url(#clip0_64_7546)">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M15.8181 9.58392C15.8178 9.91533 15.6859 10.2331 15.4514 10.4673L11.2848 14.6339C11.0478 14.8547 10.7344 14.9749 10.4106 14.9692C10.0867 14.9635 9.77777 14.8323 9.54875 14.6033C9.31972 14.3743 9.18854 14.0653 9.18282 13.7415C9.17711 13.4176 9.29732 13.1042 9.51812 12.8673L12.7998 9.58392L9.51645 6.30059C9.28886 6.06473 9.16301 5.74892 9.16602 5.42117C9.16902 5.09342 9.30063 4.77997 9.5325 4.54832C9.76437 4.31667 10.0779 4.18535 10.4057 4.18266C10.7334 4.17997 11.0491 4.30611 11.2848 4.53392L15.4514 8.70059C15.6859 8.93478 15.8178 9.25251 15.8181 9.58392ZM10.8181 9.58392C10.8178 9.91533 10.6859 10.2331 10.4514 10.4673L6.28478 14.6339C6.04782 14.8547 5.73441 14.9749 5.41058 14.9692C5.08674 14.9635 4.77777 14.8323 4.54875 14.6033C4.31972 14.3743 4.18854 14.0653 4.18282 13.7415C4.17711 13.4176 4.29732 13.1042 4.51812 12.8673L7.79978 9.58392L4.51645 6.30059C4.28886 6.06473 4.16301 5.74892 4.16601 5.42117C4.16902 5.09342 4.30063 4.77997 4.5325 4.54832C4.76437 4.31667 5.07795 4.18535 5.40569 4.18266C5.73344 4.17997 6.04914 4.30611 6.28478 4.53392L10.4514 8.70059C10.6859 8.93478 10.8178 9.25251 10.8181 9.58392Z" fill="white" />
-                    </g>
-                    <defs>
-                        <clipPath id="clip0_64_7546">
-                            <rect width="20" height="20" fill="white" />
-                        </clipPath>
-                    </defs>
-                </svg>
-            </div>
-        </div>
-        <div class="pagination-text">
-            Страница 7 из 38
-        </div>
-    </div> *@
+   
 </footer>
 
 <script>
@@ -287,58 +191,35 @@
         location.href = "@Url.Action("Steps", "Step", new { taskId = "cid" })".replace("cid", taskId.toString());
     }
 
-    // SelectTask();
-
-   
-
-
     function sortTable(n) {
         var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
         table = document.getElementById("tableTasks");
         switching = true;
-        //Задать направление сортировки по возрастанию:
         dir = "asc";
-        /*Сделайте петлю, которая будет продолжаться до тех пор, пока
-        никакого переключения не было сделано:*/
         while (switching) {
-            //начните с того, что скажите: никакого переключения не происходит:
             switching = false;
             rows = table.rows;
-            /*Цикл через все строки таблицы (за исключением
-            во-первых, который содержит заголовки таблиц):*/
             for (i = 0; i < (rows.length - 1); i++) {
-                //начните с того, что не должно быть никакого переключения:
                 shouldSwitch = false;
-                /*Получите два элемента, которые вы хотите сравнить,
-                один из текущей строки и один из следующей:*/
                 x = rows[i].getElementsByTagName("TD")[n];
                 y = rows[i + 1].getElementsByTagName("TD")[n];
-                /*проверьте, должны ли две строки поменяться местами,
-                в зависимости от направления, asc или desc:*/
                 if (dir == "asc") {
                     if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-                        //если это так, отметьте как переключатель и разорвите петлю:
                         shouldSwitch = true;
                         break;
                     }
                 } else if (dir == "desc") {
                     if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-                        //если это так, отметьте как переключатель и разорвите петлю:
                         shouldSwitch = true;
                         break;
                     }
                 }
             }
             if (shouldSwitch) {
-                /*Если переключатель был отмечен, сделайте переключатель
-                и отметьте, что переключение было сделано:*/
                 rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
                 switching = true;
-                //Каждый раз, когда выполняется переключение, увеличьте это число на 1:
                 switchcount++;
             } else {
-                /*Если переключение не было сделано и направление "asc",
-                установите направление на "desc"и снова запустите цикл while.*/
                 if (switchcount == 0 && dir == "asc") {
                     dir = "desc";
                     switching = true;
@@ -382,6 +263,5 @@
         });
         
     }
-
 
 </script>

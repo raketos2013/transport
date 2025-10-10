@@ -3,10 +3,7 @@
 *@
 @model TaskEntity
 @{
-	//ViewData["Title"] = "Создание задачи";
 	SelectList addresseeGroups = new SelectList(ViewBag.AddresseeGroups, "Id", "Name");
-	//SelectList taskGroups = new SelectList(ViewBag.TaskGroups, "Id", "Name");
-
 }
 <form id="createTaskForm" class="modal-body-content" method="post" asp-action="CreateTask" asp-controller="Task">
 	<div class="input-with-label">
@@ -37,12 +34,6 @@
 			<select asp-for="AddresseeGroupId" asp-items=@addresseeGroups></select>
 		</div>
 	</div>
-	@* <div class="input-with-label">
-		<label asp-for="TaskGroupId"></label>
-		<div class="select-wrapper">
-			<select asp-for="TaskGroupId" asp-items=@taskGroups></select>
-		</div>
-	</div> *@
 	<div class="input-checkbox">
 		<label asp-for="IsActive" class="toggle-checkbox">
 			<input type="checkbox" asp-for="@Model.IsActive" checked="@Model.IsActive">

@@ -8,6 +8,11 @@ namespace FileManager.Core.Services;
 public class LockService(IUnitOfWork unitOfWork,
                         IHttpContextAccessor httpContextAccessor) : ILockService
 {
+    public async Task<List<LockInfoEntity>> GetLockedTasks()
+    {
+        return await unitOfWork.LockRepository.GetLockedTasks();
+    }
+
     public async Task<LockInfoEntity?> IsLocked(string taskId)
     {
         return await unitOfWork.LockRepository.GetByTaskId(taskId);

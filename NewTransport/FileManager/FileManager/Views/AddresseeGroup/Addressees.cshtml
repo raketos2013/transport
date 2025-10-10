@@ -7,20 +7,7 @@
 
 
 <div class="main-content">
-    <div class="breadcrumbs">
-        <svg class="arrow-back" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" onclick="Tasks(getCookie('selectedTaskGroup'))">
-            <path d="M7.32018 12.7335C7.15944 12.9041 6.94146 13 6.71417 13C6.48689 13 6.26891 12.9041 6.10817 12.7335L2.25096 8.63796C2.09027 8.46729 2 8.23584 2 7.99451C2 7.75317 2.09027 7.52172 2.25096 7.35105L6.10817 3.25548C6.26983 3.0897 6.48635 2.99796 6.71109 3.00004C6.93583 3.00211 7.15082 3.09783 7.30974 3.26657C7.46867 3.43531 7.55881 3.66359 7.56077 3.90222C7.56272 4.14085 7.47632 4.37075 7.32018 4.5424L4.99986 7.08438L13.1428 7.08438C13.3702 7.08438 13.5882 7.18027 13.7489 7.35095C13.9097 7.52163 14 7.75313 14 7.99451C14 8.23589 13.9097 8.46738 13.7489 8.63806C13.5882 8.80874 13.3702 8.90463 13.1428 8.90463H4.99986L7.32018 11.4466C7.48088 11.6173 7.57115 11.8487 7.57115 12.0901C7.57115 12.3314 7.48088 12.5629 7.32018 12.7335Z" fill="var(--gray)" />
-        </svg>
-        <a href="#" onclick="Tasks(getCookie('selectedTaskGroup'))">Главная страница</a>
-        <svg width="6" height="16" viewBox="0 0 6 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M1.13941 5.15408C1.04075 5.25277 0.985327 5.3866 0.985327 5.52614C0.985327 5.66569 1.04075 5.79952 1.13941 5.89821L3.74438 8.50318L1.13941 11.1081C1.04355 11.2074 0.990502 11.3403 0.991701 11.4783C0.9929 11.6163 1.04825 11.7483 1.14582 11.8459C1.24339 11.9434 1.37538 11.9988 1.51337 12C1.65135 12.0012 1.78428 11.9481 1.88353 11.8523L4.86057 8.87524C4.95923 8.77655 5.01465 8.64272 5.01465 8.50318C5.01465 8.36363 4.95923 8.2298 4.86057 8.13111L1.88353 5.15408C1.78485 5.05542 1.65102 5 1.51147 5C1.37193 5 1.2381 5.05542 1.13941 5.15408Z" fill="var(--gray)" />
-        </svg>
-        <a href="#">Группы рассылки</a>
-        <svg width="6" height="16" viewBox="0 0 6 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M1.13941 5.15408C1.04075 5.25277 0.985327 5.3866 0.985327 5.52614C0.985327 5.66569 1.04075 5.79952 1.13941 5.89821L3.74438 8.50318L1.13941 11.1081C1.04355 11.2074 0.990502 11.3403 0.991701 11.4783C0.9929 11.6163 1.04825 11.7483 1.14582 11.8459C1.24339 11.9434 1.37538 11.9988 1.51337 12C1.65135 12.0012 1.78428 11.9481 1.88353 11.8523L4.86057 8.87524C4.95923 8.77655 5.01465 8.64272 5.01465 8.50318C5.01465 8.36363 4.95923 8.2298 4.86057 8.13111L1.88353 5.15408C1.78485 5.05542 1.65102 5 1.51147 5C1.37193 5 1.2381 5.05542 1.13941 5.15408Z" fill="var(--gray)" />
-        </svg>
-        <a href="#" class="active-page" id="breadcrumbs-addresseegroup"></a>
-    </div>
+    
     <div class="table-toolbar">
         <div class="toolbar-left">
             <div class="btn-full" onclick="CreateAddressee()">
@@ -48,16 +35,6 @@
     </div>
 </div>
 <footer>
-    @* <div class="pagination">
-        <div class="pagination-buttons">
-            <div class="btn-short page-number active">
-                1
-            </div>
-        </div>
-        <div class="pagination-text">
-            Страница 1 из 1
-        </div>
-    </div> *@
 </footer>
 <div class="modal-wrapper" id="modal-active-addressee">
     <div class="modal">
@@ -126,14 +103,14 @@
         if(cookieAddresseeGroup != undefined){
             selectAddresseeGroup = cookieAddresseeGroup;
         }
-        document.getElementById('breadcrumbs-addresseegroup').innerText = selectAddresseeGroup;
+        //document.getElementById('breadcrumbs-addresseegroup').innerText = selectAddresseeGroup;
         ShowAddresseeList(selectAddresseeGroup);
 
 
     });
     function ShowAddresseeList(group) {
         selectAddresseeGroup = group;
-        document.getElementById('breadcrumbs-addresseegroup').innerText = selectAddresseeGroup;
+        //document.getElementById('breadcrumbs-addresseegroup').innerText = selectAddresseeGroup;
         //document.cookie = "selectedTaskGroup=" + group;
         $.ajax({
             method: 'POST',

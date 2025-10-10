@@ -519,7 +519,7 @@ function ShowStepList() {
     if (cookieTask != undefined) {
         selectTask = cookieTask;
     }
-    document.getElementById('breadcrumbs-task').innerText = selectTask;
+    //document.getElementById('breadcrumbs-task').innerText = selectTask;
     /*var cookieGroup = getCookie("selectedTaskGroup");
     if (cookieGroup != undefined) {
         document.getElementById('breadcrumbs-task-group').innerText = cookieGroup;

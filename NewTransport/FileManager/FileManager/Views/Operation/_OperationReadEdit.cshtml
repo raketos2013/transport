@@ -4,7 +4,6 @@
 @model OperationReadEntity
 @{
     SelectList addresseeGroups = new SelectList(ViewBag.AddresseeGroups, "Id", "Name");
-
 }
 <div class="modal-body">
     <form method="post" asp-action="EditOperationRead" asp-controller="Operation"
@@ -40,8 +39,6 @@
             <div class="select-wrapper">
                 <select asp-for="Encode" asp-items="@Html.GetEnumSelectList<Encode>()"></select>
             </div>
-           @*  <label asp-for="Encode"></label>
-            <input asp-for="Encode"> *@
         </div>
         <div class="input-checkbox">
             <label class="toggle-checkbox">

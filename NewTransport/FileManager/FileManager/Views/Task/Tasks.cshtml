@@ -176,11 +176,6 @@
 <script>
 
     window.addEventListener('load', () => {
-        // var cookieGroup = getCookie("selectedTaskGroup");
-        // if(cookieGroup != undefined){
-        //     selectGroup = cookieGroup;
-        // }
-        //document.getElementById('breadcrumbs-taskgroup').innerText = selectGroup;
         ShowTaskList();
         func();
 
@@ -192,14 +187,10 @@
         ShowTaskList();
     }
     function ShowTaskList() {
-        // selectGroup = group;
-        // document.getElementById('breadcrumbs-taskgroup').innerText = selectGroup;
-        //document.cookie = "selectedTaskGroup=" + group;
         $.ajax({
             method: 'POST',
             url: '@Url.Action("TasksList", "Task")',
             data: { 
-                //"taskGroup": selectGroup 
             },
             dataType: 'html',
             success: function (result) {

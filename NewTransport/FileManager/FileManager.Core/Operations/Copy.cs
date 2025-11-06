@@ -16,7 +16,6 @@ public class Copy(TaskStepEntity step,
     public override async Task Execute(List<string>? bufferFiles)
     {
         await _taskLogger.StepLog(TaskStep, $"КОПИРОВАНИЕ: {TaskStep.Source} => {TaskStep.Destination}");
-        //Thread.Sleep(1000);
         await _taskLogger.OperationLog(TaskStep);
 
         string[] files = [];

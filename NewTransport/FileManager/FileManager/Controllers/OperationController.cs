@@ -15,6 +15,89 @@ public class OperationController(IOperationService operationService,
             : Controller
 {
     [HttpGet]
+    public async Task<IActionResult> DeleteOperation(string taskId, string stepNumber)
+    {
+        var step = await stepService.GetStepByTaskId(taskId, int.Parse(stepNumber));
+        ViewBag.AddresseeGroups = await addresseeService.GetAllAddresseeGroups();
+        if (step == null)
+        {
+            return RedirectToAction("Steps", "Step");
+        }
+        switch (step.OperationName)
+        {
+            case OperationName.None:
+                break;
+            case OperationName.Copy:
+                var copy = await operationService.GetCopyByStepId(step.StepId);
+                if (copy != null)
+                {
+                    await operationService.DeleteCopy(copy);
+                    step.OperationId = 0;
+                    await stepService.EditStep(step);
+                }
+                break;
+            case OperationName.Move:
+                var move = await operationService.GetMoveByStepId(step.StepId);
+                if (move != null)
+                {
+                    await operationService.DeleteMove(move);
+                    step.OperationId = 0;
+                    await stepService.EditStep(step);
+                }
+                break;
+            case OperationName.Read:
+                var read = await operationService.GetReadByStepId(step.StepId);
+                if (read != null)
+                {
+                    await operationService.DeleteRead(read);
+                    step.OperationId = 0;
+                    await stepService.EditStep(step);
+                }
+                break;
+            case OperationName.Exist:
+                var exist = await operationService.GetExistByStepId(step.StepId);
+                if (exist != null)
+                {
+                    await operationService.DeleteExist(exist);
+                    step.OperationId = 0;
+                    await stepService.EditStep(step);
+                }
+                break;
+            case OperationName.Rename:
+                var rename = await operationService.GetRenameByStepId(step.StepId);
+                if (rename != null)
+                {
+                    await operationService.DeleteRename(rename);
+                    step.OperationId = 0;
+                    await stepService.EditStep(step);
+                }
+                break;
+            case OperationName.Delete:
+                var delete = await operationService.GetDeleteByStepId(step.StepId);
+                if (delete != null)
+                {
+                    await operationService.DeleteDelete(delete);
+                    step.OperationId = 0;
+                    await stepService.EditStep(step);
+                }
+                break;
+            case OperationName.Clrbuf:
+                var clrbuf = await operationService.GetClrbufByStepId(step.StepId);
+                if (clrbuf != null)
+                {
+                    await operationService.DeleteClrbuf(clrbuf);
+                    step.OperationId = 0;
+                    await stepService.EditStep(step);
+                }
+                break;
+            default:
+                break;
+        }
+        return RedirectToAction("Steps", "Step");
+    }
+
+
+    [HttpGet]
     public async Task<IActionResult> EditOperation(string taskId, string stepNumber)
     {
         await lockService.Lock(taskId);

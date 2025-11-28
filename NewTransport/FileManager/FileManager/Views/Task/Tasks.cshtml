@@ -11,6 +11,9 @@
 <div class="main-content">
     <div class="table-toolbar">
         <div class="toolbar-left">
+            <div class="btn-full" onclick="ShowTaskList()">
+                Обновить
+            </div>
             <div class="btn-full" onclick="CreateTask()">
                 Новая задача
             </div>
@@ -30,7 +33,8 @@
                     <select id="select-find-task">
                         <option>Идентификатор</option>
                         <option>Наименование</option>
-                        <option>Группа рассылки</option>
+                        <option>Время начала</option>
+                        <option>Время окончания</option>
                     </select>
                 </div>
                 <input onkeyup="FindOfTable(document.querySelector('#select-find-task'))" id="input-find-task">
@@ -177,15 +181,15 @@
 
     window.addEventListener('load', () => {
         ShowTaskList();
-        func();
+       // func();
 
     });
-    function func() {
-        window.progressID = setInterval(f1, 10000);
-    }
-    function f1() {
-        ShowTaskList();
-    }
+    // function func() {
+    //     window.progressID = setInterval(f1, 10000);
+    // }
+    // function f1() {
+    //     ShowTaskList();
+    // }
     function ShowTaskList() {
         $.ajax({
             method: 'POST',
@@ -262,7 +266,7 @@
                         data: { "id": id },
                         dataType: 'html',
                         success: function (result) {
-                            f1();
+                            ShowTaskList();
                             CloseModal('modal-active-task')
                         }
                     });

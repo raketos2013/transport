@@ -13,7 +13,11 @@
 <div class="main-content">
     <div class="table-toolbar">
         <div class="toolbar-left">
+            <div class="btn-full" onclick="ReloadPage()">
+                Обновить
+            </div>
             <div class="filter-wrapper">
+                
                 <div class="btn-full btn-filter" onclick="ShowHideSubMenu('filter')">
                     Фильтр
                 </div>
@@ -216,4 +220,8 @@
         //document.getElementById('breadcrumbs-task').innerText = getCookie('selectedTask');
 
     });
+
+    function ReloadPage(){
+        window.location.reload()
+    }
 </script>

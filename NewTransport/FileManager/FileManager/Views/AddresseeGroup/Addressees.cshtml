@@ -10,6 +10,9 @@
     
     <div class="table-toolbar">
         <div class="toolbar-left">
+            <div>
+                <span id="task-text">Группа - <span id="name-group" style="font-weight: bold;"></span> </span>
+            </div>
             <div class="btn-full" onclick="CreateAddressee()">
                 Добавить адресата
             </div>
@@ -103,14 +106,14 @@
         if(cookieAddresseeGroup != undefined){
             selectAddresseeGroup = cookieAddresseeGroup;
         }
-        //document.getElementById('breadcrumbs-addresseegroup').innerText = selectAddresseeGroup;
+        document.getElementById('name-group').innerText = selectAddresseeGroup;
         ShowAddresseeList(selectAddresseeGroup);
 
 
     });
     function ShowAddresseeList(group) {
         selectAddresseeGroup = group;
-        //document.getElementById('breadcrumbs-addresseegroup').innerText = selectAddresseeGroup;
+        document.getElementById('name-group').innerText = selectAddresseeGroup;
         //document.cookie = "selectedTaskGroup=" + group;
         $.ajax({
             method: 'POST',

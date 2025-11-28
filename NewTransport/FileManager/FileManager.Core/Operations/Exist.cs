@@ -23,38 +23,45 @@ public class Exist(TaskStepEntity step,
         if (files.Length == 0 && TaskStep.IsBreak)
         {
             await _taskLogger.StepLog(TaskStep, $"Прерывание задачи: найдено 0 файлов", "", ResultOperation.W);
-            throw new Exception("Операция Exist: найдено 0 файлов");
+            _nextStep = null;
         }
-        await _taskLogger.StepLog(TaskStep, $"Количество найденный файлов по маске '{TaskStep.FileMask}': {files.Length}");
-
-        operation = await _operationService.GetExistByStepId(TaskStep.StepId);
-        if (operation != null)
+        else
         {
-            if (operation.InformSuccess)
+            await _taskLogger.StepLog(TaskStep, $"Количество найденный файлов по маске '{TaskStep.FileMask}': {files.Length}");
+
+            operation = await _operationService.GetExistByStepId(TaskStep.StepId);
+            if (operation != null)
             {
-                var addressesAsync = await _addresseeService.GetAllAddressees();
-                addresses = addressesAsync.Where(x => x.AddresseeGroupId == operation.AddresseeGroupId &&
-                                                      x.IsActive == true).ToList();
+                if (operation.InformSuccess)
+                {
+                    var addressesAsync = await _addresseeService.GetAllAddressees();
+                    addresses = addressesAsync.Where(x => x.AddresseeGroupId == operation.AddresseeGroupId &&
+                                                          x.IsActive == true).ToList();
+                }
+                bool isBreakTask = false;
+                CheckExpectedResult(operation.ExpectedResult, operation.BreakTaskAfterError, files.Length);
+                if (isBreakTask)
+                {
+                    await _taskLogger.StepLog(TaskStep, $"Прерывание задачи: несоответствие ожидаемому результату", "", ResultOperation.W);
+                    throw new Exception("Ошибка при операции Exist: несоответствие ожидаемому результату");
+                }
             }
-            bool isBreakTask = false;
-            CheckExpectedResult(operation.ExpectedResult, operation.BreakTaskAfterError, files.Length);
-            if (isBreakTask)
+
+            if (addresses.Count > 0 && files.Length > 0)
             {
-                await _taskLogger.StepLog(TaskStep, $"Прерывание задачи: несоответствие ожидаемому результату", "", ResultOperation.W);
-                throw new Exception("Ошибка при операции Exist: несоответствие ожидаемому результату");
+                foreach (var file in files)
+                {
+                    successFiles.Add(file);
+                }
+                await _mailSender.Send(TaskStep, addresses, successFiles);
             }
         }
+        
 
-        if (addresses.Count > 0 && successFiles.Count > 0)
+        if (_nextStep != null)
         {
-            foreach (var file in files)
-            {
-                successFiles.Add(file);
-            }
-            await _mailSender.Send(TaskStep, addresses, successFiles);
+            await _nextStep.Execute(bufferFiles);
         }
-
-        _nextStep?.Execute(bufferFiles);
     }
 
     public bool CheckExpectedResult(ExpectedResult expectedResult, bool breakTaskAfterError, int countFiles)

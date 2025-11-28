@@ -41,7 +41,11 @@ public class TaskLogger(IUnitOfWork unitOfWork) : ITaskLogger
                     taskLog.DateTimeLog = DateTime.Now;
                     await unitOfWork.TaskLogRepository.AddTaskLog(taskLog);
                     await unitOfWork.SaveAsync();
-                    taskLog.ResultText = $"---Контроль Файл есть в назначении: {operation.FileInSource.GetDescription()}";
+                    taskLog.ResultText = $"---Контроль Файл есть в источнике: {operation.FileInSource.GetDescription()}";
+                    taskLog.DateTimeLog = DateTime.Now;
+                    await unitOfWork.TaskLogRepository.AddTaskLog(taskLog);
+                    await unitOfWork.SaveAsync();
+                    taskLog.ResultText = $"---Контроль Файл есть в назначении: {operation.FileInDestination.GetDescription()}";
                     taskLog.DateTimeLog = DateTime.Now;
                     await unitOfWork.TaskLogRepository.AddTaskLog(taskLog);
                     await unitOfWork.SaveAsync();
@@ -56,6 +60,10 @@ public class TaskLogger(IUnitOfWork unitOfWork) : ITaskLogger
                 if (move != null)
                 {
                     taskLog.ResultText = "Свойства операции - ";
+                    taskLog.DateTimeLog = DateTime.Now;
+                    await unitOfWork.TaskLogRepository.AddTaskLog(taskLog);
+                    await unitOfWork.SaveAsync();
+                    taskLog.ResultText = $"---Контроль Файл есть в назначении: {move.FileInDestination.GetDescription()}";
                     taskLog.DateTimeLog = DateTime.Now;
                     await unitOfWork.TaskLogRepository.AddTaskLog(taskLog);
                     await unitOfWork.SaveAsync();

@@ -69,7 +69,7 @@ public class Copy(TaskStepEntity step,
             if (TaskStep.IsBreak)
             {
                 await _taskLogger.StepLog(TaskStep, $"Прерывание задачи: найдено 0 файлов", "", ResultOperation.W);
-                throw new Exception("Операция Copy: найдено 0 файлов");
+                _nextStep = null;
             }
         }
 
@@ -136,7 +136,7 @@ public class Copy(TaskStepEntity step,
         {
             await _nextStep.Execute(bufferFiles);
         }
-        
+
     }
 
     private async Task<bool> DoubleLog(OperationCopyEntity operation ,string fileName)
@@ -169,11 +169,13 @@ public class Copy(TaskStepEntity step,
         var destFileName = fileName;
         if (operation.FileInDestination == FileInDestination.OVR)
         {
+            await _taskLogger.StepLog(TaskStep, $"Файл уже существует в Назначении. Файл будет перезаписан", fileName, ResultOperation.W);
             return (true, destFileName);
         }
         else if (operation.FileInDestination == FileInDestination.RNM)
         {
             destFileName += DateTime.Now.ToString("_yyyyMMdd_HHmmss");
+            await _taskLogger.StepLog(TaskStep, $"Файл уже существует в Назначении. Переименование в {destFileName}", fileName, ResultOperation.W);
             return (false, destFileName);
         }
         else if (operation.FileInDestination == FileInDestination.ERR)

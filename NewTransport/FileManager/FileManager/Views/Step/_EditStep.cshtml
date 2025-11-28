@@ -66,14 +66,9 @@
 
 
 <script>
-    function ShowDestination(){
-        var select = document.querySelector('#operation-select');
-        console.log(select.selectedIndex);
-        if(select.selectedIndex == 3 || select.selectedIndex == 4 ||
-            select.selectedIndex == 6 || select.selectedIndex == 7){
-                document.getElementById('input-destination').style.display = 'none';
-        } else {
-            document.getElementById('input-destination').style.display = 'flex';
-        }
-    }
+    window.addEventListener('load', () => {
+        ShowDestination();
+    });
+
+    
 </script>

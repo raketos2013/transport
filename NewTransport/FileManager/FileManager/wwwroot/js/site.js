@@ -516,6 +516,7 @@ function CreateStep() {
 
 function ShowStepList() {
     var cookieTask = getCookie("selectedTask");
+    document.getElementById('name-task').innerText = cookieTask;
     if (cookieTask != undefined) {
         selectTask = cookieTask;
     }
@@ -591,6 +592,7 @@ function EditStep(taskId, stepNumber) {
                         $('#edit-step-content').empty();
                         $('#edit-step-content').append(result);
                         ShowModal('modal-edit-step');
+                        ShowDestination();
                     }
                 });
             } else if (jsonObj.isLocked == true) {
@@ -601,6 +603,15 @@ function EditStep(taskId, stepNumber) {
         }
     });
     
+}
+function ShowDestination() {
+    var select = document.querySelector('#operation-select');
+    if (select.selectedIndex == 3 || select.selectedIndex == 4 ||
+        select.selectedIndex == 6 || select.selectedIndex == 7) {
+        document.getElementById('input-destination').style.display = 'none';
+    } else {
+        document.getElementById('input-destination').style.display = 'flex';
+    }
 }
 
 function ShowEditStepModal() {
@@ -727,16 +738,50 @@ function StepOperationEdit() {
                         $('#operation-edit-content').empty();
                         $('#operation-edit-content').append(result);
                         ShowModal('modal-edit-additional-settings');
+                        ShowAddressGroup();
                     }
                 });
             } else if (jsonObj.isLocked == true) {
                 ShowModal('modal-locked-task')
                 document.getElementById('userId-locked-task').innerText = jsonObj.userId
             }
-
         }
     });
 }
+
+function DeleteStepOperation() {
+    var cookieTaskId = getCookie("selectedTask");
+    $.ajax({
+        method: 'GET',
+        url: '/Task/IsLockedTask',
+        data: {
+            "taskId": cookieTaskId
+        },
+        dataType: 'html',
+        success: function (result) {
+            let jsonObj = JSON.parse(result)
+            if (jsonObj.isLocked == false) {
+                var cookieStepNumber = getCookie("selectedStepNumber");
+                $.ajax({
+                    type: 'GET',
+                    url: "/Operation/DeleteOperation",
+                    data: {
+                        "taskId": cookieTaskId,
+                        "stepNumber": cookieStepNumber
+                    },
+                    dataType: 'html',
+                    success: function (result) {
+                        location.reload();
+                    }
+                });
+            } else if (jsonObj.isLocked == true) {
+                ShowModal('modal-locked-task')
+                document.getElementById('userId-locked-task').innerText = jsonObj.userId
+            }
+        }
+    });
+}
+
 
 function CopyTask() {
     var cookieTaskId = getCookie("selectedTask");
@@ -895,7 +940,6 @@ function OkCopyStep() {
     var cookieTaskId = getCookie("selectedTask");
     var cookieStepNumber = getCookie("selectedStepNumber");
     var newNumber = document.getElementById('numberNewStep').value;
-    CloseModal('modal-copy-step');
     $.ajax({
         method: 'POST',
         url: '/Step/CopyStep',
@@ -906,10 +950,10 @@ function OkCopyStep() {
         },
         dataType: 'html',
         success: function (result) {
+            CloseModal('modal-copy-step');
             location.reload();
         }
     });
-
 }
 
 function UnlockTask(){
@@ -941,4 +985,13 @@ function IsLockedTask() {
             return result;
         }
     });
+}
+
+function ShowAddressGroup() {
+    var inform = document.getElementById('inform-success');
+    if (inform.checked) {
+        document.getElementById('inform-addr-group').style.display = 'flex'
+    } else {
+        document.getElementById('inform-addr-group').style.display = 'none'
+    }
 }

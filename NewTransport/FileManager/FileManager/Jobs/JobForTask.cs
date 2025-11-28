@@ -162,7 +162,7 @@ public class JobForTask(IServiceScopeFactory scopeFactory) : IJob
                     task.IsActive = false;
                     await taskService.EditTask(task);
                 }
-                await taskLogger.TaskLog(context.JobDetail.Key.Name, $"Автозавершение (выключение) задачи", ResultOperation.W);
+                await taskLogger.TaskLog(context.JobDetail.Key.Name, $"Автозавершение (выключение) задачи. {ex.Message}", ResultOperation.W);
                 logger.LogError($"{DateTime.Now} задача: {context.JobDetail.Key.Name} - {ex.Message}");
             }
             catch (Exception ex2)

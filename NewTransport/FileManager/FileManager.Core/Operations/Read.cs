@@ -194,7 +194,7 @@ public class Read(TaskStepEntity step,
             if (TaskStep.IsBreak)
             {
                 await _taskLogger.StepLog(TaskStep, $"Прерывание задачи: найдено 0 файлов", "", ResultOperation.W);
-                throw new Exception("Операция Read: найдено 0 файлов");
+                _nextStep = null;
             }
         }
 
@@ -205,6 +205,9 @@ public class Read(TaskStepEntity step,
 
         await _taskLogger.StepLog(TaskStep, "Переход к следующему шагу");
 
-        _nextStep?.Execute(bufferFiles);
+        if (_nextStep != null)
+        {
+            await _nextStep.Execute(bufferFiles);
+        }
     }
 }

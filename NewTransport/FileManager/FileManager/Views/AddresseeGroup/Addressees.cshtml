@@ -11,7 +11,7 @@
     <div class="table-toolbar">
         <div class="toolbar-left">
             <div>
-                <span id="task-text">Группа - <span id="name-group" style="font-weight: bold;"></span> </span>
+                Группа - <span id="name-group"></span>
             </div>
             <div class="btn-full" onclick="CreateAddressee()">
                 Добавить адресата
@@ -102,15 +102,29 @@
 <script>
 
     window.addEventListener('load', () => {
+        //ShowAllAddresses();
         var cookieAddresseeGroup = getCookie("selectedAddresseeGroup");
         if(cookieAddresseeGroup != undefined){
             selectAddresseeGroup = cookieAddresseeGroup;
         }
         document.getElementById('name-group').innerText = selectAddresseeGroup;
         ShowAddresseeList(selectAddresseeGroup);
-
-
     });
+
+    function ShowAllAddresses(){
+        $.ajax({
+            method: 'POST',
+            url: '@Url.Action("AllAddresses", "AddresseeGroup")',
+            data: { },
+            dataType: 'html',
+            success: function (result) {
+                $('#addresses').empty();
+                $('#addresses').append(result);
+                ActiveAddressee();
+            }
+        });
+    }
+
     function ShowAddresseeList(group) {
         selectAddresseeGroup = group;
         document.getElementById('name-group').innerText = selectAddresseeGroup;
@@ -155,10 +169,8 @@
             }
             document.getElementById('tabNumInfo').innerText = tabNum;
 
-        }
-
-
-        function OkOnOffAddressee() {
+    }
+    function OkOnOffAddressee() {
             var tabNum = document.getElementById('tabNumInfo').innerText
             //var cookieTaskId = getCookie("selectedTask");
             $.ajax({
@@ -171,8 +183,8 @@
                     ShowAddresseeList(getCookie("selectedAddresseeGroup"));
                 }
             });
+    }
 
-        }
         function CancelOnOffAddressee() {
             var table, tr, td, i, txtValue;
 
@@ -209,5 +221,8 @@
                 }
             });
         }
+
+
+
 
 </script>

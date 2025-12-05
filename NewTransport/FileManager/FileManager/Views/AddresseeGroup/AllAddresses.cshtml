@@ -1,0 +1,202 @@
+﻿@using FileManager.ViewModels
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model List<AddressesWithGroupViewModel>
+@{
+    ViewData["Title"] = "Транспорт: Адресаты";
+}
+
+<div class="main-content">
+
+    <div class="table-toolbar">
+        <div class="toolbar-left">
+            <div class="btn-full" onclick="CreateAddressee()">
+                Добавить адресата
+            </div>
+            <div class="btn-full" onclick="ShowActiveAddressee()">
+                <span><span id="active-addressee-btn">Скрыть </span> неактивные</span>
+            </div>
+        </div>
+        <div class="toolbar-right">
+            <div class="input-group">
+                <div class="select-wrapper">
+                    <select>
+                        
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="main-table grid" scrollable="">
+        <div class="table-header-div">
+            <table class="table-header">
+                <colgroup>
+                    <col style="min-width:55px;width:55px;">
+                    <col style="min-width:150px;width:150px;">
+                    <col style="min-width:500px;width:500px;">
+                    <col style="min-width:80px;width:80px;">
+                    <col style="min-width:250px;width:250px;">
+                    <col style="min-width:110px;width:100%;">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>
+                            <p></p>
+                            <div class="separate"></div>
+                            <div class="sorter"></div>
+                        </th>
+                        <th>
+                            <p>Табельный номер</p>
+                            <div class="separate"></div>
+                            <div class="sorter"></div>
+                        </th>
+                        <th>
+                            <p>Группа рассылки</p>
+                            <div class="separate"></div>
+                            <div class="sorter"></div>
+                        </th>
+                        <th>
+                            <p>Активно</p>
+                            <div class="separate"></div>
+                            <div class="sorter"></div>
+                        </th>
+                        <th>
+                            <p>Адрес электронной почты</p>
+                            <div class="separate"></div>
+                            <div class="sorter"></div>
+                        </th>
+                        <th>
+                            <p>ФИО</p>
+                            <div class="separate"></div>
+                            <div class="sorter"></div>
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        <div class="table-body-div">
+            <table class="table-body" id="tableAddresses">
+                <colgroup>
+                    <col style="min-width:55px;width:55px;">
+                    <col style="min-width:150px;width:150px;">
+                    <col style="min-width:500px;width:500px;">
+                    <col style="min-width:80px;width:80px;">
+                    <col style="min-width:250px;width:250px;">
+                    <col style="min-width:110px;width:100%;">
+                </colgroup>
+                <tbody>
+                    @foreach (var item in @Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="group-btns-add">
+                                    @* <div class="btn-add" onclick="ShowDeleteAddressee('@item.PersonalNumber')">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M7.83338 19.5C7.37504 19.5 6.98282 19.3369 6.65671 19.0108C6.3306 18.6847 6.16727 18.2922 6.16671 17.8333V7C5.9306 7 5.73282 6.92 5.57338 6.76C5.41393 6.6 5.33393 6.40222 5.33338 6.16667C5.33282 5.93111 5.41282 5.73333 5.57338 5.57333C5.73393 5.41333 5.93171 5.33333 6.16671 5.33333H9.50004C9.50004 5.09722 9.58004 4.89944 9.74004 4.74C9.90004 4.58056 10.0978 4.50056 10.3334 4.5H13.6667C13.9028 4.5 14.1009 4.58 14.2609 4.74C14.4209 4.9 14.5006 5.09778 14.5 5.33333H17.8334C18.0695 5.33333 18.2675 5.41333 18.4275 5.57333C18.5875 5.73333 18.6673 5.93111 18.6667 6.16667C18.6662 6.40222 18.5862 6.60028 18.4267 6.76083C18.2673 6.92139 18.0695 7.00111 17.8334 7V17.8333C17.8334 18.2917 17.6703 18.6842 17.3442 19.0108C17.0181 19.3375 16.6256 19.5006 16.1667 19.5H7.83338ZM10.3334 16.1667C10.5695 16.1667 10.7675 16.0867 10.9275 15.9267C11.0875 15.7667 11.1673 15.5689 11.1667 15.3333V9.5C11.1667 9.26389 11.0867 9.06611 10.9267 8.90667C10.7667 8.74722 10.5689 8.66722 10.3334 8.66667C10.0978 8.66611 9.90004 8.74611 9.74004 8.90667C9.58004 9.06722 9.50004 9.265 9.50004 9.5V15.3333C9.50004 15.5694 9.58004 15.7675 9.74004 15.9275C9.90004 16.0875 10.0978 16.1672 10.3334 16.1667ZM13.6667 16.1667C13.9028 16.1667 14.1009 16.0867 14.2609 15.9267C14.4209 15.7667 14.5006 15.5689 14.5 15.3333V9.5C14.5 9.26389 14.42 9.06611 14.26 8.90667C14.1 8.74722 13.9023 8.66722 13.6667 8.66667C13.4312 8.66611 13.2334 8.74611 13.0734 8.90667C12.9134 9.06722 12.8334 9.265 12.8334 9.5V15.3333C12.8334 15.5694 12.9134 15.7675 13.0734 15.9275C13.2334 16.0875 13.4312 16.1672 13.6667 16.1667Z" fill="#999999" />
+                                        </svg>
+                                    </div> *@
+                                </div>
+                            </td>
+                            <td><p>@item.Addressee.PersonalNumber</p></td>
+                            <td><p>@item.AddresseeGroup.Id @item.AddresseeGroup.Name</p></td>
+                            <td>
+                                <div>
+                                    <label class="toggle-checkbox">
+                                        <input type="checkbox" checked="@item.Addressee.IsActive" onclick="ShowModal('modal-active-addressee'), OnOffAddressee('@item.Addressee.PersonalNumber')">
+                                        <span class="toggle-checkbox-switch"></span>
+                                    </label>
+                                </div>
+                            </td>
+                            <td><p>@item.Addressee.EMail</p></td>
+                            <td><p>@item.Addressee.Fio</p></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>  
+
+<footer>
+</footer>
+<div class="modal-wrapper" id="modal-active-addressee">
+    <div class="modal">
+        <div class="modal-header">
+            <p><span id="titleInfoAddressee"></span> адресата <span id="tabNumInfo"></span>?</p>
+            <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg" onclick="CloseModal('modal-active-addressee'), CancelOnOffAddressee()">
+                <path d="M5.19281 4.69635L8 7.50342L10.7926 4.71089C10.8543 4.64524 10.9286 4.59272 11.0111 4.55648C11.0936 4.52024 11.1825 4.50103 11.2726 4.5C11.4655 4.5 11.6505 4.57662 11.7869 4.713C11.9233 4.84938 11.9999 5.03435 11.9999 5.22722C12.0016 5.31638 11.985 5.40494 11.9513 5.48748C11.9175 5.57001 11.8672 5.64478 11.8035 5.70719L8.97452 8.49971L11.8035 11.3286C11.9234 11.4459 11.9937 11.6046 11.9999 11.7722C11.9999 11.9651 11.9233 12.15 11.7869 12.2864C11.6505 12.4228 11.4655 12.4994 11.2726 12.4994C11.1799 12.5033 11.0875 12.4878 11.0011 12.454C10.9147 12.4202 10.8363 12.3688 10.7708 12.3031L8 9.496L5.20008 12.2958C5.13863 12.3593 5.06522 12.4099 4.98409 12.4449C4.90296 12.4798 4.8157 12.4984 4.72737 12.4994C4.53449 12.4994 4.34951 12.4228 4.21313 12.2864C4.07674 12.15 4.00012 11.9651 4.00012 11.7722C3.99842 11.683 4.01497 11.5945 4.04873 11.5119C4.0825 11.4294 4.13277 11.3546 4.19648 11.2922L7.02548 8.49971L4.19648 5.67082C4.07661 5.55357 4.00633 5.39478 4.00012 5.22722C4.00012 5.03435 4.07674 4.84938 4.21313 4.713C4.34951 4.57662 4.53449 4.5 4.72737 4.5C4.90191 4.50218 5.06918 4.57272 5.19281 4.69635Z" fill="white" />
+            </svg>
+        </div>
+        <div class="modal-body">
+            <div class="modal-body-content">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div class="btn-full" onclick="OkOnOffAddressee(), CloseModal('modal-active-addressee')">
+                Ок
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var isActivatedAddressee;
+    function OnOffAddressee(tabNum) {
+            var table, tr, td, i, txtValue;
+
+            table = document.getElementById("tableAddresses");
+            tr = table.getElementsByTagName("tr");
+
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[1];
+                if (td) {
+                    txtValue = td.innerText;
+                    if (txtValue == tabNum) {
+                        var qwe = tr[i].getElementsByTagName("td")[3];
+                        var chl1 = qwe.firstElementChild.firstElementChild.firstElementChild.checked;
+                        isActivatedAddressee = chl1;
+                    }
+                }
+            }
+            if (chl1 == true) {
+                document.getElementById('titleInfoAddressee').innerText = "Включить";
+            } else {
+                document.getElementById('titleInfoAddressee').innerText = "Выключить";
+            }
+            document.getElementById('tabNumInfo').innerText = tabNum;
+
+    }
+    function OkOnOffAddressee() {
+            var tabNum = document.getElementById('tabNumInfo').innerText
+            //var cookieTaskId = getCookie("selectedTask");
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("ActivatedAddressee", "AddresseeGroup")',
+                data: { "id": tabNum },
+                dataType: 'html',
+                success: function (result) {
+                    window.location.href = '@Url.Action("AllAddresses", "AddresseeGroup")'
+                }
+            });
+    }
+
+        function CancelOnOffAddressee() {
+            var table, tr, td, i, txtValue;
+
+            table = document.getElementById("tableAddresses");
+            tr = table.getElementsByTagName("tr");
+
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[1];
+                if (td) {
+                    txtValue = td.innerText;
+                    if (txtValue == document.getElementById('tabNumInfo').innerText) {
+                        var qwe = tr[i].getElementsByTagName("td")[3];
+                        qwe.firstElementChild.firstElementChild.firstElementChild.checked = !isActivatedAddressee;
+
+                    }
+                }
+            }
+
+        }
+</script>

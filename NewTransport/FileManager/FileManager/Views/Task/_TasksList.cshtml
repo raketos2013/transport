@@ -134,7 +134,19 @@
                                 </label>
                             </div>
                         </td>
-                        <td onclick="SetExecutionLimit('@item.TaskId')"><p>@item.ExecutionLeft</p></td>
+                        <td onclick="SetExecutionLimit('@item.TaskId')">
+                            @{
+                                if (item.ExecutionLimit != 0)
+                                {
+                                    var executLeft = item.ExecutionLimit - item.ExecutionCount;
+                                    if (executLeft <= 0)
+                                    {
+                                        executLeft = 0;
+                                    }
+                                    <p>@executLeft</p>
+                                }
+                            }
+                        </td>
                         <td>
                             <div>
                                 @if (item.TaskStatus.IsProgress)

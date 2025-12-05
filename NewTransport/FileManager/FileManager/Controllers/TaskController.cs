@@ -546,17 +546,7 @@ public class TaskController(ITaskService taskService,
         {
             return RedirectToAction(nameof(Tasks));
         }
-        var executing = task.ExecutionLimit - task.ExecutionLeft;
-        if (limit <= executing)
-        {
-            task.ExecutionLeft = 0;
-
-        }
-        else
-        {
-            task.ExecutionLimit = limit;
-            task.ExecutionLeft = task.ExecutionLimit - executing;
-        }
+        task.ExecutionLimit = limit;
         await taskService.EditTask(task);
         await lockService.Unlock(taskId);
         return RedirectToAction(nameof(Tasks));

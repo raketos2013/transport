@@ -510,7 +510,7 @@ function CreateStep() {
 
         }
     });
-    
+
 
 }
 
@@ -602,7 +602,7 @@ function EditStep(taskId, stepNumber) {
 
         }
     });
-    
+
 }
 function ShowDestination() {
     var select = document.querySelector('#operation-select');
@@ -650,7 +650,7 @@ function replaceStep(operation) {
                 ShowModal('modal-locked-task')
                 document.getElementById('userId-locked-task').innerText = jsonObj.userId
             }
-           
+
         }
     });
 }
@@ -918,7 +918,7 @@ function CopyStep() {
                     },
                     dataType: 'html',
                     success: function (result) {
-                        
+
                     }
                 });
                 var cookieStepNumber = getCookie("selectedStepNumber");
@@ -956,7 +956,7 @@ function OkCopyStep() {
     });
 }
 
-function UnlockTask(){
+function UnlockTask() {
     var cookieTaskId = getCookie("selectedTask");
     $.ajax({
         method: 'POST',
@@ -995,3 +995,5 @@ function ShowAddressGroup() {
         document.getElementById('inform-addr-group').style.display = 'none'
     }
 }
+
+

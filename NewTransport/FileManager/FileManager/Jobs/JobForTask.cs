@@ -28,25 +28,31 @@ public class JobForTask(IServiceScopeFactory scopeFactory) : IJob
         {
             return;
         }
-        if (taskChecked.ExecutionLeft <= 0)
-        {
-            await taskLogger.TaskLog(context.JobDetail.Key.Name, $"<<< Выключение задачи, превышен лимит выполнений >>>", ResultOperation.W);
-            await taskService.ActivatedTask(taskChecked.TaskId);
-            return;
-        }
-        taskChecked.ExecutionLeft -= 1;
-        await taskService.EditTask(taskChecked);
-        await taskLogger.TaskLog(context.JobDetail.Key.Name, $"<<< Начало работы задачи {context.JobDetail.Key.Name} >>>");
-
         var statusAsync = await taskService.GetTaskStatuses();
         var status = statusAsync.First(x => x.TaskId == context.JobDetail.Key.Name);
         if (status != null)
         {
+            if (status.DateLastExecute.Date != DateTime.Now.Date)
+            {
+                taskChecked.ExecutionCount = 0;
+                await taskService.EditTask(taskChecked);
+            }
             status.IsProgress = true;
             status.IsError = false;
             status.DateLastExecute = DateTime.Now;
             await taskService.UpdateTaskStatus(status);
         }
+        if (taskChecked.ExecutionLimit != 0 && taskChecked.ExecutionLimit - taskChecked.ExecutionCount <= 0)
+        {
+            await taskLogger.TaskLog(context.JobDetail.Key.Name, $"<<< Выключение задачи, превышен лимит выполнений >>>", ResultOperation.W);
+            await taskService.ActivatedTask(taskChecked.TaskId);
+            return;
+        }
+        taskChecked.ExecutionCount++;
+        await taskService.EditTask(taskChecked);
+        await taskLogger.TaskLog(context.JobDetail.Key.Name, $"<<< Начало работы задачи {context.JobDetail.Key.Name} >>>");
+
+       
         if (context.RefireCount > 5)
         {
             logger.LogError($"{DateTime.Now} задача: {context.JobDetail.Key.Name} - RefireCount > 5");

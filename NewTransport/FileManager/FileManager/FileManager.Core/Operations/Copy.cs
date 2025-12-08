@@ -5,7 +5,6 @@ using FileManager.Core.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http.Headers;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace FileManager.Core.Operations;
 
@@ -17,7 +16,6 @@ public class Copy(TaskStepEntity step,
     public override async Task Execute(List<string>? bufferFiles)
     {
         await _taskLogger.StepLog(TaskStep, $"КОПИРОВАНИЕ: {TaskStep.Source} => {TaskStep.Destination}");
-        //Thread.Sleep(1000);
         await _taskLogger.OperationLog(TaskStep);
 
         string[] files = [];
@@ -71,7 +69,7 @@ public class Copy(TaskStepEntity step,
             if (TaskStep.IsBreak)
             {
                 await _taskLogger.StepLog(TaskStep, $"Прерывание задачи: найдено 0 файлов", "", ResultOperation.W);
-                throw new Exception("Операция Copy: найдено 0 файлов");
+                _nextStep = null;
             }
         }
 
@@ -138,7 +136,7 @@ public class Copy(TaskStepEntity step,
         {
             await _nextStep.Execute(bufferFiles);
         }
-        
+
     }
 
     private async Task<bool> DoubleLog(OperationCopyEntity operation ,string fileName)
@@ -171,11 +169,13 @@ public class Copy(TaskStepEntity step,
         var destFileName = fileName;
         if (operation.FileInDestination == FileInDestination.OVR)
         {
+            await _taskLogger.StepLog(TaskStep, $"Файл уже существует в Назначении. Файл будет перезаписан", fileName, ResultOperation.W);
             return (true, destFileName);
         }
         else if (operation.FileInDestination == FileInDestination.RNM)
         {
             destFileName += DateTime.Now.ToString("_yyyyMMdd_HHmmss");
+            await _taskLogger.StepLog(TaskStep, $"Файл уже существует в Назначении. Переименование в {destFileName}", fileName, ResultOperation.W);
             return (false, destFileName);
         }
         else if (operation.FileInDestination == FileInDestination.ERR)

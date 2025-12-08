@@ -65,7 +65,7 @@ public class Move(TaskStepEntity step,
             if (TaskStep.IsBreak)
             {
                 await _taskLogger.StepLog(TaskStep, $"Прерывание задачи: найдено 0 файлов", "", ResultOperation.W);
-                throw new Exception("Операция Move: найдено 0 файлов");
+                _nextStep = null;
             }
         }
 
@@ -89,6 +89,8 @@ public class Move(TaskStepEntity step,
                     if (operation.FileInLog == DoubleInLog.INADAY)
                     {
                         isMoveFile = false;
+                        await _taskLogger.StepLog(TaskStep, "Сработал контроль: \"Дублирование по журналу\"", fileName, ResultOperation.E);
+                        throw new Exception("Дублирование файла по журналу!");
                     }
                     else
                     {
@@ -120,15 +122,15 @@ public class Move(TaskStepEntity step,
                 {
                     destinationFileInfo.IsReadOnly = false;
                     File.Move(file.FullName, fileNameDestination, isOverwriteFile);
-                    await _taskLogger.StepLog(TaskStep, "Файл успешно перемещён", fileName);
+                    await _taskLogger.StepLog(TaskStep, "Файл успешно перемещён", destFileName);
                     destinationFileInfo.IsReadOnly = true;
-                    successFiles.Add(fileName);
+                    successFiles.Add(destFileName);
                 }
                 else if (destinationFileInfo.Exists && isOverwriteFile || !destinationFileInfo.Exists)
                 {
                    File.Move(file.FullName, fileNameDestination, isOverwriteFile);
-                    await _taskLogger.StepLog(TaskStep, "Файл успешно перемещён", fileName);
-                    successFiles.Add(fileName);
+                    await _taskLogger.StepLog(TaskStep, "Файл успешно перемещён", destFileName);
+                    successFiles.Add(destFileName);
                 }
             }
         }
@@ -138,7 +140,10 @@ public class Move(TaskStepEntity step,
             await _mailSender.Send(TaskStep, addresses, successFiles);
         }
 
-        _nextStep?.Execute(bufferFiles);
+        if (_nextStep != null)
+        {
+            await _nextStep.Execute(bufferFiles);
+        }
     }
 
     public async Task FileInUse(FileInfo file)
@@ -246,11 +251,13 @@ public class Move(TaskStepEntity step,
         var destFileName = fileName;
         if (operation.FileInDestination == FileInDestination.OVR)
         {
+            await _taskLogger.StepLog(TaskStep, $"Файл уже существует в Назначении. Файл будет перезаписан", fileName, ResultOperation.W);
             return (true, destFileName);
         }
         else if (operation.FileInDestination == FileInDestination.RNM)
         {
             destFileName += DateTime.Now.ToString("_yyyyMMdd_HHmmss");
+            await _taskLogger.StepLog(TaskStep, $"Файл уже существует в Назначении. Переименование в {destFileName}", fileName, ResultOperation.W);
             return (false, destFileName);
         }
         else if (operation.FileInDestination == FileInDestination.ERR)

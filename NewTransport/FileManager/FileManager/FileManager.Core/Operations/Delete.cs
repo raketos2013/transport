@@ -23,7 +23,7 @@ public class Delete(TaskStepEntity step,
         if (files.Length == 0 && TaskStep.IsBreak)
         {
             await _taskLogger.StepLog(TaskStep, $"Прерывание задачи: найдено 0 файлов", "", ResultOperation.W);
-            throw new Exception("Операция Delete: найдено 0 файлов");
+            _nextStep = null;
         }
         await _taskLogger.StepLog(TaskStep, $"Количество найденный файлов по маске '{TaskStep.FileMask}': {files.Length}");
 
@@ -51,6 +51,9 @@ public class Delete(TaskStepEntity step,
             await _mailSender.Send(TaskStep, addresses, successFiles);
         }
 
-        _nextStep?.Execute(bufferFiles);
+        if (_nextStep != null)
+        {
+            await _nextStep.Execute(bufferFiles);
+        }
     }
 }

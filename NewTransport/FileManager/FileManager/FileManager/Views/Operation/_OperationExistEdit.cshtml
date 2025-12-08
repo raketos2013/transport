@@ -4,7 +4,6 @@
 @model OperationExistEntity
 @{
     SelectList addresseeGroups = new SelectList(ViewBag.AddresseeGroups, "Id", "Name");
-
 }
 <div class="modal-body">
     <form method="post" asp-action="EditOperationExist" asp-controller="Operation"
@@ -13,12 +12,12 @@
           <input asp-for="StepId" hidden>
         <div class="input-checkbox">
             <label class="toggle-checkbox">
-                <input type="checkbox" asp-for="InformSuccess" checked="@Model.InformSuccess">
+                <input type="checkbox" asp-for="InformSuccess" checked="@Model.InformSuccess" onclick="ShowAddressGroup()" id="inform-success">
                 <span class="toggle-checkbox-switch"></span>
             </label>
             <p>Информировать об успехе</p>
         </div>
-        <div class="input-with-label">
+        <div class="input-with-label" id="inform-addr-group">
             <label asp-for="AddresseeGroupId"></label>
             <div class="select-wrapper">
                 <select asp-for="AddresseeGroupId" asp-items=@addresseeGroups></select>

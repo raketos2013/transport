@@ -6,7 +6,7 @@
 }
 <div class="modal-header">
     <p>Редактирование шага</p>
-    <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg" onclick="CloseModal('modal-edit-step')">
+    <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg" onclick="UnlockTask(), CloseModal('modal-edit-step')">
         <path d="M5.19281 4.69635L8 7.50342L10.7926 4.71089C10.8543 4.64524 10.9286 4.59272 11.0111 4.55648C11.0936 4.52024 11.1825 4.50103 11.2726 4.5C11.4655 4.5 11.6505 4.57662 11.7869 4.713C11.9233 4.84938 11.9999 5.03435 11.9999 5.22722C12.0016 5.31638 11.985 5.40494 11.9513 5.48748C11.9175 5.57001 11.8672 5.64478 11.8035 5.70719L8.97452 8.49971L11.8035 11.3286C11.9234 11.4459 11.9937 11.6046 11.9999 11.7722C11.9999 11.9651 11.9233 12.15 11.7869 12.2864C11.6505 12.4228 11.4655 12.4994 11.2726 12.4994C11.1799 12.5033 11.0875 12.4878 11.0011 12.454C10.9147 12.4202 10.8363 12.3688 10.7708 12.3031L8 9.496L5.20008 12.2958C5.13863 12.3593 5.06522 12.4099 4.98409 12.4449C4.90296 12.4798 4.8157 12.4984 4.72737 12.4994C4.53449 12.4994 4.34951 12.4228 4.21313 12.2864C4.07674 12.15 4.00012 11.9651 4.00012 11.7722C3.99842 11.683 4.01497 11.5945 4.04873 11.5119C4.0825 11.4294 4.13277 11.3546 4.19648 11.2922L7.02548 8.49971L4.19648 5.67082C4.07661 5.55357 4.00633 5.39478 4.00012 5.22722C4.00012 5.03435 4.07674 4.84938 4.21313 4.713C4.34951 4.57662 4.53449 4.5 4.72737 4.5C4.90191 4.50218 5.06918 4.57272 5.19281 4.69635Z" fill="white" />
     </svg>
 </div>
@@ -66,14 +66,9 @@
 
 
 <script>
-    function ShowDestination(){
-        var select = document.querySelector('#operation-select');
-        console.log(select.selectedIndex);
-        if(select.selectedIndex == 3 || select.selectedIndex == 4 ||
-            select.selectedIndex == 6 || select.selectedIndex == 7){
-                document.getElementById('input-destination').style.display = 'none';
-        } else {
-            document.getElementById('input-destination').style.display = 'flex';
-        }
-    }
+    window.addEventListener('load', () => {
+        ShowDestination();
+    });
+
+    
 </script>

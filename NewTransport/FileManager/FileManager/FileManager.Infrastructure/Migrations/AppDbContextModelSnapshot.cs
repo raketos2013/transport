@@ -125,6 +125,9 @@ namespace FileManager.Infrastructure.Migrations
                     b.Property<int>("DayActive")
                         .HasColumnType("integer");
 
+                    b.Property<int>("ExecutionCount")
+                        .HasColumnType("integer");
+
                     b.Property<int>("ExecutionLeft")
                         .HasColumnType("integer");
 
@@ -302,6 +305,7 @@ namespace FileManager.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("Source")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("StepNumber")

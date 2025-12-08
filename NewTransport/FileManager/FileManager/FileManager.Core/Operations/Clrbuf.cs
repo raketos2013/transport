@@ -34,11 +34,14 @@ public class Clrbuf(TaskStepEntity step,
             if (TaskStep.IsBreak)
             {
                 await _taskLogger.StepLog(TaskStep, $"Прерывание задачи: найдено 0 файлов", "", ResultOperation.W);
-                throw new Exception("Операция Clrbuf: найдено 0 файлов");
+                _nextStep = null; 
             }
         }
         await _taskLogger.StepLog(TaskStep, $"Удалено файлов из буфера: {countFiles}");
 
-        _nextStep?.Execute(bufferFiles);
+        if (_nextStep != null)
+        {
+            await _nextStep.Execute(bufferFiles);
+        }
     }
 }

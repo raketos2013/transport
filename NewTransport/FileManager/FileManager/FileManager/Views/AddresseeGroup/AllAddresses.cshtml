@@ -1,4 +1,6 @@
-﻿@using FileManager.ViewModels
+﻿@using FileManager.Core.Interfaces.Services
+@inject IAddresseeService addresseeService
+@using FileManager.ViewModels
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
@@ -11,17 +13,18 @@
 
     <div class="table-toolbar">
         <div class="toolbar-left">
-            <div class="btn-full" onclick="CreateAddressee()">
-                Добавить адресата
-            </div>
             <div class="btn-full" onclick="ShowActiveAddressee()">
                 <span><span id="active-addressee-btn">Скрыть </span> неактивные</span>
             </div>
         </div>
         <div class="toolbar-right">
             <div class="input-group">
+                @{
+                    var groups = await addresseeService.GetAllAddresseeGroups();
+                    SelectList addresseeGroups = new SelectList(groups, "Id", "Name");
+                }
                 <div class="select-wrapper">
-                    <select>
+                    <select asp-items="@addresseeGroups">
                         
                     </select>
                 </div>
@@ -35,9 +38,9 @@
                     <col style="min-width:55px;width:55px;">
                     <col style="min-width:150px;width:150px;">
                     <col style="min-width:500px;width:500px;">
-                    <col style="min-width:80px;width:80px;">
                     <col style="min-width:250px;width:250px;">
-                    <col style="min-width:110px;width:100%;">
+                    <col style="min-width:250px;width:250px;">
+                    <col style="min-width:80px;width:80px;">
                 </colgroup>
                 <thead>
                     <tr>
@@ -57,17 +60,17 @@
                             <div class="sorter"></div>
                         </th>
                         <th>
-                            <p>Активно</p>
-                            <div class="separate"></div>
-                            <div class="sorter"></div>
-                        </th>
-                        <th>
                             <p>Адрес электронной почты</p>
                             <div class="separate"></div>
                             <div class="sorter"></div>
                         </th>
                         <th>
                             <p>ФИО</p>
+                            <div class="separate"></div>
+                            <div class="sorter"></div>
+                        </th>
+                        <th>
+                            <p>Активно</p>
                             <div class="separate"></div>
                             <div class="sorter"></div>
                         </th>
@@ -81,9 +84,9 @@
                     <col style="min-width:55px;width:55px;">
                     <col style="min-width:150px;width:150px;">
                     <col style="min-width:500px;width:500px;">
-                    <col style="min-width:80px;width:80px;">
                     <col style="min-width:250px;width:250px;">
-                    <col style="min-width:110px;width:100%;">
+                    <col style="min-width:250px;width:250;">
+                    <col style="min-width:80px;width:80px;">
                 </colgroup>
                 <tbody>
                     @foreach (var item in @Model)
@@ -100,16 +103,16 @@
                             </td>
                             <td><p>@item.Addressee.PersonalNumber</p></td>
                             <td><p>@item.AddresseeGroup.Id @item.AddresseeGroup.Name</p></td>
+                            <td><p>@item.Addressee.EMail</p></td>
+                            <td><p>@item.Addressee.Fio</p></td>
                             <td>
                                 <div>
                                     <label class="toggle-checkbox">
-                                        <input type="checkbox" checked="@item.Addressee.IsActive" onclick="ShowModal('modal-active-addressee'), OnOffAddressee('@item.Addressee.PersonalNumber')">
+                                        <input type="checkbox" checked="@item.Addressee.IsActive" onclick="OnOffAddressee('@item.Addressee.PersonalNumber', '@item.Addressee.AddresseeGroupId')">
                                         <span class="toggle-checkbox-switch"></span>
                                     </label>
                                 </div>
                             </td>
-                            <td><p>@item.Addressee.EMail</p></td>
-                            <td><p>@item.Addressee.Fio</p></td>
                         </tr>
                     }
                 </tbody>
@@ -120,11 +123,11 @@
 
 <footer>
 </footer>
-<div class="modal-wrapper" id="modal-active-addressee">
+<div class="modal-wrapper" id="modal-active-addressee2">
     <div class="modal">
         <div class="modal-header">
-            <p><span id="titleInfoAddressee"></span> адресата <span id="tabNumInfo"></span>?</p>
-            <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg" onclick="CloseModal('modal-active-addressee'), CancelOnOffAddressee()">
+            <p><span id="titleInfoAddressee"></span> адресата <span id="tabNumInfo"></span> из группы <span id="groupIdInfo"></span>?</p>
+            <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg" onclick="CloseModal('modal-active-addressee2'), CancelOnOffAddressee()">
                 <path d="M5.19281 4.69635L8 7.50342L10.7926 4.71089C10.8543 4.64524 10.9286 4.59272 11.0111 4.55648C11.0936 4.52024 11.1825 4.50103 11.2726 4.5C11.4655 4.5 11.6505 4.57662 11.7869 4.713C11.9233 4.84938 11.9999 5.03435 11.9999 5.22722C12.0016 5.31638 11.985 5.40494 11.9513 5.48748C11.9175 5.57001 11.8672 5.64478 11.8035 5.70719L8.97452 8.49971L11.8035 11.3286C11.9234 11.4459 11.9937 11.6046 11.9999 11.7722C11.9999 11.9651 11.9233 12.15 11.7869 12.2864C11.6505 12.4228 11.4655 12.4994 11.2726 12.4994C11.1799 12.5033 11.0875 12.4878 11.0011 12.454C10.9147 12.4202 10.8363 12.3688 10.7708 12.3031L8 9.496L5.20008 12.2958C5.13863 12.3593 5.06522 12.4099 4.98409 12.4449C4.90296 12.4798 4.8157 12.4984 4.72737 12.4994C4.53449 12.4994 4.34951 12.4228 4.21313 12.2864C4.07674 12.15 4.00012 11.9651 4.00012 11.7722C3.99842 11.683 4.01497 11.5945 4.04873 11.5119C4.0825 11.4294 4.13277 11.3546 4.19648 11.2922L7.02548 8.49971L4.19648 5.67082C4.07661 5.55357 4.00633 5.39478 4.00012 5.22722C4.00012 5.03435 4.07674 4.84938 4.21313 4.713C4.34951 4.57662 4.53449 4.5 4.72737 4.5C4.90191 4.50218 5.06918 4.57272 5.19281 4.69635Z" fill="white" />
             </svg>
         </div>
@@ -133,15 +136,32 @@
             </div>
         </div>
         <div class="modal-footer">
-            <div class="btn-full" onclick="OkOnOffAddressee(), CloseModal('modal-active-addressee')">
+            <div class="btn-full" onclick="OkOnOffAddressee()">
                 Ок
             </div>
         </div>
     </div>
 </div>
+<div class="modal-wrapper" id="modal-add-group">
+    <div class="modal">
+        <div class="modal-header">
+            <p>Добавление адресата</p>
+            <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg" onclick="CloseModal('modal-add-group')">
+                <path d="M5.19281 4.69635L8 7.50342L10.7926 4.71089C10.8543 4.64524 10.9286 4.59272 11.0111 4.55648C11.0936 4.52024 11.1825 4.50103 11.2726 4.5C11.4655 4.5 11.6505 4.57662 11.7869 4.713C11.9233 4.84938 11.9999 5.03435 11.9999 5.22722C12.0016 5.31638 11.985 5.40494 11.9513 5.48748C11.9175 5.57001 11.8672 5.64478 11.8035 5.70719L8.97452 8.49971L11.8035 11.3286C11.9234 11.4459 11.9937 11.6046 11.9999 11.7722C11.9999 11.9651 11.9233 12.15 11.7869 12.2864C11.6505 12.4228 11.4655 12.4994 11.2726 12.4994C11.1799 12.5033 11.0875 12.4878 11.0011 12.454C10.9147 12.4202 10.8363 12.3688 10.7708 12.3031L8 9.496L5.20008 12.2958C5.13863 12.3593 5.06522 12.4099 4.98409 12.4449C4.90296 12.4798 4.8157 12.4984 4.72737 12.4994C4.53449 12.4994 4.34951 12.4228 4.21313 12.2864C4.07674 12.15 4.00012 11.9651 4.00012 11.7722C3.99842 11.683 4.01497 11.5945 4.04873 11.5119C4.0825 11.4294 4.13277 11.3546 4.19648 11.2922L7.02548 8.49971L4.19648 5.67082C4.07661 5.55357 4.00633 5.39478 4.00012 5.22722C4.00012 5.03435 4.07674 4.84938 4.21313 4.713C4.34951 4.57662 4.53449 4.5 4.72737 4.5C4.90191 4.50218 5.06918 4.57272 5.19281 4.69635Z" fill="white" />
+            </svg>
+        </div>
+        <div class="modal-body" id="create-addressee-content">
+        </div>
+        <div class="modal-footer">
+            <button type="submit" form="createAddresseeForm" class="btn-full">
+                Сохранить
+            </button>
+        </div>
+    </div>
+</div>
 <script>
     var isActivatedAddressee;
-    function OnOffAddressee(tabNum) {
+    function OnOffAddressee(tabNum, groupId) {
             var table, tr, td, i, txtValue;
 
             table = document.getElementById("tableAddresses");
@@ -152,7 +172,7 @@
                 if (td) {
                     txtValue = td.innerText;
                     if (txtValue == tabNum) {
-                        var qwe = tr[i].getElementsByTagName("td")[3];
+                        var qwe = tr[i].getElementsByTagName("td")[5];
                         var chl1 = qwe.firstElementChild.firstElementChild.firstElementChild.checked;
                         isActivatedAddressee = chl1;
                     }
@@ -163,16 +183,20 @@
             } else {
                 document.getElementById('titleInfoAddressee').innerText = "Выключить";
             }
+            ShowModal('modal-active-addressee2')
             document.getElementById('tabNumInfo').innerText = tabNum;
+            document.getElementById('groupIdInfo').innerText = groupId;
 
     }
     function OkOnOffAddressee() {
             var tabNum = document.getElementById('tabNumInfo').innerText
-            //var cookieTaskId = getCookie("selectedTask");
+            var groupId = document.getElementById('groupIdInfo').innerText
+            CloseModal('modal-active-addressee2')
             $.ajax({
                 type: 'POST',
                 url: '@Url.Action("ActivatedAddressee", "AddresseeGroup")',
-                data: { "id": tabNum },
+                data: { "id": tabNum,
+                        "groupId": groupId},
                 dataType: 'html',
                 success: function (result) {
                     window.location.href = '@Url.Action("AllAddresses", "AddresseeGroup")'
@@ -191,7 +215,7 @@
                 if (td) {
                     txtValue = td.innerText;
                     if (txtValue == document.getElementById('tabNumInfo').innerText) {
-                        var qwe = tr[i].getElementsByTagName("td")[3];
+                        var qwe = tr[i].getElementsByTagName("td")[5];
                         qwe.firstElementChild.firstElementChild.firstElementChild.checked = !isActivatedAddressee;
 
                     }

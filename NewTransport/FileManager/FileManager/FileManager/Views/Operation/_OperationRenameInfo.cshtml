@@ -6,53 +6,69 @@
 }
 @if (Model != null)
 {
-    <div class="modal-body-content">
-        <div class="modal-row">
-            <div class="modal-td">
-                <p class="td-title">stepId</p>
-                <p class="td-text">@Model.StepId</p>
+    <div class="modal-body">
+        <div class="modal-body-content">
+            <div class="modal-row">
+                <div class="modal-td">
+                    <p class="td-title">stepId</p>
+                    <p class="td-text">@Model.StepId</p>
+                </div>
+                <div class="modal-td">
+                    <p class="td-title">operId</p>
+                    <p class="td-text">@Model.OperationId</p>
+                </div>
+                <div class="modal-td">
+                    <p class="td-title">Информировать об успехе</p>
+                    <p class="td-text">
+                        <div>
+                            <label class="toggle-checkbox" style="pointer-events: none;">
+                                <input type="checkbox" checked="@Model.InformSuccess" readonly>
+                                <span class="toggle-checkbox-switch"></span>
+                            </label>
+                        </div>
+                    </p>
+                </div>
+                <div class="modal-td">
+                    <p class="td-title">Группа рассылки</p>
+                    <p class="td-text">@Model.AddresseeGroupId</p>
+                </div>
+                <div class="modal-td">
+                    <p class="td-title">Дополнительный текст</p>
+                    <p class="td-text">@Model.AdditionalText</p>
+                </div>
             </div>
-            <div class="modal-td">
-                <p class="td-title">operId</p>
-                <p class="td-text">@Model.OperationId</p>
-            </div>
-            <div class="modal-td">
-                <p class="td-title">Информировать об успехе</p>
-                <p class="td-text">
-                    @* @Model.InformSuccess *@
-                    <div>
-                        <label class="toggle-checkbox" style="pointer-events: none;">
-                            <input type="checkbox" checked="@Model.InformSuccess" readonly>
-                            <span class="toggle-checkbox-switch"></span>
-                        </label>
-                    </div>
-                </p>
-            </div>
-            <div class="modal-td">
-                <p class="td-title">Группа рассылки</p>
-                <p class="td-text">@Model.AddresseeGroupId</p>
-            </div>
-            <div class="modal-td">
-                <p class="td-title">Дополнительный текст</p>
-                <p class="td-text">@Model.AdditionalText</p>
+            <div class="modal-row">
+                <div class="modal-td">
+                    <p class="td-title">Шаблон имени файла</p>
+                    <p class="td-text">@Model.OldPattern</p>
+                </div>
+                <div class="modal-td">
+                    <p class="td-title">Шаблон нового имени файла</p>
+                    <p class="td-text">@Model.NewPattern</p>
+                </div>
+
             </div>
         </div>
-        <div class="modal-row">
-            <div class="modal-td">
-                <p class="td-title">Шаблон имени файла</p>
-                <p class="td-text">@Model.OldPattern</p>
+        <div class="modal-footer">
+            <div class="btn-full" onclick="ShowModal('modal-delete-operation')">
+                Удалить
             </div>
-            <div class="modal-td">
-                <p class="td-title">Шаблон нового имени файла</p>
-                <p class="td-text">@Model.NewPattern</p>
+            <div class="btn-full" onclick="StepOperationEdit()">
+                Редактировать
             </div>
-
         </div>
     </div>
 }
 else
 {
-    <div class="modal-body-content">
-        <span>Свойства операции не настроены</span>
+    <div class="modal-body">
+        <div class="modal-body-content">
+            <span>Свойства операции не настроены</span>
+        </div>
+        <div class="modal-footer">
+            <div class="btn-full" onclick="StepOperationEdit()">
+                Добавить
+            </div>
+        </div>
     </div>
 }

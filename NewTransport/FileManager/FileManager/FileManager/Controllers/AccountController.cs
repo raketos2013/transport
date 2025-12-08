@@ -1,4 +1,5 @@
-﻿using FileManager.Core.Interfaces.Services;
+﻿using FileManager.Core.Constants;
+using FileManager.Core.Interfaces.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
@@ -60,7 +61,6 @@ public class AccountController(ILogger<AccountController> logger,
                     new Claim(ClaimTypes.GivenName, displayName),
                 ];
 
-
                 identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 principal = new ClaimsPrincipal(identity);
                 if (principal != null && HttpContext != null)
@@ -69,17 +69,22 @@ public class AccountController(ILogger<AccountController> logger,
                                                     principal, 
                                                     new AuthenticationProperties { IsPersistent = true });
                 }
+                
             }
             else
             {
                 ViewBag.MessageAuthenticate = "Неправильный логин и (или) пароль";
                 return View();
             }
+            await userLogService.AddLog($"Вход в систему",
+                                        JsonSerializer.Serialize(""),
+                                        username);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "{message}", ex.Message);
         }
+
 
 
         //UserPrincipal userPrincipal = null;

@@ -1093,3 +1093,7 @@ footer {
     display: flex;
     justify-content: center;
 }
+
+#task-text {
+    font-size: 25px;
+}

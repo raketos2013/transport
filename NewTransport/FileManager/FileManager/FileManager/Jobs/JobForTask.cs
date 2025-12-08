@@ -18,32 +18,41 @@ public class JobForTask(IServiceScopeFactory scopeFactory) : IJob
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<JobForTask>>();
         var taskLogger = scope.ServiceProvider.GetRequiredService<ITaskLogger>();
         var mailSender = scope.ServiceProvider.GetRequiredService<IMailSender>();
-        var jobFactory = scope.ServiceProvider.GetRequiredService<ISchedulerFactory>();
         var taskService = scope.ServiceProvider.GetRequiredService<ITaskService>();
         var stepService = scope.ServiceProvider.GetRequiredService<IStepService>();
         var operationService = scope.ServiceProvider.GetRequiredService<IOperationService>();
         var addresseeService = scope.ServiceProvider.GetRequiredService<IAddresseeService>();
-        var taskLogService = scope.ServiceProvider.GetRequiredService<ITaskLogService>();
-        var authTokenConfigurations = scope.ServiceProvider.GetRequiredService<IOptions<AuthTokenConfiguration>>();
-        var httpClientFactory = scope.ServiceProvider.GetRequiredService<IHttpClientFactory>();
 
-        var hz = jobFactory.GetScheduler().Result;
         var taskChecked = await taskService.GetTaskById(context.JobDetail.Key.Name);
         if (taskChecked == null || !taskChecked.IsActive)
         {
             return;
         }
-        await taskLogger.TaskLog(context.JobDetail.Key.Name, $"<<< Начало работы задачи {context.JobDetail.Key.Name} >>>");
-
         var statusAsync = await taskService.GetTaskStatuses();
         var status = statusAsync.First(x => x.TaskId == context.JobDetail.Key.Name);
         if (status != null)
         {
+            if (status.DateLastExecute.Date != DateTime.Now.Date)
+            {
+                taskChecked.ExecutionCount = 0;
+                await taskService.EditTask(taskChecked);
+            }
             status.IsProgress = true;
             status.IsError = false;
             status.DateLastExecute = DateTime.Now;
             await taskService.UpdateTaskStatus(status);
         }
+        if (taskChecked.ExecutionLimit != 0 && taskChecked.ExecutionLimit - taskChecked.ExecutionCount <= 0)
+        {
+            await taskLogger.TaskLog(context.JobDetail.Key.Name, $"<<< Выключение задачи, превышен лимит выполнений >>>", ResultOperation.W);
+            await taskService.ActivatedTask(taskChecked.TaskId);
+            return;
+        }
+        taskChecked.ExecutionCount++;
+        await taskService.EditTask(taskChecked);
+        await taskLogger.TaskLog(context.JobDetail.Key.Name, $"<<< Начало работы задачи {context.JobDetail.Key.Name} >>>");
+
+       
         if (context.RefireCount > 5)
         {
             logger.LogError($"{DateTime.Now} задача: {context.JobDetail.Key.Name} - RefireCount > 5");
@@ -159,7 +168,7 @@ public class JobForTask(IServiceScopeFactory scopeFactory) : IJob
                     task.IsActive = false;
                     await taskService.EditTask(task);
                 }
-                await taskLogger.TaskLog(context.JobDetail.Key.Name, $"Автозавершение (выключение) задачи", ResultOperation.W);
+                await taskLogger.TaskLog(context.JobDetail.Key.Name, $"Автозавершение (выключение) задачи. {ex.Message}", ResultOperation.W);
                 logger.LogError($"{DateTime.Now} задача: {context.JobDetail.Key.Name} - {ex.Message}");
             }
             catch (Exception ex2)

@@ -342,8 +342,9 @@ public class StepService(IOperationService operationService,
             newStep.OperationId = newOperationId;
             await EditStep(newStep);
         }
-        return await unitOfWork.SaveAsync() > 0 ? newStep 
-                            : throw new DomainException("Ошибка копирования шага");
+        //return await unitOfWork.SaveAsync() > 0 ? newStep 
+        //                    : throw new DomainException("Ошибка копирования шага");
+        return newStep;
     }
 
     public async Task<int> CountFiles(int stepId)

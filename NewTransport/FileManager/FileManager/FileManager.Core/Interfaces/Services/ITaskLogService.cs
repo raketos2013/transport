@@ -7,4 +7,5 @@ public interface ITaskLogService
     Task<List<TaskLogEntity>> GetLogsByTaskId(string taskId);
     Task<TaskLogEntity> AddTaskLog(TaskLogEntity taskLog);
     Task<List<TaskLogEntity>> GetLogs();
+    Task<List<TaskLogEntity>> GetLastLogTasks();
 }

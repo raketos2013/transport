@@ -5,6 +5,7 @@ using FileManager.Core.Interfaces.Services;
 using FileManager.Core.Entities;
 using FileManager.Core.Constants;
 using FileManager.Core.Exceptions;
+using FileManager.ViewModels;
 
 namespace FileManager.Controllers;
 
@@ -72,10 +73,11 @@ public class AddresseeGroupController(IAddresseeService addresseeService,
     }
 
     [HttpPost]
-    public async Task<IActionResult> ActivatedAddressee(string id)
+    public async Task<IActionResult> ActivatedAddressee(string id, int groupId)
     {
         var addresseeAsync = await addresseeService.GetAllAddressees();
-        var addressee = addresseeAsync.FirstOrDefault(x => x.PersonalNumber == id);
+        var addressee = addresseeAsync.FirstOrDefault(x => x.PersonalNumber == id &&
+                                                           x.AddresseeGroupId == groupId);
         if (addressee != null)
         {
             addressee.IsActive = !addressee.IsActive;
@@ -126,5 +128,25 @@ public class AddresseeGroupController(IAddresseeService addresseeService,
                                         JsonSerializer.Serialize(deletedAddressee, AppConstants.JSON_OPTIONS));
         }
         return RedirectToAction(nameof(Addressees));
+    }
+
+    public async Task<IActionResult> AllAddresses()
+    {
+        var addresses = await addresseeService.GetAllAddressees();
+        addresses = addresses.OrderBy(x => x.PersonalNumber)
+                                .ThenBy(x => x.AddresseeGroupId)
+                                .ToList();
+        var groups = await addresseeService.GetAllAddresseeGroups();
+        List<AddressesWithGroupViewModel> list = [];
+        foreach( var item in addresses)
+        {
+            var newAddressee = new AddressesWithGroupViewModel()
+            {
+                Addressee = item,
+                AddresseeGroup = groups.FirstOrDefault(x => x.Id == item.AddresseeGroupId)
+            };
+            list.Add(newAddressee);
+        }
+        return View(list);
     }
 }

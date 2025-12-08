@@ -68,10 +68,13 @@ public class Rename(TaskStepEntity step,
             if (TaskStep.IsBreak)
             {
                 await _taskLogger.StepLog(TaskStep, $"Прерывание задачи: найдено 0 файлов", "", ResultOperation.W);
-                throw new Exception("Операция Rename: найдено 0 файлов");
+                _nextStep = null;
             }
         }
-        _nextStep?.Execute(bufferFiles);
+        if (_nextStep != null)
+        {
+            await _nextStep.Execute(bufferFiles);
+        }
     }
 
     private static string RenameFileNew(string filename, string old_pattern, string new_pattern)

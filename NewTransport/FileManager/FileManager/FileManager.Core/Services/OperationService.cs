@@ -19,6 +19,7 @@ public class OperationService(IUnitOfWork unitOfWork
         var step = await unitOfWork.StepRepository.GetStepByStepId(operation.StepId) 
                                 ?? throw new DomainException("Шаг не найден");
         await unitOfWork.OperationRepository.CreateClrbuf(operation);
+        await unitOfWork.SaveAsync();
         step.OperationId = operation.OperationId;
         unitOfWork.StepRepository.EditStep(step);
         //await userLogService.AddLog($"Добавление доп. св-в операции Clrbuf для шага номер {step.StepNumber} задачи {step.TaskId}",
@@ -32,6 +33,7 @@ public class OperationService(IUnitOfWork unitOfWork
         var step = await unitOfWork.StepRepository.GetStepByStepId(operation.StepId)
                                 ?? throw new DomainException("Шаг не найден");
         await unitOfWork.OperationRepository.CreateCopy(operation);
+        await unitOfWork.SaveAsync();
         step.OperationId = operation.OperationId;
         unitOfWork.StepRepository.EditStep(step);
         //await userLogService.AddLog($"Добавление доп. св-в операции Copy для шага номер {step.StepNumber} задачи {step.TaskId}",
@@ -45,6 +47,7 @@ public class OperationService(IUnitOfWork unitOfWork
         var step = await unitOfWork.StepRepository.GetStepByStepId(operation.StepId)
                                 ?? throw new DomainException("Шаг не найден");
         await unitOfWork.OperationRepository.CreateDelete(operation);
+        await unitOfWork.SaveAsync();
         step.OperationId = operation.OperationId;
         unitOfWork.StepRepository.EditStep(step);
         //await userLogService.AddLog($"Добавление доп. св-в операции Delete для шага номер {step.StepNumber} задачи {step.TaskId}",
@@ -58,6 +61,7 @@ public class OperationService(IUnitOfWork unitOfWork
         var step = await unitOfWork.StepRepository.GetStepByStepId(operation.StepId)
                                 ?? throw new DomainException("Шаг не найден");
         await unitOfWork.OperationRepository.CreateExist(operation);
+        await unitOfWork.SaveAsync();
         step.OperationId = operation.OperationId;
         unitOfWork.StepRepository.EditStep(step);
         //await userLogService.AddLog($"Добавление доп. св-в операции Exist для шага номер {step.StepNumber} задачи {step.TaskId}",
@@ -71,6 +75,7 @@ public class OperationService(IUnitOfWork unitOfWork
         var step = await unitOfWork.StepRepository.GetStepByStepId(operation.StepId)
                                 ?? throw new DomainException("Шаг не найден");
         await unitOfWork.OperationRepository.CreateMove(operation);
+        await unitOfWork.SaveAsync();
         step.OperationId = operation.OperationId;
         unitOfWork.StepRepository.EditStep(step);
         //await userLogService.AddLog($"Добавление доп. св-в операции Move для шага номер {step.StepNumber} задачи {step.TaskId}",
@@ -84,6 +89,7 @@ public class OperationService(IUnitOfWork unitOfWork
         var step = await unitOfWork.StepRepository.GetStepByStepId(operation.StepId)
                                 ?? throw new DomainException("Шаг не найден");
         await unitOfWork.OperationRepository.CreateRead(operation);
+        await unitOfWork.SaveAsync();
         step.OperationId = operation.OperationId;
         unitOfWork.StepRepository.EditStep(step);
         //await userLogService.AddLog($"Добавление доп. св-в операции Read для шага номер {step.StepNumber} задачи {step.TaskId}",
@@ -97,6 +103,7 @@ public class OperationService(IUnitOfWork unitOfWork
         var step = await unitOfWork.StepRepository.GetStepByStepId(operation.StepId)
                                 ?? throw new DomainException("Шаг не найден");
         await unitOfWork.OperationRepository.CreateRename(operation);
+        await unitOfWork.SaveAsync();
         step.OperationId = operation.OperationId;
         unitOfWork.StepRepository.EditStep(step);
         //await userLogService.AddLog($"Добавление доп. св-в операции Rename для шага номер {step.StepNumber} задачи {step.TaskId}",

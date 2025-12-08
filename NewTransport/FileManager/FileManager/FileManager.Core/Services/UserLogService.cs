@@ -8,13 +8,17 @@ namespace FileManager.Core.Services;
 public class UserLogService(IUnitOfWork unitOfWork,
                             IHttpContextAccessor httpContextAccessor) : IUserLogService
 {
-    public async Task AddLog(string action, string data)
+    public async Task AddLog(string action, string data, string userName = "")
     {
+        if (userName == "")
+        {
+            userName = httpContextAccessor.HttpContext.User.Identity.Name;
+        }
         UserLogEntity log = new()
         {
             Action = action,
             Data = data,
-            UserName = httpContextAccessor.HttpContext.User.Identity.Name,
+            UserName = userName,
             DateTimeLog = DateTime.Now
         };
         await unitOfWork.UserLogRepository.AddUserLog(log);

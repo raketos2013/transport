@@ -40,6 +40,8 @@ public class TaskEntity
     public int ExecutionLimit { get; set; }
     [Display(Name = "Осталось выполнений")]
     public int ExecutionLeft { get; set; }
+    [Display(Name = "Выполнений за день")]
+    public int ExecutionCount { get; set; }
     [Display(Name = "Выполняется")]
     public bool IsProgress { get; set; }
 

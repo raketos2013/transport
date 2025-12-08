@@ -15,6 +15,89 @@ public class OperationController(IOperationService operationService,
             : Controller
 {
     [HttpGet]
+    public async Task<IActionResult> DeleteOperation(string taskId, string stepNumber)
+    {
+        var step = await stepService.GetStepByTaskId(taskId, int.Parse(stepNumber));
+        ViewBag.AddresseeGroups = await addresseeService.GetAllAddresseeGroups();
+        if (step == null)
+        {
+            return RedirectToAction("Steps", "Step");
+        }
+        switch (step.OperationName)
+        {
+            case OperationName.None:
+                break;
+            case OperationName.Copy:
+                var copy = await operationService.GetCopyByStepId(step.StepId);
+                if (copy != null)
+                {
+                    await operationService.DeleteCopy(copy);
+                    step.OperationId = 0;
+                    await stepService.EditStep(step);
+                }
+                break;
+            case OperationName.Move:
+                var move = await operationService.GetMoveByStepId(step.StepId);
+                if (move != null)
+                {
+                    await operationService.DeleteMove(move);
+                    step.OperationId = 0;
+                    await stepService.EditStep(step);
+                }
+                break;
+            case OperationName.Read:
+                var read = await operationService.GetReadByStepId(step.StepId);
+                if (read != null)
+                {
+                    await operationService.DeleteRead(read);
+                    step.OperationId = 0;
+                    await stepService.EditStep(step);
+                }
+                break;
+            case OperationName.Exist:
+                var exist = await operationService.GetExistByStepId(step.StepId);
+                if (exist != null)
+                {
+                    await operationService.DeleteExist(exist);
+                    step.OperationId = 0;
+                    await stepService.EditStep(step);
+                }
+                break;
+            case OperationName.Rename:
+                var rename = await operationService.GetRenameByStepId(step.StepId);
+                if (rename != null)
+                {
+                    await operationService.DeleteRename(rename);
+                    step.OperationId = 0;
+                    await stepService.EditStep(step);
+                }
+                break;
+            case OperationName.Delete:
+                var delete = await operationService.GetDeleteByStepId(step.StepId);
+                if (delete != null)
+                {
+                    await operationService.DeleteDelete(delete);
+                    step.OperationId = 0;
+                    await stepService.EditStep(step);
+                }
+                break;
+            case OperationName.Clrbuf:
+                var clrbuf = await operationService.GetClrbufByStepId(step.StepId);
+                if (clrbuf != null)
+                {
+                    await operationService.DeleteClrbuf(clrbuf);
+                    step.OperationId = 0;
+                    await stepService.EditStep(step);
+                }
+                break;
+            default:
+                break;
+        }
+        return RedirectToAction("Steps", "Step");
+    }
+
+
+    [HttpGet]
     public async Task<IActionResult> EditOperation(string taskId, string stepNumber)
     {
         await lockService.Lock(taskId);
@@ -131,54 +214,56 @@ public class OperationController(IOperationService operationService,
     [HttpPost]
     public async Task<IActionResult> EditOperationCopy(OperationCopyEntity operation)
     {
+        var step = await stepService.GetStepByStepId(operation.StepId)
+                            ?? throw new DomainException("Шаг не найден");
         if (operation.OperationId == 0)
         {
             await operationService.CreateCopy(operation);
         }
         else
         {
-            var step = await stepService.GetStepByStepId(operation.StepId)
-                                ?? throw new DomainException("Шаг не найден");
-            await operationService.UpdateCopy(operation);
-            await lockService.Unlock(step.TaskId);
+            await operationService.UpdateCopy(operation);       
         }
+        await lockService.Unlock(step.TaskId);
         return RedirectToAction("Steps", "Step");
     }
 
     public async Task<IActionResult> EditOperationMove(OperationMoveEntity operation)
     {
+        var step = await stepService.GetStepByStepId(operation.StepId)
+                            ?? throw new DomainException("Шаг не найден");
         if (operation.OperationId == 0)
         {
             await operationService.CreateMove(operation);
         }
         else
         {
-            var step = await stepService.GetStepByStepId(operation.StepId)
-                                ?? throw new DomainException("Шаг не найден");
             await operationService.UpdateMove(operation);
-            await lockService.Unlock(step.TaskId);
         }
+        await lockService.Unlock(step.TaskId);
         return RedirectToAction("Steps", "Step");
     }
 
     public async Task<IActionResult> EditOperationDelete(OperationDeleteEntity operation)
     {
+        var step = await stepService.GetStepByStepId(operation.StepId)
+                            ?? throw new DomainException("Шаг не найден");
         if (operation.OperationId == 0)
         {
             await operationService.CreateDelete(operation);
         }
         else
         {
-            var step = await stepService.GetStepByStepId(operation.StepId)
-                                ?? throw new DomainException("Шаг не найден");
             await operationService.UpdateDelete(operation);
-            await lockService.Unlock(step.TaskId);
         }
+        await lockService.Unlock(step.TaskId);
         return RedirectToAction("Steps", "Step");
     }
 
     public async Task<IActionResult> EditOperationRead(OperationReadEntity operation)
     {
+        var step = await stepService.GetStepByStepId(operation.StepId)
+                            ?? throw new DomainException("Шаг не найден");
         operation.FindString ??= string.Empty;
         if (operation.OperationId == 0)
         {
@@ -186,32 +271,32 @@ public class OperationController(IOperationService operationService,
         }
         else
         {
-            var step = await stepService.GetStepByStepId(operation.StepId)
-                                ?? throw new DomainException("Шаг не найден");
             await operationService.UpdateRead(operation);
-            await lockService.Unlock(step.TaskId);
         }
+        await lockService.Unlock(step.TaskId);
         return RedirectToAction("Steps", "Step");
     }
 
     public async Task<IActionResult> EditOperationExist(OperationExistEntity operation)
     {
+        var step = await stepService.GetStepByStepId(operation.StepId)
+                            ?? throw new DomainException("Шаг не найден");
         if (operation.OperationId == 0)
         {
             await operationService.CreateExist(operation);
         }
         else
         {
-            var step = await stepService.GetStepByStepId(operation.StepId)
-                                ?? throw new DomainException("Шаг не найден");
             await operationService.UpdateExist(operation);
-            await lockService.Unlock(step.TaskId);
         }
+        await lockService.Unlock(step.TaskId);
         return RedirectToAction("Steps", "Step");
     }
 
     public async Task<IActionResult> EditOperationRename(OperationRenameEntity operation)
     {
+        var step = await stepService.GetStepByStepId(operation.StepId)
+                            ?? throw new DomainException("Шаг не найден");
         operation.OldPattern ??= string.Empty;
         operation.NewPattern ??= string.Empty;
         if (operation.OperationId == 0)
@@ -220,27 +305,25 @@ public class OperationController(IOperationService operationService,
         }
         else
         {
-            var step = await stepService.GetStepByStepId(operation.StepId)
-                                ?? throw new DomainException("Шаг не найден");
             await operationService.UpdateRename(operation);
-            await lockService.Unlock(step.TaskId);
         }
+        await lockService.Unlock(step.TaskId);
         return RedirectToAction("Steps", "Step");
     }
 
     public async Task<IActionResult> EditOperationClrbuf(OperationClrbufEntity operation)
     {
+        var step = await stepService.GetStepByStepId(operation.StepId)
+                            ?? throw new DomainException("Шаг не найден");
         if (operation.OperationId == 0)
         {
             await operationService.CreateClrbuf(operation);
         }
         else
         {
-            var step = await stepService.GetStepByStepId(operation.StepId)
-                                ?? throw new DomainException("Шаг не найден");
             await operationService.UpdateClrbuf(operation);
-            await lockService.Unlock(step.TaskId);
         }
+        await lockService.Unlock(step.TaskId);
         return RedirectToAction("Steps", "Step");
     }
 }

@@ -71,6 +71,20 @@ builder.Services.AddHttpClient("MMR", httpClient =>
     httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 });
 
+builder.Services.AddHttpClient("SapPip", httpClient =>
+{
+    httpClient.BaseAddress = new Uri("http://sappip.asb.by:8000");
+    httpClient.DefaultRequestHeaders.Accept.Clear();
+    httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+    httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0");
+
+}).ConfigurePrimaryHttpMessageHandler(handler => new HttpClientHandler
+{
+    // Use system proxy settings
+    UseProxy = false,
+})
+;
+
 
 var app = builder.Build();
 

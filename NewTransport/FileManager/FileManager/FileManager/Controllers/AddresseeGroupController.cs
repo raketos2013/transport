@@ -14,8 +14,10 @@ public class AddresseeGroupController(IAddresseeService addresseeService,
                                         IUserLogService userLogService)
             : Controller
 {
-    public IActionResult Addressees()
+    public async Task<IActionResult> Addressees()
     {
+        List<AddresseeGroupEntity> addresseeGroups = await addresseeService.GetAllAddresseeGroups();
+        ViewBag.AddresseeGroups = addresseeGroups;
         return View();
     }
 
@@ -61,7 +63,7 @@ public class AddresseeGroupController(IAddresseeService addresseeService,
                 PersonalNumber = addressee.PersonalNumber,
                 EMail = addressee.EMail,
                 Fio = addressee.Fio,
-                StructuralUnit = addressee.PersonalNumber,
+                StructuralUnit = addressee.StructuralUnit,
                 AddresseeGroupId = addressee.AddresseeGroupId
             };
             var createdAddressee = await addresseeService.CreateAddressee(entity);
@@ -69,7 +71,7 @@ public class AddresseeGroupController(IAddresseeService addresseeService,
                                         JsonSerializer.Serialize(createdAddressee, AppConstants.JSON_OPTIONS));
             return RedirectToAction(nameof(Addressees));
         }
-        return PartialView("_CreateAddressee", addressee);
+        return PartialView("_SaveAddressee", addressee);
     }
 
     [HttpPost]
@@ -87,7 +89,8 @@ public class AddresseeGroupController(IAddresseeService addresseeService,
             {
                 activated = "Включение";
             }
-            else {
+            else
+            {
                 activated = "Выключение";
             }
             await userLogService.AddLog($"{activated} адресата в группе рассылки номер {editedAddressee.AddresseeGroupId}",
@@ -111,7 +114,7 @@ public class AddresseeGroupController(IAddresseeService addresseeService,
         var addrAsync = await addresseeService.GetAllAddressees();
         var addr = addrAsync.FirstOrDefault(x => x.PersonalNumber == number &&
                                                  x.AddresseeGroupId == idGroup)
-                                ?? throw new DomainException("Адресат не найден"); 
+                                ?? throw new DomainException("Адресат не найден");
         var deletedAddressee = new AddresseeEntity()
         {
             PersonalNumber = number,
@@ -138,7 +141,7 @@ public class AddresseeGroupController(IAddresseeService addresseeService,
                                 .ToList();
         var groups = await addresseeService.GetAllAddresseeGroups();
         List<AddressesWithGroupViewModel> list = [];
-        foreach( var item in addresses)
+        foreach (var item in addresses)
         {
             var newAddressee = new AddressesWithGroupViewModel()
             {
@@ -148,5 +151,22 @@ public class AddresseeGroupController(IAddresseeService addresseeService,
             list.Add(newAddressee);
         }
         return View(list);
+    }
+
+
+    public async Task<IActionResult> GetUserFio(string persNumber)
+    {
+        List<AddresseeGroupEntity> addresseeGroups = await addresseeService.GetAllAddresseeGroups();
+        ViewBag.AddresseeGroups = addresseeGroups;
+        AddresseeEntity addressee = new();
+        var sapUser = await addresseeService.GetSapUser(persNumber);
+        if (sapUser != null)
+        {
+            addressee.PersonalNumber = sapUser.PersNumber;
+            addressee.Fio = sapUser.Fio;
+            addressee.StructuralUnit = sapUser.Orgeh;
+            addressee.EMail = string.Concat('b', sapUser.PersNumber, "@lotus.asb.by");
+        }
+        return PartialView("_SaveAddressee", addressee);
     }
 }

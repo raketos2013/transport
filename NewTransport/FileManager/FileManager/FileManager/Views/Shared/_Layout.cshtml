@@ -3,7 +3,6 @@
 @inject ITaskService taskService
 @inject IAddresseeService addresseeService
 
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -13,8 +12,6 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body>
-
-
     <div class="left-menu" id="left-menu" style="">
         <div class="left-menu-logo">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" id="menu-close" onclick="HideMenu()" style="display: block;">
@@ -253,6 +250,7 @@
         }
         clearNewGroup();
     }
+
     var idDeleteGroup;
     function DeleteTaskGroup() {
         var nameGroup = document.getElementById("nameDeleteGroup").innerText;

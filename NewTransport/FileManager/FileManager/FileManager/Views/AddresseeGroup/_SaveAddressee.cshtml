@@ -1,5 +1,4 @@
-﻿@using FileManager.Core.Entities
-
+﻿@using FileManager.Core.ViewModels
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
@@ -7,10 +6,24 @@
 @{
     SelectList addresseeGroups = new SelectList(ViewBag.AddresseeGroups, "Id", "Name");
 }
+@* <form id="createAddresseeForm" asp-action="CreateAddressee" asp-asp-controller="AddresseeGroup" method="post" class="modal-body-content">
+    <div class="input-with-label">
+        <label asp-for="PersNumber"></label>
+        <input asp-for="PersNumber" readonly>
+    </div>
+    <div class="input-with-label">
+        <label asp-for="Orgeh"></label>
+        <input asp-for="Orgeh" readonly>
+    </div>
+    <div class="input-with-label">
+        <label asp-for="Fio"></label>
+        <input asp-for="Fio" readonly>
+    </div>
+</form> *@
 <form id="createAddresseeForm" asp-action="CreateAddressee" asp-asp-controller="AddresseeGroup" method="post" class="modal-body-content">
     <div class="input-with-label">
         <label asp-for="PersonalNumber"></label>
-        <input asp-for="PersonalNumber">
+        <input asp-for="PersonalNumber" readonly>
     </div>
     <div class="input-with-label">
         <label>Группа</label>
@@ -18,19 +31,16 @@
             <select asp-for="AddresseeGroupId" asp-items=@addresseeGroups></select>
         </div>
     </div>
-    @* <div class="input-with-label">
+    <div class="input-with-label">
         <label asp-for="EMail"></label>
         <input asp-for="EMail">
     </div>
     <div class="input-with-label">
         <label asp-for="Fio"></label>
-        <input asp-for="Fio">
+        <input asp-for="Fio" readonly>
     </div>
     <div class="input-with-label">
         <label asp-for="StructuralUnit"></label>
-        <input asp-for="StructuralUnit">
-    </div> *@
+        <input asp-for="StructuralUnit" readonly>
+    </div>
 </form>
-
-<div class="modal-body-content">
-</div>

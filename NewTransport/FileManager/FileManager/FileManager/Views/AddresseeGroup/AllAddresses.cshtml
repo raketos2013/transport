@@ -13,22 +13,37 @@
 
     <div class="table-toolbar">
         <div class="toolbar-left">
-            <div class="btn-full" onclick="ShowActiveAddressee()">
+            @* <div class="btn-full" onclick="ShowActiveAddressee()">
                 <span><span id="active-addressee-btn">Скрыть </span> неактивные</span>
-            </div>
-        </div>
-        <div class="toolbar-right">
+            </div> *@
             <div class="input-group">
-                @{
-                    var groups = await addresseeService.GetAllAddresseeGroups();
-                    SelectList addresseeGroups = new SelectList(groups, "Id", "Name");
-                }
                 <div class="select-wrapper">
-                    <select asp-items="@addresseeGroups">
-                        
+                    <select onclick="ShowSelect()" id="filter-select">
+                        <option>Без фильтра</option>
+                        <option>По группе</option>
+                        <option>По пользователю</option>
+                    </select>
+                </div>
+                @{
+                    var groups = await addresseeService.GetAllAddresseeGroupsWithName();
+                    SelectList addresseeGroups = new SelectList(groups, "NameWithId", "NameWithId");
+                }
+                <div class="select-wrapper" id="div-select-groups" style="display:none;">
+                    <select asp-items="@addresseeGroups" onclick="FilterTableGroups()" id="select-groups">
+                    </select>
+                </div>
+                @{
+                    var users = await addresseeService.GetUniqueAddresseesWithFio();
+                    SelectList selectUsers = new SelectList(users, "PersonalNumber", "NumberWithFio");
+                }
+                <div class="select-wrapper" id="div-select-users" style="display:none;">
+                    <select asp-items="@selectUsers" onclick="FilterTableUsers()" id="select-users">
                     </select>
                 </div>
             </div>
+        </div>
+        <div class="toolbar-right">
+            
         </div>
     </div>
     <div class="main-table grid" scrollable="">
@@ -119,7 +134,7 @@
             </table>
         </div>
     </div>
-</div>  
+</div>
 
 <footer>
 </footer>
@@ -203,24 +218,81 @@
                 }
             });
     }
+    function CancelOnOffAddressee() {
+                var table, tr, td, i, txtValue;
 
-        function CancelOnOffAddressee() {
-            var table, tr, td, i, txtValue;
+                table = document.getElementById("tableAddresses");
+                tr = table.getElementsByTagName("tr");
 
-            table = document.getElementById("tableAddresses");
-            tr = table.getElementsByTagName("tr");
+                for (i = 0; i < tr.length; i++) {
+                    td = tr[i].getElementsByTagName("td")[1];
+                    if (td) {
+                        txtValue = td.innerText;
+                        if (txtValue == document.getElementById('tabNumInfo').innerText) {
+                            var qwe = tr[i].getElementsByTagName("td")[5];
+                            qwe.firstElementChild.firstElementChild.firstElementChild.checked = !isActivatedAddressee;
 
-            for (i = 0; i < tr.length; i++) {
-                td = tr[i].getElementsByTagName("td")[1];
-                if (td) {
-                    txtValue = td.innerText;
-                    if (txtValue == document.getElementById('tabNumInfo').innerText) {
-                        var qwe = tr[i].getElementsByTagName("td")[5];
-                        qwe.firstElementChild.firstElementChild.firstElementChild.checked = !isActivatedAddressee;
-
+                        }
                     }
                 }
+
             }
 
+
+    function ShowSelect(){
+        var select = document.querySelector('#filter-select');
+        if(select.selectedIndex == 0){
+            document.getElementById('div-select-groups').style.display = 'none'
+            document.getElementById('div-select-users').style.display = 'none'
+            var table = document.getElementById("tableAddresses");
+            var tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+                tr[i].style.display = "";
+            }
+            ShowActiveAddressee()
+        } else if(select.selectedIndex == 1){
+            document.getElementById('div-select-users').style.display = 'none'
+            document.getElementById('div-select-groups').style.display = 'flex'
+            FilterTableGroups()
+        } else if(select.selectedIndex == 2){
+            document.getElementById('div-select-groups').style.display = 'none'
+            document.getElementById('div-select-users').style.display = 'flex'
+            FilterTableUsers()
         }
+    }
+
+    function FilterTableGroups(){
+        var select = document.querySelector('#select-groups');
+        var valueSelect = select.value;
+        var table = document.getElementById("tableAddresses");
+        var tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[2];
+            if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue == valueSelect) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+    function FilterTableUsers(){
+        var select = document.querySelector('#select-users');
+        var valueSelect = select.value;
+        var table = document.getElementById("tableAddresses");
+        var tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[1];
+            if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue == valueSelect) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
 </script>

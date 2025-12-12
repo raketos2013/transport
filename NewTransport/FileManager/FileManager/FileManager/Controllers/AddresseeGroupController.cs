@@ -104,7 +104,7 @@ public class AddresseeGroupController(IAddresseeService addresseeService,
         var resultDelete = await addresseeService.DeleteAddresseeGroup(id);
         if (resultDelete)
         {
-            await userLogService.AddLog($"Удаление группы рассылки номер {id}", "");
+            await userLogService.AddLog($"Удаление группы рассылки номер {id}", JsonSerializer.Serialize(""));
         }
         return RedirectToAction("Tasks", "Task");
     }
@@ -168,5 +168,11 @@ public class AddresseeGroupController(IAddresseeService addresseeService,
             addressee.EMail = string.Concat('b', sapUser.PersNumber, "@lotus.asb.by");
         }
         return PartialView("_SaveAddressee", addressee);
+    }
+
+    public async Task<IActionResult> EditAddresseeGroup(int id, string name)
+    {
+        await addresseeService.EditAddresseeGroup(id, name);
+        return NoContent();
     }
 }

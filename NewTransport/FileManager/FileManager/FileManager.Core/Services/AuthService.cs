@@ -17,7 +17,7 @@ public class AuthService : IAuthService
             int ldapVersion = LdapConnection.LdapV3;
 
             ldapConnection.ConnectionTimeout = 0;
-            ldapConnection.Connect(domainName, LdapConnection.DefaultPort);
+            ldapConnection.Connect("sca-dc1.bb.asb", LdapConnection.DefaultPort);
 
             if (ldapConnection.Connected)
             {

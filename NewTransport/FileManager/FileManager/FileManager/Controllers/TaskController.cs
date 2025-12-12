@@ -8,6 +8,7 @@ using FileManager.Extensions;
 using FileManager.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NLog;
 using System.Text.Json;
 using X.PagedList.Extensions;
 

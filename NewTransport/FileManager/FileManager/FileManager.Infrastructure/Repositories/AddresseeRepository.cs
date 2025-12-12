@@ -87,4 +87,10 @@ public class AddresseeRepository(AppDbContext appDbContext) : IAddresseeReposito
     {
         return await appDbContext.Addressee.ToListAsync();
     }
+
+    public AddresseeGroupEntity EditAddresseeGroup(AddresseeGroupEntity group)
+    {
+        appDbContext.AddresseeGroup.Update(group);
+        return group;
+    }
 }

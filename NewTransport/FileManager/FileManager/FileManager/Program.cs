@@ -3,121 +3,143 @@ using FileManager.Extensions;
 using FileManager.Infrastructure.Data;
 using FileManager.Jobs;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using NLog;
+using NLog.Web;
 using Quartz;
 using System.Net.Http.Headers;
 
-var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(option =>
+var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
+logger.Info("Начало работы сервиса");
+
+try
 {
-    option.LoginPath = "/Account/Login";
-    option.AccessDeniedPath = "/Account/Login";
-    option.ExpireTimeSpan = TimeSpan.FromMinutes(60);
-});
+    var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<AppDbContext>();
+    builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
+    builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(option =>
+    {
+        option.LoginPath = "/Account/Login";
+        option.AccessDeniedPath = "/Account/Login";
+        option.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+    });
 
-builder.Services.AddHttpContextAccessor();
+    builder.Services.AddDbContext<AppDbContext>();
 
-builder.Services.AddRepositories();
-builder.Services.AddServices();
+    builder.Services.AddHttpContextAccessor();
 
-builder.Services.Configure<AuthTokenConfiguration>(builder.Configuration.GetSection("AuthMMR"));
+    builder.Services.AddRepositories();
+    builder.Services.AddServices();
 
-builder.Services.AddAntiforgery(options => options.HeaderName = "XSRF-TOKEN");
+    builder.Services.Configure<AuthTokenConfiguration>(builder.Configuration.GetSection("AuthMMR"));
 
-builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSession();
+    builder.Services.AddAntiforgery(options => options.HeaderName = "XSRF-TOKEN");
 
-builder.Services.AddTransient<JobForTask>();
-builder.Services.AddQuartz(options =>
-{
-    options.SchedulerId = "Scheduler.Core";
-    options.SchedulerName = "Quartz.AspNetCore.Scheduler";
+    builder.Services.AddDistributedMemoryCache();
+    builder.Services.AddSession();
 
-    options.MaxBatchSize = 5;
-    options.InterruptJobsOnShutdown = true;
-    options.InterruptJobsOnShutdownWithWait = true;
+    builder.Services.AddTransient<JobForTask>();
+    builder.Services.AddQuartz(options =>
+    {
+        options.SchedulerId = "Scheduler.Core";
+        options.SchedulerName = "Quartz.AspNetCore.Scheduler";
 
-    var jobKey = new JobKey("JobTask");
-    options.AddJob<JobService>(opts => opts.WithIdentity(jobKey));
+        options.MaxBatchSize = 5;
+        options.InterruptJobsOnShutdown = true;
+        options.InterruptJobsOnShutdownWithWait = true;
 
-    options.AddTrigger(opts => opts
-        .ForJob(jobKey)
-        .WithIdentity("Scheduling-Tasks")
-        .WithCalendarIntervalSchedule(s =>
-        {
-            s.WithIntervalInSeconds(15);
+        var jobKey = new JobKey("JobTask");
+        options.AddJob<JobService>(opts => opts.WithIdentity(jobKey));
 
-            s.InTimeZone(TimeZoneInfo.Local);
-        })
-        .StartAt(DateTimeOffset.Parse("00:00"))
-        .EndAt(DateTimeOffset.Parse("23:59"))
-    );
-    //options.UseMicrosoftDependencyInjectionJobFactory();
-});
+        options.AddTrigger(opts => opts
+            .ForJob(jobKey)
+            .WithIdentity("Scheduling-Tasks")
+            .WithCalendarIntervalSchedule(s =>
+            {
+                s.WithIntervalInSeconds(15);
 
-builder.Services.AddQuartzHostedService(options =>
-{
-    options.StartDelay = TimeSpan.FromMilliseconds(1_000);
-    options.AwaitApplicationStarted = true;
-    options.WaitForJobsToComplete = true;
-});
+                s.InTimeZone(TimeZoneInfo.Local);
+            })
+            .StartAt(DateTimeOffset.Parse("00:00"))
+            .EndAt(DateTimeOffset.Parse("23:59"))
+        );
+        //options.UseMicrosoftDependencyInjectionJobFactory();
+    });
 
-builder.Services.AddHttpClient("MMR", httpClient =>
-{
-    httpClient.DefaultRequestHeaders.Accept.Clear();
-    httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-});
+    builder.Services.AddQuartzHostedService(options =>
+    {
+        options.StartDelay = TimeSpan.FromMilliseconds(1_000);
+        options.AwaitApplicationStarted = true;
+        options.WaitForJobsToComplete = true;
+    });
 
-builder.Services.AddHttpClient("SapPip", httpClient =>
-{
-    httpClient.BaseAddress = new Uri("http://sappip.asb.by:8000");
-    httpClient.DefaultRequestHeaders.Accept.Clear();
-    httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-    httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0");
+    builder.Services.AddHttpClient("MMR", httpClient =>
+    {
+        httpClient.DefaultRequestHeaders.Accept.Clear();
+        httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+    });
 
-}).ConfigurePrimaryHttpMessageHandler(handler => new HttpClientHandler
-{
-    // Use system proxy settings
-    UseProxy = false,
-})
-;
+    builder.Services.AddHttpClient("SapPip", httpClient =>
+    {
+        httpClient.BaseAddress = new Uri("http://sappip.asb.by:8000");
+        httpClient.DefaultRequestHeaders.Accept.Clear();
+        httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+        httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0");
+
+    }).ConfigurePrimaryHttpMessageHandler(handler => new HttpClientHandler
+    {
+        // Use system proxy settings
+        UseProxy = false,
+    });
+
+    builder.Logging.ClearProviders();
+    builder.Host.UseNLog();
 
 
-var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    var schedulerFactory = scope.ServiceProvider.GetService<ISchedulerFactory>();
-    var scheduler = await schedulerFactory.GetScheduler();
+    var app = builder.Build();
+
+    using (var scope = app.Services.CreateScope())
+    {
+        var schedulerFactory = scope.ServiceProvider.GetService<ISchedulerFactory>();
+        var scheduler = await schedulerFactory.GetScheduler();
+    }
+
+    // Configure the HTTP request pipeline.
+    if (!app.Environment.IsDevelopment())
+    {
+        app.UseExceptionHandler("/Home/Error");
+        // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+        app.UseHsts();
+    }
+
+    app.UseDeveloperExceptionPage();
+    app.UseHttpsRedirection();
+    app.UseStaticFiles();
+
+    app.UseRouting();
+    app.UseSession();
+
+    app.UseAuthentication();
+    app.UseAuthorization();
+
+    app.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Task}/{action=Tasks}");
+
+    app.UseStatusCodePagesWithRedirects("/Error/{0}");
+
+
+
+    app.Run();
+
 }
-
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+catch (Exception ex)
 {
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    logger.Error(ex, "Аварийная остановка приложения");
+    throw;
 }
-
-app.UseDeveloperExceptionPage();
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-app.UseRouting();
-app.UseSession();
-
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Task}/{action=Tasks}");
-
-app.UseStatusCodePagesWithRedirects("/Error/{0}");
-
-
-
-app.Run();
+finally
+{
+    LogManager.Shutdown();
+}

@@ -8,6 +8,7 @@ public interface IAddresseeRepository
     Task<AddresseeGroupEntity?> GetAddresseeGroupById(int id);
     Task<AddresseeGroupEntity> CreateAddresseeGroup(AddresseeGroupEntity group);
     Task<bool> DeleteAddresseeGroup(int id);
+    AddresseeGroupEntity EditAddresseeGroup(AddresseeGroupEntity group);
 
     Task<List<AddresseeEntity>> GetAllAddressees();
     Task<AddresseeEntity?> GetAddresseeById(string id);

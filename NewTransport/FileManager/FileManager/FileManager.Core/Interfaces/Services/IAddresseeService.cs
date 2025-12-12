@@ -11,6 +11,7 @@ public interface IAddresseeService
     Task<AddresseeGroupEntity> CreateAddresseeGroup(AddresseeGroupEntity group);
     Task<bool> DeleteAddresseeGroup(int id);
     Task<SapUser> GetSapUser(string persNumber);
+    Task<AddresseeGroupEntity> EditAddresseeGroup(int id, string name);
 
     Task<List<AddresseeEntity>> GetAllAddressees();
     Task<List<AddresseeWithFioViewModel>> GetUniqueAddresseesWithFio();

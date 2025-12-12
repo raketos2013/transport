@@ -60,7 +60,8 @@ public class AddresseeService(IUnitOfWork unitOfWork,
 
     public async Task<List<AddresseeGroupEntity>> GetAllAddresseeGroups()
     {
-        return await unitOfWork.AddresseeRepository.GetAllAddresseeGroups();
+        var groups = await unitOfWork.AddresseeRepository.GetAllAddresseeGroups();
+        return groups.OrderBy(g => g.Id).ToList();
     }
 
     public async Task<List<AddresseGroupViewModel>> GetAllAddresseeGroupsWithName()
@@ -120,5 +121,17 @@ public class AddresseeService(IUnitOfWork unitOfWork,
             }
         }
         return sapUser;
+    }
+
+    public async Task<AddresseeGroupEntity> EditAddresseeGroup(int id, string name)
+    {
+        var group = await unitOfWork.AddresseeRepository.GetAddresseeGroupById(id);
+        if (group == null)
+        {
+            throw new DomainException("Группа рассылки не найдена");
+        }
+        group.Name = name;
+        return await unitOfWork.SaveAsync() > 0 ? group
+            : throw new DomainException("Ошибка при обновлении группы рассылки");
     }
 }

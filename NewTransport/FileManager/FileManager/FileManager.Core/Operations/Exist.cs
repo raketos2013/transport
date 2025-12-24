@@ -39,11 +39,12 @@ public class Exist(TaskStepEntity step,
                                                           x.IsActive == true).ToList();
                 }
                 bool isBreakTask = false;
-                CheckExpectedResult(operation.ExpectedResult, operation.BreakTaskAfterError, files.Length);
+                isBreakTask = CheckExpectedResult(operation.ExpectedResult, operation.BreakTaskAfterError, files.Length);
                 if (isBreakTask)
                 {
-                    await _taskLogger.StepLog(TaskStep, $"Прерывание задачи: несоответствие ожидаемому результату", "", ResultOperation.W);
-                    throw new Exception("Ошибка при операции Exist: несоответствие ожидаемому результату");
+                    await _taskLogger.StepLog(TaskStep, $"Прерывание задачи: несоответствие ожидаемому результату", "", ResultOperation.W); 
+                    _nextStep = null;
+                    //throw new Exception("Ошибка при операции Exist: несоответствие ожидаемому результату");
                 }
             }
 

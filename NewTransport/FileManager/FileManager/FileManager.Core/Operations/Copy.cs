@@ -73,6 +73,12 @@ public class Copy(TaskStepEntity step,
             }
         }
 
+        var taskLogsAsync = await _taskLogService.GetLogsByTaskId(TaskStep.TaskId);
+        var taskLogs = taskLogsAsync.Where(x => x.DateTimeLog.Date == DateTime.Now.Date &&
+                                                         x.StepId == TaskStep.StepId)
+                                    .ToList();
+
+
         bool isOverwriteFile = false;
         foreach (var file in infoFiles)
         {
@@ -82,7 +88,24 @@ public class Copy(TaskStepEntity step,
             if (operation != null)
             {
                 // дубль по журналу и файл в источнике
-                isCopyFile = await DoubleLog(operation, fileName);
+                var fileLog = taskLogs.FirstOrDefault(x => x.FileName == fileName);
+                if (fileLog != null)
+                {
+                    if (operation.FileInSource == FileInSource.OneDay && operation.FileInLog == DoubleInLog.INADAY)
+                    {
+                        isCopyFile = false;
+                    }
+                    else if (operation.FileInSource == FileInSource.Always && operation.FileInLog == DoubleInLog.INADAY)
+                    {
+                        await _taskLogger.StepLog(TaskStep, "Сработал контроль: \"Дублирование по журналу\"", fileName, ResultOperation.E);
+                        throw new Exception("Дублирование файла по журналу!");
+                    }
+                    else if (operation.FileInSource == FileInSource.OneDay && operation.FileInLog == DoubleInLog.NOCTRL)
+                    {
+                        isCopyFile = false;
+                    }
+                }
+                //isCopyFile = await DoubleLog(operation, fileName);
                 // атрибуты
                 if (isCopyFile)
                 {

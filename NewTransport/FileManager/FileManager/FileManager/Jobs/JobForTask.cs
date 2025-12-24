@@ -3,8 +3,6 @@ using FileManager.Core.Enums;
 using FileManager.Core.Interfaces.Operations;
 using FileManager.Core.Interfaces.Services;
 using FileManager.Core.OperationFactory;
-using FileManager.Core.ViewModels;
-using Microsoft.Extensions.Options;
 using Quartz;
 
 namespace FileManager.Jobs;
@@ -22,6 +20,8 @@ public class JobForTask(IServiceScopeFactory scopeFactory) : IJob
         var stepService = scope.ServiceProvider.GetRequiredService<IStepService>();
         var operationService = scope.ServiceProvider.GetRequiredService<IOperationService>();
         var addresseeService = scope.ServiceProvider.GetRequiredService<IAddresseeService>();
+
+        logger.LogInformation($"<<< start task - {context.JobDetail.Key.Name}");
 
         var taskChecked = await taskService.GetTaskById(context.JobDetail.Key.Name);
         if (taskChecked == null || !taskChecked.IsActive)
@@ -51,6 +51,7 @@ public class JobForTask(IServiceScopeFactory scopeFactory) : IJob
         taskChecked.ExecutionCount++;
         await taskService.EditTask(taskChecked);
         await taskLogger.TaskLog(context.JobDetail.Key.Name, $"<<< Начало работы задачи {context.JobDetail.Key.Name} >>>");
+        logger.LogInformation($"<<< Начало работы задачи {context.JobDetail.Key.Name} >>>");
 
        
         if (context.RefireCount > 5)
@@ -148,9 +149,11 @@ public class JobForTask(IServiceScopeFactory scopeFactory) : IJob
             //await Task.CompletedTask;
 
             await taskLogger.TaskLog(context.JobDetail.Key.Name, $"<<< Окончание работы задачи {context.JobDetail.Key.Name} >>>");
+            logger.LogInformation($"<<< Окончание работы задачи {context.JobDetail.Key.Name} >>>");
         }
         catch (Exception ex)
         {
+            logger.LogError($"{DateTime.Now} Автозавершение (выключение) задачи : {context.JobDetail.Key.Name} - {ex.Message}");
             try
             {
                 var status2Async = await taskService.GetTaskStatuses();
@@ -169,11 +172,10 @@ public class JobForTask(IServiceScopeFactory scopeFactory) : IJob
                     await taskService.EditTask(task);
                 }
                 await taskLogger.TaskLog(context.JobDetail.Key.Name, $"Автозавершение (выключение) задачи. {ex.Message}", ResultOperation.W);
-                logger.LogError($"{DateTime.Now} задача: {context.JobDetail.Key.Name} - {ex.Message}");
             }
             catch (Exception ex2)
             {
-                logger.LogError($"{DateTime.Now} задача: {context.JobDetail.Key.Name} - {ex2.Message}");
+                logger.LogError($"{DateTime.Now} Ошибка задачи: {context.JobDetail.Key.Name} - {ex2.Message}");
             }
         }
     }

@@ -44,7 +44,7 @@ try
         options.SchedulerId = "Scheduler.Core";
         options.SchedulerName = "Quartz.AspNetCore.Scheduler";
 
-        options.MaxBatchSize = 5;
+        options.MaxBatchSize = 50;
         options.InterruptJobsOnShutdown = true;
         options.InterruptJobsOnShutdownWithWait = true;
 
@@ -57,7 +57,6 @@ try
             .WithCalendarIntervalSchedule(s =>
             {
                 s.WithIntervalInSeconds(15);
-
                 s.InTimeZone(TimeZoneInfo.Local);
             })
             .StartAt(DateTimeOffset.Parse("00:00"))
@@ -141,5 +140,6 @@ catch (Exception ex)
 }
 finally
 {
+    logger.Error("FINALLY");
     LogManager.Shutdown();
 }

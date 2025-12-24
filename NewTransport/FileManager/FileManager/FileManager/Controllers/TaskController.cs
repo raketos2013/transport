@@ -169,7 +169,14 @@ public class TaskController(ITaskService taskService,
                 }
                 if (!string.IsNullOrEmpty(sessionModel.FileName))
                 {
-                    taskLogs = taskLogs.Where(x => x.FileName == sessionModel.FileName).ToList();
+                    if (sessionModel.NotEqualFileName)
+                    {
+                        taskLogs = taskLogs.Where(x => x.FileName != sessionModel.FileName).ToList();
+                    }
+                    else
+                    {
+                        taskLogs = taskLogs.Where(x => x.FileName == sessionModel.FileName).ToList();
+                    }
                 }
                 if (!string.IsNullOrEmpty(sessionModel.Text))
                 {
@@ -348,7 +355,14 @@ public class TaskController(ITaskService taskService,
             }
             if (!string.IsNullOrEmpty(model.FileName))
             {
-                taskLogs = taskLogs.Where(x => x.FileName == model.FileName);
+                if (model.NotEqualFileName)
+                {
+                    taskLogs = taskLogs.Where(x => x.FileName != model.FileName);
+                }
+                else
+                {
+                    taskLogs = taskLogs.Where(x => x.FileName == model.FileName);
+                }
             }
             if (!string.IsNullOrEmpty(model.Text))
             {

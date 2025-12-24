@@ -55,9 +55,8 @@ public class Read(TaskStepEntity step,
                 if (operation.InformSuccess)
                 {
                     var addressesAsync = await _addresseeService.GetAllAddressees();
-                    addresses = addressesAsync
-                                                    .Where(x => x.AddresseeGroupId == operation.AddresseeGroupId &&
-                                                                x.IsActive == true).ToList();
+                    addresses = addressesAsync.Where(x => x.AddresseeGroupId == operation.AddresseeGroupId &&
+                                                          x.IsActive == true).ToList();
                 }
 
                 Encoding encoding = Encoding.Default;
@@ -92,12 +91,11 @@ public class Read(TaskStepEntity step,
                             }
                             else
                             {
-                                if (line.Contains("qweqwe"))
+                                if (line.Contains(operation.FindString))
                                 {
                                     isReadFile = true;
                                 }
                             }
-
                         }
                     }
 
@@ -112,6 +110,7 @@ public class Read(TaskStepEntity step,
                     {
                             bufferFiles.Add(file);
                             successFiles.Add(fileName);
+                            await _taskLogger.StepLog(TaskStep, "Файл успешно добавлен в буфер", fileName);
                     } 
                 }
 
@@ -182,7 +181,7 @@ public class Read(TaskStepEntity step,
                 if (isBreakTask)
                 {
                     await _taskLogger.StepLog(TaskStep, $"Прерывание задачи: несоответствие ожидаемому результату", "", ResultOperation.W);
-                    throw new Exception("Ошибка при операции Read: несоответствие ожидаемому результату");
+                    _nextStep = null;
                 }
 
                 await _taskLogger.StepLog(TaskStep, $"{bufferFiles.Count} файлов добавлено в BUFFER");
@@ -202,8 +201,6 @@ public class Read(TaskStepEntity step,
         {
             await _mailSender.Send(TaskStep, addresses, successFiles);
         }
-
-        await _taskLogger.StepLog(TaskStep, "Переход к следующему шагу");
 
         if (_nextStep != null)
         {

@@ -1,16 +1,19 @@
 ﻿using FileManager.Core.Entities;
 using FileManager.Core.Interfaces.Services;
+using NLog;
 using Quartz;
 
 namespace FileManager.Jobs;
 
 public class JobService(ITaskService taskService,
-                        ISchedulerFactory jobFactory) : IJob
+                        ISchedulerFactory jobFactory,
+                        ILogger<JobService> logger) : IJob
 {
     public async Task Execute(IJobExecutionContext context)
     {
         var cancellationToken = context.CancellationToken;
         Console.WriteLine("Execute JobService!!!!");
+        logger.LogInformation("Execute JobService!!!!");
         var scheduler = jobFactory.GetScheduler().Result;
         if (scheduler != null && !scheduler.IsStarted)
         {
@@ -26,7 +29,7 @@ public class JobService(ITaskService taskService,
         {
             jobKey = new JobKey(task.TaskId, "FManager");
             //Перепланирование(обновление) задач
-
+            logger.LogInformation("Schedule");
             if (await scheduler.CheckExists(jobKey, cancellationToken))
             {
                 jobDetail = await scheduler.GetJobDetail(jobKey, cancellationToken);
@@ -35,6 +38,7 @@ public class JobService(ITaskService taskService,
                     lastModifiedJob?.ToString() != task.LastModified.ToString()
                     )
                 {
+                    logger.LogInformation($"ReSchedule task - {task.TaskId}");
                     var isDeleteJob = await scheduler.DeleteJob(jobKey, cancellationToken);
                     if (isDeleteJob)
                     {
@@ -49,6 +53,7 @@ public class JobService(ITaskService taskService,
                                 .Build();
 
                             jobTrigger = GetTrigger(task, ref jobDetail);
+                            logger.LogInformation($"Планирование задачи {task.TaskId}");
                             await scheduler.ScheduleJob(jobDetail, jobTrigger, cancellationToken);
                         }
                     }
@@ -59,6 +64,7 @@ public class JobService(ITaskService taskService,
                 //Первоначальная загрузка задач
                 if (task.IsActive)
                 {
+                    logger.LogInformation($"Schedule task - {task.TaskId}");
                     jobDetail = JobBuilder.Create<JobForTask>().WithIdentity(jobKey)
                         .UsingJobData("JobName", task.TaskId)
                         .UsingJobData("TimeBegin", task.TimeBegin.ToString())
@@ -67,7 +73,7 @@ public class JobService(ITaskService taskService,
                         .UsingJobData("LastModified", task.LastModified.ToString())
                         .Build();
                     jobTrigger = GetTrigger(task, ref jobDetail);
-
+                    logger.LogInformation($"Планирование задачи {task.TaskId}");
                     await scheduler.ScheduleJob(jobDetail, jobTrigger, cancellationToken);
                 }
             }

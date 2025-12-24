@@ -14,7 +14,7 @@
                 <col style="min-width:140px;width:140px;">
                 <col style="min-width:140px;width:140px;">
                 <col style="min-width:150px;width:150px;">
-                <col style="min-width:140px;width:140px;">
+                <col style="min-width:150px;width:150px;">
                 <col style="min-width:150px;width:150px;">
                 <col style="min-width:110px;width:110px;">
                 <col style="min-width:180px;width:180px;">
@@ -48,12 +48,12 @@
                         <div class="sorter"></div>
                     </th>
                     <th onclick="sortTable(5)">
-                        <p>Дни активности</p>
+                        <p>Группа рассылки</p>
                         <div class="separate"></div>
                         <div class="sorter"></div>
                     </th>
                     <th onclick="sortTable(6)">
-                        <p>Группа рассылки</p>
+                        <p>Дни активности</p>
                         <div class="separate"></div>
                         <div class="sorter"></div>
                     </th>
@@ -84,7 +84,7 @@
                 <col style="min-width:140px;width:140px;">
                 <col style="min-width:140px;width:140px;">
                 <col style="min-width:150px;width:150px;">
-                <col style="min-width:140px;width:140px;">
+                <col style="min-width:150px;width:150px;">
                 <col style="min-width:150px;width:150px;">
                 <col style="min-width:110px;width:110px;">
                 <col style="min-width:180px;width:180px;">
@@ -124,8 +124,8 @@
                         <td><p>@item.Name</p></td>
                         <td><p>@item.TimeBegin.ToLongTimeString()</p></td>
                         <td><p>@item.TimeEnd.ToLongTimeString()</p></td>
-                        <td><p>@item.DayActive</p></td>
                         <td><p>@item.AddresseeGroupId</p></td>
+                        <td><p>@item.DayActive</p></td>
                         <td>
                             <div>
                                 <label class="toggle-checkbox">

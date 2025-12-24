@@ -996,4 +996,10 @@ function ShowAddressGroup() {
     }
 }
 
+function SetSelectedGroup() {
+    var groupCookie = getCookie('selectedAddresseeGroup')
+    var select = document.getElementById('group-new-addressee')
+    select.value = groupCookie
+}
+
 

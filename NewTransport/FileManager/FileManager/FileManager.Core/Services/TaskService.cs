@@ -1,5 +1,4 @@
-﻿using FileManager.Core.Constants;
-using FileManager.Core.Entities;
+﻿using FileManager.Core.Entities;
 using FileManager.Core.Enums;
 using FileManager.Core.Exceptions;
 using FileManager.Core.Interfaces.Repositories;
@@ -13,8 +12,6 @@ public class TaskService(IUnitOfWork unitOfWork)
 {
     public async Task<TaskEntity> CreateTask(TaskEntity task)
     {
-        task.ExecutionLeft = 1;
-        task.ExecutionLimit = 1;
         var createdTask = await unitOfWork.TaskRepository.CreateTask(task);
         return await unitOfWork.SaveAsync() > 0 ? createdTask
                         : throw new DomainException("Ошибка создания задачи");

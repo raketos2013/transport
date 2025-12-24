@@ -6,20 +6,6 @@
 @{
     SelectList addresseeGroups = new SelectList(ViewBag.AddresseeGroups, "Id", "Name");
 }
-@* <form id="createAddresseeForm" asp-action="CreateAddressee" asp-asp-controller="AddresseeGroup" method="post" class="modal-body-content">
-    <div class="input-with-label">
-        <label asp-for="PersNumber"></label>
-        <input asp-for="PersNumber" readonly>
-    </div>
-    <div class="input-with-label">
-        <label asp-for="Orgeh"></label>
-        <input asp-for="Orgeh" readonly>
-    </div>
-    <div class="input-with-label">
-        <label asp-for="Fio"></label>
-        <input asp-for="Fio" readonly>
-    </div>
-</form> *@
 <form id="createAddresseeForm" asp-action="CreateAddressee" asp-asp-controller="AddresseeGroup" method="post" class="modal-body-content">
     <div class="input-with-label">
         <label asp-for="PersonalNumber"></label>
@@ -28,7 +14,7 @@
     <div class="input-with-label">
         <label>Группа</label>
         <div class="select-wrapper">
-            <select asp-for="AddresseeGroupId" asp-items=@addresseeGroups></select>
+            <select asp-for="AddresseeGroupId" asp-items=@addresseeGroups id="group-new-addressee"></select>
         </div>
     </div>
     <div class="input-with-label">
@@ -44,3 +30,4 @@
         <input asp-for="StructuralUnit" readonly>
     </div>
 </form>
+

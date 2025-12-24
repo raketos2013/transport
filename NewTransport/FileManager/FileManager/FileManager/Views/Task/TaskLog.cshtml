@@ -53,6 +53,12 @@
                                         <select asp-for="SortLogs" asp-items="Html.GetEnumSelectList<SortLogs>()"></select>
                                     </div>
                                 </div>
+                                <div class="input-with-label">
+                                    <label asp-for="FieldSortLogs"></label>
+                                    <div class="select-wrapper">
+                                        <select asp-for="FieldSortLogs" asp-items="Html.GetEnumSelectList<FieldSortLogs>()"></select>
+                                    </div>
+                                </div>
                             </div>
                             <div class="filter-body-column">
                                 <div class="input-with-label">
@@ -76,13 +82,15 @@
                                 <div class="input-with-label">
                                     <label asp-for="FileName"></label>
                                     <input asp-for="FileName">
-                                </div>
-                                <div class="input-with-label">
-                                    <label asp-for="FieldSortLogs"></label>
-                                    <div class="select-wrapper">
-                                        <select asp-for="FieldSortLogs" asp-items="Html.GetEnumSelectList<FieldSortLogs>()"></select>
+                                    <div class="input-checkbox">
+                                        <label asp-for="NotEqualFileName" class="toggle-checkbox">
+                                            <input asp-for="@Model.NotEqualFileName" type="checkbox" checked="@Model.NotEqualFileName">
+                                            <span class="toggle-checkbox-switch"></span>
+                                        </label>
+                                        <p>Не равно</p>
                                     </div>
                                 </div>
+                                
                             </div>
                         </div>
                         <div class="filter-body-row">

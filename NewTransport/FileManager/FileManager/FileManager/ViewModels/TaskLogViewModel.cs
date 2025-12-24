@@ -1,6 +1,7 @@
 ﻿using FileManager.Core.Entities;
 using FileManager.Core.Enums;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Cryptography.X509Certificates;
 using X.PagedList;
 
 namespace FileManager.ViewModels;
@@ -29,6 +30,8 @@ public class TaskLogViewModel
     public ResultOperation ResultOperation { get; set; }
     [Display(Name = "Имя файла")]
     public string? FileName { get; set; }
+    [Display(Name = "Не равно")]
+    public bool NotEqualFileName { get; set; }
     [Display(Name = "Сообщение")]
     public string? Text { get; set; }
     [Display(Name = "Поле для сортировки")]

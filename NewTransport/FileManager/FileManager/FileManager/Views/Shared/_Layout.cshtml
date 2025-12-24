@@ -50,8 +50,8 @@
                         {
                             <div class="sub-menu-item">
 
-                                <span style="margin-right: 10px;" onclick="Addresses(@item.Id)">@item.Id</span>
-                                <span onclick="Addresses(@item.Id)">@item.Name</span>
+                                <span style="margin-right: 10px;" onclick="Addresses('@item.Id', '@item.Name')">@item.Id</span>
+                                <span onclick="Addresses('@item.Id', '@item.Name')">@item.Name</span>
 
                                 <div class="btn-add" style="width: 60px;">
                                     <div class="btn-add" onclick="ShowModal('modal-edit-group'),  ShowEditGroup('@item.Id', '@item.Name')">
@@ -298,8 +298,9 @@
         idDeleteGroup = id;
     }
 
-    function Addresses(groupId) {
+    function Addresses(groupId, name) {
         document.cookie = "selectedAddresseeGroup=" + groupId + "; path=/";
+        document.cookie = "selectedGroupName=" + name + "; path=/";
         window.location.href = '@Url.Action("Addressees", "AddresseeGroup")'
     }
 

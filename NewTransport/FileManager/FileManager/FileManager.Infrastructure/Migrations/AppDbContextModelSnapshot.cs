@@ -43,6 +43,10 @@ namespace FileManager.Infrastructure.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("Note")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("StructuralUnit")
                         .IsRequired()
                         .HasColumnType("text");
@@ -267,6 +271,9 @@ namespace FileManager.Infrastructure.Migrations
 
                     b.Property<bool>("IsProgress")
                         .HasColumnType("boolean");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.HasKey("TaskId");
 

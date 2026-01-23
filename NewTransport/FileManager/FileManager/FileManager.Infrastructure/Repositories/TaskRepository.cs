@@ -1,4 +1,5 @@
 ﻿using FileManager.Core.Entities;
+using FileManager.Core.Enums;
 using FileManager.Core.Exceptions;
 using FileManager.Core.Interfaces.Repositories;
 using FileManager.Infrastructure.Data;
@@ -75,7 +76,8 @@ public class TaskRepository(AppDbContext dbContext) : ITaskRepository
     {
         TaskStatusEntity taskStatus = new()
         {
-            TaskId = idTask
+            TaskId = idTask,
+            Status = StatusTask.Wait
         };
         await dbContext.TaskStatuse.AddAsync(taskStatus);
         return taskStatus;

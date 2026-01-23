@@ -52,7 +52,7 @@ public class TaskService(IUnitOfWork unitOfWork)
         return editedTask;
     }
 
-    public async Task<TaskEntity?> CopyTask(string idTask, string newIdTask, string isCopySteps, List<CopyStepViewModel> copyStep)
+    public async Task<TaskEntity?> CopyTask(string idTask, string newIdTask, string isCopySteps, List<CopyStepViewModel> copyStep, bool isActivate)
     {
         var copiedTask = await GetTaskById(idTask);
         if (copiedTask == null)
@@ -67,7 +67,7 @@ public class TaskService(IUnitOfWork unitOfWork)
             TimeEnd = copiedTask.TimeEnd,
             DayActive = copiedTask.DayActive,
             AddresseeGroupId = copiedTask.AddresseeGroupId,
-            IsActive = copiedTask.IsActive,
+            IsActive = isActivate,
             LastModified = DateTime.Now,
             TaskGroupId = copiedTask.TaskGroupId,
             ExecutionLeft = copiedTask.ExecutionLimit,

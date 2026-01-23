@@ -2,6 +2,7 @@
 using FileManager.Core.Enums;
 using FileManager.Core.Exceptions;
 using FileManager.Core.Interfaces.Services;
+using FileManager.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,7 +19,18 @@ public class OperationController(IOperationService operationService,
     public async Task<IActionResult> DeleteOperation(string taskId, string stepNumber)
     {
         var step = await stepService.GetStepByTaskId(taskId, int.Parse(stepNumber));
-        ViewBag.AddresseeGroups = await addresseeService.GetAllAddresseeGroups();
+        var groups = await addresseeService.GetAllAddresseeGroups();
+        List<AddresseeGroupViewModel> list = [];
+        foreach (var item in groups)
+        {
+            var newGroup = new AddresseeGroupViewModel()
+            {
+                Id = item.Id,
+                Name = item.Id + " " + item.Name
+            };
+            list.Add(newGroup);
+        }
+        ViewBag.AddresseeGroups = list;
         if (step == null)
         {
             return RedirectToAction("Steps", "Step");
@@ -101,7 +113,18 @@ public class OperationController(IOperationService operationService,
     public async Task<IActionResult> EditOperation(string taskId, string stepNumber)
     {
         await lockService.Lock(taskId);
-        ViewBag.AddresseeGroups = await addresseeService.GetAllAddresseeGroups();
+        var groups = await addresseeService.GetAllAddresseeGroups();
+        List<AddresseeGroupViewModel> list = [];
+        foreach (var item in groups)
+        {
+            var newGroup = new AddresseeGroupViewModel()
+            {
+                Id = item.Id,
+                Name = item.Id + " " + item.Name
+            };
+            list.Add(newGroup);
+        }
+        ViewBag.AddresseeGroups = list;
         var step = await stepService.GetStepByTaskId(taskId, int.Parse(stepNumber));
         if (step == null) 
         {

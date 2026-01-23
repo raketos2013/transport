@@ -55,7 +55,18 @@ public class AddresseeGroupController(IAddresseeService addresseeService,
     public async Task<IActionResult> CreateAddressee(AddresseeEntity addressee)
     {
         List<AddresseeGroupEntity> addresseeGroups = await addresseeService.GetAllAddresseeGroups();
-        ViewBag.AddresseeGroups = addresseeGroups;
+        var groups = await addresseeService.GetAllAddresseeGroups();
+        List<AddresseeGroupViewModel> list = [];
+        foreach (var item in groups)
+        {
+            var newGroup = new AddresseeGroupViewModel()
+            {
+                Id = item.Id,
+                Name = item.Id + " " + item.Name
+            };
+            list.Add(newGroup);
+        }
+        ViewBag.AddresseeGroups = list;
         if (ModelState.IsValid)
         {
             AddresseeEntity entity = new()
@@ -64,7 +75,8 @@ public class AddresseeGroupController(IAddresseeService addresseeService,
                 EMail = addressee.EMail,
                 Fio = addressee.Fio,
                 StructuralUnit = addressee.StructuralUnit,
-                AddresseeGroupId = addressee.AddresseeGroupId
+                AddresseeGroupId = addressee.AddresseeGroupId,
+                Note = addressee.Note
             };
             var createdAddressee = await addresseeService.CreateAddressee(entity);
             await userLogService.AddLog($"Добавление адресата в группу рассылки номер {createdAddressee.AddresseeGroupId}",

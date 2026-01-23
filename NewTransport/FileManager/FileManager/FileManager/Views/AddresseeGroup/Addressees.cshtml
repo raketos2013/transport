@@ -13,7 +13,7 @@
     <div class="table-toolbar">
         <div class="toolbar-left">
             <div>
-                Группа - <span id="name-group"></span>
+                <span style="font-size: 25px;">Группа - <span id="number-group" style="font-weight: bold;"></span> <span id="name-group" style="font-weight: bold;"></span></span>
             </div>
             <div class="btn-full" onclick="ShowModal('modal-add-group')">
                 Добавить адресата
@@ -136,11 +136,15 @@
     window.addEventListener('load', () => {
         //ShowAllAddresses();
         var cookieAddresseeGroup = getCookie("selectedAddresseeGroup");
+        var cookieAddresseeGroupName = getCookie("selectedGroupName");
         if(cookieAddresseeGroup != undefined){
             selectAddresseeGroup = cookieAddresseeGroup;
         }
-        document.getElementById('name-group').innerText = selectAddresseeGroup;
+        document.getElementById('number-group').innerText = selectAddresseeGroup;
+        document.getElementById('name-group').innerText = cookieAddresseeGroupName;
         ShowAddresseeList(selectAddresseeGroup);
+
+        document.getElementById('menu-item-addresses').style.backgroundColor = '#004830'
     });
 
     function GetFio(){
@@ -176,7 +180,9 @@
 
     function ShowAddresseeList(group) {
         selectAddresseeGroup = group;
-        document.getElementById('name-group').innerText = selectAddresseeGroup;
+        var cookieAddresseeGroupName = getCookie("selectedGroupName");
+        document.getElementById('number-group').innerText = selectAddresseeGroup;
+        document.getElementById('name-group').innerText = cookieAddresseeGroupName;
         //document.cookie = "selectedTaskGroup=" + group;
         $.ajax({
             method: 'POST',

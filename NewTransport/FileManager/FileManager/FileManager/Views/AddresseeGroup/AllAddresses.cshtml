@@ -56,6 +56,7 @@
                     <col style="min-width:250px;width:250px;">
                     <col style="min-width:250px;width:250px;">
                     <col style="min-width:80px;width:80px;">
+                    <col style="min-width:110px;width:100%;">
                 </colgroup>
                 <thead>
                     <tr>
@@ -89,6 +90,11 @@
                             <div class="separate"></div>
                             <div class="sorter"></div>
                         </th>
+                        <th>
+                            <p>Примечание</p>
+                            <div class="separate"></div>
+                            <div class="sorter"></div>
+                        </th>
                     </tr>
                 </thead>
             </table>
@@ -100,8 +106,9 @@
                     <col style="min-width:150px;width:150px;">
                     <col style="min-width:500px;width:500px;">
                     <col style="min-width:250px;width:250px;">
-                    <col style="min-width:250px;width:250;">
+                    <col style="min-width:250px;width:250px;">
                     <col style="min-width:80px;width:80px;">
+                    <col style="min-width:110px;width:100%;">
                 </colgroup>
                 <tbody>
                     @foreach (var item in @Model)
@@ -128,6 +135,7 @@
                                     </label>
                                 </div>
                             </td>
+                            <td><p>@item.Addressee.Note</p></td>
                         </tr>
                     }
                 </tbody>
@@ -175,6 +183,10 @@
     </div>
 </div>
 <script>
+    window.addEventListener('load', () => {
+        document.getElementById('menu-item-addresses').style.backgroundColor = '#004830'
+    });
+
     var isActivatedAddressee;
     function OnOffAddressee(tabNum, groupId) {
             var table, tr, td, i, txtValue;

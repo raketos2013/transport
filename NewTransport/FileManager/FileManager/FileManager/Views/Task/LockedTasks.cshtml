@@ -91,6 +91,10 @@
 </div>
 
 <script>
+    window.addEventListener('load', () => {
+        document.getElementById('menu-item-locked-tasks').style.backgroundColor = '#004830'
+    });
+
     function ModalUnlockTask(taskId) {
         document.getElementById('idTaskUnlockInfo').innerText = taskId;
         ShowModal('modal-unlock-task');

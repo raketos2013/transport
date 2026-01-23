@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using FileManager.Core.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FileManager.Core.Entities;
@@ -24,12 +25,12 @@ public class TaskStatusEntity
     [Display(Name = "Количество обработанных файлов за день")]
     public int CountProcessedFiles { get; set; }
 
-
-
     [Display(Name = "Дата последнего выполнения задачи")]
     public DateTime DateLastExecute { get; set; }
 
     [Display(Name = "Количество оставшихся файлов в каталоге")]
     public int? CountLeftFiles { get; set; }
 
+    [Display(Name = "Статус")]
+    public StatusTask Status {  get; set; }
 }

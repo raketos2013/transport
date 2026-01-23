@@ -178,13 +178,14 @@ public class Read(TaskStepEntity step,
                     default:
                         break;
                 }
+                await _taskLogger.StepLog(TaskStep, $"{bufferFiles.Count} файлов добавлено в BUFFER");
                 if (isBreakTask)
                 {
                     await _taskLogger.StepLog(TaskStep, $"Прерывание задачи: несоответствие ожидаемому результату", "", ResultOperation.W);
                     _nextStep = null;
                 }
 
-                await _taskLogger.StepLog(TaskStep, $"{bufferFiles.Count} файлов добавлено в BUFFER");
+                
 
             }
         }

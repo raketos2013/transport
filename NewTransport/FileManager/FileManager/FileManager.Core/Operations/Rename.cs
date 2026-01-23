@@ -21,6 +21,7 @@ public class Rename(TaskStepEntity step,
         string[] files;
         string fileName, newFileName;
         List<FileInfo> infoFiles = [];
+        List<string> successFiles = [];
         if (TaskStep.FileMask == AppConstants.BUFFER_FILE_MASK)
         {
             if (bufferFiles != null)
@@ -60,6 +61,7 @@ public class Rename(TaskStepEntity step,
                     newFileName = RenameFileNew(fileName, operation.OldPattern, operation.NewPattern);
                     FileSystem.Rename(file.FullName, file.DirectoryName + "\\\\" + newFileName);
                     await _taskLogger.StepLog(TaskStep, $"Файл переименован в {newFileName}", fileName);
+                    successFiles.Add(fileName);
                 }
             }
         }
@@ -70,6 +72,10 @@ public class Rename(TaskStepEntity step,
                 await _taskLogger.StepLog(TaskStep, $"Прерывание задачи: найдено 0 файлов", "", ResultOperation.W);
                 _nextStep = null;
             }
+        }
+        if (addresses.Count > 0 && successFiles.Count > 0)
+        {
+            await _mailSender.Send(TaskStep, addresses, successFiles);
         }
         if (_nextStep != null)
         {

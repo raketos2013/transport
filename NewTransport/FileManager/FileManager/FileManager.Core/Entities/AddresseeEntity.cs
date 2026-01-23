@@ -21,4 +21,6 @@ public class AddresseeEntity
     public string StructuralUnit { get; set; }
     [Display(Name = "Активно")]
     public bool IsActive { get; set; }
+    [Display(Name = "Примечание")]
+    public string Note { get; set; }
 }

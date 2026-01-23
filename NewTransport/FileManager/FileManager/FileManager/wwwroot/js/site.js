@@ -643,6 +643,18 @@ function replaceStep(operation) {
                     },
                     dataType: 'html',
                     success: function (result) {
+                        if (operation == 'down') {
+                            cookieStepNumber = Number(cookieStepNumber) + 1;
+                        } else if (operation == 'up') {
+                            cookieStepNumber = Number(cookieStepNumber) - 1;
+                        } else if (operation == 'maxdown') {
+                            var table = document.getElementById('tableSteps')
+                            var rows = table.rows.length;
+                            cookieStepNumber = rows;
+                        } else if (operation == 'maxup') {
+                            cookieStepNumber = 1;
+                        }
+                        document.cookie = "selectedStepNumber=" + cookieStepNumber + "; path=/";
                         ShowStepList();
                     }
                 });
@@ -650,7 +662,6 @@ function replaceStep(operation) {
                 ShowModal('modal-locked-task')
                 document.getElementById('userId-locked-task').innerText = jsonObj.userId
             }
-
         }
     });
 }
@@ -707,6 +718,9 @@ function StepOperationInfo(stepNumber, operationName) {
             $('#operation-info-content').empty();
             $('#operation-info-content').append(result);
             ShowModal('modal-additional-settings');
+            document.getElementById('taskId-modal').innerText = cookieTaskId;
+            document.getElementById('operation-modal').innerText = operationName
+            document.getElementById('step-number-modal').innerText = stepNumber
         }
     });
 
@@ -738,6 +752,9 @@ function StepOperationEdit() {
                         $('#operation-edit-content').empty();
                         $('#operation-edit-content').append(result);
                         ShowModal('modal-edit-additional-settings');
+                        document.getElementById('taskId-modal-edit').innerText = cookieTaskId;
+                        document.getElementById('step-number-modal-edit').innerText = cookieStepNumber
+                        document.getElementById('operation-modal-edit').innerText = document.getElementById('operation-modal').innerText
                         ShowAddressGroup();
                     }
                 });

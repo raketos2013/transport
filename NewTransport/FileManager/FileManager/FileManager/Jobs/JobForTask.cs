@@ -37,8 +37,9 @@ public class JobForTask(IServiceScopeFactory scopeFactory) : IJob
                 taskChecked.ExecutionCount = 0;
                 await taskService.EditTask(taskChecked);
             }
-            status.IsProgress = true;
-            status.IsError = false;
+            //status.IsProgress = true;
+            //status.IsError = false;
+            status.Status = StatusTask.Error;
             status.DateLastExecute = DateTime.Now;
             await taskService.UpdateTaskStatus(status);
         }
@@ -46,6 +47,12 @@ public class JobForTask(IServiceScopeFactory scopeFactory) : IJob
         {
             await taskLogger.TaskLog(context.JobDetail.Key.Name, $"<<< Выключение задачи, превышен лимит выполнений >>>", ResultOperation.W);
             await taskService.ActivatedTask(taskChecked.TaskId);
+
+            if (status != null)
+            {
+                status.Status = StatusTask.Complete;
+                await taskService.UpdateTaskStatus(status);
+            }
             return;
         }
         taskChecked.ExecutionCount++;
@@ -158,11 +165,12 @@ public class JobForTask(IServiceScopeFactory scopeFactory) : IJob
             {
                 var status2Async = await taskService.GetTaskStatuses();
                 var status2 = status2Async.First(x => x.TaskId == context.JobDetail.Key.Name);
-                if (status != null)
+                if (status2 != null)
                 {
-                    status.IsProgress = false;
-                    status.IsError = true;
-                    status.DateLastExecute = DateTime.Now;
+                    //status2.IsProgress = false;
+                    //status2.IsError = true;
+                    status2.Status = StatusTask.Error;
+                    status2.DateLastExecute = DateTime.Now;
                     await taskService.UpdateTaskStatus(status2);
                 }
                 var task = await taskService.GetTaskById(context.JobDetail.Key.Name);

@@ -43,7 +43,18 @@ public class TaskController(ITaskService taskService,
     [HttpGet]
     public async Task<IActionResult> CreateTask()
     {
-        ViewBag.AddresseeGroups = await addresseeService.GetAllAddresseeGroups();
+        var groups = await addresseeService.GetAllAddresseeGroups();
+        List<AddresseeGroupViewModel> list = [];
+        foreach (var item in groups)
+        {
+            var newGroup = new AddresseeGroupViewModel()
+            {
+                Id = item.Id,
+                Name = item.Id + " " + item.Name
+            };
+            list.Add(newGroup);
+        }
+        ViewBag.AddresseeGroups = list;
         TaskEntity task = new();
         return PartialView("_CreateTask", task);
     }
@@ -59,7 +70,18 @@ public class TaskController(ITaskService taskService,
                                         JsonSerializer.Serialize(createdTask, AppConstants.JSON_OPTIONS));
             return RedirectToAction(nameof(Tasks));
         }
-        ViewBag.AddresseeGroups = await addresseeService.GetAllAddresseeGroups();
+        var groups = await addresseeService.GetAllAddresseeGroups();
+        List<AddresseeGroupViewModel> list = [];
+        foreach (var item in groups)
+        {
+            var newGroup = new AddresseeGroupViewModel()
+            {
+                Id = item.Id,
+                Name = item.Id + " " + item.Name
+            };
+            list.Add(newGroup);
+        }
+        ViewBag.AddresseeGroups = list;
         return PartialView("_CreateTask", task);
     }
 
@@ -71,7 +93,18 @@ public class TaskController(ITaskService taskService,
         var steps = stepsAsync.OrderBy(x => x.StepNumber)
                                  .ToList();
         TaskDetailsViewModel taskDetails = new(task, steps);
-        ViewBag.AddresseeGroups = await addresseeService.GetAllAddresseeGroups();
+        var groups = await addresseeService.GetAllAddresseeGroups();
+        //List<AddresseeGroupViewModel> list = [];
+        //foreach (var item in groups)
+        //{
+        //    var newGroup = new AddresseeGroupViewModel()
+        //    {
+        //        Id = item.Id,
+        //        Name = item.Id + " " + item.Name
+        //    };
+        //    list.Add(newGroup);
+        //}
+        ViewBag.AddresseeGroups = groups;
         return PartialView("_TaskDetails", taskDetails);
     }
 
@@ -465,8 +498,9 @@ public class TaskController(ITaskService taskService,
             var status = statusAsync.First(x => x.TaskId == id);
             if (status != null)
             {
-                status.IsProgress = false;
-                status.IsError = false;
+                //status.IsProgress = false;
+                //status.IsError = false;
+                status.Status = StatusTask.Wait;
                 await taskService.UpdateTaskStatus(status);
             }
 
@@ -502,7 +536,18 @@ public class TaskController(ITaskService taskService,
     {
         await lockService.Lock(taskId);
         var task = await taskService.GetTaskById(taskId);
-        ViewBag.AddresseeGroups = await addresseeService.GetAllAddresseeGroups();
+        var groups = await addresseeService.GetAllAddresseeGroups();
+        List<AddresseeGroupViewModel> list = [];
+        foreach (var item in groups)
+        {
+            var newGroup = new AddresseeGroupViewModel()
+            {
+                Id = item.Id,
+                Name = item.Id + " " + item.Name
+            };
+            list.Add(newGroup);
+        }
+        ViewBag.AddresseeGroups = list;
         return PartialView("_EditTask", task);
     }
 
@@ -545,7 +590,7 @@ public class TaskController(ITaskService taskService,
     [HttpPost]
     public async Task<IActionResult> CopyTask(CopyTaskViewModel task)
     {
-        await taskService.CopyTask(task.TaskId, task.NewTaskId, task.IsCopySteps.ToString(), task.CopySteps);
+        await taskService.CopyTask(task.TaskId, task.NewTaskId, task.IsCopySteps.ToString(), task.CopySteps, task.IsActivate);
         await lockService.Unlock(task.TaskId);
         var copiedTask = await taskService.GetTaskById(task.TaskId);
         await userLogService.AddLog($"Копирование задачи {task.TaskId}",

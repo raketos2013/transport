@@ -12,7 +12,7 @@ public interface ITaskService
     Task<bool> DeleteTask(string idTask);
     Task<TaskEntity> ActivatedTask(string idTask);
     Task<TaskEntity?> CopyTask(string idTask, string newIdTask, string isCopySteps,
-                                    List<CopyStepViewModel> copyStep);
+                                    List<CopyStepViewModel> copyStep, bool isActivate);
     Task<TaskStatusEntity> CreateTaskStatus(string idTask);
     Task<List<TaskStatusEntity>> GetTaskStatuses();
     Task<TaskStatusEntity> UpdateTaskStatus(TaskStatusEntity taskStatus);

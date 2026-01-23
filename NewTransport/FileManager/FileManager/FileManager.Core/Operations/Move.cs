@@ -192,9 +192,9 @@ public class Move(TaskStepEntity step,
 
     public List<FileInfo> MaxFiles(List<FileInfo> infoFiles, int maxFiles)
     {
-        if (maxFiles != 0 & maxFiles < infoFiles.Count - 2)
+        if (maxFiles != 0 && maxFiles < infoFiles.Count)
         {
-            infoFiles.RemoveRange(maxFiles, infoFiles.Count - 2);
+            infoFiles.RemoveRange(maxFiles, infoFiles.Count - maxFiles);
         }
         return infoFiles;
     }

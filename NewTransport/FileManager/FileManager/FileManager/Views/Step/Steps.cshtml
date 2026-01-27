@@ -408,6 +408,11 @@
                     td.style.width = '100px';
                     td.style.minWidth = '100px';
                     td.classList.add('files-exist');
+                    td.addEventListener('click', () =>{
+                        var cookieTaskId = getCookie("selectedTask");
+                        var cookieStepNumber = getCookie("selectedStepNumber");
+                        console.log(cookieTaskId + " - " + cookieStepNumber);
+                    });
                     rows[i].appendChild(td);
                 }
             }

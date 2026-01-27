@@ -1019,4 +1019,76 @@ function SetSelectedGroup() {
     select.value = groupCookie
 }
 
+function ShowTaskList() {
+    $.ajax({
+        method: 'POST',
+        url: '/Task/TasksList',
+        data: {
+        },
+        dataType: 'html',
+        success: function (result) {
+            $('#tasks').empty();
+            $('#tasks').append(result);
+            SelectRow("tableTasks");
+            cookieTask = getCookie("selectedTask");
+            tableTasks = document.getElementById("tableTasks");
+            tr = tableTasks.getElementsByTagName("tr");
+            for (var i = 0; i < tr.length; i++) {
+                var td = tr[i].getElementsByTagName("td")[1];
+                if (td.innerText == cookieTask) {
+                    tr[i].classList.add('selected-tr');
+                } else {
+                    tr[i].classList.remove('selected-tr');
+                }
+            }
+        }
+    });
+}
+
+function FilterTasks(filter) {
+    $.ajax({
+        method: 'POST',
+        url: '/Task/FilterTask',
+        data: {
+            "filter": filter
+        },
+        dataType: 'html',
+        success: function (result) {
+            console.log("Esuccess@@!!")
+            $('#tasks').empty();
+            $('#tasks').append(result);
+            SelectRow("tableTasks");
+            //cookieTask = getCookie("selectedTask");
+            //tableTasks = document.getElementById("tableTasks");
+            //tr = tableTasks.getElementsByTagName("tr");
+            //for (var i = 0; i < tr.length; i++) {
+            //    var td = tr[i].getElementsByTagName("td")[1];
+            //    if (td.innerText == cookieTask) {
+            //        tr[i].classList.add('selected-tr');
+            //    } else {
+            //        tr[i].classList.remove('selected-tr');
+            //    }
+            //}
+        },
+        function(jqXHR, exception) {
+            console.log("ERROR!!!")
+            //if (jqXHR.status === 0) {
+            //    alert('Not connect. Verify Network.');
+            //} else if (jqXHR.status == 404) {
+            //    alert('Requested page not found (404).');
+            //} else if (jqXHR.status == 500) {
+            //    alert('Internal Server Error (500).');
+            //} else if (exception === 'parsererror') {
+            //    alert('Requested JSON parse failed.');
+            //} else if (exception === 'timeout') {
+            //    alert('Time out error.');
+            //} else if (exception === 'abort') {
+            //    alert('Ajax request aborted.');
+            //} else {
+            //    window.location.reload();
+            //}
+        }
+ 
+    });
+}
 

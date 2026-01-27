@@ -1,0 +1,59 @@
+﻿@using FileManager.ViewModels
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model TaskFilterViewModel
+@{
+    SelectList addresseeGroupsSelect = new SelectList(ViewBag.AddresseeGroups, "Id", "Name");
+}
+
+<form class="filter-body" method="post" id="filter-form" asp-controller="Task" asp-action="FilterTask">
+    <div class="filter-body-row">
+        <div class="filter-body-column">
+            <div class="input-with-label">
+                <label asp-for="TaskId"></label>
+                <input asp-for="TaskId">
+            </div>
+            <div class="input-with-label">
+                <label asp-for="TimeBegin"></label>
+                <input type="time" asp-for="TimeBegin" step="1">
+            </div>
+            <div class="input-with-label">
+                <label asp-for="Status"></label>
+                <div class="select-wrapper">
+                    <select asp-for="Status" asp-items="Html.GetEnumSelectList<StatusTaskViewModel>()"></select>
+                </div>
+            </div>
+            <div class="input-with-label">
+                <label asp-for="AddresseeGroupId" class="control-label"></label>
+                <div class="select-wrapper">
+                    <select asp-for="AddresseeGroupId" class="form-select mb-3" asp-items=@addresseeGroupsSelect></select>
+                </div>
+            </div>
+        </div>
+        <div class="filter-body-column">
+            <div class="input-with-label">
+                <label asp-for="Name"></label>
+                <input asp-for="Name">
+            </div>
+            <div class="input-with-label">
+                <label asp-for="TimeEnd"></label>
+                <input type="time" asp-for="TimeEnd" step="1">
+            </div>
+            <div class="input-with-label">
+                <label asp-for="DayActive"></label>
+                <div class="select-wrapper">
+                    <select asp-for="DayActive" asp-items="Html.GetEnumSelectList<DayActiveViewModel>()"></select>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="filter-footer">
+    <button form="filter-form" class="btn-full" onclick="FilterTasks('@Model')">
+        Поиск
+    </button>
+</div>
+<script>
+    
+</script>

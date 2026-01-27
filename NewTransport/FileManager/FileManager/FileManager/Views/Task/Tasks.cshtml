@@ -23,9 +23,20 @@
             <div class="btn-full" onclick="CopyTask()">
                 Копировать задачу
             </div>
-            <a class="btn-full" asp-controller="Task" asp-action="TaskStatuses">
-                Статус задач
-            </a>
+            <div>
+                <a class="btn-full" asp-controller="Task" asp-action="TaskStatuses">
+                    Статус задач
+                </a>
+            </div>
+            
+            <div class="filter-wrapper">
+                <div class="btn-full btn-filter" onclick="ShowTaskFilter()">
+                    Фильтр
+                </div>
+                <div class="filter" id="task-filter">
+                    
+                </div>
+            </div>
         </div>
         <div class="toolbar-right">
             <div class="input-group">
@@ -192,31 +203,7 @@
     // function f1() {
     //     ShowTaskList();
     // }
-    function ShowTaskList() {
-        $.ajax({
-            method: 'POST',
-            url: '@Url.Action("TasksList", "Task")',
-            data: { 
-            },
-            dataType: 'html',
-            success: function (result) {
-                $('#tasks').empty();
-                $('#tasks').append(result);
-                SelectRow("tableTasks");
-                cookieTask = getCookie("selectedTask");
-                tableTasks = document.getElementById("tableTasks");
-                tr = tableTasks.getElementsByTagName("tr");
-                for (var i = 0; i < tr.length; i++) {
-                    var td = tr[i].getElementsByTagName("td")[1];
-                    if (td.innerText == cookieTask) {
-                        tr[i].classList.add('selected-tr');
-                    } else{
-                        tr[i].classList.remove('selected-tr');
-                    }
-                }
-            }
-        });
-    }
+    
 
     var isActivatedTask;
     function OnOffTask(id) {
@@ -339,6 +326,22 @@
                 
             }
         }
+    }
+
+    function ShowTaskFilter(){
+
+        $.ajax({
+            method: 'GET',
+            url: '/Task/FilterTask',
+            data: {
+            },
+            dataType: 'html',
+            success: function (result) {
+                $('#task-filter').empty();
+                $('#task-filter').append(result);
+                ShowHideSubMenu('task-filter')
+            }
+        });
     }
 
 </script>

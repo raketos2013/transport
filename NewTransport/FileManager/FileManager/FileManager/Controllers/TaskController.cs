@@ -25,6 +25,7 @@ public class TaskController(ITaskService taskService,
 {
     public IActionResult Tasks()
     {
+        HttpContext?.Session.Set<TaskFilterViewModel>("LogFilters", null);
         return View();
     }
 
@@ -644,4 +645,43 @@ public class TaskController(ITaskService taskService,
         return View(tasks);
     }
 
+    [HttpGet]
+    public async Task<IActionResult> FilterTask()
+    {
+        var groups = await addresseeService.GetAllAddresseeGroups();
+        List<AddresseeGroupViewModel> list = [];
+        var allGroup = new AddresseeGroupViewModel()
+        {
+            Id = 0,
+            Name = ""
+        };
+        list.Add(allGroup);
+        foreach (var item in groups)
+        {
+            var newGroup = new AddresseeGroupViewModel()
+            {
+                Id = item.Id,
+                Name = item.Id + " " + item.Name
+            };
+            list.Add(newGroup);
+        }
+        ViewBag.AddresseeGroups = list;
+        TaskFilterViewModel filterViewModel = new();
+
+        TaskFilterViewModel sessionModel = HttpContext?.Session.Get<TaskFilterViewModel>("TaskFilters");
+
+        return PartialView("_TaskFilter", filterViewModel);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> FilterTask(TaskFilterViewModel filter)
+    {
+        var tasks = await taskService.GetAllTasks();
+        List<TaskStatusEntity> statuses = await taskService.GetTaskStatuses();
+        foreach (var item in tasks)
+        {
+            item.TaskStatus = statuses.FirstOrDefault(x => x.TaskId == item.TaskId);
+        }
+        return PartialView("_TasksList", tasks);
+    }
 }

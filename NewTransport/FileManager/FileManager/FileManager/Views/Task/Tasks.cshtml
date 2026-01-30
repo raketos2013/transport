@@ -301,29 +301,12 @@
             td = tr[i].getElementsByTagName("td")[col];
             if (td) {
                 filter = input.value.toUpperCase();
-                   //txtValue = td.textContent || td.innerText;
                 txtValue = td.innerText
                 if (txtValue.toUpperCase().indexOf(filter) > -1) {
                     tr[i].style.display = "";
                 } else {
                     tr[i].style.display = "none";
                 }
-                // if (col == 5){
-                //     if(td.innerText == input.value){
-                //         tr[i].style.display = "";
-                //     } else {
-                //         tr[i].style.display = "none";
-                //     }
-                // } else {
-                //     filter = input.value.toUpperCase();
-                //     txtValue = td.textContent || td.innerText;
-                //     if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                //         tr[i].style.display = "";
-                //     } else {
-                //         tr[i].style.display = "none";
-                //     }
-                // }
-                
             }
         }
     }

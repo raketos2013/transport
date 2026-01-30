@@ -7,17 +7,17 @@ public enum StatusTaskViewModel
 {
     [Display(Name = "")]
     [Description("")]
-    NOFILTER,
+    NOFILTER = 0,
     [Display(Name = "Выполняется")]
     [Description("Выполняется")]
-    Process,
+    Process = 1,
     [Display(Name = "Ошибка")]
     [Description("Ошибка")]
-    Error,
+    Error = 2,
     [Display(Name = "Ожидание")]
     [Description("Ожидание")]
-    Wait,
+    Wait = 3,
     [Display(Name = "Завершена")]
     [Description("Завершена")]
-    Complete
+    Complete = 4
 }

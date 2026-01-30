@@ -526,6 +526,59 @@ header {
         border-radius: 0px 2px 2px 0px;
     }
 
+
+.input-with-label .select-wrapper-options {
+    border-radius: 5px;
+    width: 50px;
+    margin-bottom: 0px !important;
+}
+
+    .input-with-label .select-wrapper-options select {
+        width: 50px;
+    }
+.select-wrapper-options {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 50px;
+    height: 10px;
+    min-height: 20px;
+    background: var(--white);
+    border: 1px solid var(--gray);
+    border-radius: 2px 0px 0px 2px;
+}
+    .select-wrapper-options:hover {
+        border: 1px solid var(--main-green);
+    }
+
+    .select-wrapper-options select {
+        background: transparent;
+        border: 0;
+        font-family: "Roboto-Regular";
+        font-style: normal;
+        font-weight: 400;
+        font-size: 13px;
+        line-height: 15px;
+        color: var(--black);
+        padding: 8px 12px;
+        cursor: pointer;
+        width: 50px;
+    }
+
+    .select-wrapper-options select option {
+        font-family: "Roboto-Regular";
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 10px;
+        color: var(--black);
+        cursor: pointer;
+    }
+    
+
+
 .select-wrapper {
     position: relative;
     display: flex;

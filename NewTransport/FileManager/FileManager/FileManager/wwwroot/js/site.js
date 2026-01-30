@@ -1045,50 +1045,282 @@ function ShowTaskList() {
     });
 }
 
-function FilterTasks(filter) {
-    $.ajax({
-        method: 'POST',
-        url: '/Task/FilterTask',
-        data: {
-            "filter": filter
-        },
-        dataType: 'html',
-        success: function (result) {
-            console.log("Esuccess@@!!")
-            $('#tasks').empty();
-            $('#tasks').append(result);
-            SelectRow("tableTasks");
-            //cookieTask = getCookie("selectedTask");
-            //tableTasks = document.getElementById("tableTasks");
-            //tr = tableTasks.getElementsByTagName("tr");
-            //for (var i = 0; i < tr.length; i++) {
-            //    var td = tr[i].getElementsByTagName("td")[1];
-            //    if (td.innerText == cookieTask) {
-            //        tr[i].classList.add('selected-tr');
-            //    } else {
-            //        tr[i].classList.remove('selected-tr');
-            //    }
-            //}
-        },
-        function(jqXHR, exception) {
-            console.log("ERROR!!!")
-            //if (jqXHR.status === 0) {
-            //    alert('Not connect. Verify Network.');
-            //} else if (jqXHR.status == 404) {
-            //    alert('Requested page not found (404).');
-            //} else if (jqXHR.status == 500) {
-            //    alert('Internal Server Error (500).');
-            //} else if (exception === 'parsererror') {
-            //    alert('Requested JSON parse failed.');
-            //} else if (exception === 'timeout') {
-            //    alert('Time out error.');
-            //} else if (exception === 'abort') {
-            //    alert('Ajax request aborted.');
-            //} else {
-            //    window.location.reload();
-            //}
-        }
- 
-    });
-}
 
+
+//function FilterTasks() {
+//    var modelData = $('#filter-form').serialize();
+
+//    $.ajax({
+//        method: 'POST',
+//        url: '/Task/FilterTask',
+//        contentType: 'application/json',
+//        data: {
+//            "model": modelData
+//        },
+//        beforeSend: function (xhr) {
+//            xhr.setRequestHeader("XSRF-TOKEN",
+//                $('input:hidden[name="__RequestVerificationToken"]').val());
+//        },
+//        success: function (result) {
+//            $('#tasks').empty();
+//            $('#tasks').append(result);
+//            SelectRow("tableTasks");
+//            cookieTask = getCookie("selectedTask");
+//            tableTasks = document.getElementById("tableTasks");
+//            tr = tableTasks.getElementsByTagName("tr");
+//            for (var i = 0; i < tr.length; i++) {
+//                var td = tr[i].getElementsByTagName("td")[1];
+//                if (td.innerText == cookieTask) {
+//                    tr[i].classList.add('selected-tr');
+//                } else {
+//                    tr[i].classList.remove('selected-tr');
+//                }
+//            }
+//            ShowHideSubMenu('task-filter')
+//        },
+//        error: function (jqXHR, exception) {
+//            console.log("ERROR!!!")
+//            if (jqXHR.status === 0) {
+//                console.log('Not connect. Verify Network.');
+//            } else if (jqXHR.status == 404) {
+//                console.log('Requested page not found (404).');
+//            } else if (jqXHR.status == 500) {
+//                alconsole.logert('Internal Server Error (500).');
+//            } else if (exception === 'parsererror') {
+//                console.log('Requested JSON parse failed.');
+//            } else if (exception === 'timeout') {
+//                console.log('Time out error.');
+//            } else if (exception === 'abort') {
+//                console.log('Ajax request aborted.');
+//            } else {
+//                console.log("@@@@@@@@@@@@@@")
+//                window.location.reload();
+//            }
+//        }
+
+//    });
+//}
+
+function FilterTasks() {
+    var table, tr, td, i, option;
+
+    table = document.getElementById("tableTasks");
+    tr = table.getElementsByTagName("tr");
+
+    let taskId, name, timeBegin, timeEnd, status, days, group;
+    taskId = document.getElementById('TaskId').value;
+    name = document.getElementById('Name').value;
+    timeBegin = document.getElementById('TimeBegin').value;
+    timeEnd = document.getElementById('TimeEnd').value;
+    status = document.querySelector('#Status').value;
+    days = document.querySelector('#DayActive').value;
+    group = document.querySelector('#AddresseeGroupId').value;
+
+    for (i = 0; i < tr.length; i++) {
+        tr[i].style.display = "";
+        if (taskId != "") {
+            td = tr[i].getElementsByTagName("td")[1];
+            if (td) {
+                option = document.querySelector('#TaskId-option').selectedIndex;
+                switch (option) {
+                    case 0:
+                        if (!(td.innerText == taskId)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 1:
+                        if (!(td.innerText != taskId)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 2:
+                        if (!(td.innerText > taskId)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 3:
+                        if (!(td.innerText < taskId)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 4:
+                        if (!(td.innerText >= taskId)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 5:
+                        if (!(td.innerText <= taskId)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                }
+            }
+        }
+        if (name != "") {
+            td = tr[i].getElementsByTagName("td")[2];
+            if (td) {
+                option = document.querySelector('#Name-option').selectedIndex;
+                switch (option) {
+                    case 0:
+                        if (!(td.innerText == name)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 1:
+                        if (!(td.innerText != name)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 2:
+                        if (!(td.innerText > name)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 3:
+                        if (!(td.innerText < name)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 4:
+                        if (!(td.innerText >= name)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 5:
+                        if (!(td.innerText <= name)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                }
+            }
+        }
+        if (timeBegin != "") {
+            td = tr[i].getElementsByTagName("td")[3];
+            if (td) {
+                option = document.querySelector('#TimeBegin-option').selectedIndex;
+                switch (option) {
+                    case 0:
+                        if (!(td.innerText == timeBegin)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 1:
+                        if (!(td.innerText != timeBegin)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 2:
+                        if (!(td.innerText > timeBegin)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 3:
+                        if (!(td.innerText < timeBegin)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 4:
+                        if (!(td.innerText >= timeBegin)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 5:
+                        if (!(td.innerText <= timeBegin)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                }
+            }
+        }
+        if (timeEnd != "") {
+            td = tr[i].getElementsByTagName("td")[4];
+            if (td) {
+                option = document.querySelector('#TimeEnd-option').selectedIndex;
+                switch (option) {
+                    case 0:
+                        if (!(td.innerText == timeEnd)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 1:
+                        if (!(td.innerText != timeEnd)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 2:
+                        if (!(td.innerText > timeEnd)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 3:
+                        if (!(td.innerText < timeEnd)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 4:
+                        if (!(td.innerText >= timeEnd)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 5:
+                        if (!(td.innerText <= timeEnd)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                }
+            }
+        }
+        if (status != 0) {
+            td = tr[i].getElementsByTagName("td")[9];
+            if (td) {
+                if (td.innerText == status) {
+                    //tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+        if (days != 0) {
+
+        }
+        if (group != 0) {
+            td = tr[i].getElementsByTagName("td")[5];
+            if (td) {
+                option = document.querySelector('#AddresseeGroupId-option').selectedIndex;
+                switch (option) {
+                    case 0:
+                        if (!(td.innerText == group)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 1:
+                        if (!(td.innerText != group)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 2:
+                        if (!(td.innerText > group)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 3:
+                        if (!(td.innerText < group)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 4:
+                        if (!(td.innerText >= group)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 5:
+                        if (!(td.innerText <= group)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                }
+            }
+        }
+    }
+
+}

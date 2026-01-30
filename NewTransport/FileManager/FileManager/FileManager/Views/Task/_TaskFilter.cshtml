@@ -2,58 +2,131 @@
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
-@model TaskFilterViewModel
+@* @model TaskFilterViewModel *@
 @{
     SelectList addresseeGroupsSelect = new SelectList(ViewBag.AddresseeGroups, "Id", "Name");
 }
 
-<form class="filter-body" method="post" id="filter-form" asp-controller="Task" asp-action="FilterTask">
+<div class="filter-body" method="post" id="filter-form">
     <div class="filter-body-row">
         <div class="filter-body-column">
             <div class="input-with-label">
-                <label asp-for="TaskId"></label>
-                <input asp-for="TaskId">
-            </div>
-            <div class="input-with-label">
-                <label asp-for="TimeBegin"></label>
-                <input type="time" asp-for="TimeBegin" step="1">
-            </div>
-            <div class="input-with-label">
-                <label asp-for="Status"></label>
-                <div class="select-wrapper">
-                    <select asp-for="Status" asp-items="Html.GetEnumSelectList<StatusTaskViewModel>()"></select>
+                <label>Идентификатор</label>
+                <input id="TaskId">
+                <div class="select-wrapper-options">
+                    <select id="TaskId-option">
+                        <option>=</option>
+                        <option>!=</option>
+                        <option>></option>
+                        <option>&lt;</option>
+                        <option>>=</option>
+                        <option>&lt;=</option>
+                    </select>
                 </div>
             </div>
             <div class="input-with-label">
-                <label asp-for="AddresseeGroupId" class="control-label"></label>
+                <label>Время начала</label>
+                <input type="time" id="TimeBegin" step="1" value="">
+                <div class="select-wrapper-options">
+                    <select id="TimeBegin-option" style="width: 50px;">
+                        <option>=</option>
+                        <option>!=</option>
+                        <option>></option>
+                        <option>&lt;</option>
+                        <option>>=</option>
+                        <option>&lt;=</option>
+                    </select>
+                </div>
+            </div>
+            <div class="input-with-label">
+                <label>Статус</label>
                 <div class="select-wrapper">
-                    <select asp-for="AddresseeGroupId" class="form-select mb-3" asp-items=@addresseeGroupsSelect></select>
+                    <select id="Status" asp-items="Html.GetEnumSelectList<StatusTaskViewModel>()"></select>
+                </div>
+                <div class="select-wrapper-options">
+                    <select id="Status-option" style="width: 50px;">
+                        <option>=</option>
+                        <option>!=</option>
+                        <option>></option>
+                        <option>&lt;</option>
+                        <option>>=</option>
+                        <option>&lt;=</option>
+                    </select>
+                </div>
+            </div>
+            <div class="input-with-label">
+                <label class="control-label">Группы рассылки</label>
+                <div class="select-wrapper">
+                    <select id="AddresseeGroupId" class="form-select mb-3" asp-items=@addresseeGroupsSelect></select>
+                </div>
+                <div class="select-wrapper-options">
+                    <select id="AddresseeGroupId-option" style="width: 50px;">
+                        <option>=</option>
+                        <option>!=</option>
+                        <option>></option>
+                        <option>&lt;</option>
+                        <option>>=</option>
+                        <option>&lt;=</option>
+                    </select>
                 </div>
             </div>
         </div>
         <div class="filter-body-column">
             <div class="input-with-label">
-                <label asp-for="Name"></label>
-                <input asp-for="Name">
+                <label>Наименование</label>
+                <input id="Name">
+                <div class="select-wrapper-options">
+                    <select id="Name-option" style="width: 50px;">
+                        <option>=</option>
+                        <option>!=</option>
+                        <option>></option>
+                        <option>&lt;</option>
+                        <option>>=</option>
+                        <option>&lt;=</option>
+                    </select>
+                </div>
             </div>
+
             <div class="input-with-label">
-                <label asp-for="TimeEnd"></label>
-                <input type="time" asp-for="TimeEnd" step="1">
+                <label>Время окончания</label>
+                <input type="time" id="TimeEnd" step="1" value="">
+                <div class="select-wrapper-options">
+                    <select id="TimeEnd-option" style="width: 50px;">
+                        <option>=</option>
+                        <option>!=</option>
+                        <option>></option>
+                        <option>&lt;</option>
+                        <option>>=</option>
+                        <option>&lt;=</option>
+                    </select>
+                </div>
             </div>
+
             <div class="input-with-label">
-                <label asp-for="DayActive"></label>
+                <label>Дни активности</label>
                 <div class="select-wrapper">
-                    <select asp-for="DayActive" asp-items="Html.GetEnumSelectList<DayActiveViewModel>()"></select>
+                    <select id="DayActive" asp-items="Html.GetEnumSelectList<DayActiveViewModel>()"></select>
+                </div>
+                <div class="select-wrapper-options">
+                    <select id="DayActive-option" style="width: 50px;">
+                        <option>=</option>
+                        <option>!=</option>
+                        <option>></option>
+                        <option>&lt;</option>
+                        <option>>=</option>
+                        <option>&lt;=</option>
+                    </select>
                 </div>
             </div>
         </div>
     </div>
-</form>
-<div class="filter-footer">
-    <button form="filter-form" class="btn-full" onclick="FilterTasks('@Model')">
-        Поиск
-    </button>
 </div>
+<div class="filter-footer">
+    <div class="btn-full" id="sendFilter" onclick="FilterTasks()">
+        Поиск
+    </div>
+</div>
+
 <script>
-    
+
 </script>

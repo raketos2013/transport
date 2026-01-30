@@ -32,19 +32,59 @@
                                 <div class="input-with-label">
                                     <label asp-for="DateFrom"></label>
                                     <input type="date" asp-for="DateFrom">
+                                    <div class="select-wrapper-options">
+                                        <select id="TaskId-option" style="width: 50px;">
+                                            <option>=</option>
+                                            <option>!=</option>
+                                            <option>></option>
+                                            <option>&lt;</option>
+                                            <option>>=</option>
+                                            <option>&lt;=</option>
+                                        </select>
+                                    </div>
                                 </div>
                                 <div class="input-with-label">
                                     <label asp-for="DateTo"></label>
                                     <input type="date" asp-for="DateTo">
+                                    <div class="select-wrapper-options">
+                                        <select id="TaskId-option" style="width: 50px;">
+                                            <option>=</option>
+                                            <option>!=</option>
+                                            <option>></option>
+                                            <option>&lt;</option>
+                                            <option>>=</option>
+                                            <option>&lt;=</option>
+                                        </select>
+                                    </div>
                                 </div>
                                 <div class="input-with-label">
                                     <label asp-for="StepNumber"></label>
                                     <input asp-for="StepNumber" min="0">
+                                    <div class="select-wrapper-options">
+                                        <select id="TaskId-option" style="width: 50px;">
+                                            <option>=</option>
+                                            <option>!=</option>
+                                            <option>></option>
+                                            <option>&lt;</option>
+                                            <option>>=</option>
+                                            <option>&lt;=</option>
+                                        </select>
+                                    </div>
                                 </div>
                                 <div class="input-with-label">
                                     <label asp-for="ResultOperation">Результат</label>
                                     <div class="select-wrapper">
                                         <select asp-for="ResultOperation" asp-items="Html.GetEnumSelectList<ResultOperation>()"></select>
+                                    </div>
+                                    <div class="select-wrapper-options">
+                                        <select id="TaskId-option" style="width: 50px;">
+                                            <option>=</option>
+                                            <option>!=</option>
+                                            <option>></option>
+                                            <option>&lt;</option>
+                                            <option>>=</option>
+                                            <option>&lt;=</option>
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="input-with-label">
@@ -64,31 +104,84 @@
                                 <div class="input-with-label">
                                     <label asp-for="TaskId"></label>
                                     <input asp-for="TaskId">
+                                    <div class="select-wrapper-options">
+                                        <select id="TaskId-option" style="width: 50px;">
+                                            <option>=</option>
+                                            <option>!=</option>
+                                            <option>></option>
+                                            <option>&lt;</option>
+                                            <option>>=</option>
+                                            <option>&lt;=</option>
+                                        </select>
+                                    </div>
                                 </div>
+                                
                                 <div class="input-with-label">
                                     <label asp-for="TimeFrom"></label>
                                     <input type="time" asp-for="TimeFrom" step="1">
+                                    <div class="select-wrapper-options">
+                                        <select id="TaskId-option" style="width: 50px;">
+                                            <option>=</option>
+                                            <option>!=</option>
+                                            <option>></option>
+                                            <option>&lt;</option>
+                                            <option>>=</option>
+                                            <option>&lt;=</option>
+                                        </select>
+                                    </div>
                                 </div>
+                                
                                 <div class="input-with-label">
                                     <label asp-for="TimeTo"></label>
                                     <input type="time" asp-for="TimeTo" step="1">
+                                    <div class="select-wrapper-options">
+                                        <select id="TaskId-option" style="width: 50px;">
+                                            <option>=</option>
+                                            <option>!=</option>
+                                            <option>></option>
+                                            <option>&lt;</option>
+                                            <option>>=</option>
+                                            <option>&lt;=</option>
+                                        </select>
+                                    </div>
                                 </div>
+                                
                                 <div class="input-with-label">
                                     <label asp-for="OperationName"></label>
                                     <div class="select-wrapper">
                                         <select asp-for="OperationName" asp-items="Html.GetEnumSelectList<OperationName>()"></select>
                                     </div>
+                                    <div class="select-wrapper-options">
+                                        <select id="TaskId-option" style="width: 50px;">
+                                            <option>=</option>
+                                            <option>!=</option>
+                                            <option>></option>
+                                            <option>&lt;</option>
+                                            <option>>=</option>
+                                            <option>&lt;=</option>
+                                        </select>
+                                    </div>
                                 </div>
                                 <div class="input-with-label">
                                     <label asp-for="FileName"></label>
                                     <input asp-for="FileName">
-                                    <div class="input-checkbox">
+                                    <div class="select-wrapper-options">
+                                        <select id="TaskId-option" style="width: 50px;">
+                                            <option>=</option>
+                                            <option>!=</option>
+                                            <option>></option>
+                                            <option>&lt;</option>
+                                            <option>>=</option>
+                                            <option>&lt;=</option>
+                                        </select>
+                                    </div>
+                                    @* <div class="input-checkbox">
                                         <label asp-for="NotEqualFileName" class="toggle-checkbox">
                                             <input asp-for="@Model.NotEqualFileName" type="checkbox" checked="@Model.NotEqualFileName">
                                             <span class="toggle-checkbox-switch"></span>
                                         </label>
                                         <p>Не равно</p>
-                                    </div>
+                                    </div> *@
                                 </div>
                                 
                             </div>

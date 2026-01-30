@@ -16,7 +16,7 @@ public class TaskFilterViewModel
     [Display(Name = "Группы рассылки")]
     public int AddresseeGroupId { get; set; }
     [Display(Name = "Дни активности")]
-    public DayActive DayActive { get; set; }
+    public DayActiveViewModel DayActive { get; set; }
     [Display(Name = "Статус")]
-    public StatusTask Status {  get; set; }
+    public StatusTaskViewModel Status {  get; set; }
 }

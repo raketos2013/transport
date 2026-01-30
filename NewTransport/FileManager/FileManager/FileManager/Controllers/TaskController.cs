@@ -670,11 +670,11 @@ public class TaskController(ITaskService taskService,
 
         TaskFilterViewModel sessionModel = HttpContext?.Session.Get<TaskFilterViewModel>("TaskFilters");
 
-        return PartialView("_TaskFilter", filterViewModel);
+        return PartialView("_TaskFilter", sessionModel);
     }
 
     [HttpPost]
-    public async Task<IActionResult> FilterTask(TaskFilterViewModel filter)
+    public async Task<IActionResult> FilterTask([FromBody] TaskFilterViewModel model)
     {
         var tasks = await taskService.GetAllTasks();
         List<TaskStatusEntity> statuses = await taskService.GetTaskStatuses();
@@ -682,6 +682,30 @@ public class TaskController(ITaskService taskService,
         {
             item.TaskStatus = statuses.FirstOrDefault(x => x.TaskId == item.TaskId);
         }
+
+        tasks = tasks.Where(x => x.TimeBegin >= model.TimeBegin &&
+                                    x.TimeEnd <= model.TimeEnd).ToList();
+        if (!string.IsNullOrEmpty(model.TaskId))
+        {
+            tasks = tasks.Where(x => x.TaskId == model.TaskId).ToList();
+        }
+        if (!string.IsNullOrEmpty(model.Name))
+        {
+            tasks = tasks.Where(x => x.Name == model.Name).ToList();
+        }
+        if (model.Status != StatusTaskViewModel.NOFILTER)
+        {
+            tasks = tasks.Where(x => (int)x.TaskStatus.Status == (int)model.Status).ToList();
+        }
+        if (model.DayActive != DayActiveViewModel.NOFILTER)
+        {
+            tasks = tasks.Where(x => (int)x.DayActive == (int)model.DayActive).ToList();
+        }
+        if (model.AddresseeGroupId != 0)
+        {
+            tasks = tasks.Where(x => x.AddresseeGroupId == model.AddresseeGroupId).ToList();
+        }
+
         return PartialView("_TasksList", tasks);
     }
 }

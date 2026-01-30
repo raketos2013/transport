@@ -7,7 +7,7 @@ public enum DayActiveViewModel
 {
     [Display(Name = "")]
     [Description("")]
-    NOFILTER,
+    NOFILTER = 0,
     [Display(Name = "Рабочие")]
     [Description("Рабочие")]
     WORK = 1,

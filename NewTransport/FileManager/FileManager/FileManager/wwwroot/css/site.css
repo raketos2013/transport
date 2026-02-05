@@ -536,6 +536,7 @@ header {
     .input-with-label .select-wrapper-options select {
         width: 50px;
     }
+
 .select-wrapper-options {
     position: relative;
     display: flex;
@@ -549,6 +550,7 @@ header {
     border: 1px solid var(--gray);
     border-radius: 2px 0px 0px 2px;
 }
+
     .select-wrapper-options:hover {
         border: 1px solid var(--main-green);
     }
@@ -567,16 +569,16 @@ header {
         width: 50px;
     }
 
-    .select-wrapper-options select option {
-        font-family: "Roboto-Regular";
-        font-style: normal;
-        font-weight: 400;
-        font-size: 14px;
-        line-height: 10px;
-        color: var(--black);
-        cursor: pointer;
-    }
-    
+        .select-wrapper-options select option {
+            font-family: "Roboto-Regular";
+            font-style: normal;
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 10px;
+            color: var(--black);
+            cursor: pointer;
+        }
+
 
 
 .select-wrapper {
@@ -1149,4 +1151,22 @@ footer {
 
 #task-text {
     font-size: 25px;
+}
+
+.exist-files {
+    display: none;
+}
+
+
+.json-display {
+/*    background: #2d2d2d;
+    color: #f8f8f2;*/
+    padding: 15px;
+    border-radius: 5px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 14px;
+    overflow: auto;
+    max-height: 500px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
 }

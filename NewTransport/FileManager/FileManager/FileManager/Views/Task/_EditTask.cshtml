@@ -43,12 +43,6 @@
                 <select asp-for="AddresseeGroupId" class="form-select mb-3" asp-items=@addresseeGroupsSelect></select>
             </div>
         </div>
-        @* <div class="input-with-label">
-        <label asp-for="TaskGroupId" class="control-label"></label>
-        <div class="select-wrapper">
-            <select asp-for="TaskGroupId" class="form-select mb-3" asp-items=@taskGroupsSelect></select>
-        </div>
-    </div> *@
         <div class="input-checkbox">
             <label asp-for="IsActive" class="toggle-checkbox">
                 <input type="checkbox" asp-for="@Model.IsActive" checked="@Model.IsActive">

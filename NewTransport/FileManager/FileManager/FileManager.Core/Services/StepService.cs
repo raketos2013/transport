@@ -355,4 +355,11 @@ public class StepService(IOperationService operationService,
         return files.Length;
     }
 
+    public async Task<List<string>> GetFiles(string taskId, int stepNumber)
+    {
+        var step = await GetStepByTaskId(taskId, stepNumber)
+                            ?? throw new DomainException("Шаг не найден");
+        var files = Directory.GetFiles(step.Source, step.FileMask).ToList();
+        return files;
+    }
 }

@@ -3,6 +3,7 @@ using FileManager.Core.Entities;
 using FileManager.Core.Enums;
 using FileManager.Core.Exceptions;
 using FileManager.Core.Interfaces.Services;
+using FileManager.Core.Utilities;
 using FileManager.Core.ViewModels;
 using FileManager.Extensions;
 using FileManager.ViewModels;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
 using System.Text.Json;
+using System.Threading.Tasks;
 using X.PagedList.Extensions;
 
 namespace FileManager.Controllers;
@@ -191,7 +193,29 @@ public class TaskController(ITaskService taskService,
             {
                 if (sessionModel.OperationName != OperationName.None)
                 {
-                    taskLogs = taskLogs.Where(x => x.OperationName == sessionModel.OperationName.ToString()).ToList();
+                    switch (sessionModel.OperationNameOption)
+                    {
+                        case FilterOptions.Equal:
+                            taskLogs = taskLogs.Where(x => x.OperationName == sessionModel.OperationName.ToString()).ToList();
+                            break;
+                        case FilterOptions.NotEqual:
+                            taskLogs = taskLogs.Where(x => x.OperationName != sessionModel.OperationName.ToString()).ToList();
+                            break;
+                        case FilterOptions.More:
+                            taskLogs = taskLogs.Where(x => string.Compare(sessionModel.OperationName.ToString(), x.OperationName) > 0).ToList();
+                            break;
+                        case FilterOptions.Less:
+                            taskLogs = taskLogs.Where(x => string.Compare(sessionModel.OperationName.ToString(), x.OperationName) < 0).ToList();
+                            break;
+                        case FilterOptions.MoreEqual:
+                            taskLogs = taskLogs.Where(x => string.Compare(sessionModel.OperationName.ToString(), x.OperationName) >= 0).ToList();
+                            break;
+                        case FilterOptions.LessEqual:
+                            taskLogs = taskLogs.Where(x => string.Compare(sessionModel.OperationName.ToString(), x.OperationName) <= 0).ToList();
+                            break;
+                        default:
+                            break;
+                    }
                 }
                 if (sessionModel.StepNumber != 0)
                 {
@@ -203,14 +227,14 @@ public class TaskController(ITaskService taskService,
                 }
                 if (!string.IsNullOrEmpty(sessionModel.FileName))
                 {
-                    if (sessionModel.NotEqualFileName)
-                    {
-                        taskLogs = taskLogs.Where(x => x.FileName != sessionModel.FileName).ToList();
-                    }
-                    else
-                    {
-                        taskLogs = taskLogs.Where(x => x.FileName == sessionModel.FileName).ToList();
-                    }
+                    //if (sessionModel.NotEqualFileName)
+                    //{
+                    //    taskLogs = taskLogs.Where(x => x.FileName != sessionModel.FileName).ToList();
+                    //}
+                    //else
+                    //{
+                    //    taskLogs = taskLogs.Where(x => x.FileName == sessionModel.FileName).ToList();
+                    //}
                 }
                 if (!string.IsNullOrEmpty(sessionModel.Text))
                 {
@@ -389,14 +413,14 @@ public class TaskController(ITaskService taskService,
             }
             if (!string.IsNullOrEmpty(model.FileName))
             {
-                if (model.NotEqualFileName)
-                {
-                    taskLogs = taskLogs.Where(x => x.FileName != model.FileName);
-                }
-                else
-                {
-                    taskLogs = taskLogs.Where(x => x.FileName == model.FileName);
-                }
+                //if (model.NotEqualFileName)
+                //{
+                //    taskLogs = taskLogs.Where(x => x.FileName != model.FileName);
+                //}
+                //else
+                //{
+                //    taskLogs = taskLogs.Where(x => x.FileName == model.FileName);
+                //}
             }
             if (!string.IsNullOrEmpty(model.Text))
             {
@@ -524,6 +548,7 @@ public class TaskController(ITaskService taskService,
     public async Task<IActionResult> UnlockTask(string taskId)
     {
         await lockService.Unlock(taskId);
+        await userLogService.AddLog($"Разблокировка задачи {taskId}","");
         return NoContent();
     }
     [HttpGet]

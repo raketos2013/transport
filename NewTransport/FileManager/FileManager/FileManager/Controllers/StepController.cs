@@ -128,11 +128,19 @@ public class StepController(IStepService stepService,
     {
         List<int> countFiles = [];
         var steps = await stepService.GetAllStepsByTaskId(taskId);
-        foreach (var step in steps)
+                
+        foreach (var step in steps.OrderBy(x => x.StepNumber))
         {
             var count = await stepService.CountFiles(step.StepId);
             countFiles.Add(count);
         }
         return Ok(countFiles);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> GetFiles(string taskId, int stepNumber)
+    {
+        var files = await stepService.GetFiles(taskId, stepNumber);
+        return PartialView("_FilesForStep", files);
     }
 }

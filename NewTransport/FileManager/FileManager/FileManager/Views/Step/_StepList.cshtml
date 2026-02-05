@@ -19,6 +19,7 @@
                 <col style="min-width:100px;width:100px;">
                 <col style="min-width:250px;width:250px;max-width:250px;">
                 <col style="min-width:250px;width:250px;max-width:250px;">
+                <col style="width:250px;max-width:250px;">
             </colgroup>
             <thead>
                 <tr>
@@ -72,6 +73,11 @@
                         <div class="separate"></div>
                         <div class="sorter"></div>
                     </th>
+                    <th class="exist-files">
+                        <p>Файлы</p>
+                        <div class="separate"></div>
+                        <div class="sorter"></div>
+                    </th>
                 </tr>
             </thead>
         </table>
@@ -88,7 +94,8 @@
                 <col style="min-width:120px;width:120px;">
                 <col style="min-width:100px;width:100px;">
                 <col style="width:250px;max-width:250px;">
-                <col style="min-width:250px;width:250px;max-width:250px;">
+                <col style="min-width:250px;max-width:250px;">
+                <col style="width:250px;max-width:250px;">
             </colgroup>
             <tbody>
                 @foreach (var item in @Model)
@@ -140,21 +147,23 @@
                             </div>
                         </td>
                         <td>
-                                @if (item.OperationId != 0)
-                                {
-                                    <p>+</p>
-                                }
+                            @if (item.OperationId != 0)
+                            {
+                                <p>+</p>
+                            }
                         </td>
                         <td style="min-width:250px;width:250px;max-width:250px;"><p style="word-wrap: break-word;display:block;">@item.Source</p></td>
                         <td style="min-width:250px;width:250px;max-width:250px;"><p style="word-wrap: break-word;display:block;">@item.Destination</p></td>
+                        <td class="exist-files" onclick="ShowFiles('@item.StepNumber')"></td>
                     </tr>
                 }
-                
+
             </tbody>
         </table>
     </div>
 </div>
 <script>
+    
 
     ActiveSteps();
 </script>

@@ -14,10 +14,10 @@ public class TaskEntity
     [Required(ErrorMessage = "Обязательное поле")]
     public string Name { get; set; }
     [Display(Name = "Время начала")]
-    [DisplayFormat(DataFormatString = "{HH:mm:ss}", ApplyFormatInEditMode = true)]
+    [DisplayFormat(DataFormatString = "{0:HH:mm:ss}", ApplyFormatInEditMode = true)]
     public TimeOnly TimeBegin { get; set; }
     [Display(Name = "Время окончания")]
-    [DisplayFormat(DataFormatString = "{HH:mm:ss}", ApplyFormatInEditMode = true)]
+    [DisplayFormat(DataFormatString = "{0:HH:mm:ss}", ApplyFormatInEditMode = true)]
     public TimeOnly TimeEnd { get; set; }
     [Display(Name = "Дни активности")]
     public DayActive DayActive { get; set; }

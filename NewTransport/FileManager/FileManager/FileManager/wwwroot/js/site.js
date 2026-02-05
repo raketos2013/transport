@@ -412,6 +412,25 @@ function EditTask(taskId) {
                         $('#edit-task-content').empty();
                         $('#edit-task-content').append(result);
                         ShowModal('modal-edit-task');
+                    },
+                    error: function (jqXHR, exception) {
+                        console.log("ERROR!!!")
+                        if (jqXHR.status === 0) {
+                            console.log('Not connect. Verify Network.');
+                        } else if (jqXHR.status == 404) {
+                            console.log('Requested page not found (404).');
+                        } else if (jqXHR.status == 500) {
+                            console.log('Internal Server Error (500).');
+                        } else if (exception === 'parsererror') {
+                            console.log('Requested JSON parse failed.');
+                        } else if (exception === 'timeout') {
+                            console.log('Time out error.');
+                        } else if (exception === 'abort') {
+                            console.log('Ajax request aborted.');
+                        } else {
+                            console.log("@@@@@@@@@@@@@@")
+                            window.location.reload();
+                        }
                     }
                 });
             } else if (jsonObj.isLocked == true) {
@@ -1271,12 +1290,30 @@ function FilterTasks() {
             }
         }
         if (status != 0) {
+            var statusText = "";
+            if (status == 1) {
+                statusText = "status-process";
+            } else if (status == 2) {
+                statusText = "status-error";
+            } else if (status == 3) {
+                statusText = "status-wait";
+            } else if (status == 4) {
+                statusText = "status-complete";
+            }
             td = tr[i].getElementsByTagName("td")[9];
             if (td) {
-                if (td.innerText == status) {
-                    //tr[i].style.display = "";
-                } else {
-                    tr[i].style.display = "none";
+                option = document.querySelector('#Status-option').selectedIndex;
+                switch (option) {
+                    case 0:
+                        if (!td.classList.contains(statusText)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 1:
+                        if (td.classList.contains(statusText)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
                 }
             }
         }
@@ -1323,4 +1360,24 @@ function FilterTasks() {
         }
     }
 
+}
+
+function ShowFiles(stepNumber) {
+    var cookieTaskId = getCookie("selectedTask");
+    $.ajax({
+        method: 'POST',
+        url: '/Step/GetFiles',
+        data: {
+            "taskId": cookieTaskId,
+            "stepNumber": stepNumber
+        },
+        dataType: 'html',
+        success: function (result) {
+            $('#modal-files-content').empty();
+            $('#modal-files-content').append(result);
+            document.getElementById('stepNumber-files').innerText = stepNumber;
+            document.getElementById('taskId-files').innerText = cookieTaskId;
+            ShowModal('modal-files');
+        }
+    });
 }

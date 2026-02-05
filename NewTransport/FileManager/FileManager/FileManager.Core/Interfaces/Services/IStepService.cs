@@ -15,4 +15,5 @@ public interface IStepService
     Task<bool> DeleteStep(int stepId);
     Task<TaskStepEntity> CopyStep(int stepId, int newNumber);
     Task<int> CountFiles(int stepId);
+    Task<List<string>> GetFiles(string taskId, int stepNumber);
 }

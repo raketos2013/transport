@@ -10,6 +10,7 @@ using FileManager.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
+using System;
 using System.Text.Json;
 using System.Threading.Tasks;
 using X.PagedList.Extensions;
@@ -146,26 +147,26 @@ public class TaskController(ITaskService taskService,
             timeFrom = sessionModel.TimeFrom;
             timeTo = sessionModel.TimeTo;
             IEnumerable<TaskLogEntity> taskLogs = [];
-            if (sessionModel.TaskId != null)
-            {
-                var taskLogsAsync = await taskLogService.GetLogsByTaskId(sessionModel.TaskId);
-                if (sessionModel.TimeFrom.TimeOfDay == DateTime.MinValue.TimeOfDay && sessionModel.TimeTo.TimeOfDay == DateTime.MinValue.TimeOfDay)
-                {
-                    taskLogs = taskLogsAsync.Where(x => x.DateTimeLog.Date >= date &&
-                                                        x.DateTimeLog.Date <= date2)
-                                            .ToList();
-                }
-                else
-                {
-                    taskLogs = taskLogsAsync.Where(x => x.DateTimeLog.Date >= date &&
-                                                        x.DateTimeLog.Date <= date2 &&
-                                                        x.DateTimeLog.TimeOfDay >= timeFrom.TimeOfDay &&
-                                                        x.DateTimeLog.TimeOfDay <= timeTo.TimeOfDay)
-                                            .ToList();
-                }
-            }
-            else
-            {
+            //if (sessionModel.TaskId != null)
+            //{
+            //    var taskLogsAsync = await taskLogService.GetLogsByTaskId(sessionModel.TaskId);
+            //    if (sessionModel.TimeFrom.TimeOfDay == DateTime.MinValue.TimeOfDay && sessionModel.TimeTo.TimeOfDay == DateTime.MinValue.TimeOfDay)
+            //    {
+            //        taskLogs = taskLogsAsync.Where(x => x.DateTimeLog.Date >= date &&
+            //                                            x.DateTimeLog.Date <= date2)
+            //                                .ToList();
+            //    }
+            //    else
+            //    {
+            //        taskLogs = taskLogsAsync.Where(x => x.DateTimeLog.Date >= date &&
+            //                                            x.DateTimeLog.Date <= date2 &&
+            //                                            x.DateTimeLog.TimeOfDay >= timeFrom.TimeOfDay &&
+            //                                            x.DateTimeLog.TimeOfDay <= timeTo.TimeOfDay)
+            //                                .ToList();
+            //    }
+            //}
+            //else
+            //{
                 var taskLogsAsync = await taskLogService.GetLogs();
                 if (sessionModel.TimeFrom.TimeOfDay == DateTime.MinValue.TimeOfDay && sessionModel.TimeTo.TimeOfDay == DateTime.MinValue.TimeOfDay)
                 {
@@ -183,7 +184,8 @@ public class TaskController(ITaskService taskService,
                                                         x.DateTimeLog.TimeOfDay <= timeTo.TimeOfDay)
                                             .ToList();
                 }
-            }
+            //}
+
 
             if (sessionModel.PageSize == 0)
             {
@@ -191,6 +193,33 @@ public class TaskController(ITaskService taskService,
             }
             if (taskLogs != null)
             {
+
+                if (sessionModel.TaskId != null)
+                {
+                    switch (sessionModel.TaskIdOption)
+                    {
+                        case FilterOptions.Equal:
+                            taskLogs = taskLogs.Where(x => x.TaskId == sessionModel.TaskId).ToList();
+                            break;
+                        case FilterOptions.NotEqual:
+                            taskLogs = taskLogs.Where(x => x.TaskId != sessionModel.TaskId).ToList();
+                            break;
+                        case FilterOptions.More:
+                            taskLogs = taskLogs.Where(x => string.Compare(sessionModel.TaskId, x.TaskId) > 0).ToList();
+                            break;
+                        case FilterOptions.Less:
+                            taskLogs = taskLogs.Where(x => string.Compare(sessionModel.TaskId, x.TaskId) < 0).ToList();
+                            break;
+                        case FilterOptions.MoreEqual:
+                            taskLogs = taskLogs.Where(x => string.Compare(sessionModel.TaskId, x.TaskId) >= 0).ToList();
+                            break;
+                        case FilterOptions.LessEqual:
+                            taskLogs = taskLogs.Where(x => string.Compare(sessionModel.TaskId, x.TaskId) <= 0).ToList();
+                            break;
+                        default:
+                            break;
+                    }
+                }
                 if (sessionModel.OperationName != OperationName.None)
                 {
                     switch (sessionModel.OperationNameOption)
@@ -219,26 +248,107 @@ public class TaskController(ITaskService taskService,
                 }
                 if (sessionModel.StepNumber != 0)
                 {
-                    taskLogs = taskLogs.Where(x => x.StepNumber == sessionModel.StepNumber).ToList();
+                    switch (sessionModel.StepNumberOption)
+                    {
+                        case FilterOptions.Equal:
+                            taskLogs = taskLogs.Where(x => x.StepNumber == sessionModel.StepNumber).ToList();
+                            break;
+                        case FilterOptions.NotEqual:
+                            taskLogs = taskLogs.Where(x => x.StepNumber != sessionModel.StepNumber).ToList();
+                            break;
+                        case FilterOptions.More:
+                            taskLogs = taskLogs.Where(x => x.StepNumber > sessionModel.StepNumber).ToList();
+                            break;
+                        case FilterOptions.Less:
+                            taskLogs = taskLogs.Where(x => x.StepNumber < sessionModel.StepNumber).ToList();
+                            break;
+                        case FilterOptions.MoreEqual:
+                            taskLogs = taskLogs.Where(x => x.StepNumber >= sessionModel.StepNumber).ToList();
+                            break;
+                        case FilterOptions.LessEqual:
+                            taskLogs = taskLogs.Where(x => x.StepNumber <= sessionModel.StepNumber).ToList();
+                            break;
+                        default:
+                            break;
+                    }
                 }
                 if (sessionModel.ResultOperation != ResultOperation.N)
                 {
-                    taskLogs = taskLogs.Where(x => x.ResultOperation == sessionModel.ResultOperation).ToList();
+                    switch (sessionModel.ResultOperationOption)
+                    {
+                        case FilterOptions.Equal:
+                            taskLogs = taskLogs.Where(x => x.ResultOperation == sessionModel.ResultOperation).ToList();
+                            break;
+                        case FilterOptions.NotEqual:
+                            taskLogs = taskLogs.Where(x => x.ResultOperation != sessionModel.ResultOperation).ToList();
+                            break;
+                        case FilterOptions.More:
+                            taskLogs = taskLogs.Where(x => string.Compare(sessionModel.ResultOperation.ToString(), x.ResultOperation.ToString()) > 0).ToList();
+                            break;
+                        case FilterOptions.Less:
+                            taskLogs = taskLogs.Where(x => string.Compare(sessionModel.ResultOperation.ToString(), x.ResultOperation.ToString()) < 0).ToList();
+                            break;
+                        case FilterOptions.MoreEqual:
+                            taskLogs = taskLogs.Where(x => string.Compare(sessionModel.ResultOperation.ToString(), x.ResultOperation.ToString()) >= 0).ToList();
+                            break;
+                        case FilterOptions.LessEqual:
+                            taskLogs = taskLogs.Where(x => string.Compare(sessionModel.ResultOperation.ToString(), x.ResultOperation.ToString()) <= 0).ToList();
+                            break;
+                        default:
+                            break;
+                    }
                 }
                 if (!string.IsNullOrEmpty(sessionModel.FileName))
                 {
-                    //if (sessionModel.NotEqualFileName)
-                    //{
-                    //    taskLogs = taskLogs.Where(x => x.FileName != sessionModel.FileName).ToList();
-                    //}
-                    //else
-                    //{
-                    //    taskLogs = taskLogs.Where(x => x.FileName == sessionModel.FileName).ToList();
-                    //}
+                    switch (sessionModel.FileNameOption)
+                    {
+                        case FilterOptions.Equal:
+                            taskLogs = taskLogs.Where(x => x.FileName == sessionModel.FileName).ToList();
+                            break;
+                        case FilterOptions.NotEqual:
+                            taskLogs = taskLogs.Where(x => x.FileName != sessionModel.FileName).ToList();
+                            break;
+                        case FilterOptions.More:
+                            taskLogs = taskLogs.Where(x => string.Compare(sessionModel.FileName, x.FileName) > 0).ToList();
+                            break;
+                        case FilterOptions.Less:
+                            taskLogs = taskLogs.Where(x => string.Compare(sessionModel.FileName, x.FileName) < 0).ToList();
+                            break;
+                        case FilterOptions.MoreEqual:
+                            taskLogs = taskLogs.Where(x => string.Compare(sessionModel.FileName, x.FileName) >= 0).ToList();
+                            break;
+                        case FilterOptions.LessEqual:
+                            taskLogs = taskLogs.Where(x => string.Compare(sessionModel.FileName, x.FileName) <= 0).ToList();
+                            break;
+                        default:
+                            break;
+                    }
                 }
                 if (!string.IsNullOrEmpty(sessionModel.Text))
                 {
-                    taskLogs = taskLogs.Where(x => x.ResultText == sessionModel.Text).ToList();
+                    switch (sessionModel.TextOption)
+                    {
+                        case FilterOptions.Equal:
+                            taskLogs = taskLogs.Where(x => x.ResultText == sessionModel.Text).ToList();
+                            break;
+                        case FilterOptions.NotEqual:
+                            taskLogs = taskLogs.Where(x => x.ResultText != sessionModel.Text).ToList();
+                            break;
+                        case FilterOptions.More:
+                            taskLogs = taskLogs.Where(x => string.Compare(sessionModel.Text, x.ResultText) > 0).ToList();
+                            break;
+                        case FilterOptions.Less:
+                            taskLogs = taskLogs.Where(x => string.Compare(sessionModel.Text, x.ResultText) < 0).ToList();
+                            break;
+                        case FilterOptions.MoreEqual:
+                            taskLogs = taskLogs.Where(x => string.Compare(sessionModel.Text, x.ResultText) >= 0).ToList();
+                            break;
+                        case FilterOptions.LessEqual:
+                            taskLogs = taskLogs.Where(x => string.Compare(sessionModel.Text, x.ResultText) <= 0).ToList();
+                            break;
+                        default:
+                            break;
+                    }
                 }
 
                 switch (sessionModel.FieldSortLogs)
@@ -359,8 +469,8 @@ public class TaskController(ITaskService taskService,
 
         IEnumerable<TaskLogEntity> taskLogs = [];
 
-        if (string.IsNullOrEmpty(model.TaskId))
-        {
+        //if (string.IsNullOrEmpty(model.TaskId))
+        //{
             var taskLogsAsync = await taskLogService.GetLogs();
             if (model.TimeFrom.TimeOfDay == DateTime.MinValue.TimeOfDay && model.TimeTo.TimeOfDay == DateTime.MinValue.TimeOfDay)
             {
@@ -376,55 +486,242 @@ public class TaskController(ITaskService taskService,
                                                     x.DateTimeLog.TimeOfDay <= model.TimeTo.TimeOfDay)
                                         .ToList();
             }
-        }
-        else
-        {
-            var taskLogsAsync = await taskLogService.GetLogsByTaskId(model.TaskId);
-            if (model.TimeFrom.TimeOfDay == DateTime.MinValue.TimeOfDay && model.TimeTo.TimeOfDay == DateTime.MinValue.TimeOfDay)
-            {
+        //}
+        //else
+        //{
+        //    var taskLogsAsync = await taskLogService.GetLogsByTaskId(model.TaskId);
+        //    if (model.TimeFrom.TimeOfDay == DateTime.MinValue.TimeOfDay && model.TimeTo.TimeOfDay == DateTime.MinValue.TimeOfDay)
+        //    {
 
-                taskLogs = taskLogsAsync.Where(x => x.DateTimeLog.Date >= date &&
-                                                    x.DateTimeLog.Date <= date2)
-                                        .ToList();
-            }
-            else
-            {
+        //        taskLogs = taskLogsAsync.Where(x => x.DateTimeLog.Date >= date &&
+        //                                            x.DateTimeLog.Date <= date2)
+        //                                .ToList();
+        //    }
+        //    else
+        //    {
 
-                taskLogs = taskLogsAsync.Where(x => x.DateTimeLog.Date >= date &&
-                                                    x.DateTimeLog.Date <= date2 &&
-                                                    x.DateTimeLog.TimeOfDay >= model.TimeFrom.TimeOfDay &&
-                                                    x.DateTimeLog.TimeOfDay <= model.TimeTo.TimeOfDay)
-                                        .ToList();
-            }
-        }
+        //        taskLogs = taskLogsAsync.Where(x => x.DateTimeLog.Date >= date &&
+        //                                            x.DateTimeLog.Date <= date2 &&
+        //                                            x.DateTimeLog.TimeOfDay >= model.TimeFrom.TimeOfDay &&
+        //                                            x.DateTimeLog.TimeOfDay <= model.TimeTo.TimeOfDay)
+        //                                .ToList();
+        //    }
+        //}
         if (taskLogs != null)
         {
+            if (model.TaskId != null)
+            {
+                switch (model.TaskIdOption)
+                {
+                    case FilterOptions.Equal:
+                        taskLogs = taskLogs.Where(x => x.TaskId == model.TaskId).ToList();
+                        break;
+                    case FilterOptions.NotEqual:
+                        taskLogs = taskLogs.Where(x => x.TaskId != model.TaskId).ToList();
+                        break;
+                    case FilterOptions.More:
+                        taskLogs = taskLogs.Where(x => string.Compare(model.TaskId, x.TaskId) > 0).ToList();
+                        break;
+                    case FilterOptions.Less:
+                        taskLogs = taskLogs.Where(x => string.Compare(model.TaskId, x.TaskId) < 0).ToList();
+                        break;
+                    case FilterOptions.MoreEqual:
+                        taskLogs = taskLogs.Where(x => string.Compare(model.TaskId, x.TaskId) >= 0).ToList();
+                        break;
+                    case FilterOptions.LessEqual:
+                        taskLogs = taskLogs.Where(x => string.Compare(model.TaskId, x.TaskId) <= 0).ToList();
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+
             if (model.OperationName != OperationName.None)
             {
-                taskLogs = taskLogs.Where(x => x.OperationName == model.OperationName.ToString());
+                switch (model.OperationNameOption)
+                {
+                    case FilterOptions.Equal:
+                        taskLogs = taskLogs.Where(x => x.OperationName == model.OperationName.ToString()).ToList();
+                        break;
+                    case FilterOptions.NotEqual:
+                        taskLogs = taskLogs.Where(x => x.OperationName != model.OperationName.ToString()).ToList();
+                        break;
+                    case FilterOptions.More:
+                        taskLogs = taskLogs.Where(x => string.Compare(model.OperationName.ToString(), x.OperationName) > 0).ToList();
+                        break;
+                    case FilterOptions.Less:
+                        taskLogs = taskLogs.Where(x => string.Compare(model.OperationName.ToString(), x.OperationName) < 0).ToList();
+                        break;
+                    case FilterOptions.MoreEqual:
+                        taskLogs = taskLogs.Where(x => string.Compare(model.OperationName.ToString(), x.OperationName) >= 0).ToList();
+                        break;
+                    case FilterOptions.LessEqual:
+                        taskLogs = taskLogs.Where(x => string.Compare(model.OperationName.ToString(), x.OperationName) <= 0).ToList();
+                        break;
+                    default:
+                        break;
+                }
             }
             if (model.StepNumber != 0)
             {
-                taskLogs = taskLogs.Where(x => x.StepNumber == model.StepNumber);
+                switch (model.StepNumberOption)
+                {
+                    case FilterOptions.Equal:
+                        taskLogs = taskLogs.Where(x => x.StepNumber == model.StepNumber).ToList();
+                        break;
+                    case FilterOptions.NotEqual:
+                        taskLogs = taskLogs.Where(x => x.StepNumber != model.StepNumber).ToList();
+                        break;
+                    case FilterOptions.More:
+                        taskLogs = taskLogs.Where(x => x.StepNumber > model.StepNumber).ToList();
+                        break;
+                    case FilterOptions.Less:
+                        taskLogs = taskLogs.Where(x => x.StepNumber < model.StepNumber).ToList();
+                        break;
+                    case FilterOptions.MoreEqual:
+                        taskLogs = taskLogs.Where(x => x.StepNumber >= model.StepNumber).ToList();
+                        break;
+                    case FilterOptions.LessEqual:
+                        taskLogs = taskLogs.Where(x => x.StepNumber <= model.StepNumber).ToList();
+                        break;
+                    default:
+                        break;
+                }
             }
             if (model.ResultOperation != ResultOperation.N)
             {
-                taskLogs = taskLogs.Where(x => x.ResultOperation == model.ResultOperation);
+                switch (model.ResultOperationOption)
+                {
+                    case FilterOptions.Equal:
+                        taskLogs = taskLogs.Where(x => x.ResultOperation == model.ResultOperation).ToList();
+                        break;
+                    case FilterOptions.NotEqual:
+                        taskLogs = taskLogs.Where(x => x.ResultOperation != model.ResultOperation).ToList();
+                        break;
+                    case FilterOptions.More:
+                        taskLogs = taskLogs.Where(x => string.Compare(model.ResultOperation.ToString(), x.ResultOperation.ToString()) > 0).ToList();
+                        break;
+                    case FilterOptions.Less:
+                        taskLogs = taskLogs.Where(x => string.Compare(model.ResultOperation.ToString(), x.ResultOperation.ToString()) < 0).ToList();
+                        break;
+                    case FilterOptions.MoreEqual:
+                        taskLogs = taskLogs.Where(x => string.Compare(model.ResultOperation.ToString(), x.ResultOperation.ToString()) >= 0).ToList();
+                        break;
+                    case FilterOptions.LessEqual:
+                        taskLogs = taskLogs.Where(x => string.Compare(model.ResultOperation.ToString(), x.ResultOperation.ToString()) <= 0).ToList();
+                        break;
+                    default:
+                        break;
+                }
             }
             if (!string.IsNullOrEmpty(model.FileName))
             {
-                //if (model.NotEqualFileName)
-                //{
-                //    taskLogs = taskLogs.Where(x => x.FileName != model.FileName);
-                //}
-                //else
-                //{
-                //    taskLogs = taskLogs.Where(x => x.FileName == model.FileName);
-                //}
+                switch (model.FileNameOption)
+                {
+                    case FilterOptions.Equal:
+                        taskLogs = taskLogs.Where(x => x.FileName == model.FileName).ToList();
+                        break;
+                    case FilterOptions.NotEqual:
+                        taskLogs = taskLogs.Where(x => x.FileName != model.FileName).ToList();
+                        break;
+                    case FilterOptions.More:
+                        taskLogs = taskLogs.Where(x => string.Compare(model.FileName, x.FileName) > 0).ToList();
+                        break;
+                    case FilterOptions.Less:
+                        taskLogs = taskLogs.Where(x => string.Compare(model.FileName, x.FileName) < 0).ToList();
+                        break;
+                    case FilterOptions.MoreEqual:
+                        taskLogs = taskLogs.Where(x => string.Compare(model.FileName, x.FileName) >= 0).ToList();
+                        break;
+                    case FilterOptions.LessEqual:
+                        taskLogs = taskLogs.Where(x => string.Compare(model.FileName, x.FileName) <= 0).ToList();
+                        break;
+                    default:
+                        break;
+                }
             }
             if (!string.IsNullOrEmpty(model.Text))
             {
-                taskLogs = taskLogs.Where(x => x.ResultText == model.Text);
+                switch (model.TextOption)
+                {
+                    case FilterOptions.Equal:
+                        taskLogs = taskLogs.Where(x => x.ResultText == model.Text).ToList();
+                        break;
+                    case FilterOptions.NotEqual:
+                        taskLogs = taskLogs.Where(x => x.ResultText != model.Text).ToList();
+                        break;
+                    case FilterOptions.More:
+                        taskLogs = taskLogs.Where(x => string.Compare(model.Text, x.ResultText) > 0).ToList();
+                        break;
+                    case FilterOptions.Less:
+                        taskLogs = taskLogs.Where(x => string.Compare(model.Text, x.ResultText) < 0).ToList();
+                        break;
+                    case FilterOptions.MoreEqual:
+                        taskLogs = taskLogs.Where(x => string.Compare(model.Text, x.ResultText) >= 0).ToList();
+                        break;
+                    case FilterOptions.LessEqual:
+                        taskLogs = taskLogs.Where(x => string.Compare(model.Text, x.ResultText) <= 0).ToList();
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            switch (model.FieldSortLogs)
+            {
+                case FieldSortLogs.Date:
+                    if (model.SortLogs == SortLogs.Ascending)
+                    {
+                        taskLogs = taskLogs.OrderBy(x => x.DateTimeLog).ToList();
+                    }
+                    else
+                    {
+                        taskLogs = taskLogs.OrderByDescending(x => x.DateTimeLog).ToList();
+                    }
+                    break;
+                case FieldSortLogs.Task:
+                    if (model.SortLogs == SortLogs.Ascending)
+                    {
+                        taskLogs = taskLogs.OrderBy(x => x.TaskId).ToList();
+                    }
+                    else
+                    {
+                        taskLogs = taskLogs.OrderByDescending(x => x.TaskId).ToList();
+                    }
+                    break;
+                case FieldSortLogs.Operation:
+                    if (model.SortLogs == SortLogs.Ascending)
+                    {
+                        taskLogs = taskLogs.OrderBy(x => x.OperationName).ToList();
+                    }
+                    else
+                    {
+                        taskLogs = taskLogs.OrderByDescending(x => x.OperationName).ToList();
+                    }
+                    break;
+                case FieldSortLogs.Result:
+                    if (model.SortLogs == SortLogs.Ascending)
+                    {
+                        taskLogs = taskLogs.OrderBy(x => x.ResultOperation).ToList();
+                    }
+                    else
+                    {
+                        taskLogs = taskLogs.OrderByDescending(x => x.ResultOperation).ToList();
+                    }
+                    break;
+                case FieldSortLogs.FileName:
+                    if (model.SortLogs == SortLogs.Ascending)
+                    {
+                        taskLogs = taskLogs.OrderBy(x => x.FileName).ToList();
+                    }
+                    else
+                    {
+                        taskLogs = taskLogs.OrderByDescending(x => x.FileName).ToList();
+                    }
+                    break;
+                default:
+                    break;
             }
             switch (model.FieldSortLogs)
             {
@@ -548,7 +845,7 @@ public class TaskController(ITaskService taskService,
     public async Task<IActionResult> UnlockTask(string taskId)
     {
         await lockService.Unlock(taskId);
-        await userLogService.AddLog($"Разблокировка задачи {taskId}","");
+        await userLogService.AddLog($"Разблокировка задачи {taskId}", JsonSerializer.Serialize(""));
         return NoContent();
     }
     [HttpGet]

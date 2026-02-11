@@ -6,12 +6,72 @@
 }
 
 <div class="main-content">
+    <div class="table-toolbar">
+        <div class="toolbar-left">
+            <div class="filter-wrapper">
+                <div class="btn-full btn-filter" onclick="ShowHideSubMenu('locked-filter')">
+                    Фильтр
+                </div>
+                <div class="filter" id="locked-filter">
+                    <div class="filter-body" id="locked-filter-form">
+                        <div class="filter-body-row">
+                            <div class="filter-body-column">
+                                <div class="input-with-label">
+                                    <label >Дата С</label>
+                                    <input type="date" id="dateBeginFilter">
+                                </div>
+                                <div class="input-with-label">
+                                    <label >Дата По</label>
+                                    <input type="date" id="dateEndFilter">
+                                </div>
+                                <div class="input-with-label">
+                                    <label>Задача</label>
+                                    <input id="taskIdFilter">
+                                    <div class="select-wrapper-options">
+                                        <select style="width: 50px;" id="taskIdOption" asp-items="Html.GetEnumSelectList<FilterOptions>()"></select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="filter-body-column">
+                                <div class="input-with-label">
+                                    <label>Время С</label>
+                                    <input type="time" step="1" id="timeBeginFilter">
+                                </div>
+
+                                <div class="input-with-label">
+                                    <label>Вреям По</label>
+                                    <input type="time" step="1" id="timeEndFilter">
+                                </div>
+                                <div class="input-with-label">
+                                    <label>Пользователь</label>
+                                    <input id="userFilter">
+                                    <div class="select-wrapper-options">
+                                        <select style="width: 50px;" id="userOption" asp-items="Html.GetEnumSelectList<FilterOptions>()"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="filter-footer">
+                        <button class="btn-full" onclick="ResetFilterLockedTask()">
+                            Сбросить
+                        </button>
+                        <button class="btn-full" onclick="FilterLockedTask()">
+                            Поиск
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
     <div class="main-table grid" scrollable="">
         <div class="table-header-div">
             <table class="table-header">
                 <colgroup>
                     <col style="min-width:170px;width:200px;">
                     <col style="min-width:135px;width:200px;">
+                    <col style="min-width:140px;width:200px;">
                     <col style="min-width:140px;width:200px;">
                     <col style="min-width:140px;width:100%;">
                 </colgroup>
@@ -28,6 +88,11 @@
                             <div class="sorter"></div>
                         </th>
                         <th>
+                            <p>Дата</p>
+                            <div class="separate"></div>
+                            <div class="sorter"></div>
+                        </th>
+                        <th>
                             <p>Время</p>
                             <div class="separate"></div>
                             <div class="sorter"></div>
@@ -40,10 +105,11 @@
             </table>
         </div>
         <div class="table-body-div">
-            <table class="table-body" id="tableTasks">
+            <table class="table-body" id="tableLockedTasks">
                 <colgroup>
                     <col style="min-width:170px;width:200px;">
                     <col style="min-width:135px;width:200px;">
+                    <col style="min-width:140px;width:200px;">
                     <col style="min-width:140px;width:200px;">
                     <col style="min-width:140px;width:100%;">
                 </colgroup>
@@ -53,7 +119,8 @@
                         <tr>
                             <td><p>@item.EntityId</p></td>
                             <td><p>@item.UserId</p></td>
-                            <td><p>@item.Created</p></td>
+                            <td><p>@item.Created.ToShortDateString()</p></td>
+                            <td><p>@item.Created.ToLongTimeString()</p></td>
                             <td>
                                 <div class="group-btns-add">
                                     <div class="btn-add" onclick="ModalUnlockTask('@item.EntityId')">

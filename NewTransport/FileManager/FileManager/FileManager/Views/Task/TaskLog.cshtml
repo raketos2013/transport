@@ -25,34 +25,19 @@
                     <form class="filter-body" method="post" asp-route-taskId="@ViewBag.TaskId" id="filter-form">
                         <div class="filter-body-row">
                             <div class="filter-body-column">
-                                
                                 <div class="input-with-label">
                                     <label asp-for="DateFrom"></label>
                                     <input type="date" asp-for="DateFrom">
-                                    <div class="select-wrapper-options">
-                                        <select style="width: 50px;" asp-for="DateFromOption" asp-items="Html.GetEnumSelectList<FilterOptions>()"></select>
-                                    </div>
                                 </div>
                                 <div class="input-with-label">
                                     <label asp-for="DateTo"></label>
                                     <input type="date" asp-for="DateTo">
-                                    <div class="select-wrapper-options">
-                                        <select style="width: 50px;" asp-for="DateToOption" asp-items="Html.GetEnumSelectList<FilterOptions>()"></select>
-                                    </div>
                                 </div>
                                 <div class="input-with-label">
-                                    <label asp-for="TimeFrom"></label>
-                                    <input type="time" asp-for="TimeFrom" step="1">
+                                    <label asp-for="StepNumber"></label>
+                                    <input asp-for="StepNumber" min="0">
                                     <div class="select-wrapper-options">
-                                        <select style="width: 50px;" asp-for="TimeFromOption" asp-items="Html.GetEnumSelectList<FilterOptions>()"></select>
-                                    </div>
-                                </div>
-
-                                <div class="input-with-label">
-                                    <label asp-for="TimeTo"></label>
-                                    <input type="time" asp-for="TimeTo" step="1">
-                                    <div class="select-wrapper-options">
-                                        <select style="width: 50px;" asp-for="TimeToOption" asp-items="Html.GetEnumSelectList<FilterOptions>()"></select>
+                                        <select style="width: 50px;" asp-for="StepNumberOption" asp-items="Html.GetEnumSelectList<FilterOptions>()"></select>
                                     </div>
                                 </div>
                                 
@@ -64,6 +49,10 @@
                                     <div class="select-wrapper-options">
                                         <select style="width: 50px;" asp-for="ResultOperationOption" asp-items="Html.GetEnumSelectList<FilterOptions>()"></select>
                                     </div>
+                                </div>
+                                <div class="input-with-label">
+                                    <label asp-for="PageSize"></label>
+                                    <input asp-for="PageSize">
                                 </div>
                                 <div class="input-with-label">
                                     <label asp-for="SortLogs"></label>
@@ -80,19 +69,22 @@
                             </div>
                             <div class="filter-body-column">
                                 <div class="input-with-label">
+                                    <label asp-for="TimeFrom"></label>
+                                    <input type="time" asp-for="TimeFrom" step="1">
+                                </div>
+
+                                <div class="input-with-label">
+                                    <label asp-for="TimeTo"></label>
+                                    <input type="time" asp-for="TimeTo" step="1">
+                                </div>
+                                <div class="input-with-label">
                                     <label asp-for="TaskId"></label>
                                     <input asp-for="TaskId">
                                     <div class="select-wrapper-options">
                                         <select style="width: 50px;" asp-for="TaskIdOption" asp-items="Html.GetEnumSelectList<FilterOptions>()"></select>
                                     </div>
                                 </div>
-                                <div class="input-with-label">
-                                    <label asp-for="StepNumber"></label>
-                                    <input asp-for="StepNumber" min="0">
-                                    <div class="select-wrapper-options">
-                                        <select style="width: 50px;" asp-for="StepNumberOption" asp-items="Html.GetEnumSelectList<FilterOptions>()"></select>
-                                    </div>
-                                </div>
+                                
                                
                                 
                                 <div class="input-with-label">
@@ -119,10 +111,7 @@
                                         <select style="width: 50px;" asp-for="FileNameOption" asp-items="Html.GetEnumSelectList<FilterOptions>()"></select>
                                     </div>
                                 </div>
-                                <div class="input-with-label">
-                                    <label asp-for="PageSize"></label>
-                                    <input asp-for="PageSize">
-                                </div>
+                                
                                 
                             </div>
                         </div>

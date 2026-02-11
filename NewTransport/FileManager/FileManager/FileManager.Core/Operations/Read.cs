@@ -1,4 +1,7 @@
-﻿using FileManager.Core.Constants;
+﻿using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Vml;
+using DocumentFormat.OpenXml.Wordprocessing;
+using FileManager.Core.Constants;
 using FileManager.Core.Entities;
 using FileManager.Core.Enums;
 using Microsoft.Extensions.DependencyInjection;
@@ -58,47 +61,80 @@ public class Read(TaskStepEntity step,
                     addresses = addressesAsync.Where(x => x.AddresseeGroupId == operation.AddresseeGroupId &&
                                                           x.IsActive == true).ToList();
                 }
+            }
 
-                Encoding encoding = Encoding.Default;
+            Encoding encoding = Encoding.Default;
+            isReadFile = true;
+
+            foreach (var file in files)
+            {
+                FileInfo fileInfo = new(file);
                 isReadFile = true;
+                fileName = System.IO.Path.GetFileName(fileInfo.FullName);
 
-                foreach (var file in files)
+                // файл в источнике
+                var taskLogsAsync = await _taskLogService.GetLogsByTaskId(TaskStep.TaskId);
+                var taskLogs = taskLogsAsync.FirstOrDefault(x => x.StepId == TaskStep.StepId &&
+                                                                 x.FileName == fileName);
+                if (operation != null)
                 {
-                    FileInfo fileInfo = new(file);
-                    isReadFile = true;
-                    fileName = Path.GetFileName(fileInfo.FullName);
-
-                    // файл в источнике
-                    var taskLogsAsync = await _taskLogService.GetLogsByTaskId(TaskStep.TaskId);
-                    var taskLogs = taskLogsAsync.FirstOrDefault(x => x.StepId == TaskStep.StepId &&
-                                                                     x.FileName == fileName);
-
                     if (!string.IsNullOrEmpty(operation.FindString))
                     {
-                        isReadFile = false;
-                        using StreamReader reader = new(file);
-                        string line;
-                        while ((line = reader.ReadLine()) != null)
+                        var findFile = infoFiles.FirstOrDefault(x => x.FullName == file);
+                        if (findFile != null)
                         {
-                            if (operation.SearchRegex)
+                            if (findFile.Extension == ".docx" || findFile.Extension == ".doc")
                             {
-                                Regex regex = new(operation.FindString);
-                                MatchCollection matches = regex.Matches(line);
-                                if (matches.Count > 0)
+                                StringBuilder textBuilder = new StringBuilder();
+
+                                using (WordprocessingDocument wordDoc = WordprocessingDocument.Open(file, false))
                                 {
-                                    isReadFile = true;
+                                    Body body = wordDoc.MainDocumentPart.Document.Body;
+
+                                    foreach (var paragraph in body.Elements<Paragraph>())
+                                    {
+                                        textBuilder.AppendLine(paragraph.InnerText);
+                                    }
+                                    Regex regexx = new(operation.FindString);
+                                    MatchCollection matchess = regexx.Matches(textBuilder.ToString());
+                                    if (matchess.Count > 0)
+                                    {
+                                        isReadFile = true;
+                                    }
+                                    else
+                                    {
+                                        isReadFile = false;
+                                    }
                                 }
+
                             }
                             else
                             {
-                                if (line.Contains(operation.FindString))
+                                isReadFile = false;
+                                using StreamReader reader = new(file);
+                                string line;
+                                while ((line = reader.ReadLine()) != null)
                                 {
-                                    isReadFile = true;
+                                    if (operation.SearchRegex)
+                                    {
+                                        Regex regex = new(operation.FindString);
+                                        MatchCollection matches = regex.Matches(line);
+                                        if (matches.Count > 0)
+                                        {
+                                            isReadFile = true;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (line.Contains(operation.FindString))
+                                        {
+                                            isReadFile = true;
+                                        }
+                                    }
                                 }
                             }
-                        }
+                        }                        
                     }
-
                     if (taskLogs != null)
                     {
                         if (operation.FileInSource == FileInSource.OneDay)
@@ -106,14 +142,19 @@ public class Read(TaskStepEntity step,
                             isReadFile = false;
                         }
                     }
-                    if (isReadFile)
-                    {
-                            bufferFiles.Add(file);
-                            successFiles.Add(fileName);
-                            await _taskLogger.StepLog(TaskStep, "Файл успешно добавлен в буфер", fileName);
-                    } 
                 }
+                
+                if (isReadFile)
+                {
+                    bufferFiles.Add(file);
+                    successFiles.Add(fileName);
+                    await _taskLogger.StepLog(TaskStep, "Файл успешно добавлен в буфер", fileName);
+                }
+            }
+            await _taskLogger.StepLog(TaskStep, $"{bufferFiles.Count} файлов добавлено в BUFFER");
 
+            if (operation != null)
+            {
                 bool isBreakTask = false;
                 switch (operation.ExpectedResult)
                 {
@@ -146,22 +187,22 @@ public class Read(TaskStepEntity step,
                         {
                             if (operation.BreakTaskAfterError)
                             {
-                                isBreakTask = false;
+                                isBreakTask = true;
                             }
                             else
                             {
-                                isBreakTask = true;
+                                isBreakTask = false;
                             }
                         }
                         else
                         {
                             if (operation.BreakTaskAfterError)
                             {
-                                isBreakTask = true;
+                                isBreakTask = false;
                             }
                             else
                             {
-                                isBreakTask = false;
+                                isBreakTask = true;
                             }
                         }
                         break;
@@ -178,15 +219,12 @@ public class Read(TaskStepEntity step,
                     default:
                         break;
                 }
-                await _taskLogger.StepLog(TaskStep, $"{bufferFiles.Count} файлов добавлено в BUFFER");
+                
                 if (isBreakTask)
                 {
                     await _taskLogger.StepLog(TaskStep, $"Прерывание задачи: несоответствие ожидаемому результату", "", ResultOperation.W);
                     _nextStep = null;
                 }
-
-                
-
             }
         }
         else

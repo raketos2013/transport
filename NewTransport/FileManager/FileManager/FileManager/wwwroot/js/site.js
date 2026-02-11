@@ -1381,3 +1381,174 @@ function ShowFiles(stepNumber) {
         }
     });
 }
+
+
+function FilterLockedTask() {
+    var table, tr, td, i, option, userOption, taskIdOption;
+
+    table = document.getElementById("tableLockedTasks");
+    tr = table.getElementsByTagName("tr");
+
+    let taskId, name, timeBegin, timeEnd, dateBegin, dateEnd, group;
+    taskId = document.getElementById('taskIdFilter').value;
+    user = document.getElementById('userFilter').value;
+    timeBegin = document.getElementById('timeBeginFilter').value;
+    timeEnd = document.getElementById('timeEndFilter').value;
+    dateBegin = document.getElementById('dateBeginFilter').value;
+    dateEnd = document.getElementById('dateEndFilter').value;
+    
+    taskIdOption = document.querySelector('#taskIdOption').value;
+    userOption = document.querySelector('#userOption').value;
+
+
+    const start = new Date(dateBegin);
+    const end = new Date(dateEnd);
+
+    if (start) start.setHours(0, 0, 0, 0);
+    if (end) end.setHours(0, 0, 0, 0);
+
+    for (i = 0; i < tr.length; i++) {
+        //td = tr[i].getElementsByTagName("td")[2];
+        var td2 = tr[i].getElementsByTagName("td")[2];
+        var td3 = tr[i].getElementsByTagName("td")[3];
+        const date1 = ParseDate(td2.innerText);
+        const time1 = TimeToSeconds(td3.innerText);
+        tr[i].style.display = "";
+        if (taskId != "") {
+            td = tr[i].getElementsByTagName("td")[0];
+            if (td) {
+                switch (taskIdOption) {
+                    case "0":
+                        if (!(td.innerText == taskId)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case "1":
+                        if (!(td.innerText != taskId)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case "2":
+                        if (!(td.innerText > taskId)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case "3":
+                        if (!(td.innerText < taskId)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case "4":
+                        if (!(td.innerText >= taskId)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case "5":
+                        if (!(td.innerText <= taskId)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                }
+            }
+        }
+        if (user != "") {
+            td = tr[i].getElementsByTagName("td")[1];
+            if (td) {
+                switch (taskIdOption) {
+                    case "0":
+                        if (!(td.innerText == user)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case "1":
+                        if (!(td.innerText != user)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case "2":
+                        if (!(td.innerText > user)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case "3":
+                        if (!(td.innerText < user)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case "4":
+                        if (!(td.innerText >= user)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case "5":
+                        if (!(td.innerText <= user)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                }
+            }
+        }
+        if (dateBegin != "") {
+            td = tr[i].getElementsByTagName("td")[2];
+           
+            if (td) {
+                if (date1 < start) {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+        if (dateEnd != "") {
+            td = tr[i].getElementsByTagName("td")[2];
+            if (td) {
+                if (date1 > end) {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+        if (timeBegin != "") {
+            td = tr[i].getElementsByTagName("td")[3];
+            const startSeconds = TimeToSeconds(timeBegin);
+            if (td) {
+                if (time1 < startSeconds) {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+        if (timeEnd != "") {
+            td = tr[i].getElementsByTagName("td")[3];
+            const endSeconds = TimeToSeconds(timeEnd);
+            if (td) {
+                if (time1 > endSeconds) {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+    ShowHideSubMenu('locked-filter');
+}
+
+function ParseDate(ddmmyyyy) {
+    const [day, month, year] = ddmmyyyy.split('.').map(Number);
+    return new Date(year, month - 1, day);
+}
+
+function TimeToSeconds(timeStr) {
+    const [hours, minutes, seconds] = timeStr.split(':').map(Number);
+    return hours * 3600 + minutes * 60 + seconds;
+}
+
+function ResetFilterLockedTask() {
+    table = document.getElementById("tableLockedTasks");
+    tr = table.getElementsByTagName("tr");
+    for (i = 0; i < tr.length; i++) {
+        tr[i].style.display = "";
+    }
+    document.getElementById('taskIdFilter').value = "";
+    document.getElementById('userFilter').value = "";
+    document.getElementById('timeBeginFilter').value = "";
+    document.getElementById('timeEndFilter').value = "";
+    document.getElementById('dateBeginFilter').value = "";
+    document.getElementById('dateEndFilter').value = "";
+    document.querySelector('#taskIdOption').value = "0";
+    document.querySelector('#userOption').value = "0";
+}

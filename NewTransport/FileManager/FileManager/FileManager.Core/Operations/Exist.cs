@@ -99,22 +99,22 @@ public class Exist(TaskStepEntity step,
                 {
                     if (breakTaskAfterError)
                     {
-                        isBreakTask = false;
+                        isBreakTask = true;
                     }
                     else
                     {
-                        isBreakTask = true;
+                        isBreakTask = false;
                     }
                 }
                 else
                 {
                     if (breakTaskAfterError)
                     {
-                        isBreakTask = true;
+                        isBreakTask = false;
                     }
                     else
                     {
-                        isBreakTask = false;
+                        isBreakTask = true;
                     }
                 }
                 break;

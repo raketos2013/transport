@@ -110,7 +110,7 @@ public class Move(TaskStepEntity step,
                 // файл в назначении
                 string destFileName = fileName;
                 fileNameDestination = Path.Combine(TaskStep.Destination, destFileName);
-                if (File.Exists(fileNameDestination))
+                if (operation != null && File.Exists(fileNameDestination))
                 {
                     (isOverwriteFile, destFileName) = await ExistInDestination(operation, fileName);
                 }

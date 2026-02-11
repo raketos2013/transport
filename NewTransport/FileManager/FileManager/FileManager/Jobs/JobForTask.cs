@@ -3,7 +3,15 @@ using FileManager.Core.Enums;
 using FileManager.Core.Interfaces.Operations;
 using FileManager.Core.Interfaces.Services;
 using FileManager.Core.OperationFactory;
+using FileManager.Core.ViewModels;
+using Microsoft.Extensions.Options;
 using Quartz;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text.Json;
+using System.Threading.Tasks;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace FileManager.Jobs;
 
@@ -22,11 +30,32 @@ public class JobForTask(IServiceScopeFactory scopeFactory) : IJob
         var addresseeService = scope.ServiceProvider.GetRequiredService<IAddresseeService>();
 
         logger.LogInformation($"<<< start task - {context.JobDetail.Key.Name}");
-
         var taskChecked = await taskService.GetTaskById(context.JobDetail.Key.Name);
         if (taskChecked == null || !taskChecked.IsActive)
         {
             return;
+        }
+        var calendarDay = await CheckCalendar();
+        switch (taskChecked.DayActive)
+        {
+            case DayActive.WORK:
+                if (!calendarDay)
+                {
+                    logger.LogInformation($"<<< task not work at this day - {context.JobDetail.Key.Name}");
+                    return;
+                }
+                break;
+            case DayActive.HOLIDAY:
+                if (calendarDay)
+                {
+                    logger.LogInformation($"<<< task not work at this day - {context.JobDetail.Key.Name}");
+                    return;
+                }
+                break;
+            case DayActive.ALL:
+                break;
+            default:
+                break;
         }
         var statusAsync = await taskService.GetTaskStatuses();
         var status = statusAsync.First(x => x.TaskId == context.JobDetail.Key.Name);
@@ -186,6 +215,53 @@ public class JobForTask(IServiceScopeFactory scopeFactory) : IJob
                 logger.LogError($"{DateTime.Now} Ошибка задачи: {context.JobDetail.Key.Name} - {ex2.Message}");
             }
         }
+    }
+
+    private async Task<bool> CheckCalendar()
+    {
+        using var scope = scopeFactory.CreateScope();
+        IHttpClientFactory _httpClientFactory = scope.ServiceProvider.GetRequiredService<IHttpClientFactory>();
+        IOptions<AuthTokenConfiguration> _authTokenConfigurations = scope.ServiceProvider.GetRequiredService<IOptions<AuthTokenConfiguration>>();
+
+        var client = _httpClientFactory.CreateClient("Calendar");
+
+        var data = new Dictionary<string, string>
+                    {
+                        { "grant_type", "client_credentials" },
+                        { "client_id", _authTokenConfigurations.Value.ClientId },
+                        { "client_secret", _authTokenConfigurations.Value.ClientSecret }
+                    };
+        var content = new FormUrlEncodedContent(data);
+        var responseToken = await client.PostAsync(_authTokenConfigurations.Value.TokenUrl, content);
+
+        if (responseToken.IsSuccessStatusCode)
+        {
+            var jsonResponse = await responseToken.Content.ReadAsStringAsync();
+            var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(jsonResponse);
+
+            if (tokenResponse != null)
+            {
+                var date = DateTime.Today.ToString("yyyy-MM-dd");
+                string requestString = "http://sca-iis-dev:8080/reference-book/calendar/working-day-rb/" + date;
+                var request = new HttpRequestMessage(HttpMethod.Head, requestString);
+
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenResponse.access_token);
+                var response = await client.SendAsync(request);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("Day is WORK");
+                    return true;
+                }
+                else if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    
+                    Console.WriteLine("Day is NOT WORK");
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }
 

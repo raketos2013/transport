@@ -1,0 +1,1470 @@
+﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
+// for details on configuring this project to bundle and minify static web assets.
+
+// Write your JavaScript code.
+
+
+
+
+window.addEventListener('unload', function (event) {
+    document.cookie = "ddddd" + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+});
+
+function ShowTitlePage(text) {
+    document.getElementById('title-page').innerText = text;
+}
+
+var idSelectedTask;
+var selectedTask = 0;
+var isShowActive = false;
+var isShowActiveSteps = false;
+var isShowActiveAddressee = false;
+var tableTasks;
+var tr;
+var isShowActiveAddressee = false;
+//var selectGroup = "Все";
+var selectAddresseeGroup;
+var selectTask;
+function ShowActiveTask() {
+    isShowActive = !isShowActive;
+    ActiveTask();
+}
+
+function ActiveTask() {
+    if (isShowActive) {
+        document.getElementById('titleButton').innerText = "Показать";
+    } else {
+        document.getElementById('titleButton').innerText = "Скрыть";
+    }
+
+    var table, tr, i;
+    table = document.getElementById("tableTasks");
+    tr = table.getElementsByTagName("tr");
+
+    for (i = 0; i < tr.length; i++) {
+        var qwe = tr[i].getElementsByTagName("td")[7];
+        var chl1 = qwe.firstElementChild.firstElementChild.firstElementChild.checked;
+        if (isShowActive) {
+            if (!chl1) {
+                tr[i].style.display = "none";
+            }
+        } else {
+            tr[i].style.display = "";
+        }
+    }
+}
+
+function ShowActiveSteps() {
+    isShowActiveSteps = !isShowActiveSteps;
+    ActiveSteps();
+}
+function ActiveSteps() {
+    if (isShowActiveSteps) {
+        document.getElementById('active-step-btn').innerText = "Показать ";
+    } else {
+        document.getElementById('active-step-btn').innerText = "Скрыть ";
+    }
+
+    var table, tr, i;
+
+    table = document.getElementById("tableSteps");
+    tr = table.getElementsByTagName("tr");
+    for (i = 0; i < tr.length; i++) {
+        var qwe = tr[i].getElementsByTagName("td")[2];
+        var chl1 = qwe.firstElementChild.firstElementChild.firstElementChild.checked;
+        if (isShowActiveSteps) {
+            if (!chl1) {
+                tr[i].style.display = "none";
+            }
+        } else {
+            tr[i].style.display = "";
+        }
+    }
+}
+
+
+function ShowActiveAddressee() {
+    isShowActiveAddressee = !isShowActiveAddressee;
+    ActiveAddressee();
+}
+
+function ActiveAddressee() {
+    if (isShowActiveAddressee) {
+        document.getElementById('active-addressee-btn').innerText = "Показать ";
+    } else {
+        document.getElementById('active-addressee-btn').innerText = "Скрыть ";
+    }
+
+    var table, tr, i;
+
+    table = document.getElementById("tableAddresses");
+    tr = table.getElementsByTagName("tr");
+    for (i = 0; i < tr.length; i++) {
+        var qwe = tr[i].getElementsByTagName("td")[5];
+        var chl1 = qwe.firstElementChild.firstElementChild.firstElementChild.checked;
+        if (isShowActiveAddressee) {
+            if (!chl1) {
+                tr[i].style.display = "none";
+            }
+        } else {
+            tr[i].style.display = "";
+        }
+    }
+}
+
+
+
+
+
+/*Сворачивает меню*/
+function HideMenu() {
+    var main_part = document.querySelector(".main-part");
+    var menu_open = document.getElementById("menu-open");
+    var menu_close = document.getElementById("menu-close");
+    var menu_item_text = document.querySelectorAll(".menu-item span");
+    var menu_item_svg = document.querySelectorAll(".menu-item svg");
+    var left_menu = document.getElementById("left-menu");
+    var menu_logo = document.getElementById("menu-logo");
+    var header_logo = document.getElementById("header-logo");
+    var sub_menu_tasks = document.querySelector(".sub-menu#sub-menu-tasks");
+    var sub_menu_groups = document.querySelector(".sub-menu#sub-menu-groups");
+    main_part.setAttribute('style', 'width: calc(100vw - 54px);');
+    menu_open.style.display = "block";
+    menu_close.style.display = "none";
+    for (i = 0; i < menu_item_text.length; i++) {
+        menu_item_text[i].setAttribute('style', 'display:none;')
+    }
+    left_menu.setAttribute('style', 'width:54px;');
+    menu_logo.style.display = "none";
+    for (i = 0; i < menu_item_svg.length; i++) {
+        menu_item_svg[i].setAttribute('style', 'margin-right:0px;')
+    }
+    menu_open.setAttribute('style', 'margin-right:0px;');
+    sub_menu_tasks.setAttribute('style', 'left: 54px;');
+    sub_menu_groups.setAttribute('style', 'left: 54px;');
+    header_logo.setAttribute('style', 'visibility: visible;');
+}
+
+/*Раскрывает меню*/
+function OpenMenu() {
+    var main_part = document.querySelector(".main-part");
+    var menu_open = document.getElementById("menu-open");
+    var menu_close = document.getElementById("menu-close");
+    var menu_item_text = document.querySelectorAll(".menu-item span");
+    var menu_item_svg = document.querySelectorAll(".menu-item svg");
+    var left_menu = document.getElementById("left-menu");
+    var menu_logo = document.getElementById("menu-logo");
+    var header_logo = document.getElementById("header-logo");
+    var sub_menu_tasks = document.querySelector(".sub-menu#sub-menu-tasks");
+    var sub_menu_groups = document.querySelector(".sub-menu#sub-menu-groups");
+    main_part.setAttribute('style', 'width: calc(100vw - 235px);');
+    menu_open.style.display = "none";
+    menu_close.style.display = "block";
+    for (i = 0; i < menu_item_text.length; i++) {
+        menu_item_text[i].setAttribute('style', 'display:block;')
+    }
+    left_menu.setAttribute('style', 'width:235px;');
+    menu_logo.style.display = "block";
+
+    for (i = 0; i < menu_item_svg.length; i++) {
+        menu_item_svg[i].setAttribute('style', 'margin-right: 12px;')
+    }
+    sub_menu_tasks.setAttribute('style', 'left: 235px;');
+    sub_menu_groups.setAttribute('style', 'left: 235px;');
+    header_logo.setAttribute('style', 'visibility: hidden;');
+}
+
+/*Меню второго уровня*/
+function ShowHideSubMenu(element_id) {
+    if (document.getElementById(element_id)) {
+        var obj = document.getElementById(element_id);
+        if (obj.style.display != "block") {
+            obj.style.display = "block";
+        }
+        else obj.style.display = "none";
+    }
+}
+
+function CloseFilters() {
+    //ShowHideSubMenu('task-filter'), ShowHideSubMenu('filter-userLog'), ShowHideSubMenu('filter'), ShowHideSubMenu('locked-filter')
+    let filters = ["task-filter", "filter-userLog", "filter", "locked-filter"];
+    for (var i = 0; i < filters.length; i++) {
+        if (document.getElementById(filters[i])) {
+            var obj = document.getElementById(filters[i]);
+            if (obj.style.display != "none") {
+                obj.style.display = "none";
+            }
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const block2 = document.getElementById('sub-menu-groups');
+    window.addEventListener('click', e => {
+        const target = e.target
+        if (!target.closest('#sub-menu-groups') && !target.closest('.menu-item.groups')) {
+            block2.style.display = "none";
+        }
+    })
+})
+
+
+
+function ShowModal(element_id) {
+    document.getElementById(element_id).style.display = "flex";
+}
+
+function CloseModal(element_id) {
+    document.getElementById(element_id).style.display = "none";
+}
+
+
+function TaskDetails(taskId) {
+    $.ajax({
+        method: 'GET',
+        url: '/Task/TaskDetails',
+        data: { "taskId": taskId },
+        dataType: 'html',
+        success: function (result) {
+            $('#task-details-content').empty();
+            $('#task-details-content').append(result);
+            ShowModal('modal-task-info');
+        }
+    });
+}
+
+
+function EditTask(taskId) {
+    $.ajax({
+        method: 'GET',
+        url: '/Task/IsLockedTask',
+        data: {
+            "taskId": taskId
+        },
+        dataType: 'html',
+        success: function (result) {
+            let jsonObj = JSON.parse(result)
+            if (jsonObj.isLocked == false) {
+                $.ajax({
+                    method: 'GET',
+                    url: '/Task/EditTask',
+                    data: { "taskId": taskId },
+                    dataType: 'html',
+                    success: function (result) {
+                        $('#edit-task-content').empty();
+                        $('#edit-task-content').append(result);
+                        ShowModal('modal-edit-task');
+                    },
+                    error: function (jqXHR, exception) {
+                        console.log("ERROR!!!")
+                        if (jqXHR.status === 0) {
+                            console.log('Not connect. Verify Network.');
+                        } else if (jqXHR.status == 404) {
+                            console.log('Requested page not found (404).');
+                        } else if (jqXHR.status == 500) {
+                            console.log('Internal Server Error (500).');
+                        } else if (exception === 'parsererror') {
+                            console.log('Requested JSON parse failed.');
+                        } else if (exception === 'timeout') {
+                            console.log('Time out error.');
+                        } else if (exception === 'abort') {
+                            console.log('Ajax request aborted.');
+                        } else {
+                            console.log("@@@@@@@@@@@@@@")
+                            window.location.reload();
+                        }
+                    }
+                });
+            } else if (jsonObj.isLocked == true) {
+                ShowModal('modal-locked-task')
+                document.getElementById('userId-locked-task').innerText = jsonObj.userId
+            }
+
+        }
+    });
+}
+
+function CreateTask() {
+    $.ajax({
+        method: 'GET',
+        url: 'Task/CreateTask',
+        //data: {},
+        dataType: 'html',
+        success: function (result) {
+            $('#create-task-content').empty();
+            $('#create-task-content').append(result);
+            ShowModal('modal-add-task');
+        }
+    });
+}
+
+function UserLogDetails(dateTime, userName) {
+    $.ajax({
+        method: 'GET',
+        url: '/UserLogs/Details',
+        data: {
+            "dateTime": dateTime,
+            "username": userName
+        },
+        dataType: 'html',
+        success: function (result) {
+            $('#userlog-details-content').empty();
+            $('#userlog-details-content').append(result);
+            ShowModal('modal-log-details');
+        }
+    });
+}
+function SetTaskGroup(taskGroup) {
+    //document.cookie = "selectedTaskGroup=" + taskGroup;
+    //selectGroup = taskGroup;
+}
+
+function getCookie(name) {
+    let matches = document.cookie.match(new RegExp(
+        "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+    ));
+    return matches ? decodeURIComponent(matches[1]) : undefined;
+}
+
+function CreateAddressee() {
+    $.ajax({
+        method: 'GET',
+        url: '/AddresseeGroup/CreateAddressee',
+        //data: {},
+        dataType: 'html',
+        success: function (result) {
+            $('#create-addressee-content').empty();
+            $('#create-addressee-content').append(result);
+            ShowModal('modal-add-group');
+        }
+    });
+
+}
+
+function CreateStep() {
+    var cookieTaskId = getCookie("selectedTask");
+    $.ajax({
+        method: 'GET',
+        url: '/Task/IsLockedTask',
+        data: {
+            "taskId": cookieTaskId
+        },
+        dataType: 'html',
+        success: function (result) {
+            let jsonObj = JSON.parse(result)
+            if (jsonObj.isLocked == false) {
+                $.ajax({
+                    method: 'GET',
+                    url: '/Step/CreateStep',
+                    data: { "taskId": cookieTaskId },
+                    dataType: 'html',
+                    success: function (result) {
+                        $('#create-step-content').empty();
+                        $('#create-step-content').append(result);
+                        ShowModal('modal-add-step');
+                    }
+                });
+            } else if (jsonObj.isLocked == true) {
+                ShowModal('modal-locked-task')
+                document.getElementById('userId-locked-task').innerText = jsonObj.userId
+            }
+
+        }
+    });
+
+
+}
+
+function ShowStepList() {
+    var cookieTask = getCookie("selectedTask");
+    document.getElementById('name-task').innerText = cookieTask;
+    if (cookieTask != undefined) {
+        selectTask = cookieTask;
+    }
+    //document.getElementById('breadcrumbs-task').innerText = selectTask;
+    /*var cookieGroup = getCookie("selectedTaskGroup");
+    if (cookieGroup != undefined) {
+        document.getElementById('breadcrumbs-task-group').innerText = cookieGroup;
+    }*/
+    $.ajax({
+        method: 'POST',
+        url: '/Step/StepList',
+        data: { "taskId": selectTask },
+        dataType: 'html',
+        success: function (result) {
+            $('#steps').empty();
+            $('#steps').append(result);
+            SelectRow("tableSteps");
+            tableSteps = document.getElementById("tableSteps");
+            tr = tableSteps.getElementsByTagName("tr");
+            cookieStepNumber = getCookie("selectedStepNumber");
+            for (var i = 0; i < tr.length; i++) {
+                var td = tr[i].getElementsByTagName("td")[1];
+                if (td.innerText == cookieStepNumber) {
+                    tr[i].classList.add('selected-tr');
+                } else {
+                    tr[i].classList.remove('selected-tr');
+                }
+            }
+            ActiveSteps();
+        }
+    });
+}
+
+function StepDetails(taskId, stepNumber) {
+    document.cookie = "selectedStepNumber=" + stepNumber + "; path=/";
+    $.ajax({
+        method: 'GET',
+        url: '/Step/StepDetails',
+        data: {
+            "taskId": taskId,
+            "stepNumber": stepNumber
+        },
+        dataType: 'html',
+        success: function (result) {
+            $('#info-step-content').empty();
+            $('#info-step-content').append(result);
+            ShowModal('modal-step-info');
+        }
+    });
+}
+
+function EditStep(taskId, stepNumber) {
+    var cookieTaskId = getCookie("selectedTask");
+    $.ajax({
+        method: 'GET',
+        url: '/Task/IsLockedTask',
+        data: {
+            "taskId": cookieTaskId
+        },
+        dataType: 'html',
+        success: function (result) {
+            let jsonObj = JSON.parse(result)
+            if (jsonObj.isLocked == false) {
+                $.ajax({
+                    method: 'GET',
+                    url: '/Step/EditStep',
+                    data: {
+                        "taskId": taskId,
+                        "stepNumber": stepNumber
+                    },
+                    dataType: 'html',
+                    success: function (result) {
+                        $('#edit-step-content').empty();
+                        $('#edit-step-content').append(result);
+                        ShowModal('modal-edit-step');
+                        ShowDestination();
+                    }
+                });
+            } else if (jsonObj.isLocked == true) {
+                ShowModal('modal-locked-task')
+                document.getElementById('userId-locked-task').innerText = jsonObj.userId
+            }
+
+        }
+    });
+
+}
+function ShowDestination() {
+    var select = document.querySelector('#operation-select');
+    if (select.selectedIndex == 3 || select.selectedIndex == 4 ||
+        select.selectedIndex == 6 || select.selectedIndex == 7) {
+        document.getElementById('input-destination').style.display = 'none';
+    } else {
+        document.getElementById('input-destination').style.display = 'flex';
+    }
+}
+
+function ShowEditStepModal() {
+    cookieTaskId = getCookie("selectedTask");
+    cookieStepNumber = getCookie("selectedStepNumber");
+    EditStep(cookieTaskId, cookieStepNumber);
+}
+
+function replaceStep(operation) {
+    var cookieTaskId = getCookie("selectedTask");
+    $.ajax({
+        method: 'GET',
+        url: '/Task/IsLockedTask',
+        data: {
+            "taskId": cookieTaskId
+        },
+        dataType: 'html',
+        success: function (result) {
+            let jsonObj = JSON.parse(result)
+            if (jsonObj.isLocked == false) {
+                var cookieStepNumber = getCookie("selectedStepNumber");
+                $.ajax({
+                    method: 'POST',
+                    url: '/Step/ReplaceStep',
+                    data: {
+                        "taskId": cookieTaskId,
+                        "numberStep": cookieStepNumber,
+                        "operation": operation
+                    },
+                    dataType: 'html',
+                    success: function (result) {
+                        if (operation == 'down') {
+                            cookieStepNumber = Number(cookieStepNumber) + 1;
+                        } else if (operation == 'up') {
+                            cookieStepNumber = Number(cookieStepNumber) - 1;
+                        } else if (operation == 'maxdown') {
+                            var table = document.getElementById('tableSteps')
+                            var rows = table.rows.length;
+                            cookieStepNumber = rows;
+                        } else if (operation == 'maxup') {
+                            cookieStepNumber = 1;
+                        }
+                        document.cookie = "selectedStepNumber=" + cookieStepNumber + "; path=/";
+                        ShowStepList();
+                    }
+                });
+            } else if (jsonObj.isLocked == true) {
+                ShowModal('modal-locked-task')
+                document.getElementById('userId-locked-task').innerText = jsonObj.userId
+            }
+        }
+    });
+}
+
+function SelectRow(tableId) {
+    tableSteps = document.getElementById(tableId);
+    tr = tableSteps.getElementsByTagName("tr");
+    for (var i = 0; i < tr.length; i++) {
+        MakeRowHover(tr[i], i, tableId);
+    }
+}
+
+function SetCookieStepNumber(stepNumber) {
+    document.cookie = "selectedStepNumber=" + stepNumber + "; path=/";
+}
+
+function MakeRowHover(row, numRow, tableId) {
+    row.addEventListener("click", function (numRow) {
+        //let td = this.querySelectorAll('td');
+        for (var i = 0; i < tr.length; i++) {
+            if (tr[i] == this) {
+                tr[i].classList.add('selected-tr');
+                if (tableId == "tableSteps") {
+                    selectedRow = tr[i].querySelectorAll('td')[1].innerText;
+                    document.cookie = "selectedStepNumber=" + selectedRow + "; path=/";
+                } else if (tableId == "tableTasks") {
+                    selectedRow = tr[i].querySelectorAll('td')[1].innerText;
+                    document.cookie = "selectedTask=" + selectedRow + "; path=/";
+                }
+            }
+        }
+        for (var i = 0; i < tr.length; i++) {
+            if (tr[i] != this) {
+                td = tr[i].querySelectorAll('td');
+                tr[i].classList.remove('selected-tr');
+            }
+        }
+    });
+}
+
+function StepOperationInfo(stepNumber, operationName) {
+    var cookieTaskId = getCookie("selectedTask");
+    document.cookie = "selectedStepNumber=" + stepNumber + "; path=/";
+    $.ajax({
+        type: 'GET',
+        url: "/Operation/Operations",
+        data: {
+            "taskId": cookieTaskId,
+            "stepNumber": stepNumber,
+            "operationName": operationName
+        },
+        dataType: 'html',
+        success: function (result) {
+            $('#operation-info-content').empty();
+            $('#operation-info-content').append(result);
+            ShowModal('modal-additional-settings');
+            document.getElementById('taskId-modal').innerText = cookieTaskId;
+            document.getElementById('operation-modal').innerText = operationName
+            document.getElementById('step-number-modal').innerText = stepNumber
+        }
+    });
+
+}
+
+
+function StepOperationEdit() {
+    var cookieTaskId = getCookie("selectedTask");
+    $.ajax({
+        method: 'GET',
+        url: '/Task/IsLockedTask',
+        data: {
+            "taskId": cookieTaskId
+        },
+        dataType: 'html',
+        success: function (result) {
+            let jsonObj = JSON.parse(result)
+            if (jsonObj.isLocked == false) {
+                var cookieStepNumber = getCookie("selectedStepNumber");
+                $.ajax({
+                    type: 'GET',
+                    url: "/Operation/EditOperation",
+                    data: {
+                        "taskId": cookieTaskId,
+                        "stepNumber": cookieStepNumber
+                    },
+                    dataType: 'html',
+                    success: function (result) {
+                        $('#operation-edit-content').empty();
+                        $('#operation-edit-content').append(result);
+                        ShowModal('modal-edit-additional-settings');
+                        document.getElementById('taskId-modal-edit').innerText = cookieTaskId;
+                        document.getElementById('step-number-modal-edit').innerText = cookieStepNumber
+                        document.getElementById('operation-modal-edit').innerText = document.getElementById('operation-modal').innerText
+                        ShowAddressGroup();
+                    }
+                });
+            } else if (jsonObj.isLocked == true) {
+                ShowModal('modal-locked-task')
+                document.getElementById('userId-locked-task').innerText = jsonObj.userId
+            }
+        }
+    });
+}
+
+function DeleteStepOperation() {
+    var cookieTaskId = getCookie("selectedTask");
+    $.ajax({
+        method: 'GET',
+        url: '/Task/IsLockedTask',
+        data: {
+            "taskId": cookieTaskId
+        },
+        dataType: 'html',
+        success: function (result) {
+            let jsonObj = JSON.parse(result)
+            if (jsonObj.isLocked == false) {
+                var cookieStepNumber = getCookie("selectedStepNumber");
+                $.ajax({
+                    type: 'GET',
+                    url: "/Operation/DeleteOperation",
+                    data: {
+                        "taskId": cookieTaskId,
+                        "stepNumber": cookieStepNumber
+                    },
+                    dataType: 'html',
+                    success: function (result) {
+                        location.reload();
+                    }
+                });
+            } else if (jsonObj.isLocked == true) {
+                ShowModal('modal-locked-task')
+                document.getElementById('userId-locked-task').innerText = jsonObj.userId
+            }
+        }
+    });
+}
+
+
+function CopyTask() {
+    var cookieTaskId = getCookie("selectedTask");
+    $.ajax({
+        method: 'GET',
+        url: '/Task/IsLockedTask',
+        data: {
+            "taskId": cookieTaskId
+        },
+        dataType: 'html',
+        success: function (result) {
+            let jsonObj = JSON.parse(result)
+            if (jsonObj.isLocked == false) {
+                document.getElementById('copied-taskId').innerText = cookieTaskId;
+                $.ajax({
+                    method: 'POST',
+                    url: '/Task/StepsForCopy',
+                    data: { "taskId": cookieTaskId },
+                    dataType: 'html',
+                    success: function (result) {
+                        $('#copy-steps-content').empty();
+                        $('#copy-steps-content').append(result);
+                        ShowModal('modal-copy-task');
+                    }
+                });
+            } else if (jsonObj.isLocked == true) {
+                ShowModal('modal-locked-task')
+                document.getElementById('userId-locked-task').innerText = jsonObj.userId
+            }
+        }
+    });
+}
+
+function CopyTaskSteps() {
+    var st = document.getElementById('isCopySteps');
+    if (st.checked) {
+        document.getElementById('copy-steps-content2').style.display = 'block';
+    } else {
+        document.getElementById('copy-steps-content2').style.display = 'none';
+    }
+}
+
+function ShowDeleteAddressee(tabNum) {
+    document.getElementById('tabnum-info-del').innerText = tabNum;
+    document.getElementById('adrgroup-info-del').innerText = getCookie('selectedAddresseeGroup');
+    ShowModal('modal-delete-addressee');
+}
+
+function ShowEditAddressee(tabNum, note) {
+    document.getElementById('tabnum-info-edit').innerText = tabNum;
+    document.getElementById('addrgroup-info-edit').innerText = getCookie('selectedAddresseeGroup');
+    ShowModal('modal-edit-addressee');
+    document.getElementById('new-note').value = note;
+}
+
+function EditAddresseNote() {
+    let note = document.getElementById('new-note').value;
+    let addtGroup = document.getElementById('addrgroup-info-edit').innerText;
+    let tabnum = document.getElementById('tabnum-info-edit').innerText;
+    $.ajax({
+        method: 'GET',
+        url: '/AddresseeGroup/EditAddresseeNote',
+        data: {
+            "persNumber": tabnum,
+            "idGroup": addtGroup,
+            "note": note
+        },
+        dataType: 'html',
+        success: function (result) {
+            CloseModal('modal-edit-addressee');
+            window.location.reload();
+        }
+    });
+}
+
+
+
+function ModalDeleteTask(taskId) {
+    document.getElementById('idTaskDelInfo').innerText = taskId;
+    ShowModal('modal-delete-task');
+}
+function OkDeleteTask() {
+    var taskId = document.getElementById('idTaskDelInfo').innerText;
+    CloseModal('modal-delete-task');
+    $.ajax({
+        method: 'POST',
+        url: '/Task/DeleteTask',
+        data: { "taskId": taskId },
+        dataType: 'html',
+        success: function (result) {
+            location.reload();
+        }
+    });
+}
+function CancelDeleteTask() {
+    document.getElementById('idTaskDelInfo').innerText = "";
+    CloseModal('modal-delete-task');
+}
+
+function ModalDeleteStep(stepId, stepNumber) {
+    var cookieTaskId = getCookie("selectedTask");
+    $.ajax({
+        method: 'GET',
+        url: '/Task/IsLockedTask',
+        data: {
+            "taskId": cookieTaskId
+        },
+        dataType: 'html',
+        success: function (result) {
+            let jsonObj = JSON.parse(result)
+            if (jsonObj.isLocked == false) {
+                document.getElementById('idStepDelInfo').innerText = stepNumber;
+                document.getElementById('idStepDel').innerText = stepId;
+                ShowModal('modal-delete-step');
+            } else if (jsonObj.isLocked == true) {
+                ShowModal('modal-locked-task')
+                document.getElementById('userId-locked-task').innerText = jsonObj.userId
+            }
+
+        }
+    });
+}
+function OkDeleteStep() {
+    var stepId = document.getElementById('idStepDel').innerText;
+    CloseModal('modal-delete-step');
+    $.ajax({
+        method: 'POST',
+        url: '/Step/DeleteStep',
+        data: { "stepId": stepId },
+        dataType: 'html',
+        success: function (result) {
+            location.reload();
+        }
+    });
+}
+function CancelDeleteStep() {
+    document.getElementById('idStepDelInfo').innerText = "";
+    document.getElementById('idStepDel').innerText = "";
+    CloseModal('modal-delete-step');
+}
+
+function CopyStep() {
+    var cookieTaskId = getCookie("selectedTask");
+    $.ajax({
+        method: 'GET',
+        url: '/Task/IsLockedTask',
+        data: {
+            "taskId": cookieTaskId
+        },
+        dataType: 'html',
+        success: function (result) {
+            let jsonObj = JSON.parse(result)
+            if (jsonObj.isLocked == false) {
+                $.ajax({
+                    method: 'GET',
+                    url: '/Task/LockTask',
+                    data: {
+                        "taskId": cookieTaskId
+                    },
+                    dataType: 'html',
+                    success: function (result) {
+
+                    }
+                });
+                var cookieStepNumber = getCookie("selectedStepNumber");
+                document.getElementById('idStepCopyInfo').innerText = cookieStepNumber;
+                ShowModal('modal-copy-step');
+            } else if (jsonObj.isLocked == true) {
+                ShowModal('modal-locked-task')
+                document.getElementById('userId-locked-task').innerText = jsonObj.userId
+            }
+
+        }
+    });
+}
+function CancelCopyStep() {
+    CloseModal('modal-copy-step');
+    UnlockTask()
+}
+function OkCopyStep() {
+    var cookieTaskId = getCookie("selectedTask");
+    var cookieStepNumber = getCookie("selectedStepNumber");
+    var newNumber = document.getElementById('numberNewStep').value;
+    $.ajax({
+        method: 'POST',
+        url: '/Step/CopyStep',
+        data: {
+            "taskId": cookieTaskId,
+            "stepNumber": cookieStepNumber,
+            "newNumber": newNumber
+        },
+        dataType: 'html',
+        success: function (result) {
+            CloseModal('modal-copy-step');
+            location.reload();
+        }
+    });
+}
+
+function UnlockTask() {
+    var cookieTaskId = getCookie("selectedTask");
+    $.ajax({
+        method: 'POST',
+        url: '/Task/UnlockTask',
+        data: {
+            "taskId": cookieTaskId
+        },
+        dataType: 'html',
+        success: function (result) {
+            //location.reload();
+        }
+    });
+}
+
+function IsLockedTask() {
+    var cookieTaskId = getCookie("selectedTask");
+    //let isLocked = false;
+    $.ajax({
+        method: 'GET',
+        url: '/Task/IsLockedTask',
+        data: {
+            "taskId": cookieTaskId
+        },
+        dataType: 'html',
+        success: function (result) {
+            return result;
+        }
+    });
+}
+
+function ShowAddressGroup() {
+    var inform = document.getElementById('inform-success');
+    if (inform.checked) {
+        document.getElementById('inform-addr-group').style.display = 'flex'
+    } else {
+        document.getElementById('inform-addr-group').style.display = 'none'
+    }
+}
+
+function SetSelectedGroup() {
+    var groupCookie = getCookie('selectedAddresseeGroup')
+    var select = document.getElementById('group-new-addressee')
+    select.value = groupCookie
+}
+
+function ShowTaskList() {
+    $.ajax({
+        method: 'POST',
+        url: '/Task/TasksList',
+        data: {
+        },
+        dataType: 'html',
+        success: function (result) {
+            $('#tasks').empty();
+            $('#tasks').append(result);
+            SelectRow("tableTasks");
+            cookieTask = getCookie("selectedTask");
+            tableTasks = document.getElementById("tableTasks");
+            tr = tableTasks.getElementsByTagName("tr");
+            for (var i = 0; i < tr.length; i++) {
+                var td = tr[i].getElementsByTagName("td")[1];
+                if (td.innerText == cookieTask) {
+                    tr[i].classList.add('selected-tr');
+                } else {
+                    tr[i].classList.remove('selected-tr');
+                }
+            }
+        }
+    });
+}
+
+
+
+function ClearFilterTasks() {
+    document.getElementById('TaskId').value = "";
+    document.getElementById('Name').value = "";
+    document.getElementById('TimeBegin').value = "00:00:00";
+    document.getElementById('TimeEnd').value = "00:00:00";
+    document.querySelector('#Status').value = 0;
+    document.querySelector('#DayActive').value = 0;
+    document.querySelector('#AddresseeGroupId').value = 0;
+    document.querySelector('#LeftExecution').value = "";
+
+    document.querySelector('#TaskId-option').selectedIndex = 0;
+    document.querySelector('#Name-option').selectedIndex = 0;
+    document.querySelector('#TimeBegin-option').selectedIndex = 0;
+    document.querySelector('#TimeEnd-option').selectedIndex = 0;
+    document.querySelector('#Status-option').selectedIndex = 0;
+    document.querySelector('#DayActive-option').selectedIndex = 0;
+    document.querySelector('#AddresseeGroupId-option').selectedIndex = 0;
+    document.querySelector('#LeftExecution-option').selectedIndex = 0;
+
+    FilterTasks();
+}
+
+function FilterTasks() {
+    var table, tr, td, i, option;
+
+    table = document.getElementById("tableTasks");
+    tr = table.getElementsByTagName("tr");
+
+    let taskId, name, timeBegin, timeEnd, status, days, group, leftExe;
+    taskId = document.getElementById('TaskId').value;
+    name = document.getElementById('Name').value;
+    timeBegin = document.getElementById('TimeBegin').value;
+    timeEnd = document.getElementById('TimeEnd').value;
+    status = document.querySelector('#Status').value;
+    days = document.querySelector('#DayActive');
+    let daysVal = days.options[days.selectedIndex].text;
+    group = document.querySelector('#AddresseeGroupId').value;
+    leftExe = document.querySelector('#LeftExecution').value;
+    
+
+    for (i = 0; i < tr.length; i++) {
+        tr[i].style.display = "";
+        if (taskId != "") {
+            td = tr[i].getElementsByTagName("td")[1];
+            if (td) {
+                option = document.querySelector('#TaskId-option').selectedIndex;
+                switch (option) {
+                    case 0:
+                        if (!(td.innerText == taskId)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 1:
+                        if (!(td.innerText != taskId)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 2:
+                        if (!(td.innerText > taskId)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 3:
+                        if (!(td.innerText < taskId)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 4:
+                        if (!(td.innerText >= taskId)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 5:
+                        if (!(td.innerText <= taskId)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                }
+            }
+        }
+        if (name != "") {
+            td = tr[i].getElementsByTagName("td")[2];
+            if (td) {
+                option = document.querySelector('#Name-option').selectedIndex;
+                switch (option) {
+                    case 0:
+                        if (!(td.innerText == name)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 1:
+                        if (!(td.innerText != name)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 2:
+                        if (!(td.innerText > name)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 3:
+                        if (!(td.innerText < name)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 4:
+                        if (!(td.innerText >= name)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 5:
+                        if (!(td.innerText <= name)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                }
+            }
+        }
+        if (timeBegin != "00:00:00" && timeBegin != "") {
+            td = tr[i].getElementsByTagName("td")[3];
+            if (td) {
+                option = document.querySelector('#TimeBegin-option').selectedIndex;
+                switch (option) {
+                    case 0:
+                        if (!(td.innerText == timeBegin)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 1:
+                        if (!(td.innerText != timeBegin)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 2:
+                        if (!(td.innerText > timeBegin)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 3:
+                        if (!(td.innerText < timeBegin)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 4:
+                        if (!(td.innerText >= timeBegin)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 5:
+                        if (!(td.innerText <= timeBegin)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                }
+            }
+        }
+        if (timeEnd != "00:00:00" && timeEnd != "") {
+            td = tr[i].getElementsByTagName("td")[4];
+            if (td) {
+                option = document.querySelector('#TimeEnd-option').selectedIndex;
+                switch (option) {
+                    case 0:
+                        if (!(td.innerText == timeEnd)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 1:
+                        if (!(td.innerText != timeEnd)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 2:
+                        if (!(td.innerText > timeEnd)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 3:
+                        if (!(td.innerText < timeEnd)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 4:
+                        if (!(td.innerText >= timeEnd)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 5:
+                        if (!(td.innerText <= timeEnd)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                }
+            }
+        }
+        if (status != 0) {
+            var statusText = "";
+            if (status == 1) {
+                statusText = "status-process";
+            } else if (status == 2) {
+                statusText = "status-error";
+            } else if (status == 3) {
+                statusText = "status-wait";
+            } else if (status == 4) {
+                statusText = "status-complete";
+            }
+            td = tr[i].getElementsByTagName("td")[9];
+            if (td) {
+                option = document.querySelector('#Status-option').selectedIndex;
+                switch (option) {
+                    case 0:
+                        if (!td.classList.contains(statusText)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 1:
+                        if (td.classList.contains(statusText)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                }
+            }
+        }
+        if (days.value != 0) {
+            td = tr[i].getElementsByTagName("td")[6];
+            if (td) {
+                option = document.querySelector('#DayActive-option').selectedIndex;
+                switch (option) {
+                    case 0:
+                        if (!(td.innerText == daysVal)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 1:
+                        if (!(td.innerText != daysVal)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 2:
+                        if (!(td.innerText > daysVal)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 3:
+                        if (!(td.innerText < daysVal)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 4:
+                        if (!(td.innerText >= daysVal)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 5:
+                        if (!(td.innerText <= daysVal)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                }
+            }
+        }
+        if (group != 0) {
+            td = tr[i].getElementsByTagName("td")[5];
+            if (td) {
+                option = document.querySelector('#AddresseeGroupId-option').selectedIndex;
+                switch (option) {
+                    case 0:
+                        if (!(td.innerText == group)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 1:
+                        if (!(td.innerText != group)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 2:
+                        if (!(td.innerText > group)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 3:
+                        if (!(td.innerText < group)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 4:
+                        if (!(td.innerText >= group)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 5:
+                        if (!(td.innerText <= group)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                }
+            }
+        }
+        if (leftExe != "") {
+            td = tr[i].getElementsByTagName("td")[8];
+            if (td) {
+                option = document.querySelector('#LeftExecution-option').selectedIndex;
+                switch (option) {
+                    case 0:
+                        if (!(td.innerText == leftExe)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 1:
+                        if (!(td.innerText != leftExe)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 2:
+                        if (!(td.innerText > leftExe)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 3:
+                        if (!(td.innerText < leftExe)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 4:
+                        if (!(td.innerText >= nleftExeame)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case 5:
+                        if (!(td.innerText <= leftExe)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                }
+            }
+        }
+    }
+    ShowHideSubMenu('task-filter')
+}
+
+function ShowFiles(stepNumber) {
+    var cookieTaskId = getCookie("selectedTask");
+    $.ajax({
+        method: 'POST',
+        url: '/Step/GetFiles',
+        data: {
+            "taskId": cookieTaskId,
+            "stepNumber": stepNumber
+        },
+        dataType: 'html',
+        success: function (result) {
+            $('#modal-files-content').empty();
+            $('#modal-files-content').append(result);
+            document.getElementById('stepNumber-files').innerText = stepNumber;
+            document.getElementById('taskId-files').innerText = cookieTaskId;
+            ShowModal('modal-files');
+        }
+    });
+}
+
+
+
+
+function ParseDate(ddmmyyyy) {
+    const [day, month, year] = ddmmyyyy.split('.').map(Number);
+    return new Date(year, month - 1, day);
+}
+
+function TimeToSeconds(timeStr) {
+    const [hours, minutes, seconds] = timeStr.split(':').map(Number);
+    return hours * 3600 + minutes * 60 + seconds;
+}
+
+function FilterLockedTask() {
+    var table, tr, td, i, option, userOption, taskIdOption;
+
+    table = document.getElementById("tableLockedTasks");
+    tr = table.getElementsByTagName("tr");
+
+    let taskId, name, timeBegin, timeEnd, dateBegin, dateEnd, group;
+    taskId = document.getElementById('taskIdFilter').value;
+    user = document.getElementById('userFilter').value;
+    timeBegin = document.getElementById('timeBeginFilter').value;
+    timeEnd = document.getElementById('timeEndFilter').value;
+    dateBegin = document.getElementById('dateBeginFilter').value;
+    dateEnd = document.getElementById('dateEndFilter').value;
+
+    taskIdOption = document.querySelector('#taskIdOption').value;
+    userOption = document.querySelector('#userOption').value;
+
+
+    const start = new Date(dateBegin);
+    const end = new Date(dateEnd);
+
+    if (start) start.setHours(0, 0, 0, 0);
+    if (end) end.setHours(0, 0, 0, 0);
+
+    for (i = 0; i < tr.length; i++) {
+        //td = tr[i].getElementsByTagName("td")[2];
+        var td2 = tr[i].getElementsByTagName("td")[2];
+        var td3 = tr[i].getElementsByTagName("td")[3];
+        const date1 = ParseDate(td2.innerText);
+        const time1 = TimeToSeconds(td3.innerText);
+        tr[i].style.display = "";
+        if (taskId != "") {
+            td = tr[i].getElementsByTagName("td")[0];
+            if (td) {
+                switch (taskIdOption) {
+                    case "0":
+                        if (!(td.innerText == taskId)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case "1":
+                        if (!(td.innerText != taskId)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case "2":
+                        if (!(td.innerText > taskId)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case "3":
+                        if (!(td.innerText < taskId)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case "4":
+                        if (!(td.innerText >= taskId)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case "5":
+                        if (!(td.innerText <= taskId)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                }
+            }
+        }
+        if (user != "") {
+            td = tr[i].getElementsByTagName("td")[1];
+            if (td) {
+                switch (taskIdOption) {
+                    case "0":
+                        if (!(td.innerText == user)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case "1":
+                        if (!(td.innerText != user)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case "2":
+                        if (!(td.innerText > user)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case "3":
+                        if (!(td.innerText < user)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case "4":
+                        if (!(td.innerText >= user)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                    case "5":
+                        if (!(td.innerText <= user)) {
+                            tr[i].style.display = "none";
+                        }
+                        break;
+                }
+            }
+        }
+        if (dateBegin != "") {
+            td = tr[i].getElementsByTagName("td")[2];
+
+            if (td) {
+                if (date1 < start) {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+        if (dateEnd != "") {
+            td = tr[i].getElementsByTagName("td")[2];
+            if (td) {
+                if (date1 > end) {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+        if (timeBegin != "" && timeBegin != "00:00:00") {
+            td = tr[i].getElementsByTagName("td")[3];
+            const startSeconds = TimeToSeconds(timeBegin);
+            if (td) {
+                if (time1 < startSeconds) {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+        if (timeEnd != "" && timeEnd != "00:00:00") {
+            td = tr[i].getElementsByTagName("td")[3];
+            const endSeconds = TimeToSeconds(timeEnd);
+            if (td) {
+                if (time1 > endSeconds) {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+    ShowHideSubMenu('locked-filter');
+}
+
+function ResetFilterLockedTask() {
+    table = document.getElementById("tableLockedTasks");
+    tr = table.getElementsByTagName("tr");
+    for (i = 0; i < tr.length; i++) {
+        tr[i].style.display = "";
+    }
+    document.getElementById('taskIdFilter').value = "";
+    document.getElementById('userFilter').value = "";
+    document.getElementById('timeBeginFilter').value = "00:00:00";
+    document.getElementById('timeEndFilter').value = "00:00:00";
+    document.getElementById('dateBeginFilter').value = "";
+    document.getElementById('dateEndFilter').value = "";
+    document.querySelector('#taskIdOption').value = "0";
+    document.querySelector('#userOption').value = "0";
+
+    FilterLockedTask();
+}
+

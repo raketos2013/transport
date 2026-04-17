@@ -1,0 +1,33 @@
+﻿@using System.Text.Json
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model UserLogEntity
+@{
+}
+<script defer src="https://unpkg.com/pretty-json-custom-element/index.js"></script>
+
+<div class="modal-body-content" style="overflow: auto;">
+    <div class="modal-row">
+        <div class="modal-td">
+            <p class="td-title">Дата время события</p>
+            <p class="td-text">@Model.DateTimeLog</p>
+        </div>
+        <div class="modal-td">
+            <p class="td-title">Имя пользователя</p>
+            <p class="td-text">@Model.UserName</p>
+        </div>
+        <div class="modal-td">
+            <p class="td-title">Действие</p>
+            <p class="td-text">@Model.Action</p>
+        </div>
+    </div>
+    <div class="modal-row">
+        <div class="modal-td">
+            <p class="td-title">Объект</p>
+            <pretty-json style="overflow: auto;">
+                @Model.Data
+            </pretty-json>
+        </div>
+    </div>
+</div>

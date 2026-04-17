@@ -1,0 +1,209 @@
+﻿using FileManager.Core.Constants;
+using FileManager.Core.Entities;
+using FileManager.Core.Exceptions;
+using FileManager.Core.Interfaces.Services;
+using FileManager.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+
+namespace FileManager.Controllers;
+
+[Authorize(Roles = "o.br.ДИТ")]
+public class AddresseeGroupController(IAddresseeService addresseeService,
+                                        IUserLogService userLogService)
+            : Controller
+{
+    public async Task<IActionResult> Addressees()
+    {
+        List<AddresseeGroupEntity> addresseeGroups = await addresseeService.GetAllAddresseeGroups();
+        ViewBag.AddresseeGroups = addresseeGroups;
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> AddresseeList(int groupId)
+    {
+        var addresseesAsync = await addresseeService.GetAllAddressees();
+        var addressees = addresseesAsync.Where(x => x.AddresseeGroupId == groupId).ToList();
+        return PartialView("_AddresseeList", addressees);
+    }
+
+    public async Task<bool> CreateGroup(string number, string name)
+    {
+        var groups = await addresseeService.GetAllAddresseeGroups();
+        if (groups.Exists(x => x.Id == int.Parse(number)))
+        {
+            return false;
+        }
+        AddresseeGroupEntity group = new()
+        {
+            Id = int.Parse(number),
+            Name = name
+        };
+        var createdGroup = await addresseeService.CreateAddresseeGroup(group);
+        await userLogService.AddLog($"Создание группы рассылки номер {createdGroup.Id}",
+                                    JsonSerializer.Serialize(createdGroup, AppConstants.JSON_OPTIONS));
+        return true;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> CreateAddressee()
+    {
+        List<AddresseeGroupEntity> addresseeGroups = await addresseeService.GetAllAddresseeGroups();
+        ViewBag.AddresseeGroups = addresseeGroups;
+        AddresseeEntity newAddressee = new();
+        return PartialView("_CreateAddressee", newAddressee);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateAddressee(AddresseeEntity addressee)
+    {
+        List<AddresseeGroupEntity> addresseeGroups = await addresseeService.GetAllAddresseeGroups();
+        var groups = await addresseeService.GetAllAddresseeGroups();
+        List<AddresseeGroupViewModel> list = [];
+        foreach (var item in groups)
+        {
+            var newGroup = new AddresseeGroupViewModel()
+            {
+                Id = item.Id,
+                Name = item.Id + " " + item.Name
+            };
+            list.Add(newGroup);
+        }
+        ViewBag.AddresseeGroups = list;
+
+        AddresseeEntity entity = new()
+        {
+            PersonalNumber = addressee.PersonalNumber,
+            EMail = addressee.EMail,
+            Fio = addressee.Fio,
+            StructuralUnit = addressee.StructuralUnit,
+            AddresseeGroupId = addressee.AddresseeGroupId,
+            Note = addressee.Note
+        };
+        if (string.IsNullOrEmpty(entity.Note))
+        {
+            entity.Note = "";
+        }
+        var createdAddressee = await addresseeService.CreateAddressee(entity);
+        await userLogService.AddLog($"Добавление адресата в группу рассылки номер {createdAddressee.AddresseeGroupId}",
+                                    JsonSerializer.Serialize(createdAddressee, AppConstants.JSON_OPTIONS));
+        return RedirectToAction(nameof(Addressees));
+
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> ActivatedAddressee(string id, int groupId)
+    {
+        var addresseeAsync = await addresseeService.GetAllAddressees();
+        var addressee = addresseeAsync.FirstOrDefault(x => x.PersonalNumber == id &&
+                                                           x.AddresseeGroupId == groupId);
+        if (addressee != null)
+        {
+            addressee.IsActive = !addressee.IsActive;
+            var editedAddressee = await addresseeService.EditAddressee(addressee);
+            string activated = "";
+            if (editedAddressee.IsActive)
+            {
+                activated = "Включение";
+            }
+            else
+            {
+                activated = "Выключение";
+            }
+            await userLogService.AddLog($"{activated} адресата в группе рассылки номер {editedAddressee.AddresseeGroupId}",
+                                        JsonSerializer.Serialize(editedAddressee, AppConstants.JSON_OPTIONS));
+        }
+        return RedirectToAction(nameof(Addressees));
+    }
+
+    public async Task<IActionResult> DeleteAddresseeGroup(int id)
+    {
+        var resultDelete = await addresseeService.DeleteAddresseeGroup(id);
+        if (resultDelete)
+        {
+            await userLogService.AddLog($"Удаление группы рассылки номер {id}", JsonSerializer.Serialize(""));
+        }
+        return RedirectToAction("Tasks", "Task");
+    }
+
+    public async Task<IActionResult> DeleteAddressee(string number, int idGroup)
+    {
+        var addrAsync = await addresseeService.GetAllAddressees();
+        var addr = addrAsync.FirstOrDefault(x => x.PersonalNumber == number &&
+                                                 x.AddresseeGroupId == idGroup)
+                                ?? throw new DomainException("Адресат не найден");
+        var deletedAddressee = new AddresseeEntity()
+        {
+            PersonalNumber = number,
+            AddresseeGroupId = idGroup,
+            EMail = addr.EMail,
+            StructuralUnit = addr.StructuralUnit,
+            IsActive = addr.IsActive,
+            Fio = addr.Fio
+        };
+        var resultDelete = await addresseeService.DeleteAddressee(number, idGroup);
+        if (resultDelete)
+        {
+            await userLogService.AddLog($"Удаление адресата {number} из группы рассылки номер {idGroup}",
+                                        JsonSerializer.Serialize(deletedAddressee, AppConstants.JSON_OPTIONS));
+        }
+        return RedirectToAction(nameof(Addressees));
+    }
+
+    public async Task<IActionResult> AllAddresses()
+    {
+        var addresses = await addresseeService.GetAllAddressees();
+        addresses = addresses.OrderBy(x => x.PersonalNumber)
+                                .ThenBy(x => x.AddresseeGroupId)
+                                .ToList();
+        var groups = await addresseeService.GetAllAddresseeGroups();
+        List<AddressesWithGroupViewModel> list = [];
+        foreach (var item in addresses)
+        {
+            var newAddressee = new AddressesWithGroupViewModel()
+            {
+                Addressee = item,
+                AddresseeGroup = groups.FirstOrDefault(x => x.Id == item.AddresseeGroupId)
+            };
+            list.Add(newAddressee);
+        }
+        return View(list);
+    }
+
+
+    public async Task<IActionResult> GetUserFio(string persNumber)
+    {
+        List<AddresseeGroupEntity> addresseeGroups = await addresseeService.GetAllAddresseeGroups();
+        ViewBag.AddresseeGroups = addresseeGroups;
+        AddresseeEntity addressee = new();
+        var sapUser = await addresseeService.GetSapUser(persNumber);
+        if (sapUser != null)
+        {
+            addressee.PersonalNumber = sapUser.PersNumber;
+            addressee.Fio = sapUser.Fio;
+            addressee.StructuralUnit = sapUser.Orgeh;
+            addressee.EMail = string.Concat('b', sapUser.PersNumber, "@lotus.asb.by");
+        }
+        return PartialView("_SaveAddressee", addressee);
+    }
+
+    public async Task<IActionResult> EditAddresseeGroup(int id, string name)
+    {
+        await addresseeService.EditAddresseeGroup(id, name);
+        return NoContent();
+    }
+
+    public async Task<IActionResult> EditAddresseeNote(string persNumber, int idGroup, string note)
+    {
+        var addrAsync = await addresseeService.GetAllAddressees();
+        var addr = addrAsync.FirstOrDefault(x => x.PersonalNumber == persNumber &&
+                                                 x.AddresseeGroupId == idGroup)
+                                ?? throw new DomainException("Адресат не найден");
+        addr.Note = note;
+        await addresseeService.EditAddressee(addr);
+        return NoContent();
+    }
+}

@@ -1,0 +1,74 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model TaskEntity
+@{
+    SelectList addresseeGroups = new SelectList(ViewBag.AddresseeGroups, "Id", "Name");
+}
+
+
+
+<div class="modal-body">
+    <form id="createTaskForm" class="modal-body-content" method="post" asp-action="CreateTask" asp-controller="Task">
+        <div class="input-with-label">
+            <label asp-for="TaskId"></label>
+            <input asp-for="TaskId" required />
+            <span asp-validation-for="TaskId" class="error-text" id="taskIdError" style="color: red;"></span>
+        </div>
+
+        <div class="input-with-label">
+            <label asp-for="Name"></label>
+            <input asp-for="Name" required>
+        </div>
+        <div class="input-with-label">
+            <label asp-for="TimeBegin"></label>
+            <input asp-for="TimeBegin" type="time" step="1">
+        </div>
+        <div class="input-with-label">
+            <label asp-for="TimeEnd"></label>
+            <input asp-for="TimeEnd" type="time" step="1">
+        </div>
+        <div class="input-with-label">
+            <label asp-for="DayActive"></label>
+            <div class="select-wrapper">
+                <select asp-for="DayActive" asp-items="Html.GetEnumSelectList<DayActive>()"></select>
+            </div>
+        </div>
+        <div class="input-with-label">
+            <label asp-for="AddresseeGroupId"></label>
+            <div class="select-wrapper">
+                <select asp-for="AddresseeGroupId" asp-items=@addresseeGroups></select>
+            </div>
+        </div>
+        <div class="input-checkbox">
+            <label asp-for="IsActive" class="toggle-checkbox">
+                <input type="checkbox" asp-for="@Model.IsActive" checked="@Model.IsActive">
+                <span class="toggle-checkbox-switch"></span>
+            </label>
+            <p>Активно</p>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="submit" form="createTaskForm" class="btn-full button-border" onclick="return CheckTaskId()">
+        Сохранить
+    </button>
+</div>
+
+<script>
+    function CheckTaskId() {
+        var form = $('#createTaskForm'); 
+        var taskId = form.find('#TaskId').val();
+
+        var errorSpan = document.getElementById("taskIdError");
+        var pattern = /[а-яА-ЯЁё]/;
+
+        if (pattern.test(taskId)) {
+            errorSpan.innerText = "Использование кирилицы запрещено";
+            return false;
+        }
+
+        errorSpan.innerText = "";
+        return true;
+    }
+</script>

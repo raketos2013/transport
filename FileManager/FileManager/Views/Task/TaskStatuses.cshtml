@@ -1,0 +1,83 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model IEnumerable<TaskLogEntity>
+@{
+}
+
+<div class="main-content">
+    <div class="main-table grid" scrollable="">
+        <div class="table-header-div">
+            <table class="table-header">
+                <colgroup>
+                    <col style="min-width:170px;width:170px;">
+                    <col style="min-width:135px;width:135px;">
+                    <col style="min-width:140px;width:140px;">
+                    <col style="min-width:140px;width:140px;">
+                    <col style="min-width:170px;width:170px;">
+                    <col style="min-width:110px;width:100%;">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>
+                            <p>Дата-время события</p>
+                            <div class="separate"></div>
+                            <div class="sorter"></div>
+                        </th>
+                        <th>
+                            <p>Задача</p>
+                            <div class="separate"></div>
+                            <div class="sorter"></div>
+                        </th>
+                        <th>
+                            <p>Номер шага</p>
+                            <div class="separate"></div>
+                            <div class="sorter"></div>
+                        </th>
+                        <th>
+                            <p>Операция</p>
+                            <div class="separate"></div>
+                            <div class="sorter"></div>
+                        </th>
+                        <th>
+                            <p>Имя файла</p>
+                            <div class="separate"></div>
+                            <div class="sorter"></div>
+                        </th>
+                        <th>
+                            <p>Сообщение</p>
+                            <div class="separate"></div>
+                            <div class="sorter"></div>
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        <div class="table-body-div">
+            <table class="table-body" id="tableTasks">
+                <colgroup>
+                    <col style="min-width:170px;width:170px;">
+                    <col style="min-width:135px;width:135px;">
+                    <col style="min-width:140px;width:140px;">
+                    <col style="min-width:140px;width:140px;">
+                    <col style="min-width:170px;width:170px;">
+                    <col style="min-width:110px;width:100%;">
+                </colgroup>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td><p>@item.DateTimeLog</p></td>
+                            <td><p>@item.TaskId</p></td>
+                            <td><p>@item.StepNumber</p></td>
+                            <td><p>@item.OperationName</p></td>
+                            <td><p>@item.FileName</p></td>
+                            <td><p>@item.ResultText</p></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
